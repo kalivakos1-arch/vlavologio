@@ -294,6 +294,17 @@ function renderOem(){
 }
 function markChips(){ var cs=$("oembox").querySelectorAll(".chip"); for(var i=0;i<cs.length;i++){ cs[i].classList.toggle("on", cs[i].getAttribute("data-o")===S.oem); } }
 
+function procBox(c, plat){
+  var txt = c[1]+" "+(c[2]||""), out = "";
+  PROCS.forEach(function(p){
+    if(!p.test(c[1])) return;
+    var pv = p.plat[plat] || p.plat._ || "";
+    out += '<details class="proc"><summary>'+esc(p.title)+'</summary>'+(pv?'<div class="pext">📘 '+esc(pv)+'</div>':'')+
+      '<ol class="steps">'+p.steps.map(function(s){ return '<li><b>'+esc(s[0])+'</b><div>'+esc(s[1])+'</div></li>'; }).join("")+'</ol></details>';
+  });
+  return out;
+}
+
 function card(r, showPlat){
   var c = r.c, t = r.t;
   return '<div class="res">'+
@@ -303,6 +314,7 @@ function card(r, showPlat){
     (c[4]?'<div class="rl">↔ '+esc(c[4])+'</div>':'')+
     (c[2]?(function(){ var st=stepsOf(c[2]); return st ? '<div class="rd"><b>🔧 Τι ελέγχεις – με τη σειρά:</b><ol class="steps">'+st.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol></div>' : '<div class="rd"><b>🔧 Τι ελέγχεις:</b> '+esc(c[2])+'</div>'; })():'')+
     (c[3]?'<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+esc(c[3])+'</div>':'')+
+    procBox(c, t.plat)+
     partLinks(c[1]+' '+(c[2]||''))+
     '<div class="rs">'+esc(t.tbl.name)+'</div>'+
   '</div>';
