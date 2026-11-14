@@ -97,16 +97,16 @@ if(typeof OUTP!=="undefined") Object.keys(OUTP).forEach(function(p){ if(OUTP[p].
 
 // ===== Αναζήτηση μάρκας (ελληνικά/αγγλικά) =====
 var ALIAS = {
- "LG":["λγ","ελτζι","ελ τζι","ελζι"], "Daikin":["νταικιν","ντάικιν","νταϊκιν","ντεικιν"], "Mitsubishi Electric":["μιτσουμπισι","μιτσουμπίσι ελεκτρικ","μιτσουμπισι ηλεκτρικ","mitsubishi"],
+ "LG":["λγ","ελτζι","ελ τζι","ελζι","λ τζι","λτζι","ελ τζη"], "Daikin":["νταικιν","ντάικιν","νταϊκιν","ντεικιν"], "Mitsubishi Electric":["μιτσουμπισι","μιτσουμπίσι ελεκτρικ","μιτσουμπισι ηλεκτρικ","mitsubishi"],
  "Mitsubishi Heavy":["μιτσουμπισι χεβι","μιτσουμπισι βαρεα","heavy","mhi"], "Fujitsu":["φουτζιτσου","φουτζίτσου","φουτζι"], "Toshiba":["τοσιμπα","τοσίμπα","τοσιμπα"],
  "Panasonic":["πανασονικ","πανασόνικ"], "Samsung":["σαμσουνγκ","σάμσουνγκ","σαμσουγκ"], "Hitachi":["χιτατσι","χιτάτσι"], "Gree":["γκρι","γκρη","γρι","γκριι"],
  "Midea":["μιντεα","μιντέα","μιδεα","μιντια"], "AUX":["αουξ","αυξ","ωξ","οξ","άουξ"], "Hisense":["χαισενς","χαϊσενς","χισενς","χαισενσ"], "Haier":["χαιερ","χάιερ","χαϊερ","χαιρ"],
- "TCL":["τσλ","τισιελ","τι σι ελ"], "Cooper&Hunter":["κουπερ","κούπερ","κουπερ χαντερ","cooper"], "Bosch":["μπος","μποσ"], "Carrier":["καριερ","κάριερ"],
+ "TCL":["τσλ","τισιελ","τι σι ελ"], "Cooper&Hunter":["κουπερ","κούπερ","κουπερ χαντερ","κουπερ εντ χαντερ","κουπερ και χαντερ","cooper"], "Bosch":["μπος","μποσ"], "Carrier":["καριερ","κάριερ"],
  "Inventor":["ινβεντορ","ινβέντορ","inventor"], "Toyotomi":["τογιοτομι","τογιοτόμι"], "Sendo":["σεντο","σέντο"], "Nexi (by Sendo)":["νεξι","νέξι"],
- "Juro-Pro":["τζουρο","τζούρο","juro"], "Morris":["μορις","μόρις"], "Tesla":["τεσλα","τέσλα"], "Pitsos":["πιτσος","πίτσος"], "Equation":["εκουεισιον","equation"],
+ "Juro-Pro":["τζουρο","τζούρο","τζουρο προ","juro"], "Morris":["μορις","μόρις"], "Tesla":["τεσλα","τέσλα"], "Pitsos":["πιτσος","πίτσος"], "Equation":["εκουεισιον","equation"],
  "F&U":["εφ εντ γιου","fu"], "Eurolamp":["ευρολαμπ","γιουρολαμπ"], "Primo":["πριμο","πρίμο"], "Philco":["φιλκο","φίλκο"], "Arielli":["αριελι","αριέλι"], "Finlux":["φινλουξ"],
  "Nuvelle":["νουβελ"], "Miyato":["μιγιατο","μιγιάτο"], "Coolstar":["κουλσταρ"], "United":["γιουνάιτεντ","γιουναιτεντ"], "Intercool":["ιντερκουλ"], "Omnys":["ομνις"],
- "Xiaomi":["σιαομι","σιαόμι","ξιαομι"], "Beko":["μπεκο","μπέκο"], "Sharp":["σαρπ","σάρπ"], "Olimpia Splendid":["ολυμπια","ολίμπια"], "Crown":["κραουν"], "Eskimo":["εσκιμο","εσκιμώ"],
+ "Xiaomi":["σιαομι","σιαόμι","ξιαομι"], "Beko":["μπεκο","μπέκο"], "Sharp":["σαρπ","σάρπ"], "Olimpia Splendid":["ολυμπια","ολίμπια","ολυμπια σπλεντιντ","ολιμπια σπλεντιντ"], "Crown":["κραουν"], "Eskimo":["εσκιμο","εσκιμώ"],
  "Izumi":["ιζουμι"], "Kumo":["κουμο"], "Telco":["τελκο"], "Winson":["γουινσον"]
 };
 function stripAcc(s){ return String(s).toLowerCase().normalize ? String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"") : String(s).toLowerCase(); }
@@ -118,6 +118,24 @@ function gr2lat(s){
   return s.replace(/[α-ω]/g,function(c){return m[c]||c;});
 }
 function skel(s){ return s.replace(/[^a-z0-9]/g,"").replace(/[aeiouyhw]/g,""); }
+
+function canon(s){
+  s = gr2lat(s).replace(/[^a-z0-9]/g,"");
+  s = s.replace(/ph/g,"f").replace(/ck/g,"k").replace(/[cq]/g,"k").replace(/(tz|dz|j)/g,"z").replace(/z/g,"s").replace(/y/g,"i").replace(/ee/g,"i").replace(/w/g,"v");
+  return s.replace(/(.)\1+/g,"$1");
+}
+function lev(a,b){ var m=a.length,n=b.length,d=[],i,j; for(i=0;i<=m;i++){d[i]=[i];} for(j=0;j<=n;j++) d[0][j]=j;
+  for(i=1;i<=m;i++) for(j=1;j<=n;j++) d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); return d[m][n]; }
+function fuzzyHit(ql, names){ // επιστρέφει απόσταση (μικρότερη = καλύτερη) ή -1
+  var q = canon(ql); if(q.length<3) return -1;
+  var best = -1;
+  names.forEach(function(nm){ var t = canon(nm); if(t.length<3) return;
+    var lim = Math.max(1, Math.floor(Math.min(q.length,t.length)/4)), d;
+    for(var L=Math.max(3,q.length-1); L<=Math.min(t.length,q.length+1); L++){ d=lev(q, t.slice(0,L)); if(d<=lim && (best<0||d<best)) best=d; }
+    if(q.length>t.length && t.length>=4){ d=lev(q.slice(0,t.length), t); if(d<=lim && (best<0||d<best)) best=d; }
+  });
+  return best;
+}
 function brandMatches(q){
   var qq = stripAcc(q).trim(); if(!qq) return [];
   var ql = gr2lat(qq).replace(/[^a-z0-9]/g,""), qs = skel(ql), out = [];
@@ -126,8 +144,10 @@ function brandMatches(q){
     if(name.indexOf(ql)===0 && ql) sc = 100;
     else if(words.some(function(w){return ql && w.indexOf(ql)===0;})) sc = 90;
     else if((ALIAS[b.n]||[]).some(function(a){ return stripAcc(a).indexOf(qq)===0 || (ql && gr2lat(a).replace(/[^a-z0-9]/g,"").indexOf(ql)===0); })) sc = 85;
+    else if((ALIAS[b.n]||[]).some(function(al){ var x=stripAcc(al); return x.length>=4 && qq.indexOf(x)===0; })) sc = 80;
     else if(ql.length>=2 && qs.length>=2 && skel(name).indexOf(qs)===0) sc = 60;
     else if(ql.length>=3 && name.indexOf(ql)>0) sc = 40;
+    else { var fd = fuzzyHit(ql, [b.n].concat(ALIAS[b.n]||[])); if(fd>=0) sc = 50 - fd*5; }
     if(sc && b.n!=="Άλλη μάρκα…") out.push({b:b, s:sc - (b.own?0:1)});
   });
   out.sort(function(x,y){ return y.s-x.s; });
