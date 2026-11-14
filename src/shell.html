@@ -26,13 +26,13 @@ header{display:flex;align-items:center;gap:10px;margin:2px 0 12px}
 .logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#3ea6ff,#7fd3ff);display:grid;place-items:center;font-size:21px;flex:none}
 h1{font-size:19px;margin:0}
 header p{margin:0;color:var(--muted);font-size:12.5px}
-.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
 .cat{background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:9px 4px;font-size:12.5px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;line-height:1.2;text-align:center}
 .cat span{font-size:19px}
 .cat.on{border-color:var(--acc);background:#13314d;color:#fff}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
-#brandSel{width:100%;text-align:left;background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:12px 14px;font-size:17px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between}
-#brandSel::after{content:"▾";color:var(--muted)}
+#brandSel{flex:none;width:52px;text-align:center;justify-content:center;background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:12px 14px;font-size:17px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between}
+
 #brandsWrap{display:none;margin-top:8px}
 #brandsWrap.open{display:block}
 .grp{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin:10px 2px 6px}
@@ -133,6 +133,11 @@ details.note p{font-size:13.5px;color:#cfdbe7}
 .row4 label{display:block;font-size:12.5px;color:var(--muted)}
 .row4 input{width:100%;margin-top:3px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px;font-size:14px;box-sizing:border-box}
 .pcalcw label.small{margin-top:6px}
+.bsearch{display:flex;gap:6px}
+.bsearch input{flex:1;font-size:18px;font-weight:700;padding:12px 14px;border-radius:10px;background:var(--card2);border:1px solid var(--line);color:var(--text);min-width:0}
+#bsug{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.bs{text-align:left;background:#13314d;border:1px solid var(--acc2);color:#fff;border-radius:10px;padding:11px 12px;font-size:16px;cursor:pointer}
+.lbl.step{color:#cfe7ff;font-size:13.5px}
 .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-height:1.5}
 </style>
 </head>
@@ -143,15 +148,15 @@ details.note p{font-size:13.5px;color:#cfdbe7}
     <div><h1>Βλαβολόγιο Κλιματισμού</h1><p>Κωδικοί βλαβών από τα service manuals – λειτουργεί χωρίς AI</p></div>
   </header>
 
-  <div class="cats" id="cats"></div>
-
   <div class="card">
-    <button id="brandSel">Διάλεξε μάρκα</button>
+    <label class="lbl step">① Μάρκα</label>
+    <div class="bsearch"><input id="bq" placeholder="Γράψε μάρκα – π.χ. LG ή λγ, Gree ή γκρι" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><button id="brandSel" aria-label="Όλες οι μάρκες">☰</button></div>
+    <div id="bsug"></div>
     <div id="brandsWrap"><div id="brands"></div></div>
-    <div id="oembox" style="display:none"></div>
   </div>
-
-  <div class="search">
+  <div id="catwrap" style="display:none"><label class="lbl step">② Με τι έχεις να κάνεις;</label><div class="cats" id="cats"></div></div>
+  <div class="card" id="oembox" style="display:none"></div>
+  <div class="search"><label class="lbl step" id="qlbl">④ Κωδικός βλάβης</label>
     <div class="srcbox" id="srcbox"><button data-s="in">Κωδικός εσωτερικής / χειριστηρίου</button><button data-s="out">📟 Πλακέτα εξωτερικής</button><button data-s="parts">🔧 Έλεγχος εξαρτημάτων</button><button data-s="sym">🩺 Χωρίς κωδικό (συμπτώματα)</button></div>
     <div class="sbox">
       <input id="q" placeholder="Κωδικός βλάβης ή λέξη" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="search">

@@ -3,8 +3,9 @@
 var T = window.T;
 
 var CATS = [
-  {id:"split", label:"Τοίχου / Split", icon:"❄️"},
-  {id:"hp",    label:"Αντλία θερμότητας", icon:"🔥"},
+  {id:"split", label:"Split (τοίχου, κασέτα, κανάλι)", icon:"❄️"},
+  {id:"multi", label:"Multi split", icon:"🔀"},
+  {id:"hp",    label:"Αντλία θερμότητας (νερού)", icon:"🔥"},
   {id:"vrf",   label:"VRF", icon:"🏢"},
   {id:"vrfhr", label:"VRF Heat Recovery", icon:"🔁"}
 ];
@@ -87,6 +88,52 @@ var BRANDS = [
   {n:"Άλλη μάρκα…", cands:{split:["midea","gree","aux","tcl","hisense","haier","daikin","lg","samsung"], hp:["midea","gree","daikin","panasonic","lg","samsung","me","toshiba","hisense","haier"], vrf:["midea","gree","daikin","me","lg","samsung","toshiba","hitachi","mhi","fujitsu","panasonic","hisense"], vrfhr:["midea","gree","daikin","me","lg","samsung","toshiba","panasonic","hisense"]}}
 ];
 
+
+// Multi = ίδιοι κωδικοί με split (εσωτερικές + πολλαπλή εξωτερική)
+Object.keys(PLAT).forEach(function(p){ if(PLAT[p].split) PLAT[p].multi = PLAT[p].split; });
+GENERIC.multi = GENERIC.split;
+BRANDS.forEach(function(b){ if(b.cands && b.cands.split && !b.cands.multi) b.cands.multi = b.cands.split; });
+if(typeof OUTP!=="undefined") Object.keys(OUTP).forEach(function(p){ if(OUTP[p].split) OUTP[p].multi = OUTP[p].split; });
+
+// ===== Αναζήτηση μάρκας (ελληνικά/αγγλικά) =====
+var ALIAS = {
+ "LG":["λγ","ελτζι","ελ τζι","ελζι"], "Daikin":["νταικιν","ντάικιν","νταϊκιν","ντεικιν"], "Mitsubishi Electric":["μιτσουμπισι","μιτσουμπίσι ελεκτρικ","μιτσουμπισι ηλεκτρικ","mitsubishi"],
+ "Mitsubishi Heavy":["μιτσουμπισι χεβι","μιτσουμπισι βαρεα","heavy","mhi"], "Fujitsu":["φουτζιτσου","φουτζίτσου","φουτζι"], "Toshiba":["τοσιμπα","τοσίμπα","τοσιμπα"],
+ "Panasonic":["πανασονικ","πανασόνικ"], "Samsung":["σαμσουνγκ","σάμσουνγκ","σαμσουγκ"], "Hitachi":["χιτατσι","χιτάτσι"], "Gree":["γκρι","γκρη","γρι","γκριι"],
+ "Midea":["μιντεα","μιντέα","μιδεα","μιντια"], "AUX":["αουξ","αυξ","ωξ","οξ","άουξ"], "Hisense":["χαισενς","χαϊσενς","χισενς","χαισενσ"], "Haier":["χαιερ","χάιερ","χαϊερ","χαιρ"],
+ "TCL":["τσλ","τισιελ","τι σι ελ"], "Cooper&Hunter":["κουπερ","κούπερ","κουπερ χαντερ","cooper"], "Bosch":["μπος","μποσ"], "Carrier":["καριερ","κάριερ"],
+ "Inventor":["ινβεντορ","ινβέντορ","inventor"], "Toyotomi":["τογιοτομι","τογιοτόμι"], "Sendo":["σεντο","σέντο"], "Nexi (by Sendo)":["νεξι","νέξι"],
+ "Juro-Pro":["τζουρο","τζούρο","juro"], "Morris":["μορις","μόρις"], "Tesla":["τεσλα","τέσλα"], "Pitsos":["πιτσος","πίτσος"], "Equation":["εκουεισιον","equation"],
+ "F&U":["εφ εντ γιου","fu"], "Eurolamp":["ευρολαμπ","γιουρολαμπ"], "Primo":["πριμο","πρίμο"], "Philco":["φιλκο","φίλκο"], "Arielli":["αριελι","αριέλι"], "Finlux":["φινλουξ"],
+ "Nuvelle":["νουβελ"], "Miyato":["μιγιατο","μιγιάτο"], "Coolstar":["κουλσταρ"], "United":["γιουνάιτεντ","γιουναιτεντ"], "Intercool":["ιντερκουλ"], "Omnys":["ομνις"],
+ "Xiaomi":["σιαομι","σιαόμι","ξιαομι"], "Beko":["μπεκο","μπέκο"], "Sharp":["σαρπ","σάρπ"], "Olimpia Splendid":["ολυμπια","ολίμπια"], "Crown":["κραουν"], "Eskimo":["εσκιμο","εσκιμώ"],
+ "Izumi":["ιζουμι"], "Kumo":["κουμο"], "Telco":["τελκο"], "Winson":["γουινσον"]
+};
+function stripAcc(s){ return String(s).toLowerCase().normalize ? String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"") : String(s).toLowerCase(); }
+function gr2lat(s){
+  s = stripAcc(s);
+  var di=[["μπ","b"],["ντ","d"],["γκ","g"],["γγ","g"],["τζ","tz"],["τσ","ts"],["ου","u"],["αι","ai"],["ει","i"],["οι","i"],["ψ","ps"],["ξ","x"],["θ","th"],["χ","h"]];
+  di.forEach(function(d){ s = s.split(d[0]).join(d[1]); });
+  var m={"α":"a","β":"v","γ":"g","δ":"d","ε":"e","ζ":"z","η":"i","ι":"i","κ":"k","λ":"l","μ":"m","ν":"n","ο":"o","π":"p","ρ":"r","σ":"s","ς":"s","τ":"t","υ":"i","φ":"f","ω":"o"};
+  return s.replace(/[α-ω]/g,function(c){return m[c]||c;});
+}
+function skel(s){ return s.replace(/[^a-z0-9]/g,"").replace(/[aeiouyhw]/g,""); }
+function brandMatches(q){
+  var qq = stripAcc(q).trim(); if(!qq) return [];
+  var ql = gr2lat(qq).replace(/[^a-z0-9]/g,""), qs = skel(ql), out = [];
+  BRANDS.forEach(function(b){
+    var name = b.n.toLowerCase().replace(/[^a-z0-9]/g,""), words = b.n.toLowerCase().split(/[^a-z0-9]+/), sc = 0;
+    if(name.indexOf(ql)===0 && ql) sc = 100;
+    else if(words.some(function(w){return ql && w.indexOf(ql)===0;})) sc = 90;
+    else if((ALIAS[b.n]||[]).some(function(a){ return stripAcc(a).indexOf(qq)===0 || (ql && gr2lat(a).replace(/[^a-z0-9]/g,"").indexOf(ql)===0); })) sc = 85;
+    else if(ql.length>=2 && qs.length>=2 && skel(name).indexOf(qs)===0) sc = 60;
+    else if(ql.length>=3 && name.indexOf(ql)>0) sc = 40;
+    if(sc && b.n!=="Άλλη μάρκα…") out.push({b:b, s:sc - (b.own?0:1)});
+  });
+  out.sort(function(x,y){ return y.s-x.s; });
+  return out.slice(0,8).map(function(x){return x.b;});
+}
+
 var OEM_TIP = "Πώς βρίσκω το εργοστάσιο: στο ταμπελάκι της εξωτερικής κοίτα «Manufacturer / Made by / Κατασκευαστής»: «Ningbo AUX» = AUX, «GD Midea» ή «Midea» = Midea, «Gree Electric Appliances (Zhuhai)» = Gree, «TCL» = TCL, «Hisense» = Hisense, «Haier/Qingdao Haier» = Haier. Βοηθάει και η πλακέτα (λογότυπο/κωδικός), και ο τύπος κωδικού: τετραψήφιοι EH/EL/EC/PC = Midea.";
 
 // ===== state =====
@@ -105,6 +152,7 @@ function brandObj(){ for(var i=0;i<BRANDS.length;i++) if(BRANDS[i].n===S.brand) 
 function persist(){ LS.set("vl_state",{cat:S.cat,brand:S.brand,oem:S.oem,src:S.src,part:S.part}); }
 
 // διαθέσιμες πλατφόρμες για τη μάρκα στην κατηγορία
+function candidatesFor(b,cat){ var o=S.cat; S.cat=cat; var r=candidates(b); S.cat=o; return r; }
 function candidates(b){
   if(!b) return [];
   if(b.own){ return PLAT[b.own][S.cat] ? [b.own] : []; }
@@ -150,6 +198,9 @@ function search(q){
   var n = norm(q);
   function pass(fn){ var r=[]; tabs.forEach(function(t){ t.tbl.codes.forEach(function(c){ if(c[0].some(function(k){return fn(norm(k));})) r.push({t:t,c:c}); }); }); return r; }
   res = pass(function(k){return k===n;});
+  // πίνακες «exclusive» (π.χ. LG Therma V): όταν έχουν τον κωδικό, κρύβουν τους υπόλοιπους πίνακες της ίδιας πλατφόρμας
+  var ex = {}; res.forEach(function(x){ if(x.t.tbl.exclusive) ex[x.t.plat]=1; });
+  res = res.filter(function(x){ return !ex[x.t.plat] || x.t.tbl.exclusive; });
   if(res.length) return {res:res, mode:"exact"};
   if(n.length>2){ var n2=n.slice(0,2); res = pass(function(k){return k===n2;}); if(res.length) return {res:res, mode:"detail", base:n2}; }
   res = pass(function(k){return k.indexOf(n)===0;});
@@ -158,25 +209,31 @@ function search(q){
 
 // ===== render =====
 function renderCats(){
-  $("cats").innerHTML = CATS.map(function(c){
+  var b = brandObj(); var av = CATS.filter(function(c){ return !b || candidatesFor(b,c.id).length; });
+  if(b && av.length && !av.some(function(c){return c.id===S.cat;})) S.cat = av[0].id;
+  $("catwrap").style.display = b ? "" : "none";
+  $("cats").innerHTML = av.map(function(c){
     return '<button class="cat'+(c.id===S.cat?' on':'')+'" data-c="'+c.id+'"><span>'+c.icon+'</span>'+esc(c.label)+'</button>';
   }).join("");
 }
 function renderBrands(){
-  var list = BRANDS.filter(function(b){ return candidates(b).length>0; });
-  if(S.brand && !list.some(function(b){return b.n===S.brand;})){ S.brand=null; S.oem=null; }
+  var list = BRANDS.slice();
   var own = list.filter(function(b){return b.own;}), reb = list.filter(function(b){return !b.own;});
   function btn(b){ return '<button class="br'+(b.n===S.brand?' on':'')+(b.own?'':' reb')+'" data-b="'+esc(b.n)+'">'+esc(b.n)+'</button>'; }
   $("brands").innerHTML = '<div class="grp">Δικό τους εργοστάσιο</div><div class="bgrid">'+own.map(btn).join("")+'</div>'+
     (reb.length?'<div class="grp">Χωρίς δικό τους εργοστάσιο (θα χρειαστεί μοντέλο/ταμπελάκι)</div><div class="bgrid">'+reb.map(btn).join("")+'</div>':'');
-  $("brandSel").textContent = S.brand || "Διάλεξε μάρκα";
+  if(document.activeElement!==$("bq")) $("bq").value = S.brand || "";
+  $("bsug").innerHTML = "";
 }
 function renderOem(){
   var b = brandObj(); var box = $("oembox");
   if(!b){ box.style.display="none"; return; }
   if(b.own){
-    box.style.display = b.hint ? "block":"none";
-    box.innerHTML = b.hint ? '<div class="hint">'+esc(b.hint)+'</div>' : "";
+    box.style.display = "block";
+    box.innerHTML = (b.hint ? '<div class="hint">'+esc(b.hint)+'</div>' : "")+
+      '<label class="lbl step">③ Μοντέλο (από το ταμπελάκι – προαιρετικό)</label><input id="model" placeholder="π.χ. '+esc(b.n==="LG"?"S12EQ / HU071MR":b.n==="Daikin"?"FTXM35R":b.n==="Gree"?"GWH12ACC-K6DNA1D":"μοντέλο εσωτερικής ή εξωτερικής")+'" autocapitalize="characters" spellcheck="false">'+
+      '<div class="small" id="mapMsg">Με το μοντέλο βλέπεις και στοιχεία εξαρτημάτων (Ω, χρώματα) στον «Έλεγχο εξαρτημάτων».</div>';
+    var mi0=$("model"); mi0.value=S.model||""; mi0.addEventListener("input",function(){ S.model=mi0.value; });
     return;
   }
   var cs = candidates(b);
@@ -186,7 +243,7 @@ function renderOem(){
   var mine = myMap.filter(function(m){return m.brand===b.n;});
   box.innerHTML =
     (b.hint?'<div class="hint">'+esc(b.hint)+'</div>':'<div class="hint">Η '+esc(b.n)+' δεν έχει δικό της εργοστάσιο. Διάλεξε εργοστάσιο ή άφησε «Σύγκριση» για να δεις τι σημαίνει ο κωδικός σε κάθε πιθανό εργοστάσιο.</div>')+
-    '<label class="lbl">Μοντέλο (από το ταμπελάκι – προαιρετικά)</label>'+
+    '<label class="lbl step">③ Μοντέλο (από το ταμπελάκι)</label>'+
     '<div class="row2"><input id="model" placeholder="π.χ. V5MCI32-12" autocapitalize="characters" spellcheck="false"><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
     '<div id="mapMsg" class="small"></div>'+
     '<label class="lbl">Εργοστάσιο παραγωγής</label>'+
@@ -831,8 +888,8 @@ document.addEventListener("click", function(e){
   var el = e.target.closest("[data-c],[data-b],[data-o],[data-del],[data-q],#brandSel");
   if(!el) return;
   if(el.id==="brandSel"){ $("brandsWrap").classList.toggle("open"); return; }
-  if(el.hasAttribute("data-c")){ S.cat = el.getAttribute("data-c"); S.oem=null; renderAll(); return; }
-  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.oem=null; S.model=""; $("brandsWrap").classList.remove("open"); renderAll(); setTimeout(function(){$("q").focus();},50); return; }
+  if(el.hasAttribute("data-c")){ S.cat = el.getAttribute("data-c"); S.oem=null; renderAll(); setTimeout(function(){ var m=$("model"); if(m && !m.value) m.focus(); else $("q").focus(); },50); return; }
+  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.oem=null; S.model=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
   if(el.hasAttribute("data-o")){ S.oem = el.getAttribute("data-o"); markChips(); renderResults(); persist(); return; }
   if(el.hasAttribute("data-del")){ var b=brandObj(), p=el.getAttribute("data-del"); myMap = myMap.filter(function(m){return !(m.brand===b.n && m.prefix===p);}); LS.set("vl_mymap",myMap); renderOem(); return; }
   if(el.hasAttribute("data-q")){ S.q = el.getAttribute("data-q"); $("q").value=S.q; renderResults(); window.scrollTo({top:$("q").getBoundingClientRect().top+window.scrollY-80,behavior:"smooth"}); return; }
@@ -855,6 +912,14 @@ document.addEventListener("click", function(e){
   var x = recent[+el.getAttribute("data-r")]; if(!x) return;
   S.cat=x.cat; S.brand=x.brand; S.oem=x.oem; S.q=x.q; $("q").value=x.q; $("brandsWrap").classList.remove("open"); renderAll();
 });
+
+$("bq").addEventListener("input", function(){
+  var r = brandMatches(this.value);
+  $("bsug").innerHTML = this.value.trim() ? (r.length ? r.map(function(b){ return '<button class="bs" data-b="'+esc(b.n)+'"><b>'+esc(b.n)+'</b>'+(b.own?'':' <span class="small">· χωρίς δικό της εργοστάσιο</span>')+'</button>'; }).join("") : '<div class="small">Δεν βρέθηκε. Πάτα ☰ για όλη τη λίστα ή διάλεξε «Άλλη μάρκα…».</div>') : "";
+});
+$("bq").addEventListener("focus", function(){ this.select(); });
+$("bq").addEventListener("keydown", function(e){ if(e.key==="Enter"){ var f=$("bsug").querySelector("[data-b]"); if(f) f.click(); } });
+
 $("q").addEventListener("input", function(){ S.q = this.value; renderResults(); clearTimeout(recT); recT=setTimeout(saveRecent,1500); });
 $("q").addEventListener("keydown", function(e){ if(e.key==="Enter"){ this.blur(); saveRecent(); } });
 renderRecent();
@@ -870,6 +935,6 @@ document.addEventListener("click", function(e){
 });
 $("clr").addEventListener("click", function(){ S.q=""; $("q").value=""; renderResults(); $("q").focus(); });
 
-if(!S.brand) $("brandsWrap").classList.add("open");
+
 renderAll();
 })();
