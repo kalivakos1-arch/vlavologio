@@ -118,3 +118,24 @@ var PROCS = [
    me:"Mitsubishi Electric City Multi (service manual): γραμμή M-NET εσωτερικών–εξωτερικής στην κλέμα TB3 της εξωτερικής (M1–M2): 24–30V DC. Δεν υπάρχει τάση → βγάλε τη γραμμή από την TB3 και ξαναμέτρα: αν τώρα υπάρχει → βραχυκύκλωμα στη γραμμή· αν ακόμα δεν υπάρχει → τροφοδοτικό M-NET / πλακέτα εξωτερικής.",
    _:""}}
 ];
+
+/* Έλεγχος πινάκων με manual – Νοέμβριος 2026 */
+(function(){
+  var M="11/2026 – σύγκριση κωδικό-κωδικό με ";
+  var C={
+    daikin_split:"service manual & D-SEARCH Daikin", gree_split:"service manual Gree & GREE Comfort",
+    midea_split:"service manual Midea & «New Error Codes» guide", aux_split:"επίσημη λίστα κωδικών AUX",
+    haier_split:"επίσημες σελίδες υποστήριξης Haier & service manual", tcl_split:"service manual TCL (προστέθηκαν EA, EP, Ed, Ey)",
+    hisense_split:"service manual Hisense (προστέθηκε 18· το 41 διαφέρει ανά σειρά)", me_split:"service manual Mitsubishi Electric",
+    mhi_split:"MHI Service Support Handbook (RAC fault codes)", fujitsu_all:"λίστα κωδικών Fujitsu General",
+    toshiba_ras:"service manual Toshiba RAS", toshiba_rav:"service manual Toshiba RAV/SMMS",
+    panasonic_split:"service manual Panasonic", lg_all:"LG self-diagnosis (service manual) & LG support (CH04 φλοτέρ, CH61, CH72)",
+    samsung_all:"service manual Samsung", hitachi_all:"alarm code list Hitachi",
+    daikin_altherma:"service manual Daikin Altherma", me_ecodan:"service manual Ecodan FTC",
+    panasonic_aquarea:"service manual Aquarea", lg_therma:"service manual LG Therma V",
+    midea_mthermal:"service manual Midea M-Thermal", samsung_ehs:"service manual Samsung EHS",
+    daikin_vrv:"service manual Daikin VRV", me_citymulti:"service manual City Multi (διορθώθηκε 1600 = έλλειψη ψυκτικού)",
+    midea_vrf:"service manual Midea VRF", mhi_kx:"MHI KX service handbook"
+  };
+  for(var k in C){ if(T[k]) T[k].chk=M+C[k]+". Σε σπάνιες σειρές ένας κωδικός μπορεί να διαφέρει – αν η περιγραφή δεν ταιριάζει, κοίτα το manual του μοντέλου."; }
+})();

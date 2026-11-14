@@ -367,7 +367,7 @@ function renderResults(){
   var seen={}, nh="";
   tabs.forEach(function(t){ if(seen[t.key]) return; seen[t.key]=1;
     nh += '<details class="note"><summary>📘 '+esc(t.tbl.name)+' – τιμές & όλοι οι κωδικοί ('+t.tbl.codes.length+')</summary>'+
-      '<p>'+esc(t.tbl.note)+'</p>'+(OUTNOTE[t.key]?'<p>📟 '+esc(OUTNOTE[t.key])+'</p>':'')+'<p class="small">Πηγή: '+esc(t.tbl.src)+'</p>'+
+      '<p>'+esc(t.tbl.note)+'</p>'+(OUTNOTE[t.key]?'<p>📟 '+esc(OUTNOTE[t.key])+'</p>':'')+'<p class="small">Πηγή: '+esc(t.tbl.src)+'</p>'+(t.tbl.chk?'<p class="small chk">✔ Έλεγχος: '+esc(t.tbl.chk)+'</p>':'')+
       '<div class="all">'+t.tbl.codes.map(function(c){return '<div class="ar" data-q="'+esc(c[0][0])+'"><span class="code">'+esc(c[0].join(" / "))+'</span> '+esc(c[1])+'</div>';}).join("")+'</div></details>';
   });
   $("notes").innerHTML = nh;
