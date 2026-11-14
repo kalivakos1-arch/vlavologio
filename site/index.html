@@ -198,6 +198,7 @@ details.note p{font-size:13.5px;color:var(--text2)}
 .proc{margin-top:10px;background:var(--accbg);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);border-radius:12px;padding:8px 10px}
 .proc summary{font-weight:700;color:var(--acctx);cursor:pointer;font-size:14.5px}
 .chk{color:var(--ok)}
+.det{color:var(--ok);font-weight:700}
 .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:22px;line-height:1.5}
 @media (max-width:380px){.srcbox button{font-size:10.5px}.srcbox button i{font-size:17px}}
 </style>
@@ -3066,6 +3067,32 @@ function brandMatches(q){
 
 var OEM_TIP = "Πώς βρίσκω το εργοστάσιο: στο ταμπελάκι της εξωτερικής κοίτα «Manufacturer / Made by / Κατασκευαστής»: «Ningbo AUX» = AUX, «GD Midea» ή «Midea» = Midea, «Gree Electric Appliances (Zhuhai)» = Gree, «TCL» = TCL, «Hisense» = Hisense, «Haier/Qingdao Haier» = Haier. Βοηθάει και η πλακέτα (λογότυπο/κωδικός), και ο τύπος κωδικού: τετραψήφιοι EH/EL/EC/PC = Midea.";
 
+// ===== Αυτόματη αναγνώριση εργοστασίου από το μοντέλο =====
+// b: μάρκα (null = ισχύει για όλες), re: regex στο μοντέλο (κεφαλαία, χωρίς κενά), o: εργοστάσιο, w: γιατί
+var OEMRX = [
+  {b:["Inventor","Nobu"], re:/^[VU]\dM[CDFR]/, o:"midea", w:"Επαγγελματικά Inventor σειράς V5M/V6M (κασέτα MCI, κανάλι MDI, ντουλάπα MFI/MFO, οροφής MRI – εξωτερικές U5MRS/U5MRT) είναι Midea."},
+  {b:["Inventor","Nobu"], re:/^[A-Z]\dMV[IO]/, o:"midea", w:"Σειρές Inventor …MVI/…MVO (π.χ. P6MVI, O1MVI, O3MVI): τα service manuals τους έχουν αισθητήρια T1–T4 και λειτουργία ελέγχου τύπου Midea."},
+  {b:["Inventor","Nobu"], re:/^L\dV[IO]/, o:"inv_gree", w:"Σειρά Inventor L4VI/L4VO: το service manual έχει τη δομή και τους κωδικούς Gree."},
+  {b:["Toyotomi"], re:/^(CT|TR)[NG][-\/]?\d/, o:"gree", w:"Toyotomi CTN/CTG (Erai) και TRN/TRG: τα εγχειρίδια δείχνουν κωδικούς Gree (U8, H6, H3, E1, E5, C5, F0–F2)."},
+  {b:["Bosch"], re:/^RAC\d|^CL\d{4}|^CLIMATE/, o:"midea", w:"Bosch Climate (RAC…) είναι Midea."},
+  {b:null, re:/^KCT\d/, o:"kerosun", w:"Μοντέλο KCT = Kerosun Clima."},
+  {b:null, re:/^RA[SV]-/, o:"toshiba", w:"Μοντέλα RAS-/RAV- είναι Toshiba (και Toshiba-Carrier)."},
+  {b:null, re:/HRF?N\d|HFN\d|HRDN\d|^M[2-5]?O[A-Z]{1,2}-?\d{2}|^MS[A-Z]{1,4}-?\d{2}H|^MOX\d|^MOB\d|^MOU-|^MCD-|^MUE-|^MOE-|^42Q|^38Q|^M\d?O[DE]-/, o:"midea", w:"Η ονομασία (π.χ. …HRFN8, MOX/MOB/MOU, MSAG/MSMB, 42QHC/38QHC) είναι του εργοστασίου Midea."},
+  {b:null, re:/^GW[HC]\d|^GU[HC]?D?\d|^GMV|^GWHD|-K\dDN[A-Z]|^CH-S\d/, o:"gree", w:"Η ονομασία GWH/GWC/GU…, GMV ή …-K6DNA είναι του εργοστασίου Gree."},
+  {b:null, re:/^AS[WX]-?H\d{2}|^ASF-?H\d{2}|^AL[CM][A-Z]?-?H\d{2}|^AM[2-5]-?H\d{2}|^ACK?-?H\d{2}|^[FD]ASW-?H|\/JAR3DI|\/JD|\/FZR|\/FREE|\/AUFIT/, o:"aux", w:"Η ονομασία ASW-H…, ASF-H…, AM2-H…, …/JAR3DI είναι του εργοστασίου AUX."},
+  {b:null, re:/^TAC-?\d|^TCA-|^FMA-|^TPG|^TACO|CHSD\//, o:"tcl", w:"Η ονομασία TAC-…CHSD / FMA- είναι του εργοστασίου TCL."},
+  {b:null, re:/^AS-?\d{2}U[RW]|^AU[DCFV]-\d|^[2-5]?AMW-?\d|^AUW-|^AW-?\d{2}U/, o:"hisense", w:"Η ονομασία AS-…UR4S / AUD- / AUC- / AMW είναι του εργοστασίου Hisense."},
+  {b:null, re:/^[1-5]U\d{2}[A-Z]|^AS\d{2}[A-Z]{2}\d|^AD\d{2}[A-Z]|^AB\d{2}[A-Z]|^HSU-/, o:"haier", w:"Η ονομασία 1U/2U…, AS25…, AD/AB… είναι του εργοστασίου Haier."}
+];
+function detectOem(b, model){
+  var v = String(model||"").toUpperCase().replace(/\s/g,""); if(v.length<3) return null;
+  for(var i=0;i<OEMRX.length;i++){ var r=OEMRX[i];
+    if(r.b && r.b.indexOf(b.n)<0) continue;
+    if(r.re.test(v)) return r;
+  }
+  return null;
+}
+
 // ===== state =====
 var S = {cat:"split", brand:null, oem:null, q:"", src:"in"};
 var LS = {
@@ -3195,7 +3222,7 @@ function renderOem(){
   box.innerHTML =
     (b.hint?'<div class="hint">'+esc(b.hint)+'</div>':'<div class="hint">Η '+esc(b.n)+' δεν έχει δικό της εργοστάσιο. Διάλεξε εργοστάσιο ή άφησε «Σύγκριση» για να δεις τι σημαίνει ο κωδικός σε κάθε πιθανό εργοστάσιο.</div>')+
     '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι)</label>'+
-    '<div class="row2"><input id="model" placeholder="π.χ. V5MCI32-12" autocapitalize="characters" spellcheck="false"><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
+    '<div class="row2"><input id="model" placeholder="μοντέλο εξωτερικής ή εσωτερικής – π.χ. V5MFO32-60" autocapitalize="characters" spellcheck="false"><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
     '<div id="mapMsg" class="small"></div>'+
     '<label class="lbl">Εργοστάσιο παραγωγής</label>'+
     '<div class="chips">'+(cs.length>1?'<button class="chip'+(S.oem==="__all"?' on':'')+'" data-o="__all">Σύγκριση όλων</button>':'')+
@@ -3208,8 +3235,11 @@ function renderOem(){
     S.model = mi.value; var v = mi.value.toUpperCase().replace(/\s/g,"");
     var hit = null;
     myMap.forEach(function(m){ if(m.brand===b.n && v && v.indexOf(m.prefix)===0 && (!hit || m.prefix.length>hit.prefix.length)) hit=m; });
-    if(hit && cs.indexOf(hit.oem)>=0){ S.oem = hit.oem; $("mapMsg").textContent = "Βρέθηκε στις αντιστοιχίες σου: "+hit.prefix+"… = "+PLAT[hit.oem].name; markChips(); renderResults(); persist(); }
-    else $("mapMsg").textContent = "";
+    if(hit && cs.indexOf(hit.oem)>=0){ S.oem = hit.oem; $("mapMsg").textContent = "Βρέθηκε στις αντιστοιχίες σου: "+hit.prefix+"… = "+PLAT[hit.oem].name; markChips(); renderCtx(); renderResults(); persist(); return; }
+    var d = detectOem(b, v);
+    if(d && cs.indexOf(d.o)>=0){ S.oem = d.o; $("mapMsg").innerHTML = '<span class="det">🔎 Εργοστάσιο: <b>'+esc(PLAT[d.o].name)+'</b></span> – '+esc(d.w); markChips(); renderCtx(); renderResults(); persist(); }
+    else if(d && PLAT[d.o] && PLAT[d.o][S.cat]){ $("mapMsg").innerHTML = '<span class="det">🔎 Μοιάζει με '+esc(PLAT[d.o].name)+'</span> – '+esc(d.w)+' (δεν είναι στα συνήθη εργοστάσια της '+esc(b.n)+' σε αυτή την κατηγορία – έλεγξε το ταμπελάκι).'; }
+    else $("mapMsg").textContent = v.length>=4 ? "Δεν αναγνωρίστηκε το εργοστάσιο από το μοντέλο – διάλεξέ το παρακάτω ή δες «Πώς βρίσκω το εργοστάσιο»." : "";
   });
   $("saveMap").addEventListener("click", function(){
     var v = (mi.value||"").toUpperCase().replace(/\s/g,"");
@@ -3221,7 +3251,7 @@ function renderOem(){
     LS.set("vl_mymap", myMap);
     renderOem();
     $("mapMsg").textContent = "Αποθηκεύτηκε: "+b.n+" "+pre+"… = "+PLAT[S.oem].name+" (μόνο σε αυτή τη συσκευή).";
-  });
+  });  if(mi.value && !S._detLock){ S._detLock=1; try{ mi.dispatchEvent(new Event("input")); }catch(e){} S._detLock=0; }
 }
 function markChips(){ var cs=$("oembox").querySelectorAll(".chip"); for(var i=0;i<cs.length;i++){ cs[i].classList.toggle("on", cs[i].getAttribute("data-o")===S.oem); } }
 
