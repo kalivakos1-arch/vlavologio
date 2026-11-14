@@ -807,7 +807,7 @@ function presCalc(){
   else { cLo=tin+12; cHi=tin+30; eLo=tout-14; eHi=tout-3; }
   var exp='';
   if(!isNaN(tin)&&!isNaN(tout)){
-    exp = '<div class="pext">📘 Αναμενόμενα (μετά από 15′ λειτουργίας στο μέγιστο):<br>'+
+    exp = '<div class="pext">📘 Αναμενόμενα (μετά από 15′ λειτουργίας στο μέγιστο) – <i>τυπικές τιμές πρακτικής, όχι από manual· αν το manual του μοντέλου δίνει πίνακα πιέσεων, ισχύει εκείνος</i>:<br>'+
       (md==="cool"||ty==="vrf" ? '• Χαμηλή: <b>'+pu(satP(ref,eLo))+' – '+pu(satP(ref,eHi))+'</b> (εξάτμιση '+f1(eLo)+'…'+f1(eHi)+'°C)<br>':'')+
       '• Υψηλή: <b>'+pu(satP(ref,cLo))+' – '+pu(satP(ref,cHi))+'</b> (συμπύκνωση '+f1(cLo)+'…'+f1(cHi)+'°C)'+(md==="heat"&&ty!=="vrf"?'':'')+'</div>';
   }
