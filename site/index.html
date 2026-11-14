@@ -10,157 +10,217 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Βλαβολόγιο">
-<meta name="theme-color" content="#0e1621">
+<meta name="theme-color" content="#0b1220">
 <title>Βλαβολόγιο Κλιματισμού</title>
 <style>
-:root{--bg:#0e1621;--card:#16212d;--card2:#1d2a39;--line:#2a3b4e;--text:#e9eff5;--muted:#93a4b6;--acc:#3ea6ff;--acc2:#1f7fd1;--warn:#ffb648;--ok:#46c98b;}
+:root{--bg:#0b1220;--bg2:#0f1729;--card:#121b2e;--card2:#18233a;--card3:#1e2b46;--line:#26344f;--line2:#33456a;--text:#e9eff8;--text2:#c9d5e6;--muted:#8d9db6;
+--acc:#22d3ee;--acc2:#0ea5e9;--accbg:rgba(34,211,238,.12);--acctx:#bff3ff;--onacc:#04202a;
+--warn:#fbbf24;--warnbg:rgba(251,191,36,.10);--warntx:#fde4a6;--ok:#34d399;--okbg:rgba(52,211,153,.12);--oktx:#a7f3d0;--bad:#f87171;--badbg:rgba(248,113,113,.12);--badtx:#fecaca;
+--sh:0 1px 2px rgba(0,0,0,.25),0 8px 24px rgba(0,0,0,.18);--r:16px}
+:root[data-theme=light]{--bg:#eef2f8;--bg2:#e6ecf5;--card:#ffffff;--card2:#f2f5fa;--card3:#e8eef7;--line:#d8e0ec;--line2:#c3cfe0;--text:#0f1b2d;--text2:#2a3a52;--muted:#5d6d84;
+--acc:#0284c7;--acc2:#0369a1;--accbg:rgba(2,132,199,.09);--acctx:#075985;--onacc:#fff;
+--warn:#b45309;--warnbg:rgba(245,158,11,.12);--warntx:#7c3d06;--ok:#047857;--okbg:rgba(16,185,129,.12);--oktx:#065f46;--bad:#b91c1c;--badbg:rgba(239,68,68,.10);--badtx:#7f1d1d;
+--sh:0 1px 2px rgba(15,27,45,.06),0 6px 18px rgba(15,27,45,.06)}
+@media (prefers-color-scheme:light){:root:not([data-theme=dark]){--bg:#eef2f8;--bg2:#e6ecf5;--card:#ffffff;--card2:#f2f5fa;--card3:#e8eef7;--line:#d8e0ec;--line2:#c3cfe0;--text:#0f1b2d;--text2:#2a3a52;--muted:#5d6d84;
+--acc:#0284c7;--acc2:#0369a1;--accbg:rgba(2,132,199,.09);--acctx:#075985;--onacc:#fff;--warn:#b45309;--warnbg:rgba(245,158,11,.12);--warntx:#7c3d06;--ok:#047857;--okbg:rgba(16,185,129,.12);--oktx:#065f46;--bad:#b91c1c;--badbg:rgba(239,68,68,.10);--badtx:#7f1d1d;--sh:0 1px 2px rgba(15,27,45,.06),0 6px 18px rgba(15,27,45,.06)}}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
-.wrap{max-width:720px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(60px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left))}
-button{-webkit-tap-highlight-color:transparent;touch-action:manipulation;font-family:inherit}
-.recent{display:flex;gap:6px;overflow-x:auto;padding:6px 0 0;-webkit-overflow-scrolling:touch}
-.recent:empty{display:none}
-.rc{flex:none;background:var(--card);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:5px 10px;font-size:12.5px;white-space:nowrap}
-.rc b{color:var(--text);font-family:ui-monospace,Menlo,monospace}
-header{display:flex;align-items:center;gap:10px;margin:2px 0 12px}
-.logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#3ea6ff,#7fd3ff);display:grid;place-items:center;font-size:21px;flex:none}
-h1{font-size:19px;margin:0}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Noto Sans",sans-serif;-webkit-text-size-adjust:100%}
+body{background:radial-gradient(1200px 500px at 50% -200px,var(--accbg),transparent 70%),var(--bg);min-height:100vh}
+.wrap{max-width:760px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(60px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left))}
+button{-webkit-tap-highlight-color:transparent;touch-action:manipulation;font-family:inherit;cursor:pointer}
+button:active{transform:scale(.98)}
+header{display:flex;align-items:center;gap:12px;margin:4px 2px 14px}
+.logo{width:44px;height:44px;border-radius:13px;background:linear-gradient(140deg,#22d3ee,#0ea5e9 55%,#6366f1);display:grid;place-items:center;font-size:22px;flex:none;box-shadow:0 6px 18px rgba(14,165,233,.35)}
+h1{font-size:19px;margin:0;letter-spacing:-.2px}
 header p{margin:0;color:var(--muted);font-size:12.5px}
-.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
-.cat{background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:9px 4px;font-size:12.5px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;line-height:1.2;text-align:center}
-.cat span{font-size:19px}
-.cat.on{border-color:var(--acc);background:#13314d;color:#fff}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
-#brandSel{flex:none;width:52px;text-align:center;justify-content:center;background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:12px 14px;font-size:17px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between}
-
+header .hgrow{flex:1;min-width:0}
+#theme{flex:none;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin-bottom:10px;box-shadow:var(--sh)}
+.lbl{display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin:10px 0 6px}
+.lbl.step{display:flex;align-items:center;gap:8px;color:var(--text2);font-size:13px;margin:2px 0 8px;letter-spacing:.2px;text-transform:uppercase}
+.lbl.step b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--accbg);color:var(--acc);font-size:11.5px}
+input,select{font-family:inherit}
+input{width:100%;font-size:17px;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:11px;outline:none;-webkit-appearance:none}
+input:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--accbg)}
+/* μάρκα */
+.bsearch{display:flex;gap:6px;position:relative}
+.bsearch input{flex:1;font-size:18px;font-weight:650;padding:13px 14px 13px 42px;min-width:0}
+.bsearch .mag{position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.6;pointer-events:none}
+#brandSel{flex:none;width:52px;background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:12px;font-size:17px;font-weight:700}
+#brandSel.on{border-color:var(--acc);color:var(--acc)}
+#bsug{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+#bsug:empty{display:none}
+.bs{display:flex;align-items:center;gap:12px;text-align:left;background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:14px;padding:9px 12px;font-size:16px}
+.bs:first-child{border-color:var(--acc);background:var(--accbg)}
+.bs .bt{display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.bs .bt small{color:var(--muted);font-size:12.5px;font-weight:500}
+.bs .go{margin-left:auto;color:var(--muted);font-size:18px}
+.bdg{flex:none;display:inline-grid;place-items:center;width:38px;height:38px;border-radius:11px;color:#fff;font-weight:800;font-size:14px;letter-spacing:.3px;text-shadow:0 1px 1px rgba(0,0,0,.25);box-shadow:inset 0 -2px 0 rgba(0,0,0,.15)}
+.bdg.sm{width:30px;height:30px;font-size:12px;border-radius:9px}
+.bdg.lg{width:48px;height:48px;font-size:17px;border-radius:14px}
+.bchosen{display:flex;align-items:center;gap:12px}
+.bchosen .bt{flex:1;min-width:0;line-height:1.25}
+.bchosen .bt b{font-size:19px;display:block}
+.bchosen .bt small{color:var(--muted);font-size:12.5px}
+.chg{flex:none;background:var(--card2);border:1px solid var(--line);color:var(--acc);border-radius:10px;padding:8px 12px;font-size:14px;font-weight:700}
 #brandsWrap{display:none;margin-top:8px}
 #brandsWrap.open{display:block}
-.grp{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin:10px 2px 6px}
-.bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.br{background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 4px;font-size:13.5px;font-weight:600;cursor:pointer}
+.grp{font-size:11.5px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin:12px 2px 8px}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(102px,1fr));gap:8px}
+.br{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:14px;padding:10px 4px 9px;font-size:12.5px;font-weight:650;line-height:1.2;text-align:center}
 .br.reb{border-style:dashed}
-.br.on{border-color:var(--acc);background:#13314d}
-.hint{background:rgba(255,182,72,.1);border:1px solid rgba(255,182,72,.35);color:#ffd9a3;border-radius:10px;padding:9px 11px;font-size:13.5px;margin-top:10px}
-.lbl{display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin:10px 0 5px}
-input{width:100%;font-size:17px;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:11px;outline:none;-webkit-appearance:none}
-input:focus{border-color:var(--acc)}
+.br.on{border-color:var(--acc);background:var(--accbg)}
+/* κατηγορίες */
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-bottom:10px}
+.cat{background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:14px;padding:10px 6px;font-size:12.5px;font-weight:650;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;line-height:1.2;box-shadow:var(--sh)}
+.cat span{font-size:20px;flex:none;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--card2)}
+.cat.on{border-color:var(--acc);background:var(--accbg);color:var(--text)}
+.cat.on span{background:var(--acc);}
+.hint{background:var(--warnbg);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);color:var(--warntx);border-radius:12px;padding:9px 11px;font-size:13.5px;margin-bottom:8px}
 .row2{display:flex;gap:6px}
-.mini{background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:0 12px;font-size:14px;font-weight:600;white-space:nowrap}
+.mini{background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:0 12px;font-size:14px;font-weight:650;white-space:nowrap}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{background:var(--card2);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:7px 12px;font-size:14px;font-weight:600;cursor:pointer}
-.chip.on{border-color:var(--acc);color:#fff;background:#13314d}
+.chip{background:var(--card2);border:1px solid var(--line);color:var(--text2);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:650}
+.chip.on{border-color:var(--acc);color:var(--acctx);background:var(--accbg)}
 .tip{margin-top:8px;font-size:13px;color:var(--muted)}
 .tip summary{cursor:pointer;color:var(--acc)}
 .small{font-size:12.5px;color:var(--muted)}
 .mymap{margin-top:8px}
 .mm{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;padding:4px 0;border-bottom:1px solid var(--line)}
 .x{background:none;border:0;color:var(--muted);font-size:15px;padding:2px 6px}
-.search{position:sticky;top:env(safe-area-inset-top);z-index:5;background:var(--bg);padding:6px 0 8px}
+/* αναζήτηση */
+.search{position:sticky;top:0;z-index:5;background:linear-gradient(var(--bg) 85%,transparent);padding:8px 0 10px;margin:0 -2px}
+.ctx{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin:0 2px 6px;min-height:22px}
+.ctx b{color:var(--text)}
+.srcbox{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px;box-shadow:var(--sh)}
+.srcbox button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11.5px;font-weight:650;line-height:1.15;padding:7px 2px;border-radius:10px;border:0;background:transparent;color:var(--muted);text-align:center}
+.srcbox button i{font-style:normal;font-size:19px}
+.srcbox button.on{background:var(--acc);color:var(--onacc)}
 .sbox{display:flex;gap:6px}
-#q{font-size:26px;font-weight:800;letter-spacing:1.5px;text-align:center;text-transform:uppercase;font-family:ui-monospace,Menlo,monospace;padding:12px}
-#q::placeholder{font-size:16px;letter-spacing:0;font-weight:500;text-transform:none;font-family:inherit}
-#clr{background:var(--card2);border:1px solid var(--line);color:var(--muted);border-radius:10px;width:52px;font-size:20px}
-.res{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:12px;padding:11px 12px;margin-bottom:8px}
-.rh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}
+#q{font-size:26px;font-weight:800;letter-spacing:1.5px;text-align:center;text-transform:uppercase;font-family:ui-monospace,"SF Mono",Menlo,monospace;padding:12px;background:var(--card);box-shadow:var(--sh)}
+#q::placeholder{font-size:16px;letter-spacing:0;font-weight:500;text-transform:none;font-family:inherit;color:var(--muted)}
+#clr{background:var(--card);border:1px solid var(--line);color:var(--muted);border-radius:12px;width:52px;font-size:20px}
+.recent{display:flex;gap:6px;overflow-x:auto;padding:8px 0 0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.recent:empty{display:none}
+.rc{flex:none;background:var(--card);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:5px 11px;font-size:12.5px;white-space:nowrap}
+.rc b{color:var(--text);font-family:ui-monospace,Menlo,monospace}
+/* αποτελέσματα */
+.res{position:relative;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--kc,var(--acc));border-radius:var(--r);padding:12px 13px;margin-bottom:10px;box-shadow:var(--sh)}
+.rh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
 .codes{display:flex;flex-wrap:wrap;gap:4px}
-.code{font-family:ui-monospace,Menlo,monospace;font-weight:800;background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:14px}
-.plat{font-size:12px;font-weight:700;color:var(--acc);background:#13314d;border-radius:999px;padding:2px 9px;white-space:nowrap}
-.rt{font-weight:700;font-size:16.5px;margin:4px 0}
-.rd{font-size:14.5px;color:#cfdbe7}
-.ro{font-size:14px;color:#ffd58a;margin-top:6px;padding:6px 8px;background:rgba(255,190,80,.08);border-radius:8px}
-.rl{font-size:14px;color:#9fe0b4;margin:2px 0 4px}
-.guide{font-size:14px;line-height:1.45;color:#d7e3ef;background:#132233;border:1px solid #23415f;border-radius:12px;padding:10px 12px;margin:8px 0}
+.code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-weight:800;background:var(--card2);border:1px solid var(--line);border-radius:7px;padding:1px 8px;font-size:15px}
+.kind{font-size:11.5px;font-weight:800;color:var(--kc,var(--acc));background:color-mix(in srgb,var(--kc,var(--acc)) 14%,transparent);border-radius:999px;padding:2px 9px;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px}
+.plat{font-size:12px;font-weight:700;color:var(--acctx);background:var(--accbg);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.rt{font-weight:750;font-size:17px;margin:4px 0 6px;line-height:1.35}
+.rd{font-size:14.5px;color:var(--text2)}
+.ro{font-size:14px;color:var(--warntx);margin-top:8px;padding:7px 9px;background:var(--warnbg);border-radius:10px}
+.rl{font-size:14px;color:var(--oktx);background:var(--okbg);border-radius:10px;padding:6px 9px;margin:2px 0 8px}
+.guide{font-size:14px;line-height:1.45;color:var(--text2);background:var(--accbg);border:1px solid color-mix(in srgb,var(--acc) 30%,transparent);border-radius:14px;padding:10px 12px;margin:8px 0}
 .guide div{margin-top:6px}
-.patb{background:#16202b;border:1px solid #2c3a4a;border-radius:12px;padding:10px;margin:8px 0}
+.patb{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;margin:8px 0;box-shadow:var(--sh)}
 .patrow{display:flex;gap:6px;margin-top:8px}
-.pled{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border-radius:10px;border:1px solid #2c3a4a;background:#0f1720;color:#9aa9b8;font:inherit}
+.pled{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--muted);font:inherit}
 .pled span{font-size:24px;line-height:1}
 .pled small{font-size:11px}
-.pled.s1{background:#4a1515;color:#ff6b6b;border-color:#ff6b6b}
-.pled.s2{background:#4a3a10;color:#ffd166;border-color:#ffd166;animation:blk 1s infinite}
+.pled.s1{background:var(--badbg);color:var(--bad);border-color:var(--bad)}
+.pled.s2{background:var(--warnbg);color:var(--warn);border-color:var(--warn);animation:blk 1s infinite}
 @keyframes blk{50%{opacity:.45}}
 .code.pat{letter-spacing:.5px;white-space:normal}
-.srcbox{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
-.srcbox button{flex:1;font:inherit;font-size:13px;padding:8px 6px;border-radius:10px;border:1px solid #2c3a4a;background:#16202b;color:#b9c7d6}
-.srcbox button.on{background:#1f6feb;border-color:#1f6feb;color:#fff;font-weight:600}
-.rs{font-size:11.5px;color:var(--muted);margin-top:6px}
+/* λυχνίες εσωτερικής */
+.ledw{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;margin:8px 0;box-shadow:var(--sh)}
+.ledw h3{margin:0 0 4px;font-size:14px;color:var(--text2)}
+.lamp{padding:8px 0;border-top:1px solid var(--line)}
+.lamp:first-of-type{border-top:0}
+.lname{display:flex;align-items:center;gap:8px;font-weight:750;font-size:14.5px;margin-bottom:6px}
+.lname small{color:var(--muted);font-weight:500}
+.dot{width:14px;height:14px;border-radius:50%;background:var(--lc);box-shadow:0 0 10px var(--lc)}
+.dot.off{background:var(--line2);box-shadow:none}
+.dot.c{animation:blk .5s infinite}.dot.s{animation:blk 1s infinite}
+.lopts{display:flex;flex-wrap:wrap;gap:6px}
+.lo{min-width:40px;background:var(--card2);border:1px solid var(--line);color:var(--text2);border-radius:10px;padding:7px 9px;font-size:14px;font-weight:700}
+.lo.on{background:var(--lc);border-color:var(--lc);color:#0b1220}
+.lsym{display:inline-flex;flex-wrap:wrap;gap:8px;font-weight:750;font-size:14px}
+.lsym span{display:inline-flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:2px 9px 2px 6px}
+.lsym .dot{width:10px;height:10px}
+.ledreset{background:none;border:0;color:var(--acc);font-size:13.5px;font-weight:700;padding:6px 0 0}
+.rs{font-size:11.5px;color:var(--muted);margin-top:8px}
 .pgrp{font-size:14px;margin:12px 2px 6px;color:var(--warn)}
 .info{margin:2px 2px 8px}
-.empty{color:var(--muted);text-align:center;padding:16px 8px;font-size:14.5px}
-details.note{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px}
+.empty{color:var(--muted);text-align:center;padding:18px 10px;font-size:14.5px;background:var(--card);border:1px dashed var(--line2);border-radius:var(--r)}
+.empty .big{font-size:34px;display:block;margin-bottom:4px}
+details.note{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-top:8px}
 details.note summary{cursor:pointer;font-weight:700;font-size:14px}
-details.note p{font-size:13.5px;color:#cfdbe7}
+details.note p{font-size:13.5px;color:var(--text2)}
 .all{max-height:420px;overflow:auto;border-top:1px solid var(--line);margin-top:6px}
 .ar{padding:7px 2px;border-bottom:1px solid var(--line);font-size:13.5px;cursor:pointer}
 .ar .code{font-size:12.5px;margin-right:4px}
-.plinks{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.plk{background:#13314d;border:1px solid var(--acc2);color:#cfe7ff;border-radius:999px;padding:6px 10px;font-size:12.5px}
+.plinks{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.plk{background:var(--accbg);border:1px solid color-mix(in srgb,var(--acc) 45%,transparent);color:var(--acctx);border-radius:999px;padding:6px 11px;font-size:12.5px;font-weight:650}
 .pbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:10px}
 .pinfo{margin:6px 0}
 .pchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.pc{background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 10px;font-size:13.5px}
-.pc.on{border-color:var(--acc);background:#13314d}
-.pwarn{background:rgba(255,90,90,.1);border:1px solid rgba(255,90,90,.4);color:#ffc4c4;border-radius:10px;padding:8px 11px;font-size:13px;margin-bottom:10px}
-.psec{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
-.pst{font-weight:700;margin-bottom:5px;color:#cfe7ff}
+.pc{background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:8px 11px;font-size:13.5px;font-weight:600}
+.pc.on{border-color:var(--acc);background:var(--accbg)}
+.pwarn{background:var(--badbg);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);color:var(--badtx);border-radius:12px;padding:8px 11px;font-size:13px;margin-bottom:10px}
+.psec{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.pst{font-weight:750;margin-bottom:5px;color:var(--acctx)}
 .psb{white-space:pre-line;font-size:14px;line-height:1.5}
-.pext{background:rgba(70,201,139,.1);border:1px solid rgba(70,201,139,.4);border-radius:10px;padding:8px 11px;font-size:13.5px;margin-bottom:8px}
-.pcalcw{background:var(--card2);border:1px solid var(--acc2);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.pext{background:var(--okbg);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);border-radius:12px;padding:8px 11px;font-size:13.5px;margin-bottom:8px}
+.pcalcw{background:var(--card2);border:1px solid var(--line2);border-radius:14px;padding:10px 12px;margin-bottom:10px}
 .pcalcw select{width:100%;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px;font-size:14px}
 .pcalcw .row2 label{flex:1;font-size:12.5px;color:var(--muted)}
 .pcalcw .row2 input{margin-top:4px}
 .pexp{margin-top:8px;font-size:15px}
-.pver{margin-top:8px;border-radius:10px;padding:8px 10px;font-weight:700}
-.pver.good{background:rgba(70,201,139,.15);color:#8ff0bd}.pver.mid{background:rgba(255,182,72,.15);color:#ffd9a3}.pver.bad{background:rgba(255,90,90,.15);color:#ffb0b0}
+.pver{margin-top:8px;border-radius:12px;padding:9px 11px;font-weight:700}
+.pver.good{background:var(--okbg);color:var(--oktx)}.pver.mid{background:var(--warnbg);color:var(--warntx)}.pver.bad{background:var(--badbg);color:var(--badtx)}
 .pnote{margin:8px 2px}
-.psave{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px}
-.pmod{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:9px 11px;margin:8px 0}
+.psave{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-top:8px}
+.pmod{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:9px 11px;margin:8px 0}
 .pmi{font-size:13.5px;line-height:1.45;margin:5px 0;padding-left:2px}
-.pmi.hl{background:rgba(62,166,255,.12);border-left:3px solid var(--acc);padding:4px 6px;border-radius:6px}
+.pmi.hl{background:var(--accbg);border-left:3px solid var(--acc);padding:4px 6px;border-radius:6px}
 .ftypes{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
 .ftypes .pc{text-align:left}
 .fcols{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}
 .fcols label,.row3 label,label.small{display:block;font-size:12.5px;color:var(--muted)}
-.fcols select,.row3 input,label.small select,.row3 select{width:100%;margin-top:3px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px;font-size:14px;box-sizing:border-box}
+.fcols select,.row3 input,label.small select,.row3 select{width:100%;margin-top:3px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px;font-size:14px;box-sizing:border-box}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:6px 0}
 .steps{margin:6px 0 2px;padding-left:22px}
 .steps li{margin:5px 0;line-height:1.45}
-.steps li div{font-size:14px;color:#cfdbe7;margin-top:2px}
-.sym,.mmg{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.steps li::marker{color:var(--acc);font-weight:800}
+.steps li div{font-size:14px;color:var(--text2);margin-top:2px}
+.sym,.mmg{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px;box-shadow:var(--sh)}
 .sym summary,.mmg summary{font-weight:700;font-size:15.5px;cursor:pointer}
-.mmg{border-color:var(--acc2)}
+.mmg{border-color:var(--line2)}
 .row4{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}
 .row4 label{display:block;font-size:12.5px;color:var(--muted)}
-.row4 input{width:100%;margin-top:3px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px;font-size:14px;box-sizing:border-box}
+.row4 input{width:100%;margin-top:3px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px;font-size:14px;box-sizing:border-box}
 .pcalcw label.small{margin-top:6px}
-.bsearch{display:flex;gap:6px}
-.bsearch input{flex:1;font-size:18px;font-weight:700;padding:12px 14px;border-radius:10px;background:var(--card2);border:1px solid var(--line);color:var(--text);min-width:0}
-#bsug{display:flex;flex-direction:column;gap:6px;margin-top:6px}
-.bs{text-align:left;background:#13314d;border:1px solid var(--acc2);color:#fff;border-radius:10px;padding:11px 12px;font-size:16px;cursor:pointer}
-.lbl.step{color:#cfe7ff;font-size:13.5px}
-.proc{margin-top:8px;background:rgba(62,166,255,.08);border:1px solid var(--acc2);border-radius:10px;padding:8px 10px}
-.proc summary{font-weight:700;color:#cfe7ff;cursor:pointer;font-size:14.5px}
-.foot{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-height:1.5}
-.chk{color:#2e7d32}</style>
+.proc{margin-top:10px;background:var(--accbg);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);border-radius:12px;padding:8px 10px}
+.proc summary{font-weight:700;color:var(--acctx);cursor:pointer;font-size:14.5px}
+.chk{color:var(--ok)}
+.foot{color:var(--muted);font-size:12px;text-align:center;margin-top:22px;line-height:1.5}
+@media (max-width:380px){.srcbox button{font-size:10.5px}.srcbox button i{font-size:17px}}
+</style>
 <link rel="manifest" href="manifest.json">
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="logo">🛠️</div>
-    <div><h1>Βλαβολόγιο Κλιματισμού</h1><p>Κωδικοί βλαβών από τα service manuals – λειτουργεί χωρίς AI</p></div>
+    <div class="hgrow"><h1>Βλαβολόγιο Κλιματισμού</h1><p>Κωδικοί, λυχνίες & μετρήσεις από τα service manuals</p></div><button id="theme" aria-label="Θέμα">🌓</button>
   </header>
 
-  <div class="card">
-    <label class="lbl step">① Μάρκα</label>
-    <div class="bsearch"><input id="bq" placeholder="Γράψε μάρκα – π.χ. LG ή λγ, Gree ή γκρι" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><button id="brandSel" aria-label="Όλες οι μάρκες">☰</button></div>
-    <div id="bsug"></div>
+  <div class="card" id="brandcard">
+    <label class="lbl step"><b>1</b> Μάρκα</label>
+    <div id="bchosen"></div>
+    <div id="bpick"><div class="bsearch"><span class="mag">🔍</span><input id="bq" placeholder="Μάρκα – π.χ. LG ή λγ" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><button id="brandSel" aria-label="Όλες οι μάρκες">☰</button></div>
+    <div id="bsug"></div><button class="ledreset" id="bcancel" style="display:none">✕ Άκυρο – μένω στην ίδια μάρκα</button></div>
     <div id="brandsWrap"><div id="brands"></div></div>
   </div>
-  <div id="catwrap" style="display:none"><label class="lbl step">② Με τι έχεις να κάνεις;</label><div class="cats" id="cats"></div></div>
+  <div id="catwrap" style="display:none"><label class="lbl step"><b>2</b> Με τι έχεις να κάνεις;</label><div class="cats" id="cats"></div></div>
   <div class="card" id="oembox" style="display:none"></div>
-  <div class="search"><label class="lbl step" id="qlbl">④ Κωδικός βλάβης</label>
-    <div class="srcbox" id="srcbox"><button data-s="in">Κωδικός εσωτερικής / χειριστηρίου</button><button data-s="out">📟 Πλακέτα εξωτερικής</button><button data-s="parts">🔧 Έλεγχος εξαρτημάτων</button><button data-s="sym">🩺 Χωρίς κωδικό (συμπτώματα)</button></div>
+  <div class="search"><div class="ctx" id="ctx"></div>
+    <div class="srcbox" id="srcbox"><button data-s="in"><i>🔢</i>Κωδικός</button><button data-s="led"><i>💡</i>Λυχνίες εσωτ.</button><button data-s="out"><i>📟</i>Πλακέτα εξωτ.</button><button data-s="parts"><i>🔧</i>Εξαρτήματα</button><button data-s="sym"><i>🩺</i>Συμπτώματα</button></div>
     <div class="sbox">
       <input id="q" placeholder="Κωδικός βλάβης ή λέξη" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="search">
       <button id="clr" aria-label="Καθαρισμός">✕</button>
@@ -1917,6 +1977,178 @@ T.hr_midea = {
   ]
 };
 
+// ===== Λυχνίες εσωτερικής μονάδας (μονάδες χωρίς οθόνη) =====
+// Κάθε πίνακας έχει lamps: [{n:όνομα, col:χρώμα, v:[επιτρεπτές καταστάσεις]}]
+// Καταστάσεις: "0" σβηστή, "on" αναμμένη σταθερά, "c" αναβοσβήνει συνεχώς (γρήγορα), "s" αναβοσβήνει αργά (1 Hz), "n" = αριθμός αναλαμπών
+// codes: [[κλειδιά "τιμή-τιμή"], περιγραφή, έλεγχος, [κωδικοί χειριστηρίου για σύνδεση]]
+
+// --- Fujitsu: παράγεται από τον πίνακα fujitsu_all (OPERATION = 1ο ψηφίο, TIMER = 2ο) ---
+(function(){
+  var F = T.fujitsu_all; if(!F) return;
+  var map = {A:10,C:12,J:13,U:15};
+  function d(ch){ return /\d/.test(ch) ? +ch : map[ch]; }
+  var codes = [];
+  F.codes.forEach(function(c){
+    var k = c[0][0]; if(!/^[0-9AJ][0-9AU]$/.test(k)) return;
+    var a = d(k[0]), b = d(k[1]); if(!a || b===undefined || b===0) return;
+    codes.push([[a+"-"+b], c[1], "", [k]]);
+  });
+  T.fujitsu_inled = {
+    name: "Fujitsu – λυχνίες εσωτερικής (OPERATION / TIMER / ECONOMY)",
+    src: "Fujitsu General service manuals – Error detection (lamp blinking patterns)",
+    note: "Μέτρα πόσες φορές αναβοσβήνει η πράσινη OPERATION και πόσες η πορτοκαλί TIMER σε κάθε κύκλο (αναλαμπές 0,5″). Η ECONOMY (πράσινη) αναβοσβήνει γρήγορα συνεχώς όσο υπάρχει βλάβη. Ο αριθμός OPERATION–TIMER είναι ο κωδικός E:xx του ενσύρματου (π.χ. 4 + 2 = E:42). Η ένδειξη εμφανίζεται μόνο όσο η μονάδα είναι σε λειτουργία. Σε πολύ παλιές σειρές (π.χ. ASU9RL2) ο πίνακας μπορεί να διαφέρει.",
+    chk: "11/2026 – κανόνας από τα service manuals Fujitsu (Error detection: OPERATION = 1ο ψηφίο, TIMER = 2ο, ECONOMY συνεχώς).",
+    link: "fujitsu_all",
+    lamps: [ {n:"OPERATION", sub:"πράσινη", col:"#46c98b", v:["n"]}, {n:"TIMER", sub:"πορτοκαλί", col:"#ff9f43", v:["n"]} ],
+    codes: codes
+  };
+})();
+
+// --- Mitsubishi Electric MSZ (τοίχου): πάνω λυχνία OPERATION (ή POWER) ---
+T.me_inled = {
+  name: "Mitsubishi Electric MSZ – λυχνία λειτουργίας (όταν σταματά μόνο του)",
+  src: "Mitsubishi Electric service manual MSZ-GF/GE/FH (10-4 Troubleshooting check table)",
+  note: "Όταν η εσωτερική εντοπίσει βλάβη, σβήνει ο ανεμιστήρας και αναβοσβήνει η πάνω λυχνία OPERATION (στα MSZ-FD η POWER, στα MSZ-A η αριστερή). Μέτρα τις αναλαμπές ανάμεσα στις παύσες των 2,5″. Για λεπτομέρεια βλάβης εξωτερικής δες και τη LED της πλακέτας inverter.",
+  chk: "11/2026 – service manual MSZ-GF60VE, πίνακας 10-4.",
+  link: "me_split",
+  lamps: [ {n:"OPERATION", sub:"πάνω λυχνία", col:"#46c98b", v:["c","on","n"]} ],
+  codes: [
+    [["c"],"Λάθος καλωδίωση ή σήμα επικοινωνίας (0,5″ αναμμένη / 0,5″ σβηστή)","Δεν έρχεται σήμα από την εξωτερική για 6 λεπτά. Έλεγξε S1-S2-S3 (σωστή σειρά, σφιξίματα), τάση S2-S3 να «πάλλεται» (σήμα επικοινωνίας – σύγκρινε με το manual), καλώδιο χωρίς ματίσματα, πλακέτα εσωτ./εξωτ.",["E6","E7"]],
+    [["2"],"Αισθητήριο στοιχείου ή χώρου εσωτερικής (ανοιχτό/βραχυκύκλωμα)","Βγάλε τη φίσα και μέτρα Ω: χώρου & στοιχείου ~10 kΩ στους 25°C (δες «Έλεγχος εξαρτημάτων» → Αισθητήριο). Αν είναι σωστά → πλακέτα εσωτ.",null],
+    [["3"],"Μοτέρ ανεμιστήρα εσωτερικής","Δεν έρχεται σήμα στροφών (feedback) κατά τη λειτουργία. Γύρνα τη φτερωτή με το χέρι, έλεγξε φίσα, μέτρα τάσεις μοτέρ (DC ~310V / 15V / σήμα). Αν το μοτέρ είναι σωστό → πλακέτα εσωτ.",null],
+    [["4"],"Σύστημα ελέγχου εσωτερικής (μνήμη πλακέτας)","Δεν διαβάζεται η μνήμη της πλακέτας εσωτερικής. Reset ρεύματος· αν επανέρχεται → αλλαγή πλακέτας εσωτ.",null],
+    [["5"],"Κύκλωμα ισχύος εξωτερικής (υπερένταση / αποτυχία εκκίνησης ×3)","Ο συμπιεστής σταματά 3 φορές μέσα στο πρώτο λεπτό για υπερένταση ή αποτυχία εκκίνησης. Μέτρα τυλίγματα συμπιεστή (U-V, V-W, W-U ίσα) και μόνωση, έλεγξε πλακέτα inverter, βάνες ανοιχτές.",null],
+    [["6"],"Αισθητήρια εξωτερικής","Ανοιχτό/βραχυκυκλωμένο αισθητήριο εξωτερικής όσο δουλεύει ο συμπιεστής. Έλεγξε και τις βάνες, μέτρα τα αισθητήρια εξωτερικής στη φίσα τους.",null],
+    [["7"],"Σύστημα ελέγχου εξωτερικής (μνήμη πλακέτας inverter / εξωτερικής)","Δεν διαβάζεται η μνήμη της πλακέτας εξωτερικής. Reset· αν επανέρχεται → πλακέτα inverter / ελέγχου εξωτερικής.",null],
+    [["14"],"Άλλη βλάβη (14 ή περισσότερες αναλαμπές)","Βλάβη που δεν ανήκει στα παραπάνω. Έλεγξε βάνες και 4οδη· δες τη λειτουργία ανάκλησης βλαβών εξωτερικής ή τη LED της πλακέτας inverter (Πλακέτα εξωτερικής).",null],
+    [["on"],"Σύστημα ελέγχου εξωτερικής (η λυχνία μένει αναμμένη και η εξωτερική δεν ξεκινά)","Κοίτα το αναβόσβημα της LED στην πλακέτα inverter / ελέγχου εξωτερικής και ψάξε το στην «Πλακέτα εξωτερικής».",null]
+  ]
+};
+T.me_inled_recall = {
+  name: "Mitsubishi Electric MSZ – ανάκληση βλαβών με τηλεχειριστήριο (failure mode recall)",
+  src: "Mitsubishi Electric service manual MSZ-FD/GA (Indoor unit failure mode table)",
+  note: "Μόνο όταν έχεις βάλει τη μονάδα σε λειτουργία ανάκλησης βλαβών από το τηλεχειριστήριο: εδώ οι αναλαμπές σημαίνουν ΑΛΛΟ πράγμα από τον πάνω πίνακα. Σβηστή λυχνία = καμία αποθηκευμένη βλάβη.",
+  link: "me_split",
+  lamps: [ {n:"OPERATION", sub:"πάνω λυχνία", col:"#46c98b", v:["c","on","n"]} ],
+  codes: [
+    [["c"],"Αισθητήριο θερμοκρασίας χώρου (1 αναλαμπή κάθε 0,5″)","Μέτρα το αισθητήριο χώρου (~10 kΩ @25°C) και τη φίσα του.",null],
+    [["2"],"Αισθητήριο στοιχείου εσωτερικής","Μέτρα το αισθητήριο στοιχείου (κύριο και βοηθητικό αν υπάρχει).",null],
+    [["3"],"Σήμα επικοινωνίας","Δες «Πώς ελέγχω λάθος καλωδίωση/σήμα»: S1-S2-S3, καλώδιο, πλακέτες.",["E6"]],
+    [["11"],"Μοτέρ ανεμιστήρα εσωτερικής","Δεν έρχεται σήμα στροφών για 12″ μετά την εκκίνηση. Μοτέρ, φίσα, πλακέτα.",null],
+    [["12"],"Σύστημα ελέγχου εσωτερικής","Αλλαγή πλακέτας εσωτερικής.",null]
+  ]
+};
+
+// --- Mitsubishi Heavy SRK: RUN / TIMER ---
+T.mhi_inled = {
+  name: "Mitsubishi Heavy SRK/SRF – λυχνίες RUN / TIMER",
+  src: "MHI SRK user/service manuals – Self diagnosis function",
+  note: "Μέτρα τις αναλαμπές της RUN (πράσινη) και της TIMER (κίτρινη). «Συνεχώς» = αναβοσβήνει χωρίς παύση. Οι σειρές διαφέρουν λίγο – αν ένας συνδυασμός δεν υπάρχει εδώ, δες το manual του μοντέλου.",
+  chk: "11/2026 – self diagnosis tables MHI SRK (ZM/ZS/ZSP).",
+  link: "mhi_split",
+  lamps: [ {n:"RUN", sub:"πράσινη", col:"#46c98b", v:["on","c","n"]}, {n:"TIMER", sub:"κίτρινη", col:"#ffd166", v:["on","c","n"]} ],
+  codes: [
+    [["1-on"],"Αισθητήριο στοιχείου εσωτερικής (1)","Κομμένο καλώδιο / κακή επαφή φίσας ή πλακέτα εσωτ.",["E6"]],
+    [["2-on"],"Αισθητήριο θερμοκρασίας χώρου","Κομμένο καλώδιο / κακή επαφή φίσας ή πλακέτα εσωτ.",["E7"]],
+    [["3-on"],"Αισθητήριο στοιχείου εσωτερικής (3) – σε ορισμένα","Καλώδιο/φίσα αισθητηρίου, πλακέτα εσωτ.",null],
+    [["5-on"],"Τάση active filter","Ελαττωματικό active filter, λάθος τάση τροφοδοσίας, πλακέτα εξωτ.",["E47"]],
+    [["6-on"],"Μοτέρ ανεμιστήρα εσωτερικής","Μοτέρ, φίσα μοτέρ, πλακέτα εσωτ.",["E16"]],
+    [["7-on"],"Προστασία ψυκτικού κυκλώματος (κλειστή βάνα / έλλειψη ψυκτικού)","Άνοιξε τις βάνες, έλεγξε διαρροή και φορτίο.",["E57"]],
+    [["c-1"],"Αισθητήριο εξωτερικού αέρα","Καλώδιο/φίσα αισθητηρίου, πλακέτα εξωτ.",["E38"]],
+    [["c-2"],"Αισθητήριο στοιχείου (σωλήνα υγρού) εξωτερικής","Καλώδιο/φίσα αισθητηρίου, πλακέτα εξωτ.",["E37"]],
+    [["c-4"],"Αισθητήριο σωλήνα κατάθλιψης","Καλώδιο/φίσα αισθητηρίου, πλακέτα εξωτ.",["E39"]],
+    [["c-5"],"Αισθητήριο αναρρόφησης (σε ορισμένα)","Καλώδιο/φίσα αισθητηρίου.",null],
+    [["on-1"],"Current cut (υπερένταση)","Κλειδωμένος συμπιεστής, κομμένη φάση στον συμπιεστή, βραχυκυκλωμένο power transistor, κλειστή βάνα.",["E42"]],
+    [["on-2"],"Βλάβη εξωτερικής","Κομμένο καλώδιο συμπιεστή, μπλοκαρισμένος συμπιεστής, πλακέτα.",["E59"]],
+    [["on-3"],"Current safe stop","Υπερφόρτωση, υπερπλήρωση ψυκτικού, κλειδωμένος συμπιεστής.",["E58"]],
+    [["on-4"],"Power transistor","Χαλασμένο power transistor (πλακέτα εξωτ.).",["E51"]],
+    [["on-5"],"Υπερθέρμανση συμπιεστή","Έλλειψη ψυκτικού, αισθητήριο κατάθλιψης, κλειστή βάνα.",["E36"]],
+    [["on-6"],"Σφάλμα μετάδοσης σήματος","Τροφοδοσία, κομμένο καλώδιο σήματος, πλακέτα εσωτ./εξωτ.",["E5"]],
+    [["on-7"],"Μοτέρ ανεμιστήρα εξωτερικής","Μοτέρ, φίσα, πλακέτα εξωτ.",["E48"]],
+    [["on-c"],"Προστασία υψηλής πίεσης σε ψύξη","Υπερφόρτωση, υπερπλήρωση, αισθητήριο στοιχείου εξωτ., κλειστή βάνα, βρόμικο στοιχείο.",["E35"]]
+  ]
+};
+
+// --- Toshiba RAS: block display ---
+T.toshiba_inled = {
+  name: "Toshiba RAS – λυχνίες εσωτερικής (ομάδα βλάβης)",
+  src: "Toshiba service manuals RAS (Judgement by flashing LED of indoor unit)",
+  note: "Οι λυχνίες δείχνουν μόνο την ΟΜΑΔΑ της βλάβης. Τον ακριβή κωδικό τον βγάζεις με το τηλεχειριστήριο: πάτα CHECK με μύτη μολυβιού (δείχνει 00) και μετά ▲/▼ – στον σωστό κωδικό η μονάδα μπιπάρει 10″ και αναβοσβήνουν όλες οι λυχνίες. Μετά ψάξε τον κωδικό στην «Εσωτερική / χειριστήριο». Η τρίτη λυχνία λέγεται FILTER ή PRE-DEF ανάλογα το μοντέλο.",
+  chk: "11/2026 – service manuals Toshiba RAS (block display A–E).",
+  link: "toshiba_ras",
+  lamps: [ {n:"OPERATION", sub:"πράσινη", col:"#46c98b", v:["0","s","c"]}, {n:"TIMER", sub:"κίτρινη", col:"#ffd166", v:["0","c"]}, {n:"FILTER / PRE-DEF", sub:"πορτοκαλί", col:"#ff9f43", v:["0","c"]} ],
+  codes: [
+    [["s-0-0"],"Διακοπή ρεύματος (μετά από επαναφορά ρεύματος) – όχι βλάβη","Ξεκίνα τη μονάδα από το τηλεχειριστήριο· αν συμβαίνει συχνά, έλεγξε την τροφοδοσία.",null],
+    [["c-0-0"],"Προστασία πλακέτας εσωτερικής","Κωδικός με CHECK (συνήθως 0C, 0d, 11, 12). Αισθητήρια εσωτ., ανεμιστήρας εσωτ., πλακέτα εσωτ.",null],
+    [["c-c-0"],"Καλώδιο σύνδεσης / σήμα επικοινωνίας","Κωδικός με CHECK (συνήθως 04, 05). Καλώδιο εσωτ.–εξωτ., τροφοδοσία εξωτ., πλακέτες.",null],
+    [["c-0-c"],"Προστασία πλακέτας εξωτερικής","Κωδικός με CHECK (συνήθως 14, 16, 17, 18, 19, 1A, 1b). Αισθητήρια εξωτ., πλακέτα inverter.",null],
+    [["c-c-c"],"Άλλη προστασία (και συμπιεστής)","Κωδικός με CHECK (συνήθως 1C, 1d, 1E, 1F, 08). Συμπιεστής, ψυκτικό, 4οδη.",null]
+  ]
+};
+
+// --- Midea (μονάδες χωρίς οθόνη: κασέτες / κανάλια / κάποια τοίχου) ---
+T.midea_inled = {
+  name: "Midea (και OEM) – λυχνίες OPERATION / TIMER",
+  src: "Midea troubleshooting guides (Operation lamp / Timer lamp / display code)",
+  note: "Σε μονάδες χωρίς οθόνη μέτρα τις αναλαμπές της OPERATION και δες αν η TIMER είναι σβηστή ή αναβοσβήνει. Ισχύει για Midea και πολλά OEM (Bosch, Carrier, Inventor, Toyotomi κ.ά. όταν είναι Midea).",
+  chk: "11/2026 – Midea troubleshooting (Operation/Timer lamp table)· σε παλιές σειρές μπορεί να διαφέρει.",
+  link: "midea_split",
+  lamps: [ {n:"OPERATION", sub:"λειτουργίας", col:"#46c98b", v:["n"]}, {n:"TIMER", sub:"χρονοδιακόπτη", col:"#ffd166", v:["0","c"]} ],
+  codes: [
+    [["1-0"],"EEPROM εσωτερικής (E0 / EH00)","",["E0"]],
+    [["2-0"],"Επικοινωνία εσωτερικής–εξωτερικής (E1 / EL01)","",["E1"]],
+    [["3-0"],"Ανίχνευση μηδενικού σημείου τάσης (E2 / EH02) – σε ορισμένα","",["E2"]],
+    [["4-0"],"Ταχύτητα ανεμιστήρα εσωτερικής εκτός ελέγχου (E3 / EH03)","",["E3"]],
+    [["5-0"],"Αισθητήριο χώρου T1 (E4 / EH60)","",["E4"]],
+    [["6-0"],"Αισθητήριο στοιχείου εσωτερικής T2 (E5 / EH61)","",["E5"]],
+    [["7-0"],"Ανίχνευση διαρροής ψυκτικού (EC / EL0C)","",["EC"]],
+    [["1-c"],"Προστασία υπερέντασης (F0 / PC08) – σε ορισμένα","",["F0"]],
+    [["5-c"],"Σφάλμα οδήγησης συμπιεστή inverter (P4 / PC04)","",["P4"]],
+    [["7-c"],"Προστασία χαμηλής πίεσης (PC03) – σε ορισμένα","Έλλειψη ψυκτικού, κλειστή βάνα, φραγή, πρεσοστάτης χαμηλής/φίσα.",null]
+  ]
+};
+
+// Ποιοι πίνακες λυχνιών ανά πλατφόρμα & κατηγορία
+var INLED = {
+  fujitsu: {split:["fujitsu_inled"], multi:["fujitsu_inled"], vrf:["fujitsu_inled"], vrfhr:["fujitsu_inled"]},
+  me:      {split:["me_inled","me_inled_recall"], multi:["me_inled","me_inled_recall"]},
+  mhi:     {split:["mhi_inled"], multi:["mhi_inled"]},
+  toshiba: {split:["toshiba_inled"], multi:["toshiba_inled"]},
+  midea:   {split:["midea_inled"], multi:["midea_inled"]}
+};
+// Τι κάνεις όταν αναβοσβήνει λυχνία, ανά πλατφόρμα (και για όσες δεν έχουν πίνακα λυχνιών)
+var INGUIDE = {
+  fujitsu: "Μέτρα αναλαμπές OPERATION (πράσινη) και TIMER (πορτοκαλί) – η ECONOMY αναβοσβήνει γρήγορα. Π.χ. 4 και 2 = E:42.",
+  me: "Μέτρα τις αναλαμπές της πάνω λυχνίας OPERATION ανάμεσα στις παύσες των 2,5″. Ο κωδικός P/E/U βγαίνει και με CHECK στο τηλεχειριστήριο.",
+  mhi: "Μέτρα αναλαμπές της RUN και της TIMER.",
+  toshiba: "Δες ποιες λυχνίες αναβοσβήνουν (δείχνουν την ομάδα βλάβης) και μετά πάρε τον ακριβή κωδικό με CHECK στο τηλεχειριστήριο.",
+  midea: "Μέτρα αναλαμπές OPERATION και δες αν αναβοσβήνει και η TIMER. Σε μοντέλα με οθόνη ο κωδικός φαίνεται κατευθείαν.",
+  daikin: "Daikin: αν αναβοσβήνει η λυχνία λειτουργίας, ο κωδικός βγαίνει από το τηλεχειριστήριο: κράτα πατημένο το CANCEL (στο ARC466/ARC470 το κουμπί TEMP ή CANCEL) ~5″ μέχρι να δείξει «00» και πάτα το ξανά και ξανά μέχρι να ακουστεί συνεχόμενο μπιπ – ο κωδικός που δείχνει τότε είναι η βλάβη. Ψάξ' τον στην «Εσωτερική / χειριστήριο».",
+  panasonic: "Panasonic: αν αναβοσβήνει η λυχνία TIMER, κράτα πατημένο το CHECK στο τηλεχειριστήριο ~5″ και πάτα ▲/▼ – στον σωστό κωδικό η μονάδα μπιπάρει ~4″ και ανάβει η λυχνία λειτουργίας. Ο κωδικός (H.. / F..) φαίνεται στο τηλεχειριστήριο.",
+  lg: "LG: τα περισσότερα ευρωπαϊκά μοντέλα δείχνουν CH-κωδικό στην οθόνη (σε μοντέλα χωρίς οθόνη το LED αναβοσβήνει τον αριθμό του κωδικού – σύγκρινε με το manual του μοντέλου).",
+  samsung: "Samsung: ο κωδικός φαίνεται στην οθόνη ή στο ενσύρματο χειριστήριο. Σε παλιά μοντέλα χωρίς οθόνη, οι λυχνίες ανάβουν σε συνδυασμό – δες το manual του μοντέλου.",
+  gree: "Gree: ο κωδικός φαίνεται στην οθόνη της εσωτερικής ή στο ενσύρματο. Σε κανάλια/κασέτες χωρίς ενσύρματο, δες τα LED της πλακέτας εξωτερικής.",
+  hitachi: "Hitachi: ο αριθμός αλάρμ φαίνεται στο ενσύρματο χειριστήριο· η λυχνία λειτουργίας της εσωτερικής αναβοσβήνει όσο υπάρχει αλάρμ.",
+  _: "Η μάρκα αυτή συνήθως δείχνει τον κωδικό στην οθόνη ή στο χειριστήριο – ψάξ' τον στην «Εσωτερική / χειριστήριο». Αν υπάρχουν μόνο λυχνίες, δες το manual του μοντέλου."
+};
+
+// Σύνδεση με τον πίνακα κωδικών χειριστηρίου: συμπληρώνει τον έλεγχο και δείχνει τον αντίστοιχο κωδικό
+(function(){
+  Object.keys(INLED).forEach(function(p){ Object.keys(INLED[p]).forEach(function(cat){ INLED[p][cat].forEach(function(k){
+    var t = T[k]; if(!t || t._linked) return; t._linked = 1;
+    var L = t.link && T[t.link];
+    t.codes.forEach(function(c){
+      var ks = c[3]; c[3] = null;
+      if(!L || !ks) return;
+      var hit = null, hk = null;
+      ks.forEach(function(code){ if(hit) return; L.codes.forEach(function(x){ if(!hit && x[0].indexOf(code)>=0){ hit=x; hk=code; } }); });
+      if(!hit) return;
+      if(!c[2]) c[2] = hit[2];
+      c[4] = "Ίδιο με κωδικό χειριστηρίου "+(p==="fujitsu"?"E:":"")+hit[0].join(" / ")+(hit[1]===c[1]?"":" – "+hit[1]);
+    });
+  }); }); });
+})();
+
 // ===== Κωδικοί πλακέτας εξωτερικής (7-segment / LED) =====
 // OUTX[πίνακας][κωδικός] = τι δείχνει η πλακέτα της εξωτερικής για αυτόν τον κωδικό (εμφανίζεται στην κάρτα)
 var OUTX = {};
@@ -2816,6 +3048,17 @@ var myMap = LS.get("vl_mymap", []); // [{brand, prefix, oem, cat}]
 
 function $(id){return document.getElementById(id);}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+var BPAL = ["#0ea5e9","#6366f1","#14b8a6","#f97316","#e11d48","#8b5cf6","#10b981","#f59e0b","#3b82f6","#ec4899","#22c55e","#a855f7","#ef4444","#06b6d4"];
+function bInit(n){
+  var w = String(n).replace(/\(.*?\)/g,"").replace(/[&+]/g," ").split(/[\s\-…]+/).filter(function(x){return /[A-Za-zΑ-Ωα-ω0-9]/.test(x);});
+  if(!w.length) return "?";
+  if(w.length===1) return w[0].length<=3 ? w[0].toUpperCase() : w[0].slice(0,2).toUpperCase();
+  return (w[0][0]+w[1][0]).toUpperCase();
+}
+function bCol(n){ var h=0; for(var i=0;i<n.length;i++) h=(h*31+n.charCodeAt(i))>>>0; return BPAL[h%BPAL.length]; }
+function badge(n, cls){ if(n==="Άλλη μάρκα…") return '<span class="bdg'+(cls?' '+cls:'')+'" style="background:#64748b">?</span>';
+  var c=bCol(n); return '<span class="bdg'+(cls?' '+cls:'')+'" style="background:linear-gradient(140deg,'+c+','+c+'cc)">'+esc(bInit(n))+'</span>'; }
+function bSub(b){ return b.own ? "Δικό της εργοστάσιο – βλαβολόγιο "+PLAT[b.own].name : (b.n==="Άλλη μάρκα…" ? "Άγνωστη μάρκα – διάλεξε εργοστάσιο" : "Χωρίς δικό της εργοστάσιο – θα σε ρωτήσω μοντέλο"); }
 function brandObj(){ for(var i=0;i<BRANDS.length;i++) if(BRANDS[i].n===S.brand) return BRANDS[i]; return null; }
 function persist(){ LS.set("vl_state",{cat:S.cat,brand:S.brand,oem:S.oem,src:S.src,part:S.part}); }
 
@@ -2834,8 +3077,12 @@ function activeTables(){
   var out = [];
   var useOut = S.src==="out" && plats.some(function(p){ return OUTP[p] && OUTP[p][S.cat]; });
   activeTables.outMissing = S.src==="out" && !useOut;
+  var lcat = S.cat==="multi" ? "split" : S.cat;
+  var useLed = S.src==="led" && plats.some(function(p){ return INLED[p] && (INLED[p][S.cat]||INLED[p][lcat]); });
+  activeTables.ledMissing = S.src==="led" && !useLed;
+  activeTables.plats = plats;
   plats.forEach(function(p){
-    var list = useOut ? ((OUTP[p] && OUTP[p][S.cat]) || []) : (PLAT[p][S.cat]||[]);
+    var list = useLed ? ((INLED[p] && (INLED[p][S.cat]||INLED[p][lcat])) || []) : useOut ? ((OUTP[p] && OUTP[p][S.cat]) || []) : (PLAT[p][S.cat]||[]);
     list.forEach(function(t){ if(T[t]) out.push({plat:p, key:t, tbl:T[t]}); });
   });
   return out;
@@ -2887,10 +3134,16 @@ function renderCats(){
 function renderBrands(){
   var list = BRANDS.slice();
   var own = list.filter(function(b){return b.own;}), reb = list.filter(function(b){return !b.own;});
-  function btn(b){ return '<button class="br'+(b.n===S.brand?' on':'')+(b.own?'':' reb')+'" data-b="'+esc(b.n)+'">'+esc(b.n)+'</button>'; }
+  function btn(b){ return '<button class="br'+(b.n===S.brand?' on':'')+(b.own?'':' reb')+'" data-b="'+esc(b.n)+'">'+badge(b.n,"sm")+esc(b.n)+'</button>'; }
+  var cb = brandObj(), editing = !cb || S.bedit;
+  $("bchosen").innerHTML = (cb && !editing) ? '<div class="bchosen">'+badge(cb.n,"lg")+'<div class="bt"><b>'+esc(cb.n)+'</b><small>'+esc(bSub(cb))+'</small></div><button class="chg" id="chgBrand">Αλλαγή</button></div>' : "";
+  $("bpick").style.display = editing ? "" : "none";
+  $("bcancel").style.display = (cb && S.bedit) ? "" : "none";
+  if(!editing) $("brandsWrap").classList.remove("open");
+  $("brandSel").classList.toggle("on", $("brandsWrap").classList.contains("open"));
   $("brands").innerHTML = '<div class="grp">Δικό τους εργοστάσιο</div><div class="bgrid">'+own.map(btn).join("")+'</div>'+
     (reb.length?'<div class="grp">Χωρίς δικό τους εργοστάσιο (θα χρειαστεί μοντέλο/ταμπελάκι)</div><div class="bgrid">'+reb.map(btn).join("")+'</div>':'');
-  if(document.activeElement!==$("bq")) $("bq").value = S.brand || "";
+  if(document.activeElement!==$("bq")) $("bq").value = S.bedit ? "" : (S.brand || "");
   $("bsug").innerHTML = "";
 }
 function renderOem(){
@@ -2899,7 +3152,7 @@ function renderOem(){
   if(b.own){
     box.style.display = "block";
     box.innerHTML = (b.hint ? '<div class="hint">'+esc(b.hint)+'</div>' : "")+
-      '<label class="lbl step">③ Μοντέλο (από το ταμπελάκι – προαιρετικό)</label><input id="model" placeholder="π.χ. '+esc(b.n==="LG"?"S12EQ / HU071MR":b.n==="Daikin"?"FTXM35R":b.n==="Gree"?"GWH12ACC-K6DNA1D":"μοντέλο εσωτερικής ή εξωτερικής")+'" autocapitalize="characters" spellcheck="false">'+
+      '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι – προαιρετικό)</label><input id="model" placeholder="π.χ. '+esc(b.n==="LG"?"S12EQ / HU071MR":b.n==="Daikin"?"FTXM35R":b.n==="Gree"?"GWH12ACC-K6DNA1D":"μοντέλο εσωτερικής ή εξωτερικής")+'" autocapitalize="characters" spellcheck="false">'+
       '<div class="small" id="mapMsg">Με το μοντέλο βλέπεις και στοιχεία εξαρτημάτων (Ω, χρώματα) στον «Έλεγχο εξαρτημάτων».</div>';
     var mi0=$("model"); mi0.value=S.model||""; mi0.addEventListener("input",function(){ S.model=mi0.value; });
     return;
@@ -2911,7 +3164,7 @@ function renderOem(){
   var mine = myMap.filter(function(m){return m.brand===b.n;});
   box.innerHTML =
     (b.hint?'<div class="hint">'+esc(b.hint)+'</div>':'<div class="hint">Η '+esc(b.n)+' δεν έχει δικό της εργοστάσιο. Διάλεξε εργοστάσιο ή άφησε «Σύγκριση» για να δεις τι σημαίνει ο κωδικός σε κάθε πιθανό εργοστάσιο.</div>')+
-    '<label class="lbl step">③ Μοντέλο (από το ταμπελάκι)</label>'+
+    '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι)</label>'+
     '<div class="row2"><input id="model" placeholder="π.χ. V5MCI32-12" autocapitalize="characters" spellcheck="false"><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
     '<div id="mapMsg" class="small"></div>'+
     '<label class="lbl">Εργοστάσιο παραγωγής</label>'+
@@ -2953,11 +3206,29 @@ function procBox(c, plat){
   return out;
 }
 
+var KINDS = [
+  ["Επικοινωνία","#8b5cf6",/επικοινων|σήμα|μετάδοσ|καλωδίωσ|διεύθυνσ|M-NET|tracking/i],
+  ["Αισθητήριο","#14b8a6",/αισθητ|θερμίστορ|thermistor/i],
+  ["Ψυκτικό / πίεση","#f97316",/πίεσ|πρεσοστ|ψυκτικ|διαρρο|βάνα|υπερθέρμανση κατάθλιψης|κατάθλιψ/i],
+  ["Ανεμιστήρας","#0ea5e9",/ανεμιστ|μοτέρ ανεμ|fan/i],
+  ["Ηλεκτρικό / inverter","#ef4444",/IPM|PFC|ρεύμα|υπερέντασ|τάση|τάσεως|inverter|συμπιεστ|transistor|φάσ|DC link|current/i],
+  ["Πλακέτα","#a855f7",/πλακέτα|EEPROM|μνήμη|PCB|μικροεπεξ/i],
+  ["Νερό / αποχέτευση","#3b82f6",/νερ|ροή|αποχέτευ|φλοτέρ|συμπυκνωμάτων|στάθμη/i],
+  ["Προστασία","#f59e0b",/προστασ|αντιπαγ|υπερθέρμ|υπερφόρτ|πάγωμα/i]
+];
+function kindOf(txt){ for(var i=0;i<KINDS.length;i++) if(KINDS[i][2].test(txt)) return KINDS[i]; return null; }
+var LSTATE = {"0":"σβηστή","on":"αναμμένη","c":"αναβοσβήνει συνεχώς","s":"αργό αναβόσβημα"};
+function lampVal(v){ return LSTATE[v] || ("× "+v); }
+function ledSym(key, lamps){
+  var vs = key.split("-");
+  return '<span class="lsym">'+lamps.map(function(l,i){ var v=vs[i]||"0"; var cls = v==="0"?" off":(v==="c"?" c":v==="s"?" s":"");
+    return '<span style="--lc:'+l.col+'"><i class="dot'+cls+'"></i>'+esc(l.n)+' '+esc(lampVal(v))+'</span>'; }).join("")+'</span>';
+}
 function card(r, showPlat){
-  var c = r.c, t = r.t;
-  return '<div class="res">'+
-    '<div class="rh"><span class="codes">'+(t.tbl.pat ? '<span class="code pat">'+esc(patSym(c[0][0], t.tbl.pat.labels))+'</span>' : c[0].map(function(k){return '<span class="code">'+esc(k)+'</span>';}).join(""))+'</span>'+
-    (showPlat?'<span class="plat">'+esc(PLAT[t.plat].name)+'</span>':'')+'</div>'+
+  var c = r.c, t = r.t, kd = kindOf(c[1]);
+  return '<div class="res"'+(kd?' style="--kc:'+kd[1]+'"':'')+'>'+
+    '<div class="rh"><span class="codes">'+(t.tbl.lamps ? ledSym(c[0][0], t.tbl.lamps) : t.tbl.pat ? '<span class="code pat">'+esc(patSym(c[0][0], t.tbl.pat.labels))+'</span>' : c[0].map(function(k){return '<span class="code">'+esc(k)+'</span>';}).join(""))+'</span>'+
+    (showPlat?'<span class="plat">'+esc(PLAT[t.plat].name)+'</span>':(kd?'<span class="kind">'+esc(kd[0])+'</span>':''))+'</div>'+
     '<div class="rt">'+esc(c[1])+'</div>'+
     (c[4]?'<div class="rl">↔ '+esc(c[4])+'</div>':'')+
     (c[2]?(function(){ var st=stepsOf(c[2]); return st ? '<div class="rd"><b>🔧 Τι ελέγχεις – με τη σειρά:</b><ol class="steps">'+st.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol></div>' : '<div class="rd"><b>🔧 Τι ελέγχεις:</b> '+esc(c[2])+'</div>'; })():'')+
@@ -2967,16 +3238,85 @@ function card(r, showPlat){
     '<div class="rs">'+esc(t.tbl.name)+'</div>'+
   '</div>';
 }
+// ===== ΛΥΧΝΙΕΣ ΕΣΩΤΕΡΙΚΗΣ =====
+S.ledv = {};
+function ledGuideFor(plats){
+  var g = []; plats.forEach(function(p){ var x = INGUIDE[p] || INGUIDE._; if(g.indexOf(x)<0) g.push(x); }); return g;
+}
+function ledGuideOnly(b){
+  var pl = activeTables.plats || candidates(b);
+  var g = ledGuideFor(pl.length?pl:["_"]);
+  return '<div class="empty"><span class="big">💡</span>Για '+esc(b.n)+' σε αυτή την κατηγορία δεν υπάρχει πίνακας λυχνιών – ο κωδικός φαίνεται σε οθόνη ή χειριστήριο.</div>'+
+    '<div class="guide">👀 <b>Τι κάνεις όταν αναβοσβήνει λυχνία:</b>'+g.map(function(x){return '<div>'+esc(x)+'</div>';}).join("")+'</div>';
+}
+function lampSig(t){ return t.tbl.lamps.map(function(l){return l.n;}).join("|"); }
+function renderLed(b, tabs, multi){
+  var html = "";
+  var g = ledGuideFor(activeTables.plats||[]);
+  html += '<div class="guide">👀 '+g.map(function(x){return esc(x);}).join("<br>")+'</div>';
+  var groups = {}, order = [];
+  tabs.forEach(function(t){ var k=lampSig(t); if(!groups[k]){ groups[k]=[]; order.push(k);} groups[k].push(t); });
+  order.forEach(function(sig){
+    var ts = groups[sig], lamps = ts[0].tbl.lamps;
+    var cur = S.ledv[sig] || (S.ledv[sig] = lamps.map(function(){return null;}));
+    var maxN = lamps.map(function(l,i){ var m=0; ts.forEach(function(t){ t.tbl.codes.forEach(function(c){ var v=c[0][0].split("-")[i]; if(/^\d+$/.test(v)) m=Math.max(m,+v); }); }); return m; });
+    html += '<div class="ledw"><h3>Πάτα αυτό που βλέπεις σε κάθε λυχνία</h3>'+lamps.map(function(l,i){
+      var opts = [];
+      l.v.forEach(function(v){ if(v==="n"){ for(var k=1;k<=maxN[i];k++) opts.push(String(k)); } else opts.push(v); });
+      var cv = cur[i], dcls = cv==null||cv==="0" ? " off" : cv==="c"?" c":cv==="s"?" s":"";
+      return '<div class="lamp" style="--lc:'+l.col+'"><div class="lname"><i class="dot'+dcls+'"></i>'+esc(l.n)+' <small>'+esc(l.sub||"")+'</small></div><div class="lopts">'+
+        opts.map(function(v){ var lab = v==="0"?"Σβηστή":v==="on"?"Αναμμένη":v==="c"?"Συνεχώς":v==="s"?"Αργά (1Hz)":v+"×"; return '<button class="lo'+(cv===v?' on':'')+'" data-lsig="'+esc(sig)+'" data-li="'+i+'" data-lv="'+v+'">'+lab+'</button>'; }).join("")+'</div></div>';
+    }).join("")+(cur.some(function(x){return x!=null;})?'<button class="ledreset" data-lreset="'+esc(sig)+'">↺ Καθαρισμός</button>':'')+'</div>';
+    var setN = cur.filter(function(x){return x!=null;}).length;
+    if(!setN){ html += '<div class="empty">Μέτρησε τις αναλαμπές σε έναν πλήρη κύκλο (ανάμεσα σε δύο παύσες) και πάτα τις τιμές παραπάνω.</div>'; return; }
+    var res = [];
+    ts.forEach(function(t){ t.tbl.codes.forEach(function(c){
+      var vs = c[0][0].split("-"), ok = true;
+      cur.forEach(function(v,i){ if(v!=null && (vs[i]||"0")!==v) ok=false; });
+      if(ok) res.push({t:t,c:c});
+    });});
+    if(!res.length){ html += '<div class="empty">Δεν βρέθηκε αυτός ο συνδυασμός. Ξαναμέτρησε (η μέτρηση ξεκινά μετά την παύση) ή δες τον πλήρη πίνακα πιο κάτω.</div>'; return; }
+    if(setN<lamps.length) html += '<div class="small info">Ταιριάζουν '+res.length+' – διάλεξε και τις υπόλοιπες λυχνίες για ακρίβεια:</div>';
+    var byTbl = {}; res.forEach(function(x){ (byTbl[x.t.key]=byTbl[x.t.key]||[]).push(x); });
+    var many = Object.keys(byTbl).length>1;
+    Object.keys(byTbl).forEach(function(k){
+      if(many) html += '<div class="pgrp">'+esc(T[k].name)+':</div>';
+      html += byTbl[k].slice(0,40).map(function(x){return card(x,multi);}).join("");
+    });
+  });
+  return html;
+}
+function ledNotes(tabs){
+  var seen={}, nh="";
+  tabs.forEach(function(t){ if(seen[t.key]) return; seen[t.key]=1;
+    nh += '<details class="note"><summary>📘 '+esc(t.tbl.name)+' – όλοι οι συνδυασμοί ('+t.tbl.codes.length+')</summary><p>'+esc(t.tbl.note)+'</p><p class="small">Πηγή: '+esc(t.tbl.src)+'</p>'+(t.tbl.chk?'<p class="small chk">✔ Έλεγχος: '+esc(t.tbl.chk)+'</p>':'')+
+      '<div class="all">'+t.tbl.codes.map(function(c){ return '<div class="ar" style="cursor:default">'+ledSym(c[0][0], t.tbl.lamps)+'<div>'+esc(c[1])+'</div></div>'; }).join("")+'</div></details>';
+  });
+  $("notes").innerHTML = nh;
+}
+document.addEventListener("click", function(e){
+  var el = e.target.closest("[data-lv],[data-lreset]"); if(!el) return;
+  if(el.hasAttribute("data-lreset")){ S.ledv[el.getAttribute("data-lreset")] = null; renderResults(); return; }
+  var sig = el.getAttribute("data-lsig"), i = +el.getAttribute("data-li"), v = el.getAttribute("data-lv");
+  var cur = S.ledv[sig]; if(!cur) return;
+  cur[i] = cur[i]===v ? null : v; renderResults();
+});
+function renderCtx(){
+  var b = brandObj(), c = null; CATS.forEach(function(x){ if(x.id===S.cat) c=x; });
+  $("ctx").innerHTML = b ? badge(b.n,"sm")+'<span><b>'+esc(b.n)+'</b>'+(c?' · '+esc(c.label):'')+(S.oem && S.oem!=="__all" && !b.own && PLAT[S.oem]?' · '+esc(PLAT[S.oem].name):'')+'</span>' : '<span>Διάλεξε πρώτα μάρκα ↑</span>';
+}
 function renderResults(){
   var out = $("results"); var b = brandObj();
   if(S.src==="parts"){ renderParts(); return; }
   if(S.src==="sym"){ renderSym(); return; }
   if(!b){ out.innerHTML = '<div class="empty">Διάλεξε κατηγορία και μάρκα.</div>'; $("notes").innerHTML=""; return; }
   var tabs = activeTables();
+  if(!tabs.length && S.src==="led"){ out.innerHTML = ledGuideOnly(b); $("notes").innerHTML=""; return; }
   if(!tabs.length){ out.innerHTML = '<div class="empty">Δεν υπάρχει ακόμα βλαβολόγιο για '+esc(b.n)+' σε αυτή την κατηγορία.</div>'; $("notes").innerHTML=""; return; }
   var plats = {}; tabs.forEach(function(t){plats[t.plat]=1;}); var multi = Object.keys(plats).length>1;
   var q = S.q.trim();
   var html = "";
+  if(S.src==="led"){ out.innerHTML = renderLed(b, tabs, multi); ledNotes(tabs); return; }
   if(S.src==="out"){
     var gp = {}; candidates(b).forEach(function(p){ if(!(b.own || !S.oem || S.oem==="__all" || S.oem===p)) return; if(OUTGUIDE[p]) gp[p]=OUTGUIDE[p]; });
     var gk = Object.keys(gp);
@@ -3561,16 +3901,19 @@ document.addEventListener("click", function(e){
   }
 });
 
-function renderAll(){ renderCats(); renderBrands(); renderOem(); renderResults(); persist(); }
+function renderAll(){ renderCats(); renderBrands(); renderOem(); renderCtx(); renderResults(); persist(); }
 
 // ===== events =====
 document.addEventListener("click", function(e){
-  var el = e.target.closest("[data-c],[data-b],[data-o],[data-del],[data-q],#brandSel");
+  var el = e.target.closest("[data-c],[data-b],[data-o],[data-del],[data-q],#brandSel,#chgBrand,#theme,#bcancel");
   if(!el) return;
-  if(el.id==="brandSel"){ $("brandsWrap").classList.toggle("open"); return; }
+  if(el.id==="brandSel"){ $("brandsWrap").classList.toggle("open"); $("brandSel").classList.toggle("on", $("brandsWrap").classList.contains("open")); return; }
+  if(el.id==="bcancel"){ S.bedit=false; $("bsug").innerHTML=""; renderBrands(); return; }
+  if(el.id==="chgBrand"){ S.bedit=true; renderBrands(); setTimeout(function(){ $("bq").value=""; $("bq").focus(); },30); return; }
+  if(el.id==="theme"){ var th=["auto","light","dark"], i=th.indexOf(LS.get("vl_theme","auto")); setTheme(th[(i+1)%3]); return; }
   if(el.hasAttribute("data-c")){ S.cat = el.getAttribute("data-c"); S.oem=null; renderAll(); setTimeout(function(){ var m=$("model"); if(m && !m.value) m.focus(); else $("q").focus(); },50); return; }
-  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.oem=null; S.model=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
-  if(el.hasAttribute("data-o")){ S.oem = el.getAttribute("data-o"); markChips(); renderResults(); persist(); return; }
+  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.bedit=false; S.oem=null; S.model=""; S.ledv={}; $("bsug").innerHTML=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
+  if(el.hasAttribute("data-o")){ S.oem = el.getAttribute("data-o"); markChips(); renderCtx(); renderResults(); persist(); return; }
   if(el.hasAttribute("data-del")){ var b=brandObj(), p=el.getAttribute("data-del"); myMap = myMap.filter(function(m){return !(m.brand===b.n && m.prefix===p);}); LS.set("vl_mymap",myMap); renderOem(); return; }
   if(el.hasAttribute("data-q")){ S.q = el.getAttribute("data-q"); $("q").value=S.q; renderResults(); window.scrollTo({top:$("q").getBoundingClientRect().top+window.scrollY-80,behavior:"smooth"}); return; }
 });
@@ -3595,7 +3938,7 @@ document.addEventListener("click", function(e){
 
 $("bq").addEventListener("input", function(){
   var r = brandMatches(this.value);
-  $("bsug").innerHTML = this.value.trim() ? (r.length ? r.map(function(b){ return '<button class="bs" data-b="'+esc(b.n)+'"><b>'+esc(b.n)+'</b>'+(b.own?'':' <span class="small">· χωρίς δικό της εργοστάσιο</span>')+'</button>'; }).join("") : '<div class="small">Δεν βρέθηκε. Πάτα ☰ για όλη τη λίστα ή διάλεξε «Άλλη μάρκα…».</div>') : "";
+  $("bsug").innerHTML = this.value.trim() ? (r.length ? r.map(function(b){ return '<button class="bs" data-b="'+esc(b.n)+'">'+badge(b.n)+'<span class="bt"><b>'+esc(b.n)+'</b><small>'+esc(bSub(b))+'</small></span><span class="go">›</span></button>'; }).join("") : '<div class="small">Δεν βρέθηκε. Πάτα ☰ για όλη τη λίστα ή διάλεξε «Άλλη μάρκα…».</div>') : "";
 });
 $("bq").addEventListener("focus", function(){ this.select(); });
 $("bq").addEventListener("keydown", function(e){ if(e.key==="Enter"){ var f=$("bsug").querySelector("[data-b]"); if(f) f.click(); } });
@@ -3603,7 +3946,7 @@ $("bq").addEventListener("keydown", function(e){ if(e.key==="Enter"){ var f=$("b
 $("q").addEventListener("input", function(){ S.q = this.value; renderResults(); clearTimeout(recT); recT=setTimeout(saveRecent,1500); });
 $("q").addEventListener("keydown", function(e){ if(e.key==="Enter"){ this.blur(); saveRecent(); } });
 renderRecent();
-function renderSrc(){ var bs=$("srcbox").querySelectorAll("[data-s]"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("on", bs[i].getAttribute("data-s")===S.src); var pp=S.src==="parts"||S.src==="sym"; document.querySelector(".sbox").style.display=pp?"none":""; $("recent").style.display=pp?"none":""; document.querySelector(".search").style.position=pp?"static":""; }
+function renderSrc(){ var bs=$("srcbox").querySelectorAll("[data-s]"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("on", bs[i].getAttribute("data-s")===S.src); var pp=S.src==="parts"||S.src==="sym"||S.src==="led"; document.querySelector(".sbox").style.display=pp?"none":""; $("recent").style.display=pp?"none":""; document.querySelector(".search").style.position=pp?"static":""; }
 $("srcbox").addEventListener("click", function(e){ var el=e.target.closest("[data-s]"); if(!el) return; S.src=el.getAttribute("data-s"); renderSrc(); renderResults(); persist(); });
 renderSrc();
 document.addEventListener("click", function(e){
@@ -3616,6 +3959,11 @@ document.addEventListener("click", function(e){
 $("clr").addEventListener("click", function(){ S.q=""; $("q").value=""; renderResults(); $("q").focus(); });
 
 
+function setTheme(t){ LS.set("vl_theme",t); var r=document.documentElement; if(t==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",t);
+  $("theme").textContent = t==="light"?"☀️":t==="dark"?"🌙":"🌓"; $("theme").title = t==="light"?"Φωτεινό θέμα":t==="dark"?"Σκούρο θέμα":"Αυτόματο θέμα (όπως το κινητό)";
+  var dark = t==="dark" || (t==="auto" && !(window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches));
+  var m=document.querySelector('meta[name=theme-color]'); if(m) m.setAttribute("content", dark?"#0b1220":"#eef2f8"); }
+setTheme(LS.get("vl_theme","auto"));
 renderAll();
 })();
 </script>

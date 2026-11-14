@@ -168,6 +168,17 @@ var myMap = LS.get("vl_mymap", []); // [{brand, prefix, oem, cat}]
 
 function $(id){return document.getElementById(id);}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+var BPAL = ["#0ea5e9","#6366f1","#14b8a6","#f97316","#e11d48","#8b5cf6","#10b981","#f59e0b","#3b82f6","#ec4899","#22c55e","#a855f7","#ef4444","#06b6d4"];
+function bInit(n){
+  var w = String(n).replace(/\(.*?\)/g,"").replace(/[&+]/g," ").split(/[\s\-…]+/).filter(function(x){return /[A-Za-zΑ-Ωα-ω0-9]/.test(x);});
+  if(!w.length) return "?";
+  if(w.length===1) return w[0].length<=3 ? w[0].toUpperCase() : w[0].slice(0,2).toUpperCase();
+  return (w[0][0]+w[1][0]).toUpperCase();
+}
+function bCol(n){ var h=0; for(var i=0;i<n.length;i++) h=(h*31+n.charCodeAt(i))>>>0; return BPAL[h%BPAL.length]; }
+function badge(n, cls){ if(n==="Άλλη μάρκα…") return '<span class="bdg'+(cls?' '+cls:'')+'" style="background:#64748b">?</span>';
+  var c=bCol(n); return '<span class="bdg'+(cls?' '+cls:'')+'" style="background:linear-gradient(140deg,'+c+','+c+'cc)">'+esc(bInit(n))+'</span>'; }
+function bSub(b){ return b.own ? "Δικό της εργοστάσιο – βλαβολόγιο "+PLAT[b.own].name : (b.n==="Άλλη μάρκα…" ? "Άγνωστη μάρκα – διάλεξε εργοστάσιο" : "Χωρίς δικό της εργοστάσιο – θα σε ρωτήσω μοντέλο"); }
 function brandObj(){ for(var i=0;i<BRANDS.length;i++) if(BRANDS[i].n===S.brand) return BRANDS[i]; return null; }
 function persist(){ LS.set("vl_state",{cat:S.cat,brand:S.brand,oem:S.oem,src:S.src,part:S.part}); }
 
@@ -186,8 +197,12 @@ function activeTables(){
   var out = [];
   var useOut = S.src==="out" && plats.some(function(p){ return OUTP[p] && OUTP[p][S.cat]; });
   activeTables.outMissing = S.src==="out" && !useOut;
+  var lcat = S.cat==="multi" ? "split" : S.cat;
+  var useLed = S.src==="led" && plats.some(function(p){ return INLED[p] && (INLED[p][S.cat]||INLED[p][lcat]); });
+  activeTables.ledMissing = S.src==="led" && !useLed;
+  activeTables.plats = plats;
   plats.forEach(function(p){
-    var list = useOut ? ((OUTP[p] && OUTP[p][S.cat]) || []) : (PLAT[p][S.cat]||[]);
+    var list = useLed ? ((INLED[p] && (INLED[p][S.cat]||INLED[p][lcat])) || []) : useOut ? ((OUTP[p] && OUTP[p][S.cat]) || []) : (PLAT[p][S.cat]||[]);
     list.forEach(function(t){ if(T[t]) out.push({plat:p, key:t, tbl:T[t]}); });
   });
   return out;
@@ -239,10 +254,16 @@ function renderCats(){
 function renderBrands(){
   var list = BRANDS.slice();
   var own = list.filter(function(b){return b.own;}), reb = list.filter(function(b){return !b.own;});
-  function btn(b){ return '<button class="br'+(b.n===S.brand?' on':'')+(b.own?'':' reb')+'" data-b="'+esc(b.n)+'">'+esc(b.n)+'</button>'; }
+  function btn(b){ return '<button class="br'+(b.n===S.brand?' on':'')+(b.own?'':' reb')+'" data-b="'+esc(b.n)+'">'+badge(b.n,"sm")+esc(b.n)+'</button>'; }
+  var cb = brandObj(), editing = !cb || S.bedit;
+  $("bchosen").innerHTML = (cb && !editing) ? '<div class="bchosen">'+badge(cb.n,"lg")+'<div class="bt"><b>'+esc(cb.n)+'</b><small>'+esc(bSub(cb))+'</small></div><button class="chg" id="chgBrand">Αλλαγή</button></div>' : "";
+  $("bpick").style.display = editing ? "" : "none";
+  $("bcancel").style.display = (cb && S.bedit) ? "" : "none";
+  if(!editing) $("brandsWrap").classList.remove("open");
+  $("brandSel").classList.toggle("on", $("brandsWrap").classList.contains("open"));
   $("brands").innerHTML = '<div class="grp">Δικό τους εργοστάσιο</div><div class="bgrid">'+own.map(btn).join("")+'</div>'+
     (reb.length?'<div class="grp">Χωρίς δικό τους εργοστάσιο (θα χρειαστεί μοντέλο/ταμπελάκι)</div><div class="bgrid">'+reb.map(btn).join("")+'</div>':'');
-  if(document.activeElement!==$("bq")) $("bq").value = S.brand || "";
+  if(document.activeElement!==$("bq")) $("bq").value = S.bedit ? "" : (S.brand || "");
   $("bsug").innerHTML = "";
 }
 function renderOem(){
@@ -251,7 +272,7 @@ function renderOem(){
   if(b.own){
     box.style.display = "block";
     box.innerHTML = (b.hint ? '<div class="hint">'+esc(b.hint)+'</div>' : "")+
-      '<label class="lbl step">③ Μοντέλο (από το ταμπελάκι – προαιρετικό)</label><input id="model" placeholder="π.χ. '+esc(b.n==="LG"?"S12EQ / HU071MR":b.n==="Daikin"?"FTXM35R":b.n==="Gree"?"GWH12ACC-K6DNA1D":"μοντέλο εσωτερικής ή εξωτερικής")+'" autocapitalize="characters" spellcheck="false">'+
+      '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι – προαιρετικό)</label><input id="model" placeholder="π.χ. '+esc(b.n==="LG"?"S12EQ / HU071MR":b.n==="Daikin"?"FTXM35R":b.n==="Gree"?"GWH12ACC-K6DNA1D":"μοντέλο εσωτερικής ή εξωτερικής")+'" autocapitalize="characters" spellcheck="false">'+
       '<div class="small" id="mapMsg">Με το μοντέλο βλέπεις και στοιχεία εξαρτημάτων (Ω, χρώματα) στον «Έλεγχο εξαρτημάτων».</div>';
     var mi0=$("model"); mi0.value=S.model||""; mi0.addEventListener("input",function(){ S.model=mi0.value; });
     return;
@@ -263,7 +284,7 @@ function renderOem(){
   var mine = myMap.filter(function(m){return m.brand===b.n;});
   box.innerHTML =
     (b.hint?'<div class="hint">'+esc(b.hint)+'</div>':'<div class="hint">Η '+esc(b.n)+' δεν έχει δικό της εργοστάσιο. Διάλεξε εργοστάσιο ή άφησε «Σύγκριση» για να δεις τι σημαίνει ο κωδικός σε κάθε πιθανό εργοστάσιο.</div>')+
-    '<label class="lbl step">③ Μοντέλο (από το ταμπελάκι)</label>'+
+    '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι)</label>'+
     '<div class="row2"><input id="model" placeholder="π.χ. V5MCI32-12" autocapitalize="characters" spellcheck="false"><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
     '<div id="mapMsg" class="small"></div>'+
     '<label class="lbl">Εργοστάσιο παραγωγής</label>'+
@@ -305,11 +326,29 @@ function procBox(c, plat){
   return out;
 }
 
+var KINDS = [
+  ["Επικοινωνία","#8b5cf6",/επικοινων|σήμα|μετάδοσ|καλωδίωσ|διεύθυνσ|M-NET|tracking/i],
+  ["Αισθητήριο","#14b8a6",/αισθητ|θερμίστορ|thermistor/i],
+  ["Ψυκτικό / πίεση","#f97316",/πίεσ|πρεσοστ|ψυκτικ|διαρρο|βάνα|υπερθέρμανση κατάθλιψης|κατάθλιψ/i],
+  ["Ανεμιστήρας","#0ea5e9",/ανεμιστ|μοτέρ ανεμ|fan/i],
+  ["Ηλεκτρικό / inverter","#ef4444",/IPM|PFC|ρεύμα|υπερέντασ|τάση|τάσεως|inverter|συμπιεστ|transistor|φάσ|DC link|current/i],
+  ["Πλακέτα","#a855f7",/πλακέτα|EEPROM|μνήμη|PCB|μικροεπεξ/i],
+  ["Νερό / αποχέτευση","#3b82f6",/νερ|ροή|αποχέτευ|φλοτέρ|συμπυκνωμάτων|στάθμη/i],
+  ["Προστασία","#f59e0b",/προστασ|αντιπαγ|υπερθέρμ|υπερφόρτ|πάγωμα/i]
+];
+function kindOf(txt){ for(var i=0;i<KINDS.length;i++) if(KINDS[i][2].test(txt)) return KINDS[i]; return null; }
+var LSTATE = {"0":"σβηστή","on":"αναμμένη","c":"αναβοσβήνει συνεχώς","s":"αργό αναβόσβημα"};
+function lampVal(v){ return LSTATE[v] || ("× "+v); }
+function ledSym(key, lamps){
+  var vs = key.split("-");
+  return '<span class="lsym">'+lamps.map(function(l,i){ var v=vs[i]||"0"; var cls = v==="0"?" off":(v==="c"?" c":v==="s"?" s":"");
+    return '<span style="--lc:'+l.col+'"><i class="dot'+cls+'"></i>'+esc(l.n)+' '+esc(lampVal(v))+'</span>'; }).join("")+'</span>';
+}
 function card(r, showPlat){
-  var c = r.c, t = r.t;
-  return '<div class="res">'+
-    '<div class="rh"><span class="codes">'+(t.tbl.pat ? '<span class="code pat">'+esc(patSym(c[0][0], t.tbl.pat.labels))+'</span>' : c[0].map(function(k){return '<span class="code">'+esc(k)+'</span>';}).join(""))+'</span>'+
-    (showPlat?'<span class="plat">'+esc(PLAT[t.plat].name)+'</span>':'')+'</div>'+
+  var c = r.c, t = r.t, kd = kindOf(c[1]);
+  return '<div class="res"'+(kd?' style="--kc:'+kd[1]+'"':'')+'>'+
+    '<div class="rh"><span class="codes">'+(t.tbl.lamps ? ledSym(c[0][0], t.tbl.lamps) : t.tbl.pat ? '<span class="code pat">'+esc(patSym(c[0][0], t.tbl.pat.labels))+'</span>' : c[0].map(function(k){return '<span class="code">'+esc(k)+'</span>';}).join(""))+'</span>'+
+    (showPlat?'<span class="plat">'+esc(PLAT[t.plat].name)+'</span>':(kd?'<span class="kind">'+esc(kd[0])+'</span>':''))+'</div>'+
     '<div class="rt">'+esc(c[1])+'</div>'+
     (c[4]?'<div class="rl">↔ '+esc(c[4])+'</div>':'')+
     (c[2]?(function(){ var st=stepsOf(c[2]); return st ? '<div class="rd"><b>🔧 Τι ελέγχεις – με τη σειρά:</b><ol class="steps">'+st.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol></div>' : '<div class="rd"><b>🔧 Τι ελέγχεις:</b> '+esc(c[2])+'</div>'; })():'')+
@@ -319,16 +358,85 @@ function card(r, showPlat){
     '<div class="rs">'+esc(t.tbl.name)+'</div>'+
   '</div>';
 }
+// ===== ΛΥΧΝΙΕΣ ΕΣΩΤΕΡΙΚΗΣ =====
+S.ledv = {};
+function ledGuideFor(plats){
+  var g = []; plats.forEach(function(p){ var x = INGUIDE[p] || INGUIDE._; if(g.indexOf(x)<0) g.push(x); }); return g;
+}
+function ledGuideOnly(b){
+  var pl = activeTables.plats || candidates(b);
+  var g = ledGuideFor(pl.length?pl:["_"]);
+  return '<div class="empty"><span class="big">💡</span>Για '+esc(b.n)+' σε αυτή την κατηγορία δεν υπάρχει πίνακας λυχνιών – ο κωδικός φαίνεται σε οθόνη ή χειριστήριο.</div>'+
+    '<div class="guide">👀 <b>Τι κάνεις όταν αναβοσβήνει λυχνία:</b>'+g.map(function(x){return '<div>'+esc(x)+'</div>';}).join("")+'</div>';
+}
+function lampSig(t){ return t.tbl.lamps.map(function(l){return l.n;}).join("|"); }
+function renderLed(b, tabs, multi){
+  var html = "";
+  var g = ledGuideFor(activeTables.plats||[]);
+  html += '<div class="guide">👀 '+g.map(function(x){return esc(x);}).join("<br>")+'</div>';
+  var groups = {}, order = [];
+  tabs.forEach(function(t){ var k=lampSig(t); if(!groups[k]){ groups[k]=[]; order.push(k);} groups[k].push(t); });
+  order.forEach(function(sig){
+    var ts = groups[sig], lamps = ts[0].tbl.lamps;
+    var cur = S.ledv[sig] || (S.ledv[sig] = lamps.map(function(){return null;}));
+    var maxN = lamps.map(function(l,i){ var m=0; ts.forEach(function(t){ t.tbl.codes.forEach(function(c){ var v=c[0][0].split("-")[i]; if(/^\d+$/.test(v)) m=Math.max(m,+v); }); }); return m; });
+    html += '<div class="ledw"><h3>Πάτα αυτό που βλέπεις σε κάθε λυχνία</h3>'+lamps.map(function(l,i){
+      var opts = [];
+      l.v.forEach(function(v){ if(v==="n"){ for(var k=1;k<=maxN[i];k++) opts.push(String(k)); } else opts.push(v); });
+      var cv = cur[i], dcls = cv==null||cv==="0" ? " off" : cv==="c"?" c":cv==="s"?" s":"";
+      return '<div class="lamp" style="--lc:'+l.col+'"><div class="lname"><i class="dot'+dcls+'"></i>'+esc(l.n)+' <small>'+esc(l.sub||"")+'</small></div><div class="lopts">'+
+        opts.map(function(v){ var lab = v==="0"?"Σβηστή":v==="on"?"Αναμμένη":v==="c"?"Συνεχώς":v==="s"?"Αργά (1Hz)":v+"×"; return '<button class="lo'+(cv===v?' on':'')+'" data-lsig="'+esc(sig)+'" data-li="'+i+'" data-lv="'+v+'">'+lab+'</button>'; }).join("")+'</div></div>';
+    }).join("")+(cur.some(function(x){return x!=null;})?'<button class="ledreset" data-lreset="'+esc(sig)+'">↺ Καθαρισμός</button>':'')+'</div>';
+    var setN = cur.filter(function(x){return x!=null;}).length;
+    if(!setN){ html += '<div class="empty">Μέτρησε τις αναλαμπές σε έναν πλήρη κύκλο (ανάμεσα σε δύο παύσες) και πάτα τις τιμές παραπάνω.</div>'; return; }
+    var res = [];
+    ts.forEach(function(t){ t.tbl.codes.forEach(function(c){
+      var vs = c[0][0].split("-"), ok = true;
+      cur.forEach(function(v,i){ if(v!=null && (vs[i]||"0")!==v) ok=false; });
+      if(ok) res.push({t:t,c:c});
+    });});
+    if(!res.length){ html += '<div class="empty">Δεν βρέθηκε αυτός ο συνδυασμός. Ξαναμέτρησε (η μέτρηση ξεκινά μετά την παύση) ή δες τον πλήρη πίνακα πιο κάτω.</div>'; return; }
+    if(setN<lamps.length) html += '<div class="small info">Ταιριάζουν '+res.length+' – διάλεξε και τις υπόλοιπες λυχνίες για ακρίβεια:</div>';
+    var byTbl = {}; res.forEach(function(x){ (byTbl[x.t.key]=byTbl[x.t.key]||[]).push(x); });
+    var many = Object.keys(byTbl).length>1;
+    Object.keys(byTbl).forEach(function(k){
+      if(many) html += '<div class="pgrp">'+esc(T[k].name)+':</div>';
+      html += byTbl[k].slice(0,40).map(function(x){return card(x,multi);}).join("");
+    });
+  });
+  return html;
+}
+function ledNotes(tabs){
+  var seen={}, nh="";
+  tabs.forEach(function(t){ if(seen[t.key]) return; seen[t.key]=1;
+    nh += '<details class="note"><summary>📘 '+esc(t.tbl.name)+' – όλοι οι συνδυασμοί ('+t.tbl.codes.length+')</summary><p>'+esc(t.tbl.note)+'</p><p class="small">Πηγή: '+esc(t.tbl.src)+'</p>'+(t.tbl.chk?'<p class="small chk">✔ Έλεγχος: '+esc(t.tbl.chk)+'</p>':'')+
+      '<div class="all">'+t.tbl.codes.map(function(c){ return '<div class="ar" style="cursor:default">'+ledSym(c[0][0], t.tbl.lamps)+'<div>'+esc(c[1])+'</div></div>'; }).join("")+'</div></details>';
+  });
+  $("notes").innerHTML = nh;
+}
+document.addEventListener("click", function(e){
+  var el = e.target.closest("[data-lv],[data-lreset]"); if(!el) return;
+  if(el.hasAttribute("data-lreset")){ S.ledv[el.getAttribute("data-lreset")] = null; renderResults(); return; }
+  var sig = el.getAttribute("data-lsig"), i = +el.getAttribute("data-li"), v = el.getAttribute("data-lv");
+  var cur = S.ledv[sig]; if(!cur) return;
+  cur[i] = cur[i]===v ? null : v; renderResults();
+});
+function renderCtx(){
+  var b = brandObj(), c = null; CATS.forEach(function(x){ if(x.id===S.cat) c=x; });
+  $("ctx").innerHTML = b ? badge(b.n,"sm")+'<span><b>'+esc(b.n)+'</b>'+(c?' · '+esc(c.label):'')+(S.oem && S.oem!=="__all" && !b.own && PLAT[S.oem]?' · '+esc(PLAT[S.oem].name):'')+'</span>' : '<span>Διάλεξε πρώτα μάρκα ↑</span>';
+}
 function renderResults(){
   var out = $("results"); var b = brandObj();
   if(S.src==="parts"){ renderParts(); return; }
   if(S.src==="sym"){ renderSym(); return; }
   if(!b){ out.innerHTML = '<div class="empty">Διάλεξε κατηγορία και μάρκα.</div>'; $("notes").innerHTML=""; return; }
   var tabs = activeTables();
+  if(!tabs.length && S.src==="led"){ out.innerHTML = ledGuideOnly(b); $("notes").innerHTML=""; return; }
   if(!tabs.length){ out.innerHTML = '<div class="empty">Δεν υπάρχει ακόμα βλαβολόγιο για '+esc(b.n)+' σε αυτή την κατηγορία.</div>'; $("notes").innerHTML=""; return; }
   var plats = {}; tabs.forEach(function(t){plats[t.plat]=1;}); var multi = Object.keys(plats).length>1;
   var q = S.q.trim();
   var html = "";
+  if(S.src==="led"){ out.innerHTML = renderLed(b, tabs, multi); ledNotes(tabs); return; }
   if(S.src==="out"){
     var gp = {}; candidates(b).forEach(function(p){ if(!(b.own || !S.oem || S.oem==="__all" || S.oem===p)) return; if(OUTGUIDE[p]) gp[p]=OUTGUIDE[p]; });
     var gk = Object.keys(gp);
@@ -913,16 +1021,19 @@ document.addEventListener("click", function(e){
   }
 });
 
-function renderAll(){ renderCats(); renderBrands(); renderOem(); renderResults(); persist(); }
+function renderAll(){ renderCats(); renderBrands(); renderOem(); renderCtx(); renderResults(); persist(); }
 
 // ===== events =====
 document.addEventListener("click", function(e){
-  var el = e.target.closest("[data-c],[data-b],[data-o],[data-del],[data-q],#brandSel");
+  var el = e.target.closest("[data-c],[data-b],[data-o],[data-del],[data-q],#brandSel,#chgBrand,#theme,#bcancel");
   if(!el) return;
-  if(el.id==="brandSel"){ $("brandsWrap").classList.toggle("open"); return; }
+  if(el.id==="brandSel"){ $("brandsWrap").classList.toggle("open"); $("brandSel").classList.toggle("on", $("brandsWrap").classList.contains("open")); return; }
+  if(el.id==="bcancel"){ S.bedit=false; $("bsug").innerHTML=""; renderBrands(); return; }
+  if(el.id==="chgBrand"){ S.bedit=true; renderBrands(); setTimeout(function(){ $("bq").value=""; $("bq").focus(); },30); return; }
+  if(el.id==="theme"){ var th=["auto","light","dark"], i=th.indexOf(LS.get("vl_theme","auto")); setTheme(th[(i+1)%3]); return; }
   if(el.hasAttribute("data-c")){ S.cat = el.getAttribute("data-c"); S.oem=null; renderAll(); setTimeout(function(){ var m=$("model"); if(m && !m.value) m.focus(); else $("q").focus(); },50); return; }
-  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.oem=null; S.model=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
-  if(el.hasAttribute("data-o")){ S.oem = el.getAttribute("data-o"); markChips(); renderResults(); persist(); return; }
+  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.bedit=false; S.oem=null; S.model=""; S.ledv={}; $("bsug").innerHTML=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
+  if(el.hasAttribute("data-o")){ S.oem = el.getAttribute("data-o"); markChips(); renderCtx(); renderResults(); persist(); return; }
   if(el.hasAttribute("data-del")){ var b=brandObj(), p=el.getAttribute("data-del"); myMap = myMap.filter(function(m){return !(m.brand===b.n && m.prefix===p);}); LS.set("vl_mymap",myMap); renderOem(); return; }
   if(el.hasAttribute("data-q")){ S.q = el.getAttribute("data-q"); $("q").value=S.q; renderResults(); window.scrollTo({top:$("q").getBoundingClientRect().top+window.scrollY-80,behavior:"smooth"}); return; }
 });
@@ -947,7 +1058,7 @@ document.addEventListener("click", function(e){
 
 $("bq").addEventListener("input", function(){
   var r = brandMatches(this.value);
-  $("bsug").innerHTML = this.value.trim() ? (r.length ? r.map(function(b){ return '<button class="bs" data-b="'+esc(b.n)+'"><b>'+esc(b.n)+'</b>'+(b.own?'':' <span class="small">· χωρίς δικό της εργοστάσιο</span>')+'</button>'; }).join("") : '<div class="small">Δεν βρέθηκε. Πάτα ☰ για όλη τη λίστα ή διάλεξε «Άλλη μάρκα…».</div>') : "";
+  $("bsug").innerHTML = this.value.trim() ? (r.length ? r.map(function(b){ return '<button class="bs" data-b="'+esc(b.n)+'">'+badge(b.n)+'<span class="bt"><b>'+esc(b.n)+'</b><small>'+esc(bSub(b))+'</small></span><span class="go">›</span></button>'; }).join("") : '<div class="small">Δεν βρέθηκε. Πάτα ☰ για όλη τη λίστα ή διάλεξε «Άλλη μάρκα…».</div>') : "";
 });
 $("bq").addEventListener("focus", function(){ this.select(); });
 $("bq").addEventListener("keydown", function(e){ if(e.key==="Enter"){ var f=$("bsug").querySelector("[data-b]"); if(f) f.click(); } });
@@ -955,7 +1066,7 @@ $("bq").addEventListener("keydown", function(e){ if(e.key==="Enter"){ var f=$("b
 $("q").addEventListener("input", function(){ S.q = this.value; renderResults(); clearTimeout(recT); recT=setTimeout(saveRecent,1500); });
 $("q").addEventListener("keydown", function(e){ if(e.key==="Enter"){ this.blur(); saveRecent(); } });
 renderRecent();
-function renderSrc(){ var bs=$("srcbox").querySelectorAll("[data-s]"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("on", bs[i].getAttribute("data-s")===S.src); var pp=S.src==="parts"||S.src==="sym"; document.querySelector(".sbox").style.display=pp?"none":""; $("recent").style.display=pp?"none":""; document.querySelector(".search").style.position=pp?"static":""; }
+function renderSrc(){ var bs=$("srcbox").querySelectorAll("[data-s]"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("on", bs[i].getAttribute("data-s")===S.src); var pp=S.src==="parts"||S.src==="sym"||S.src==="led"; document.querySelector(".sbox").style.display=pp?"none":""; $("recent").style.display=pp?"none":""; document.querySelector(".search").style.position=pp?"static":""; }
 $("srcbox").addEventListener("click", function(e){ var el=e.target.closest("[data-s]"); if(!el) return; S.src=el.getAttribute("data-s"); renderSrc(); renderResults(); persist(); });
 renderSrc();
 document.addEventListener("click", function(e){
@@ -968,5 +1079,10 @@ document.addEventListener("click", function(e){
 $("clr").addEventListener("click", function(){ S.q=""; $("q").value=""; renderResults(); $("q").focus(); });
 
 
+function setTheme(t){ LS.set("vl_theme",t); var r=document.documentElement; if(t==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",t);
+  $("theme").textContent = t==="light"?"☀️":t==="dark"?"🌙":"🌓"; $("theme").title = t==="light"?"Φωτεινό θέμα":t==="dark"?"Σκούρο θέμα":"Αυτόματο θέμα (όπως το κινητό)";
+  var dark = t==="dark" || (t==="auto" && !(window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches));
+  var m=document.querySelector('meta[name=theme-color]'); if(m) m.setAttribute("content", dark?"#0b1220":"#eef2f8"); }
+setTheme(LS.get("vl_theme","auto"));
 renderAll();
 })();
