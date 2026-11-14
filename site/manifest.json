@@ -1,0 +1,1 @@
+{"name": "Βλαβολόγιο Κλιματισμού", "short_name": "Βλαβολόγιο", "start_url": "./", "scope": "./", "display": "standalone", "background_color": "#0b121a", "theme_color": "#0b121a", "icons": [{"src": "icon.png", "sizes": "180x180", "type": "image/png"}]}
