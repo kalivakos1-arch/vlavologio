@@ -260,7 +260,7 @@ function norm(s){
   s = s.replace(/^([A-Z]+)0+(\d)/, "$1$2");   // E01 -> E1, P03 -> P3
   return s;
 }
-function isTextQuery(q){ return /[α-ωάέήίόύώΑ-Ωa-z]{3,}/i.test(q) && !/^[A-Za-z]{1,2}\d/.test(q.trim()); }
+function isTextQuery(q){ var t = String(q).trim(); if(/^[A-Za-z0-9][A-Za-z0-9\- ]{0,6}$/.test(t) && (/\d/.test(t) || t.replace(/\W/g,"").length<=4)) return false; return /[α-ωάέήίόύώΑ-Ωa-z]{3,}/i.test(t) && !/^[A-Za-z]{1,2}\d/.test(t); }
 
 function search(q){
   var tabs = activeTables(); var res = [];
