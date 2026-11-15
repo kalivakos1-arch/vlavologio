@@ -118,17 +118,19 @@ var INST = {
   srcEl: "LG Installation manual"
  },
  "Midea": {
-  cap: function(k){ var m = k.match(/^(?:AEP2|AG16GRAPH|AG1|GAIA)(\d{2})/) || k.match(/(09|12|18|24|36)/); return m ? +m[1] : null; },
+  cap: function(k){ var m = k.match(/^(?:AEP2|AG1|AG16GRAPH|AG16BLACK|GAIA|ACEAI|ACE|CB1|EF|MX1|MX3|MX4|DURA|LINEPRO|LINE|PRO|EZB|EZ|AIRGRN|MSFAAU|MOB01)(\d{2})/) || k.match(/(09|12|18|21|24|36)/); return m ? +m[1] : null; },
   capLbl: "κλάση σε χιλ. Btu",
   rows: [
-   {re:/^(AEP2|AG1|AG16GRAPH|GAIA)[IO]?(09|12)/, c:[9,12], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 25m · υψομετρική 10m", src:"Midea Ελλάδας – επίσημο site, τεχνικά χαρακτηριστικά All Easy Pro / Xtreme Save / Xtreme Graphite / Gaia"},
-   {re:/^(AEP2|AG1|AG16GRAPH)[IO]?18/, c:[18,18], liq:"1/4", gas:"1/2", len:"Μέγ. μήκος 30m · υψομετρική 20m", src:"Midea Ελλάδας – επίσημο site, τεχνικά χαρακτηριστικά All Easy Pro / Xtreme Save / Xtreme Graphite"},
-   {re:/^(AEP2|AG1|AG16GRAPH)[IO]?24/, c:[24,24], liq:"3/8", gas:"5/8", len:"Μέγ. μήκος 50m · υψομετρική 25m", src:"Midea Ελλάδας – επίσημο site, τεχνικά χαρακτηριστικά All Easy Pro / Xtreme Save / Xtreme Graphite"},
+   {re:/^(?:AEP2|AG1|AG16GRAPH|AG16BLACK|GAIA|ACEAI|ACE|CB1|EF|MX1|MX3|MX4|DURA|LINEPRO|LINE|PRO|EZB|EZ|AIRGRN|MSFAAU|MOB01)(09|12)/, c:[0,99], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 25m · υψομετρική 10m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Midea (όλες οι σειρές 9/12)"},
+   {re:/^(AEP2|AG1|AG16GRAPH|AG16BLACK|ACEAI|ACE|CB1|EF|MX3|DURA|LINEPRO|LINE|PRO|EZB|EZ|AIRGRN)18/, c:[0,99], liq:"1/4", gas:"1/2", len:"Μέγ. μήκος 30m · υψομετρική 20m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Midea (σειρές 18)"},
+   {re:/^(AEP2|AG1|AG16GRAPH|AG16BLACK|CB1)24/, c:[0,99], liq:"3/8", gas:"5/8", len:"Μέγ. μήκος 50m · υψομετρική 25m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Midea All Easy Pro / Xtreme Save II / Xtreme Graphite / Black Crystal / Breezeless E"},
+   {re:/^(ACEAI|EF|MX4|DURA|LINE|PRO)24|^(LINEPRO|EZB|EZ|AIRGRN)21/, c:[0,99], liq:"1/4", gas:"1/2", len:"Μέγ. μήκος 50m · υψομετρική 25m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Midea Ace AI / Solunar / Dura / Line / Pro / Line Pro / Solstice / Air Green"},
+   {re:/^ACE24/, c:[0,99], len:"Μέγ. μήκος 50m · υψομετρική 25m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Midea Ace 24 (χωρίς διατομή σωλήνων στη σελίδα)"},
    {c:[7,14], len:"Μέγ. μήκος 25m · υψομετρική 10m (inverter R32)", src:"Midea Owner's & Installation manual (CS445UI)"},
    {c:[15,23], len:"Μέγ. μήκος 30m · υψομετρική 20m (inverter R32)", src:"Midea Owner's & Installation manual (CS445UI)"},
    {c:[24,35], len:"Μέγ. μήκος 50m · υψομετρική 25m (inverter R32)", src:"Midea Owner's & Installation manual (CS445UI)"}
   ],
-  noRow: "Αυτή η σειρά Midea δεν είναι στα τεχνικά χαρακτηριστικά του ελληνικού site (All Easy Pro, Xtreme Save, Xtreme Graphite, Gaia: 09/12 → 1/4\" + 3/8\", 18 → 1/4\" + 1/2\", 24 → 3/8\" + 5/8\"). Το installation manual δεν δίνει σωλήνες ανά μοντέλο – δες την ταμπέλα της εξωτερικής.",
+  noRow: "Αυτή η σειρά Midea δεν είναι στα τεχνικά χαρακτηριστικά του ελληνικού αντιπροσώπου. Προσοχή: στα 24 της Midea ο σωλήνας διαφέρει ανά σειρά (3/8\"+5/8\" ή 1/4\"+1/2\"). Το installation manual δεν δίνει σωλήνες ανά μοντέλο – δες την ταμπέλα της εξωτερικής.",
   comm: "H07RN-F, διατομή από το μέγιστο ρεύμα της ταμπέλας: >3–6A: 0,75 · >6–10A: 1 · >10–16A: 1,5 · >16–25A: 2,5 · >25–32A: 4 · >32–40A: 6 mm²",
   pwr: "Εξωτερική: H07RN-F (εσωτερική, αν τροφοδοτείται χωριστά: H05VV-F ή H05V2V2-F). Διατομή με τον ίδιο πίνακα ρεύματος.",
   brkNote: "Γενικός διακόπτης και προστασία υπέρτασης 1,5 × το μέγιστο ρεύμα · ΔΔΡ ≤30mA · αποζεύκτης όλων των πόλων με άνοιγμα ≥3mm.",
@@ -277,6 +279,41 @@ var INST = {
   ],
   noRow: "Αυτό το μοντέλο Nobu δεν είναι στα τεχνικά στοιχεία του επίσημου site (σειρές NBKU3V και NOB).",
   srcEl: "Nobu – επίσημο site (nobuklima.gr)"
+ },
+ "Eskimo": {
+  cap: function(k){ var m = k.match(/(09|12|18|24)/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu",
+  rows: [
+   {re:/^ESAF(09|12)/, c:[0,99], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 25m · υψομετρική 10m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Eskimo (ES-AF / Forest)"},
+   {re:/^ESAF18/, c:[0,99], liq:"1/4", gas:"1/2", len:"Μέγ. μήκος 30m · υψομετρική 20m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Eskimo (ES-AF / Forest)"},
+   {re:/^ESAF24/, c:[0,99], liq:"3/8", gas:"5/8", len:"Μέγ. μήκος 50m · υψομετρική 25m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Eskimo (ES-AF / Forest)"},
+   {re:/^ESGP(09|12)/, c:[0,99], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 25m · υψομετρική 10m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Eskimo GP"},
+   {re:/^ESGP(18|24)/, c:[0,99], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 30m · υψομετρική 20m", note:"Η σελίδα του αντιπροσώπου γράφει 1/4\" + 3/8\" και για τα GP 18 / 24 – επιβεβαίωσε στις συνδέσεις της εξωτερικής πριν αγοράσεις σωλήνα.", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Eskimo GP"},
+  ],
+  noRow: "Αυτό το μοντέλο Eskimo δεν είναι στα τεχνικά χαρακτηριστικά του αντιπροσώπου (FG Europe).",
+  srcEl: "FG Europe – τεχνικά χαρακτηριστικά (δεν δίνει καλώδια / ασφάλεια)"
+ },
+ "Comfee": {
+  cap: function(k){ var m = k.match(/(09|12|18|24)/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu",
+  rows: [
+   {re:/^AF(09|12)/, c:[0,99], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 25m · υψομετρική 10m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Comfee"},
+   {re:/^AF18/, c:[0,99], liq:"1/4", gas:"1/2", len:"Μέγ. μήκος 30m · υψομετρική 20m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Comfee"},
+   {re:/^AF24/, c:[0,99], len:"Μέγ. μήκος 50m · υψομετρική 25m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Comfee (χωρίς διατομή σωλήνων στη σελίδα)"},
+  ],
+  noRow: "Αυτό το μοντέλο Comfee δεν είναι στα τεχνικά χαρακτηριστικά του αντιπροσώπου.",
+  srcEl: "FG Europe – τεχνικά χαρακτηριστικά"
+ },
+ "Inclima": {
+  cap: function(k){ var m = k.match(/(09|12|18|24)/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu",
+  rows: [
+   {re:/^INCLIMA(09|12)/, c:[0,99], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 25m · υψομετρική 10m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Inclima"},
+   {re:/^INCLIMA18/, c:[0,99], liq:"1/4", gas:"1/2", len:"Μέγ. μήκος 30m · υψομετρική 20m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Inclima"},
+   {re:/^INCLIMA24/, c:[0,99], len:"Μέγ. μήκος 50m · υψομετρική 25m", src:"FG Europe (επίσημος αντιπρόσωπος Midea/Eskimo/Comfee/Inclima) – τεχνικά χαρακτηριστικά Inclima (χωρίς διατομή σωλήνων στη σελίδα)"},
+  ],
+  noRow: "Αυτό το μοντέλο Inclima δεν είναι στα τεχνικά χαρακτηριστικά του αντιπροσώπου.",
+  srcEl: "FG Europe – τεχνικά χαρακτηριστικά"
  }
 };
 var INCH_MM = {"1/4":"6,35","3/8":"9,52","1/2":"12,70","5/8":"15,88","3/4":"19,05"};
