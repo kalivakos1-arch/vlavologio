@@ -1165,6 +1165,7 @@ function renderParts(){
     if(P.id==="charge") h += chargeForm();
     if(P.id==="conv") h += convForm();
     if(P.id==="cap") h += capForm();
+    if(P.id==="inst") h += instForm();
     if(P.id==="sensor"){
       var sl = sensList();
       h += '<div class="pcalcw"><div class="lbl">🧮 Υπολογιστής αισθητηρίου</div>'+
@@ -1188,6 +1189,7 @@ function renderParts(){
   if(P && MEAS[P.id]) measUpdate();
   if(P && P.id==="pres") presCalc();
   if(P && P.id==="charge") chargeFill();
+  if(P && P.id==="inst") instCalc();
 }
 var fmT=null;
 document.addEventListener("input", function(e){

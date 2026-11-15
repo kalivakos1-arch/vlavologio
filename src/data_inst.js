@@ -1,0 +1,122 @@
+// ===== ΣΤΟΙΧΕΙΑ ΕΓΚΑΤΑΣΤΑΣΗΣ ΑΝΑ ΜΟΝΤΕΛΟ (μόνο από installation/service manuals) =====
+// cap: συνάρτηση που βγάζει την κλάση ισχύος από το μοντέλο (κεφαλαία, χωρίς κενά/παύλες)
+// rows: re (σειρά, προαιρετικό), c:[min,max] κλάση, liq/gas σε ίντσες, comm (διασύνδεση), pwr (τροφοδοσία), brk (ασφάλεια), len (μήκη), src
+var INST = {
+ "Daikin": {
+  cap: function(k){ var m = k.match(/^A?[A-Z]{2,4}(\d{2})[A-Z]/); return m ? +m[1] : null; },
+  capLbl: "κλάση (π.χ. 25 = 2,5kW)",
+  multi: /^\d/,
+  rows: [
+   {re:/^ARXM71/, c:[71,71], liq:"3/8", gas:"5/8", src:"Daikin Installer reference guide ARXM50-71+RXM42~71 (4P513661-9J)"},
+   {re:/^(RXF|RXP|ARXF)(50|60|71)/, c:[50,71], liq:"1/4", gas:"1/2", src:"Daikin Installer reference guide RXF50~71D5V1B (4P519439-15Q) · RXP50~71N5V1B (4P519439-18T)"},
+   {c:[15,42], liq:"1/4", gas:"3/8", src:"Daikin Installer reference guide FTXM20~42+ATXM20~35R (4P518023-8G) · RXM20~35R5V1B (4P519439-8H) · RXM42R (4P513661-9J)"},
+   {c:[50,60], liq:"1/4", gas:"1/2", src:"Daikin Installer reference guide FTXM50~71 (4P518023-8G)"},
+   {c:[71,71], liq:"1/4", gas:"5/8", src:"Daikin Installer reference guide FTXM71 (4P518023-8G) · RXM71R (4P513661-9J)", note:"Οι εξωτερικές RXF71 / RXP71 έχουν σύνδεση 1/2\" – δες το μοντέλο της εξωτερικής."}
+  ],
+  comm: "4πολικό 1,5–2,5 mm², H05RN-F (60245 IEC 57), κατάλληλο για 220–240V",
+  pwr: "3πολικό. Στα νεότερα manuals (RXM-A): διατομή ανάλογα με το ρεύμα, όχι κάτω από 2,5 mm². Στα RXF71A / RXP50~71M: 2,5–4,0 mm² H05RN-F. Σε κάποια μικρά μοντέλα το manual γράφει μόνο «σύμφωνα με την ισχύουσα νομοθεσία».",
+  brk: [[/^A?RXM20A/,"10A"],[/^A?RXM(25|35|42)A/,"13A"],[/^RXM42R|^RXA(42|50)|^RXJ50N/,"13A"],[/^ARXM(50|60|71)R|^RXM(50|60)R/,"16A"],[/^RXP(20|25|35)M/,"16A"],[/^RXM71R|^RXP(50|60|71)M|^RXF(50|60)B|^RXF71A|^ARXF(50|60|71)A|^RXF(50|60|71)D/,"20A"]],
+  brkNote: "Η ασφάλεια δίνεται ανά μοντέλο εξωτερικής – γράψε το μοντέλο της εξωτερικής (RXM…, RXF…, RXP…).",
+  srcEl: "Daikin Installer reference guides 4P513661-9J, 4P519439-15Q, RXM-A (Specifications of standard wiring components)"
+ },
+ "Mitsubishi Electric": {
+  cap: function(k){ var m = k.match(/^M[SU][ZY]?-?[A-Z]{2}(\d{2})/) || k.match(/^M[SU]-?[A-Z]{2}(\d{2})/); return m ? +m[1] : null; },
+  capLbl: "κλάση (π.χ. 35 = 3,5kW)",
+  rows: [
+   {re:/^M[SU]Z?(AP|EF|GE|GC)/, c:[15,42], liq:"1/4", gas:"3/8", brk:"10A", pwr:"3πολικό 1,0 mm²", comm:"4πολικό 1,0 mm²", len:"Μέγ. μήκος 20m · μέγ. υψομετρική 12m · χωρίς επιπλέον φορτίο έως 10m, μετά 20 g/m (AP)", src:"ME Installation manual MSZ-AP (JG79Y335H01) · MSZ-EF · MSZ-GE · MSZ-GC (SG79Y762H04)"},
+   {re:/^M[SU]GF/, c:[20,35], liq:"1/4", gas:"3/8", brk:"10A", pwr:"3πολικό 2,5 mm²", comm:"4πολικό 1,0 mm²", len:"Μέγ. μήκος 20m (GF20/25) / 25m (GF35) · υψομετρική 10m", src:"ME Installation manual MS-GF20/25/35VA"},
+   {re:/^M[SU]Z?FD/, c:[25,35], liq:"1/4", gas:"3/8", brk:"10–12A ανά έκδοση εξωτερικής", pwr:"3πολικό 1,0–1,5 mm² ανά έκδοση", comm:"4πολικό 1,0 mm²", len:"Μέγ. μήκος 20m · υψομετρική 12m", src:"ME Installation manual MSZ-FD25/35VA"},
+   {re:/^M[SU]Z?(AP|EF)/, c:[50,50], liq:"1/4", gas:"1/2", brk:"16A", pwr:"3πολικό 2,0 mm²", comm:"4πολικό 1,0 mm²", len:"Μέγ. μήκος 30m · υψομετρική 15m (AP50: χωρίς επιπλέον φορτίο έως 15m)", src:"ME Installation manual MSZ-AP (JG79Y335H01) · MSZ-EF50VE"},
+   {re:/^M[SU]Z?AP/, c:[60,60], liq:"1/4", gas:"1/2", brk:"16A", pwr:"3πολικό 2,0 mm²", comm:"4πολικό 1,0 mm²", len:"Μέγ. μήκος 30m · υψομετρική 15m", src:"ME Installation manual MSZ-AP60-71VG(K) (JG79J380H01)"},
+   {re:/^M[SU]Z?AP/, c:[71,71], liq:"1/4", gas:"1/2", brk:"20A", pwr:"3πολικό 2,5 mm²", comm:"4πολικό 1,0 mm²", len:"Μέγ. μήκος 30m · υψομετρική 15m", src:"ME Installation manual MSZ-AP60-71VG(K) (JG79J380H01)", note:"Στον πίνακα του manual οι σωλήνες και το καλώδιο διασύνδεσης είναι κοινό κελί για AP60 και AP71."}
+  ],
+  noRow: "Για αυτή τη σειρά της Mitsubishi Electric δεν έχω τον πίνακα του manual. Στις σειρές AP / EF / GE / GC: κλάση 15–42 → 1/4\" + 3/8\", κλάση 50–60 → 1/4\" + 1/2\". Επιβεβαίωσε στο manual της σειράς σου (πίνακας «1-3. SPECIFICATIONS»).",
+  srcEl: "Πίνακας «1-3. SPECIFICATIONS» του installation manual κάθε σειράς"
+ },
+ "Toshiba": {
+  cap: function(k){ var m = k.match(/^RAS(?:B|M)?(\d{2})/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu (π.χ. 10 = ~10.000)",
+  rows: [
+   {re:/^RAS(B)?(07|10|13|16)J2/, c:[7,16], liq:"1/4", gas:"3/8", brkBy:{7:"10A",10:"10A",13:"10A",16:"15A"}, pwr:"H07RN-F ή 60245 IEC66 – 1,5 mm² ή περισσότερο (07–13) · 2,5 mm² ή περισσότερο (16)", comm:"H07RN-F ή 60245 IEC66 (1,5 mm² ή περισσότερο)", src:"Toshiba Installation manual Seiya RAS-B07/10/13/16J2KVSG-E / RAS-07/10/13/16J2AVSG-E"},
+   {re:/^RAS(B)?(07|10|13)G3/, c:[7,13], liq:"1/4", gas:"3/8", src:"Toshiba Installation manual EDGE RAS-B07/10/13G3KVSG-E"},
+   {re:/^RAS(B)?16G3/, c:[16,16], liq:"1/4", gas:"1/2", src:"Toshiba Installation manual EDGE RAS-B16G3KVSG-E"},
+   {re:/^RAS(B)?(05|07|10|13|16|18)E2/, c:[5,18], brkBy:{5:"10A",7:"15A",10:"15A",13:"15A",16:"15A",18:"15A"}, pwr:"H07RN-F ή 60245 IEC66 – 0,75 έως 1,5 mm² ή περισσότερο ανά μοντέλο (πίνακας «Electrical works»)", comm:"H07RN-F ή 60245 IEC66", src:"Toshiba Installation manual RAS-B05~18E2KVG-E"},
+   {re:/^RAS(B)?(18|22|24)G3/, c:[18,24], liq:"1/4", gas:"1/2", pwr:"H07RN-F ή 60245 IEC66 (2,5 mm² ή περισσότερο)", src:"Toshiba Installation manual RAS-B18/22/24G3KVSG-E"},
+   {c:[5,13], liq:"1/4", gas:"3/8", src:"Toshiba R32 installation manual (σωλήνες 05k–13k: υγρού Ø6,35 / αερίου Ø9,52)", generic:true},
+   {c:[16,24], liq:"1/4", gas:"1/2", src:"Toshiba R32 installation manual (σωλήνες 16k–24k: υγρού Ø6,35 / αερίου Ø12,70)", generic:true}
+  ],
+  comm: "H07RN-F ή 60245 IEC66 (διατομή ανά μοντέλο στο manual)",
+  pwr: "H07RN-F ή 60245 IEC66 (διατομή ανά μοντέλο στο manual)",
+  srcEl: "Πίνακας «Electrical works» του installation manual"
+ },
+ "Fujitsu": {
+  cap: function(k){ var m = k.match(/^A[SOGRU][YEGB]?[GA]?(\d{2})/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu",
+  rows: [
+   {re:/^A[SO][YE]G(07|09|12|14)(KM|KP|LM|LU|LV|KG)/, c:[7,12], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 20m (σειρά KP)", src:"Fujitsu Installation manual KMC / KPCA (9333893006) / LMCA / LUCA"},
+   {re:/^A[SO][YE]G14/, c:[14,14], liq:"1/4", gas:"1/2", src:"Fujitsu Installation manual ASYG07-14LMCA / LUCA / AGYG09-14LVCA"},
+   {re:/^A[SO][YE]G(18|24)KL/, c:[18,24], liqBy:{18:"1/4",24:"1/4"}, gasBy:{18:"3/8",24:"1/2"}, src:"Fujitsu Installation manual ASEG18/24KLCA"}
+  ],
+  comm: "1,5 mm² Type 60245 IEC 57 – 3 αγωγοί + γείωση, 230V. Όριο: πτώση τάσης κάτω από 2%, αλλιώς μεγαλύτερη διατομή.",
+  pwr: "1,5 mm² Type 60245 IEC 57 – 2 αγωγοί + γείωση (KMC / KP)",
+  brkNote: "Το manual δίνει την ασφάλεια στον πίνακα «Electrical requirement» του μοντέλου – δεν τη βρήκα σε κείμενο που να μπορώ να διαβάσω.",
+  srcEl: "Fujitsu Installation manual – «Electrical requirement»"
+ },
+ "Panasonic": {
+  cap: function(k){ var m = k.match(/^C[SU][A-Z]{0,3}?(\d{1,2})[A-Z]/); return m ? +m[1] : null; },
+  capLbl: "κλάση (25 = 2,5kW ή 9/12/18/24 χιλ. Btu)",
+  rows: [
+   {c:[9,12], liq:"1/4", gas:"3/8", src:"Panasonic service manual CS-PS9/12NKH (Btu μοντέλα)"},
+   {c:[18,18], liq:"1/4", gas:"1/2", src:"Panasonic service manual CS-S18JKQ / CS-PS18NKQ"},
+   {c:[24,24], liq:"1/4", gas:"5/8", src:"Panasonic service manual CS-S24JKQ / CS-PS24NKQ"},
+   {c:[20,35], liq:"1/4", gas:"3/8", src:"Panasonic service manuals: μοντέλα 9.000–12.000 Btu (2,5–3,5kW) → 6,35 / 9,52", kw:true},
+   {c:[50,50], liq:"1/4", gas:"1/2", src:"Panasonic service manuals: μοντέλα 18.000 Btu (5,0kW) → 6,35 / 12,7", kw:true},
+   {c:[71,71], liq:"1/4", gas:"5/8", src:"Panasonic service manuals: μοντέλα 24.000 Btu (7,1kW) → 6,35 / 15,88", kw:true}
+  ],
+  comm: "4 × 1,5 mm² εύκαμπτο με επένδυση πολυχλωροπρενίου, τύπος 60245 IEC 57 ή βαρύτερο",
+  pwr: "3 × 1,5 mm² (½–1,75HP) · 3 × 2,5 mm² (2,0–2,5HP), τύπος 60245 IEC 57 ή βαρύτερο",
+  brk: [],
+  brkNote: "16A για ¾–2,0HP · 20A για 2,5HP (διπολικός, άνοιγμα επαφών ≥3mm). Τα HP είναι στο ταμπελάκι.",
+  srcEl: "Panasonic Installation instructions Etherea Z/XZ · service manuals CS-UE / CS-RE (κεφ. Installation)"
+ },
+ "Gree": {
+  cap: function(k){ var m = k.match(/^G[WU]H(\d{2})/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu",
+  rows: [
+   {re:/^GWH18AA/, c:[18,18], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 20m · υψομετρική 10m · χωρίς επιπλέον έως 5m, μετά 16 g/m", src:"Gree service manual Bora inverter R32 18/24 (GWH18AAD-K6DNA1B)"},
+   {re:/^GWH24AA/, c:[24,24], liq:"1/4", gas:"5/8", len:"Μέγ. μήκος 25m · υψομετρική 10m · χωρίς επιπλέον έως 5m, μετά 40 g/m", src:"Gree service manual Bora inverter R32 18/24 (GWH24AAD-K6DNA4A)"},
+   {re:/^GWH(18|24)YE/, c:[18,24], liq:"1/4", gas:"5/8", len:"Μέγ. μήκος 40m (18) / 50m (24) · υψομετρική 20m / 30m", src:"Gree service manual GWH18YE / GWH24YE-S6DBA2A"},
+   {c:[7,12], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 15–20m ανά μοντέλο · υψομετρική 10m · χωρίς επιπλέον έως 5m", src:"Gree service manuals 9K/12K (Change K3DNA6G, Lomo R32, Airy, Pular, Weka)"}
+  ],
+  noRow: "Στα 18K / 24K της Gree η σωλήνα αερίου αλλάζει ανά σειρά (π.χ. Bora 18K: 3/8\", Pular 18K: 1/2\", Bora 24K: 5/8\"). Επιβεβαίωσε στο service manual της σειράς σου («Connection Pipe»).",
+  srcEl: "Τα manuals της Gree που βρήκα δεν δίνουν διατομές καλωδίων σε κείμενο που να μπορώ να διαβάσω."
+ },
+ "LG": {
+  cap: function(k){ var m = k.match(/^[A-Z]{1,3}(09|12|18|24)/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu",
+  rows: [
+   {c:[9,12], liq:"1/4", gas:"3/8", len:"Τυπικό μήκος 7,5m · ελάχ. 2m · μέγ. 20m · επιπλέον 20 g/m", pwr:"H07RN-F 1,0 mm² (2,5–3,5kW)", comm:"H07RN-F 1,0 mm² (εσωτερική: H05VV-F 1,0 mm²)", src:"LG Installation manual 2,5k / 3,5k (Piping length and elevation · Cable type)"}
+  ],
+  noRow: "Για LG 18K / 24K δεν έχω πίνακα από ευρωπαϊκό manual που να μπορώ να διαβάσω.",
+  srcEl: "LG Installation manual"
+ },
+ "Midea": {
+  cap: function(k){ var m = k.match(/(09|12|18|24|36)/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu",
+  rows: [
+   {c:[7,14], len:"Μέγ. μήκος 25m · υψομετρική 10m (inverter R32)", src:"Midea Owner's & Installation manual (CS445UI)"},
+   {c:[15,23], len:"Μέγ. μήκος 30m · υψομετρική 20m (inverter R32)", src:"Midea Owner's & Installation manual (CS445UI)"},
+   {c:[24,35], len:"Μέγ. μήκος 50m · υψομετρική 25m (inverter R32)", src:"Midea Owner's & Installation manual (CS445UI)"}
+  ],
+  pipeNote: "Το installation manual της Midea δεν αντιστοιχίζει σωλήνες σε μοντέλο – γράφει να ρωτήσεις τον αντιπρόσωπο. Οι διατομές υπάρχουν στο service manual / ταμπέλα της εξωτερικής.",
+  comm: "H07RN-F, διατομή από το μέγιστο ρεύμα της ταμπέλας: >3–6A: 0,75 · >6–10A: 1 · >10–16A: 1,5 · >16–25A: 2,5 · >25–32A: 4 · >32–40A: 6 mm²",
+  pwr: "Εξωτερική: H07RN-F (εσωτερική, αν τροφοδοτείται χωριστά: H05VV-F ή H05V2V2-F). Διατομή με τον ίδιο πίνακα ρεύματος.",
+  brkNote: "Γενικός διακόπτης και προστασία υπέρτασης 1,5 × το μέγιστο ρεύμα · ΔΔΡ ≤30mA · αποζεύκτης όλων των πόλων με άνοιγμα ≥3mm.",
+  srcEl: "Midea Owner's & Installation manual (CS445UI)"
+ }
+};
+var INCH_MM = {"1/4":"6,35","3/8":"9,52","1/2":"12,70","5/8":"15,88","3/4":"19,05"};
+PARTS.push({id:"inst", icon:"📐", name:"Σωλήνες & καλώδια ανά μοντέλο", body:[
+ ["Τι δείχνει","Διάμετρο σωλήνα υγρού και αερίου (ίντσες και mm), καλώδιο διασύνδεσης εσωτερικής–εξωτερικής, καλώδιο τροφοδοσίας, ασφάλεια και μέγιστα μήκη – μόνο ό,τι γράφει το manual της εταιρίας, με την πηγή. Ό,τι δεν βρέθηκε γράφεται ότι λείπει."],
+ ["Πώς το γράφω","Γράψε το μοντέλο όπως στο ταμπελάκι (εσωτερικής ή εξωτερικής). Για την ασφάλεια σε Daikin προτίμησε το μοντέλο της εξωτερικής."],
+ ["Προσοχή","Η διατομή του καλωδίου τροφοδοσίας ελέγχεται πάντα και με το μήκος της γραμμής και τον κανονισμό εσωτερικών ηλεκτρικών εγκαταστάσεων. Τα manuals γράφουν ελάχιστες τιμές."]]});

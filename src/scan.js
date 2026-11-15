@@ -588,3 +588,55 @@ function multiOutGuide(){
   var pl = activeTables.plats || [], h = pl.filter(function(p){ return MULTIOUT[p]; }).map(function(p){ return '<div>'+(pl.length>1?'<b>'+esc(PLAT[p].name)+':</b> ':'')+esc(MULTIOUT[p])+'</div>'; }).join("");
   return h ? '<div class="guide">🔀 <b>Multi – τι δείχνει η πλακέτα εξωτερικής:</b>'+h+'</div>' : '';
 }
+
+// ===== Σωλήνες & καλώδια ανά μοντέλο =====
+function instKey(v){ return (v||"").toUpperCase().replace(/[^A-Z0-9]/g,""); }
+function instForm(){
+  var bs = Object.keys(INST), cur = INST[S.brand] ? S.brand : (S.instB && INST[S.instB] ? S.instB : bs[0]);
+  return '<div class="pcalcw"><div class="lbl">📐 Μάρκα και μοντέλο</div>'+
+    '<select id="inst_b">'+bs.map(function(b){ return '<option'+(b===cur?' selected':'')+'>'+esc(b)+'</option>'; }).join("")+'</select>'+
+    '<input id="inst_m" placeholder="π.χ. FTXM35R, MSZ-AP25VG, RAS-B10J2KVSG-E" autocapitalize="characters" spellcheck="false" value="'+esc(S.model||"")+'" style="margin-top:8px">'+
+    '<div id="inst_o"></div>'+
+    '<div class="small" style="margin-top:8px">Μάρκες με στοιχεία από manual: '+esc(bs.join(", "))+'. Για τις υπόλοιπες δεν βρήκα ακόμα επίσημο πίνακα που να μπορώ να διαβάσω.</div></div>';
+}
+function instPipe(x){ return x ? '<b>'+x+'"</b> <span class="small">('+(INCH_MM[x]||"")+' mm)</span>' : ''; }
+function instCalc(){
+  var o = document.getElementById("inst_o"); if(!o) return;
+  var bn = (document.getElementById("inst_b")||{}).value, B = INST[bn], k = instKey((document.getElementById("inst_m")||{}).value);
+  S.instB = bn;
+  if(!B){ o.innerHTML = ""; return; }
+  if(k.length<4){ o.innerHTML = '<div class="small" style="margin-top:8px">Γράψε το μοντέλο από το ταμπελάκι.</div>'; return; }
+  if(B.multi && B.multi.test(k)){ o.innerHTML = '<div class="pwarn" style="margin-top:8px">Αυτό μοιάζει με εξωτερική multi. Οι σωλήνες σε multi εξαρτώνται από κάθε εσωτερική (και συχνά θέλουν συστολές) – δες το manual της multi.</div>'; return; }
+  var cap = B.cap(k);
+  if(cap==null){ o.innerHTML = '<div class="small" style="margin-top:8px">Δεν αναγνώρισα την ισχύ από το μοντέλο ('+esc(B.capLbl)+'). Έλεγξε ότι γράφτηκε σωστά.</div>'; return; }
+  var rows = B.rows.filter(function(r){ return (!r.re || r.re.test(k)) && cap>=r.c[0] && cap<=r.c[1]; });
+  var pr = null; rows.forEach(function(r){ if(!pr && (r.liq || (r.liqBy && r.liqBy[cap]))) pr = r; });
+  var lr = null; rows.forEach(function(r){ if(!lr && r.len) lr = r; });
+  var er = rows.filter(function(r){ return r.pwr || r.comm || r.brk || r.brkBy; })[0] || {};
+  var brk = er.brk || (er.brkBy && er.brkBy[cap]) || null;
+  if(!brk && B.brk) B.brk.forEach(function(x){ if(!brk && x[0].test(k)) brk = x[1]; });
+  var L = [];
+  L.push('<div class="instr"><span>Κλάση από το μοντέλο</span><b>'+cap+'</b></div>');
+  if(pr){
+    var lq = pr.liq || pr.liqBy[cap], gs = pr.gas || pr.gasBy[cap];
+    L.push('<div class="instr"><span>Σωλήνας υγρού (λεπτός)</span><div>'+instPipe(lq)+'</div></div>');
+    L.push('<div class="instr"><span>Σωλήνας αερίου (χοντρός)</span><div>'+instPipe(gs)+'</div></div>');
+  } else {
+    L.push('<div class="instr miss"><span>Σωλήνες</span><div>'+esc(B.pipeNote || B.noRow || "Δεν βρέθηκε στα manuals για αυτό το μοντέλο.")+'</div></div>');
+  }
+  L.push('<div class="instr"><span>Καλώδιο διασύνδεσης</span><div>'+esc(er.comm || B.comm || "Δεν βρέθηκε στο manual.")+'</div></div>');
+  L.push('<div class="instr"><span>Καλώδιο τροφοδοσίας</span><div>'+esc(er.pwr || B.pwr || "Δεν βρέθηκε στο manual.")+'</div></div>');
+  L.push('<div class="instr'+(brk?'':' miss')+'"><span>Ασφάλεια</span><div>'+esc(brk || B.brkNote || "Δεν βρέθηκε στο manual.")+'</div></div>');
+  if(lr) L.push('<div class="instr"><span>Μήκη</span><div>'+esc(lr.len)+'</div></div>');
+  var notes = rows.filter(function(r){ return r.note; }).map(function(r){ return r.note; });
+  if(pr && pr.generic) notes.push("Οι σωλήνες είναι από τον γενικό πίνακα του manual της εταιρίας και όχι από πίνακα της συγκεκριμένης σειράς.");
+  if(pr && pr.kw) notes.push("Η Panasonic δίνει τους σωλήνες ανά Btu· εδώ αντιστοιχίστηκαν από την ισχύ σε kW.");
+  if(!pr && B.noRow && B.pipeNote) notes.push(B.noRow);
+  var srcs = []; rows.forEach(function(r){ if(r.src && srcs.indexOf(r.src)<0 && (r===pr || r===lr || r===er)) srcs.push(r.src); });
+  if(B.srcEl && srcs.indexOf(B.srcEl)<0) srcs.push(B.srcEl);
+  o.innerHTML = '<div class="instw">'+L.join("")+'</div>'+
+    notes.map(function(n){ return '<div class="pext">ℹ️ '+esc(n)+'</div>'; }).join("")+
+    '<div class="small" style="margin-top:6px">Πηγή: '+srcs.map(esc).join(" · ")+'</div>';
+}
+document.addEventListener("input", function(e){ var t=e.target; if(t && (t.id==="inst_m" || t.id==="inst_b")){ if(t.id==="inst_m") S.model = t.value; instCalc(); } });
+document.addEventListener("change", function(e){ var t=e.target; if(t && t.id==="inst_b") instCalc(); });
