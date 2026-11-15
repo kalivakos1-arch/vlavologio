@@ -101,7 +101,7 @@ var BRANDS = [
 Object.keys(PLAT).forEach(function(p){ if(PLAT[p].split) PLAT[p].multi = PLAT[p].split; });
 GENERIC.multi = GENERIC.split;
 BRANDS.forEach(function(b){ if(b.cands && b.cands.split && !b.cands.multi) b.cands.multi = b.cands.split; });
-if(typeof OUTP!=="undefined") Object.keys(OUTP).forEach(function(p){ if(OUTP[p].split) OUTP[p].multi = OUTP[p].split; });
+if(typeof OUTP!=="undefined") Object.keys(OUTP).forEach(function(p){ if(OUTP[p].split && !OUTP[p].multi) OUTP[p].multi = OUTP[p].split; });
 
 // ===== Αναζήτηση μάρκας (ελληνικά/αγγλικά) =====
 var ALIAS = {
@@ -460,7 +460,7 @@ function card(r, showPlat){
   return '<div class="res"'+(kd?' style="--kc:'+kd[1]+'"':'')+'>'+
     '<div class="rh"><span class="codes">'+(t.tbl.lamps ? ledSym(c[0][0], t.tbl.lamps) : t.tbl.pat ? '<span class="code pat">'+esc(patSym(c[0][0], t.tbl.pat.labels))+'</span>' : c[0].map(function(k){return '<span class="code">'+esc(k)+'</span>';}).join(""))+'</span>'+
     (showPlat?'<span class="plat">'+esc(PLAT[t.plat].name)+'</span>':(kd?'<span class="kind">'+esc(kd[0])+'</span>':''))+'</div>'+
-    '<div class="rt">'+esc(c[1])+'</div>'+behBox(t.plat, c[0])+
+    '<div class="rt">'+esc(c[1])+'</div>'+(t.key==='midea_multi_out' ? '' : behBox(t.plat, c[0]))+
     (c[4]?'<div class="rl">↔ '+esc(c[4])+'</div>':'')+
     (c[2]?(function(){ var st=stepsOf(c[2]); return st ? '<div class="rd"><b>🔧 Τι ελέγχεις – με τη σειρά:</b><ol class="steps">'+st.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol></div>' : '<div class="rd"><b>🔧 Τι ελέγχεις:</b> '+esc(c[2])+'</div>'; })():'')+
     (c[3]?'<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+esc(c[3])+'</div>':'')+
@@ -566,6 +566,7 @@ function renderResults(){
     html += '<div class="empty">'+(S.src==="out"?'Γράψε αναλαμπές (π.χ. 5) ή συνδυασμό LED (π.χ. 221: 0 σβηστό, 1 αναμμένο, 2 αναβοσβήνει) – ή πάτα τα LED παραπάνω. ':'')+'Γράψε τον κωδικό βλάβης (π.χ. E1, CH05, U4, 1302) ή μια λέξη (π.χ. «επικοινωνία»).</div>';
   } else {
     var r = search(q);
+    if(S.src==="in" && S.cat==="multi" && typeof multiOutNote==="function") html += multiOutNote(q);
     if(r.mode==="none"){
       html += '<div class="empty">Ο κωδικός «'+esc(q)+'» δεν βρέθηκε για '+esc(b.n)+(multi?' (σε κανένα πιθανό εργοστάσιο)':'')+'.<br><span class="small">Έλεγξε κατηγορία μονάδας, γράμματα/αριθμούς (0 ↔ O, 1 ↔ I), ή αν η οθόνη δείχνει θερμοκρασία και όχι κωδικό.</span></div>';
     } else {
