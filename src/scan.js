@@ -612,7 +612,7 @@ function instCalc(){
   var rows = B.rows.filter(function(r){ return (!r.re || r.re.test(k)) && cap>=r.c[0] && cap<=r.c[1]; });
   var pr = null; rows.forEach(function(r){ if(!pr && (r.liq || r.gas || (r.liqBy && r.liqBy[cap]))) pr = r; });
   var lr = null; rows.forEach(function(r){ if(!lr && (r.len || (r.lenBy && r.lenBy[cap]))) lr = r; });
-  var er = {}; rows.forEach(function(r){ ["pwr","comm","brk"].forEach(function(f){ if(!er[f] && r[f]){ er[f]=r[f]; er[f+"S"]=r.src; } }); if(!er.brk && r.brkBy && r.brkBy[cap]){ er.brk=r.brkBy[cap]; er.brkS=r.src; } });
+  var er = {}; rows.forEach(function(r){ ["pwr","comm","brk"].forEach(function(f){ if(!er[f] && r[f]){ er[f]=r[f]; er[f+"S"]=r.src; } }); ["pwr","comm","brk"].forEach(function(f){ var b=r[f+"By"]; if(!er[f] && b && b[cap]){ er[f]=b[cap]; er[f+"S"]=r.src; } }); });
   var brk = er.brk || null;
   if(!brk && B.brk) B.brk.forEach(function(x){ if(!brk && x[0].test(k)) brk = x[1]; });
   var L = [];

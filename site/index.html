@@ -3547,13 +3547,23 @@ var INST = {
   srcEl: "Panasonic Installation instructions Etherea Z/XZ · service manuals CS-UE / CS-RE (κεφ. Installation)"
  },
  "Gree": {
-  cap: function(k){ var m = k.match(/^G[WU]H(\d{2})/); return m ? +m[1] : null; },
+  cap: function(k){ var g = k.match(/^GRCO?(\d{2})\dQI/); if(g) return {10:9,12:12,16:16,18:18,21:21,24:24}[g[1]] || +g[1]; var m = k.match(/^G[WUEKFT]H(\d{2})/); return m ? +m[1] : null; },
   capLbl: "κλάση σε χιλ. Btu",
   rows: [
+   {re:/^GWH18AGDXB/, c:[18,18], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 25m · υψομετρική 10m", brk:"16A", src:"gree.gr – Service manual Pular N7 / Aura N7 (GWH18AGDXB = μοντέλο 16K)"},
+   {re:/^GWH24AGDXE/, c:[24,24], liq:"1/4", gas:"1/2", len:"Μέγ. μήκος 25m · υψομετρική 10m", brk:"16A", src:"gree.gr – Service manual Pular N7 (GWH24AGDXE = μοντέλο 21K)"},
+   {re:/^(GRCO?\d{3}QIK(PL|PLB|AR)\d?N7|GWH(09|12)AGC|GWH18AGDXD|GWH24AGE)/, c:[9,24], liqBy:{9:"1/4",12:"1/4",16:"1/4",18:"1/4",21:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",16:"3/8",18:"1/2",21:"1/2",24:"5/8"}, lenBy:{9:"Μέγ. μήκος 15m · υψομετρική 10m",12:"Μέγ. μήκος 20m · υψομετρική 10m",16:"Μέγ. μήκος 25m · υψομετρική 10m",18:"Μέγ. μήκος 25m · υψομετρική 10m",21:"Μέγ. μήκος 25m · υψομετρική 10m"}, brkBy:{9:"10A",12:"10A",16:"16A",18:"16A",21:"16A",24:"25A"}, src:"gree.gr – Service manual Pular N7 / Aura N7 / Pular Graphite (μονάδες GWH09/12AGCXB, GWH18AGDXB = 16K, GWH18AGDXD, GWH24AGDXE = 21K) · Εγχειρίδιο εγκατάστασης (Απόδοση διακόπτη ασφαλείας) · 24K: πίνακας εσωτερικής GWH24AGE στο gree.gr", note:"Στο Pular/Aura 16K (GRC-161) το αέριο είναι 3/8\", στο 18K (GRC-181) είναι 1/2\". Για το 24K το μήκος δεν δίνεται στο service manual του αντιπροσώπου."},
+   {re:/^(GRCO?\d{3}QIKMSN6|GWH(09|12|18|24)AW[CDE])/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{12:"Μέγ. μήκος 20m · υψομετρική 10m",18:"Μέγ. μήκος 25m · υψομετρική 10m"}, src:"gree.gr – Service manual Mistral N6 (GWH12AWCXD, GWH18AWDXE) · πίνακας εσωτερικών μονάδων στο gree.gr (GWH09AWCXB, GWH24AWEXF)"},
+   {re:/^(GRCO?\d{3}QIKAIW|GWH(09|12|18|24)A?V[CDE]X[BDEF])/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{9:"Μέγ. μήκος 15m · υψομετρική 10m",12:"Μέγ. μήκος 20m · υψομετρική 10m",18:"Μέγ. μήκος 25m · υψομετρική 10m",24:"Μέγ. μήκος 25m · υψομετρική 10m"}, src:"gree.gr – Service manual Airy (GWH09AVCXB, GWH12AVCXD, GWH18AVDXE, GWH24AVEXF)"},
+   {re:/^(GRCO?\d{3}QIKAIPN7|GWH18AVDXF|GWH24AVEXH)/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{9:"Μέγ. μήκος 15m · υψομετρική 10m",12:"Μέγ. μήκος 20m · υψομετρική 10m",18:"Μέγ. μήκος 25m · υψομετρική 10m",24:"Μέγ. μήκος 40m · υψομετρική 25m"}, brkBy:{9:"10A",12:"10A",18:"16A",24:"16A"}, src:"gree.gr – Service manual Airy Pro 09/12 και 18/24 (GWH18AVDXF-K6DNA1A, GWH24AVEXH) · Εγχειρίδιο εγκατάστασης Airy Pro"},
+   {re:/^(GRCO?\d{3}QIKVTN7|GWH(09|12|18|24)BC)/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{12:"Μέγ. μήκος 20m · υψομετρική 10m",18:"Μέγ. μήκος 25m · υψομετρική 10m",24:"Μέγ. μήκος 25m · υψομετρική 10m"}, brkBy:{9:"10A",12:"10A",18:"16A",24:"25A"}, src:"gree.gr – Service manual Ventus 9–24K (εξωτερικές GWH09ACCXB, GWH12AWCXD, GWH18AWDXE, GWH24AVEXF) · Εγχειρίδιο εγκατάστασης Ventus"},
+   {re:/^(GRCO?\d{3}QIKICN6|GWH(09|12|18)AT)/, c:[9,18], liqBy:{9:"1/4",12:"1/4",18:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2"}, lenBy:{12:"Μέγ. μήκος 20m · υψομετρική 10m",18:"Μέγ. μήκος 25m · υψομετρική 10m"}, brkBy:{9:"10A",12:"10A",18:"16A"}, src:"gree.gr – Service manual Icon (GWH12ATBXB, GWH18ATDXD) · Εγχειρίδιο εγκατάστασης Icon"},
+   {re:/^(GRCO?241QIKICN6|GWH24ATEXF)/, c:[24,24], brk:"25A", src:"gree.gr – Εγχειρίδιο εγκατάστασης Icon", note:"Για το Icon 24K δεν βρήκα διατομές σωλήνων στο service manual του αντιπροσώπου."},
+   {re:/^GEH(09|12|18)AA/, c:[9,18], liqBy:{9:"1/4",12:"1/4",18:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2"}, brkBy:{9:"10A",12:"10A",18:"16A"}, src:"gree.gr – πίνακας Console (GEH09/12/18AA) · Service manual Console (Air Switch Capacity)"},
    {re:/^GWH18AA/, c:[18,18], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 20m · υψομετρική 10m · χωρίς επιπλέον έως 5m, μετά 16 g/m", src:"Gree service manual Bora inverter R32 18/24 (GWH18AAD-K6DNA1B)"},
    {re:/^GWH24AA/, c:[24,24], liq:"1/4", gas:"5/8", len:"Μέγ. μήκος 25m · υψομετρική 10m · χωρίς επιπλέον έως 5m, μετά 40 g/m", src:"Gree service manual Bora inverter R32 18/24 (GWH24AAD-K6DNA4A)"},
    {re:/^GWH(18|24)YE/, c:[18,24], liq:"1/4", gas:"5/8", len:"Μέγ. μήκος 40m (18) / 50m (24) · υψομετρική 20m / 30m", src:"Gree service manual GWH18YE / GWH24YE-S6DBA2A"},
-   {c:[7,12], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 15–20m ανά μοντέλο · υψομετρική 10m · χωρίς επιπλέον έως 5m", src:"Gree service manuals 9K/12K (Change K3DNA6G, Lomo R32, Airy, Pular, Weka)"}
+   {c:[7,12], generic:true, liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 15–20m ανά μοντέλο · υψομετρική 10m · χωρίς επιπλέον έως 5m", src:"Gree service manuals 9K/12K (Change K3DNA6G, Lomo R32, Airy, Pular, Weka)"}
   ],
   noRow: "Στα 18K / 24K της Gree η σωλήνα αερίου αλλάζει ανά σειρά (π.χ. Bora 18K: 3/8\", Pular 18K: 1/2\", Bora 24K: 5/8\"). Επιβεβαίωσε στο service manual της σειράς σου («Connection Pipe»).",
   srcEl: "Τα manuals της Gree που βρήκα δεν δίνουν διατομές καλωδίων σε κείμενο που να μπορώ να διαβάσω."
@@ -3562,9 +3572,18 @@ var INST = {
   cap: function(k){ var m = k.match(/^[A-Z]{1,3}(09|12|18|24)/); return m ? +m[1] : null; },
   capLbl: "κλάση σε χιλ. Btu",
   rows: [
+   {re:/^(AC|PC|S)(09|12|18|24)(BK|SK|ET|EQ)/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{9:"Μέγ. μήκος 15m · ελάχ. 3m · υψομετρική 7m",12:"Μέγ. μήκος 15m · ελάχ. 3m · υψομετρική 7m",18:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m",24:"Μέγ. μήκος 30m · ελάχ. 3m · υψομετρική 15m"}, brkBy:{9:"15A",12:"15A",18:"20A",24:"25A"}, pwrBy:{9:"3 × 1,0 mm²",12:"3 × 1,0 mm²",18:"3 × 1,5 mm²",24:"3 × 2,5 mm²"}, comm:"4 × 1,0 mm² (μαζί με γείωση) – τροφοδοσία + επικοινωνία", src:"LG Air Conditioner Catalogue 2024 (lg.com/gr, πίνακες Wall mounted) – ARTCOOL Gallery AC·BK / DUALCOOL Standard Plus PC·SK / S·ET / S·EQ"},
+   {re:/^DC(09|12|18|24)RK/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{9:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m",12:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m",18:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m",24:"Μέγ. μήκος 30m · ελάχ. 3m · υψομετρική 15m"}, brkBy:{9:"15A",12:"15A",18:"20A",24:"25A"}, pwrBy:{9:"3 × 1,0 mm²",12:"3 × 1,0 mm²",18:"3 × 1,5 mm²",24:"3 × 2,5 mm²"}, comm:"4 × 1,0 mm² (μαζί με γείωση) – τροφοδοσία + επικοινωνία", src:"LG Air Conditioner Catalogue 2024 (lg.com/gr, πίνακες Wall mounted) – DUALCOOL Deluxe DC·RK"},
+   {re:/^DC(09|12)RT/, c:[9,12], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{9:"Μέγ. μήκος 15m · ελάχ. 3m · υψομετρική 7m",12:"Μέγ. μήκος 15m · ελάχ. 3m · υψομετρική 7m"}, brkBy:{9:"15A",12:"15A"}, pwrBy:{9:"3 × 1,0 mm²",12:"3 × 1,0 mm²",18:"3 × 1,5 mm²",24:"3 × 2,5 mm²"}, comm:"4 × 1,0 mm² (μαζί με γείωση) – τροφοδοσία + επικοινωνία", src:"LG Air Conditioner Catalogue 2024 (lg.com/gr, πίνακες Wall mounted) – DUALCOOL DC·RT"},
+   {re:/^H(09|12|18|24)S1D/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{9:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 7m",12:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 7m",18:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m",24:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 15m"}, brkBy:{9:"15A",12:"15A",18:"15A",24:"20A"}, pwrBy:{9:"3 × 1,0 mm²",12:"3 × 1,0 mm²",18:"3 × 1,0 mm²",24:"3 × 2,5 mm²"}, comm:"4 × 1,0 mm² (μαζί με γείωση) – τροφοδοσία + επικοινωνία", src:"LG Air Conditioner Catalogue 2024 (lg.com/gr, πίνακες Wall mounted) – H·S1D"},
+   {re:/^H(09|12)S1P/, c:[9,12], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{9:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m",12:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m"}, brkBy:{9:"15A",12:"15A"}, pwrBy:{9:"3 × 1,0 mm²",12:"3 × 1,0 mm²",18:"3 × 1,5 mm²",24:"3 × 2,5 mm²"}, comm:"4 × 1,0 mm² (μαζί με γείωση) – τροφοδοσία + επικοινωνία", src:"LG Air Conditioner Catalogue 2024 (lg.com/gr, πίνακες Wall mounted) – H·S1P"},
+   {re:/^F(09|12)MT/, c:[9,12], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{9:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m",12:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m"}, brkBy:{9:"15A",12:"15A"}, pwrBy:{9:"3 × 1,0 mm²",12:"3 × 1,0 mm²",18:"3 × 1,5 mm²",24:"3 × 2,5 mm²"}, comm:"4 × 1,0 mm² (μαζί με γείωση) – τροφοδοσία + επικοινωνία", src:"LG Air Conditioner Catalogue 2024 (lg.com/gr, πίνακες Wall mounted) – F·MT"},
+   {re:/^A(09|12)GA[12]/, c:[9,12], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{9:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m",12:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m"}, brkBy:{9:"20A",12:"20A"}, pwrBy:{9:"3 × 1,0 mm²",12:"3 × 1,0 mm²",18:"3 × 1,5 mm²",24:"3 × 2,5 mm²"}, comm:"4 × 1,0 mm² (μαζί με γείωση) – τροφοδοσία + επικοινωνία", src:"LG Air Conditioner Catalogue 2024 (lg.com/gr, πίνακες Wall mounted) – A·GA1 / A·GA2"},
+   {re:/^W(09|12)TE/, c:[9,12], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 15m · ελάχ. 3m · υψομετρική 10m", pwr:"3 × 1,5 mm²", comm:"4 × 0,75 mm² (μαζί με γείωση)", src:"LG Air Conditioner Catalogue 2024 (lg.com/gr, πίνακες Wall mounted) – W·TE"},
+   {re:/^W(09|12|18|24)TI/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"3/8",24:"1/2"}, len:"Μέγ. μήκος 15m · ελάχ. 3m · υψομετρική 10m", pwr:"3 × 1,5 mm²", comm:"4 × 0,75 mm² (μαζί με γείωση)", src:"LG Air Conditioner Catalogue 2024 (lg.com/gr, πίνακες Wall mounted) – W·TI", note:"Προσοχή: στη σειρά W·TI τα 18 έχουν 3/8\" και τα 24 έχουν 1/2\" αέριο (διαφορετικά από τις άλλες σειρές LG)."},
    {c:[9,12], liq:"1/4", gas:"3/8", len:"Τυπικό μήκος 7,5m · ελάχ. 2m · μέγ. 20m · επιπλέον 20 g/m", pwr:"H07RN-F 1,0 mm² (2,5–3,5kW)", comm:"H07RN-F 1,0 mm² (εσωτερική: H05VV-F 1,0 mm²)", src:"LG Installation manual 2,5k / 3,5k (Piping length and elevation · Cable type)"},
-   {c:[18,18], liq:"1/4", gas:"1/2", len:"Τυπικό μήκος 7,5m · μέγ. 20m · επιπλέον 30 g/m", src:"LG Installation manual MFL67647124 (wall mounted 18k/24k – έκδοση Αμερικής)", note:"Ο πίνακας 18k/24k είναι από το manual της LG για Αμερική – τα καλώδια εκεί είναι σε AWG και δεν ισχύουν για Ελλάδα."},
-   {c:[24,24], liq:"1/4", gas:"5/8", len:"Τυπικό μήκος 7,5m · μέγ. 20m · επιπλέον 30 g/m", src:"LG Installation manual MFL67647124 (wall mounted 18k/24k – έκδοση Αμερικής)", note:"Ο πίνακας 18k/24k είναι από το manual της LG για Αμερική – τα καλώδια εκεί είναι σε AWG και δεν ισχύουν για Ελλάδα."}
+   {c:[18,18], liq:"1/4", gas:"1/2", src:"LG Air Conditioner Catalogue 2024 (lg.com/gr, πίνακες Wall mounted) (όλες οι σειρές εκτός W·TI)", generic:true},
+   {c:[24,24], liq:"1/4", gas:"5/8", src:"LG Air Conditioner Catalogue 2024 (lg.com/gr, πίνακες Wall mounted) (όλες οι σειρές εκτός W·TI)", generic:true},
   ],
   srcEl: "LG Installation manual"
  },
@@ -3606,10 +3625,14 @@ var INST = {
   cap: function(k){ var kw = k.match(/^[A-Z]{2}(25|35|50|70)[A-Z]/); if(kw) return {25:9,35:12,50:18,70:24}[kw[1]]; var m = k.match(/(09|12|18|24)/); return m ? +m[1] : null; },
   capLbl: "κλάση σε χιλ. Btu (25/35/50/70 kW → 9/12/18/24)",
   rows: [
+   {re:/^(AS|KB|KF|CA|HB)70(BT2|KW)/, c:[24,24], liq:"3/8", gas:"5/8", len:"Μέγ. μήκος 20m · υψομετρική 15m", brk:"30A", src:"gr.hisense.com – τεχνικά χαρακτηριστικά εξωτερικών μονάδων (Hisense Hellas) – AS70BT2 / AS70KW (Wings Comfort, Expert Comfort, Easy Smart, UNI HB 70)"},
+   {re:/^(AC|HC)70FW/, c:[24,24], liq:"1/4", len:"Μέγ. μήκος 20m · υψομετρική 15m", src:"gr.hisense.com – τεχνικά χαρακτηριστικά εξωτερικών μονάδων (Hisense Hellas) – AC70FW00W (Max Comfort 70)", note:"Για το Max Comfort 70 η σελίδα του αντιπροσώπου δίνει μόνο υγρό 1/4\" – το αέριο δεν αναγράφεται."},
+   {c:[18,18], brk:"20A", len:"Μέγ. μήκος 20m · υψομετρική 15m", src:"gr.hisense.com – τεχνικά χαρακτηριστικά εξωτερικών μονάδων (Hisense Hellas) – AS50BP / AS50XS1"},
+   {c:[9,12], brk:"15A", len:"Μέγ. μήκος 20m · υψομετρική 10m (AS35LR03W: 15m)", src:"gr.hisense.com – τεχνικά χαρακτηριστικά εξωτερικών μονάδων (Hisense Hellas) – AS25/AS35 όλων των σειρών"},
    {c:[9,12], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 20m · υψομετρική 10m", src:"Hisense European Air conditioners 2023 (τεχνικά στοιχεία, όλες οι σειρές τοίχου 09/12)"},
    {c:[18,18], liq:"1/4", gas:"1/2", len:"Μέγ. μήκος 20m", src:"Hisense European Air conditioners 2023 (τεχνικά στοιχεία 18)"}
   ],
-  noRow: "Στα 24 της Hisense ο σωλήνας αλλάζει ανά σειρά (1/4\"+5/8\", 3/8\"+5/8\" ή 1/4\"+1/2\" στους καταλόγους της) – επιβεβαίωσε στο manual / ταμπέλα της σειράς σου.",
+  noRow: "Στα 24 (70) της Hisense ο σωλήνας αλλάζει ανά σειρά: Wings/Expert/Easy Smart/UNI HB 70 → 3/8\" + 5/8\". Max Comfort 70 → υγρό 1/4\". Επιβεβαίωσε στην ταμπέλα της εξωτερικής.",
   srcEl: "Δεν βρήκα manual της Hisense με διατομές καλωδίων σε κείμενο που να μπορώ να διαβάσω."
  },
  "Mitsubishi Heavy": {
@@ -3756,6 +3779,39 @@ var INST = {
   ],
   noRow: "Αυτό το μοντέλο Comfee δεν είναι στα τεχνικά χαρακτηριστικά του αντιπροσώπου.",
   srcEl: "FG Europe – τεχνικά χαρακτηριστικά"
+ },
+ "TCL": {
+  cap: function(k){ var m = k.match(/(09|12|18|24)(CHSD|ZG)/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu",
+  rows: [
+   {re:/^(MIRACLE(AI|PLUS)|TAC)?\d{2}CHSDTPH21/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"1/2"}, len:"Μέγ. μήκος 25m · υψομετρική 10m · προφόρτιση 5m", pwrBy:{9:"3 × 1,5 mm²",12:"3 × 1,5 mm²",18:"3 × 1,5 mm²",24:"3 × 2,5 mm²"}, comm:"4 × 0,75 mm²", brkBy:{9:"10A",12:"10A",18:"16A",24:"16A"}, src:"tclgreece.gr (Tournikiotis Group, αντιπρόσωπος TCL) – Πίνακας τεχνικών χαρακτηριστικών Miracle AI / Miracle Plus (…CHSD/TPH21)"},
+   {re:/^(OCARINAAI)?\d{2}CHSDTPH12/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"3/8",24:"1/2"}, len:"Μέγ. μήκος 25m · υψομετρική 10m · προφόρτιση 5m", pwrBy:{9:"3 × 1,5 mm²",12:"3 × 1,5 mm²",18:"3 × 1,5 mm²",24:"3 × 2,5 mm²"}, comm:"4 × 0,75 mm²", brkBy:{9:"10A",12:"10A",18:"16A",24:"16A"}, src:"tclgreece.gr (Tournikiotis Group, αντιπρόσωπος TCL) – Πίνακας τεχνικών χαρακτηριστικών Ocarina AI (…CHSD/TPH12)"},
+   {re:/^AIPROMAX\d{2}ZG21/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"1/2"}, len:"Μέγ. μήκος 25m · υψομετρική 10m · προφόρτιση 5m", pwrBy:{9:"3 × 1,5 mm²",12:"3 × 1,5 mm²",18:"3 × 1,5 mm²",24:"3 × 2,5 mm²"}, comm:"4 × 0,75 mm²", brkBy:{9:"10A",12:"10A",18:"16A",24:"16A"}, src:"tclgreece.gr (Tournikiotis Group, αντιπρόσωπος TCL) – Πίνακας τεχνικών χαρακτηριστικών AI Pro Max (…ZG21V3A)"},
+   {re:/^(SAVEINAI|GRAPHAI|AIPRO)\d{2}ZG(31|41|11)/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"3/8",24:"1/2"}, len:"Μέγ. μήκος 25m · υψομετρική 10m · προφόρτιση 5m", pwrBy:{9:"3 × 1,5 mm²",12:"3 × 1,5 mm²",18:"3 × 1,5 mm²",24:"3 × 1,5 mm²"}, comm:"4 × 0,75 mm²", brkBy:{9:"10A",12:"10A",18:"16A",24:"16A"}, src:"tclgreece.gr (Tournikiotis Group, αντιπρόσωπος TCL) – Πίνακας τεχνικών χαρακτηριστικών Save-in AI (ZG31) / Graph AI (ZG41B) / AI Pro (ZG11)"},
+   {re:/^CFRESH\d{2}CHSDFCI/, c:[9,12], liqBy:{9:"1/4",12:"1/4"}, gasBy:{9:"3/8",12:"3/8"}, len:"Μέγ. μήκος 25m · υψομετρική 10m · προφόρτιση 5m", pwrBy:{9:"3 × 1,5 mm²",12:"3 × 1,5 mm²"}, comm:"4 × 0,75 mm²", brkBy:{9:"20A",12:"20A"}, src:"tclgreece.gr (Tournikiotis Group, αντιπρόσωπος TCL) – Πίνακας τεχνικών χαρακτηριστικών Freshin 3.0 (C-FRESH…/FCI)"},
+   {re:/^CFRESH\d{2}CHSDFAI/, c:[9,12], liqBy:{9:"1/4",12:"1/4"}, gasBy:{9:"3/8",12:"3/8"}, len:"Μέγ. μήκος 25m · υψομετρική 10m · προφόρτιση 5m", pwrBy:{9:"3 × 1,5 mm²",12:"3 × 1,5 mm²"}, comm:"4 × 1,5 mm²", brkBy:{9:"10A",12:"10A"}, src:"tclgreece.gr (Tournikiotis Group, αντιπρόσωπος TCL) – Πίνακας τεχνικών χαρακτηριστικών C-Fresh (C-FRESH…/FAI)"}
+  ],
+  noRow: "Αυτή η σειρά TCL δεν είναι στους πίνακες του Έλληνα αντιπροσώπου. Γράψε το μοντέλο όπως στην ταμπέλα (π.χ. MIRACLE AI-12CHSD/TPH21, AI PRO-18ZG11).",
+  srcEl: "tclgreece.gr (Tournikiotis Group, αντιπρόσωπος TCL) – Πίνακας τεχνικών χαρακτηριστικών (Ηλεκτρολογική σύνδεση)"
+ },
+ "Pitsos / Bosch": {
+  cap: function(k){ var m = k.match(/^[A-Z]{3}(09|12|18|24)/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu",
+  rows: [],
+  noRow: "Το επίσημο ελληνικό εγχειρίδιο εγκατάστασης της Pitsos/Bosch (BSH) δεν δίνει σωλήνες ανά μοντέλο. Γράφει να ρωτήσεις τον αντιπρόσωπο. Οι διατομές που αναφέρει είναι 1/4\" για υγρό και 3/8\", 1/2\" ή 5/8\" για αέριο. Δες την ταμπέλα της εξωτερικής μονάδας.",
+  comm: "Καλώδιο σήματος H07RN-F, διατομή από το μέγιστο ρεύμα της ταμπέλας: >3–6A: 0,75 · >6–10A: 1 · >10–16A: 1,5 · >16–25A: 2,5 · >25–32A: 4 · >32–40A: 6 mm²",
+  pwr: "Εξωτερική: H07RN-F (εσωτερική, αν τροφοδοτείται χωριστά: H05VV-F ή H05V2V2-F). Διατομή με τον ίδιο πίνακα ρεύματος.",
+  brkNote: "Η ασφάλεια και ο διακόπτης επιλέγονται από το μέγιστο ρεύμα της ταμπέλας (ίδιος πίνακας).",
+  srcEl: "BSH – Ελληνικό εγχειρίδιο εγκατάστασης Pitsos (PSI/PSO 09–24, 19852963 & 20997821)"
+ },
+ "AUX": {
+  cap: function(k){ var m = k.match(/^AS[WC]H(\d{2})/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu",
+  rows: [
+   {re:/^ASWH/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{9:"Μέγ. μήκος 20m · υψομετρική 10m",12:"Μέγ. μήκος 20m · υψομετρική 10m",18:"Μέγ. μήκος 25m · υψομετρική 15m",24:"Μέγ. μήκος 25m · υψομετρική 15m"}, src:"Westnet (αποκλειστικός αντιπρόσωπος AUX Ελλάδας) – Κατάλογος οικιακού & επαγγελματικού κλιματισμού AUX (Q Series, J-Smart Plus, Halo)"}
+  ],
+  noRow: "Για αυτό το μοντέλο AUX δεν βρήκα πίνακα σωλήνων στον κατάλογο του αντιπροσώπου.",
+  srcEl: "Ο κατάλογος του αντιπροσώπου δεν δίνει διατομές καλωδίων ή ασφάλεια σε κείμενο που να μπορώ να διαβάσω."
  },
  "Inclima": {
   cap: function(k){ var m = k.match(/(09|12|18|24)/); return m ? +m[1] : null; },
@@ -5860,7 +5916,7 @@ function instCalc(){
   var rows = B.rows.filter(function(r){ return (!r.re || r.re.test(k)) && cap>=r.c[0] && cap<=r.c[1]; });
   var pr = null; rows.forEach(function(r){ if(!pr && (r.liq || r.gas || (r.liqBy && r.liqBy[cap]))) pr = r; });
   var lr = null; rows.forEach(function(r){ if(!lr && (r.len || (r.lenBy && r.lenBy[cap]))) lr = r; });
-  var er = {}; rows.forEach(function(r){ ["pwr","comm","brk"].forEach(function(f){ if(!er[f] && r[f]){ er[f]=r[f]; er[f+"S"]=r.src; } }); if(!er.brk && r.brkBy && r.brkBy[cap]){ er.brk=r.brkBy[cap]; er.brkS=r.src; } });
+  var er = {}; rows.forEach(function(r){ ["pwr","comm","brk"].forEach(function(f){ if(!er[f] && r[f]){ er[f]=r[f]; er[f+"S"]=r.src; } }); ["pwr","comm","brk"].forEach(function(f){ var b=r[f+"By"]; if(!er[f] && b && b[cap]){ er[f]=b[cap]; er[f+"S"]=r.src; } }); });
   var brk = er.brk || null;
   if(!brk && B.brk) B.brk.forEach(function(x){ if(!brk && x[0].test(k)) brk = x[1]; });
   var L = [];
