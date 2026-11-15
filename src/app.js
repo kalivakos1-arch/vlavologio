@@ -475,7 +475,7 @@ function card(r, showPlat){
     (c[3]?'<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+esc(c[3])+'</div>':'')+
     procBox(c, t.plat)+
     partLinks(c[1]+' '+(c[2]||''), c)+
-    '<div class="rs">'+esc(t.tbl.name)+'</div>'+
+    '<div class="rs">'+esc(t.tbl.name)+(typeof VERIF_T!=="undefined" && VERIF_T[t.key] ? '<br>⚠️ '+esc(VERIF_T[t.key]) : '')+'</div>'+
   '</div>';
 }
 // ===== ΛΥΧΝΙΕΣ ΕΣΩΤΕΡΙΚΗΣ =====

@@ -9,3 +9,7 @@ var VERIF = {
   gree_split: { EA:"Πηγή: service manuals Gree για ΗΠΑ (κονσόλα, slim duct, A-coil). Δεν έχει επιβεβαιωθεί ακόμα σε ευρωπαϊκό/ελληνικό μοντέλο.", FE:"Πηγή: service manuals Gree για ΗΠΑ (κονσόλα, slim duct, A-coil). Δεν έχει επιβεβαιωθεί ακόμα σε ευρωπαϊκό/ελληνικό μοντέλο." }
 };
 function verifNote(tkey, codes){ var m = VERIF[tkey]; if(!m) return ""; for(var i=0;i<codes.length;i++){ var k=String(codes[i]).toUpperCase(); if(m[k]) return m[k]; } return ""; }
+// Σημείωση σε επίπεδο πίνακα (όταν η πηγή είναι γενική, όχι ειδικά για Ευρώπη)
+var VERIF_T = {
+  aux_split: "Πηγή: οδηγός βλαβών της AUX Imp. & Exp. (για όλες τις αγορές εξαγωγής). Το ευρωπαϊκό service manual του Έλληνα αντιπροσώπου δεν ήταν διαθέσιμο για διασταύρωση."
+};

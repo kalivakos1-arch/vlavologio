@@ -366,9 +366,12 @@ var T = window.T = window.T || {};
 
 T.midea_split = {
   name: "Midea – Split / Multi (και OEM Midea)",
-  src: "Midea service manuals (Optimum/Xtreme 2017+), Midea «New Error Codes» guide (EH/EL/EC/PC) · Αισθητήρες διαρροής R32: Midea / Carrier (κατασκευή Midea) – owner's manuals μονάδων με αισθητήρα ψυκτικού (D5FSHAH, 45MBDAQ) · Midea service/owner's manuals (νέοι κωδικοί EH/EC/PC)",
+  src: "Midea service manuals (Optimum/Xtreme 2017+), Midea «New Error Codes» guide (EH/EL/EC/PC) · Αισθητήρες διαρροής R32: Midea / Carrier (κατασκευή Midea) – owner's manuals μονάδων με αισθητήρα ψυκτικού (D5FSHAH, 45MBDAQ) · Midea service/owner's manuals (νέοι κωδικοί EH/EC/PC) · Midea – ευρωπαϊκό service manual SM_LC(GA)_R32_3D INV_EU (κασέτα/κανάλι/δαπέδου-οροφής)",
   note: "Αισθητήρια T1 (χώρου), T2 (στοιχείο εσωτ.), T3 (στοιχείο εξωτ.), T4 (εξωτ. αέρας): 10 kΩ @25°C. Κατάθλιψη TP/T5: ~50–55 kΩ @25°C. Επικοινωνία: μέτρα DC μεταξύ S και N (2–3) στην εξωτερική – κανονικά εναλλάσσεται περίπου −25…+25 V. DC bus (P–N): ~310 VDC σε αναμονή. Οι νεότερες γενιές δείχνουν τετραψήφιους κωδικούς (EH 00, EL 01, EC 53, PC 04…) – η εφαρμογή τους αντιστοιχίζει με τους παλιούς. Parameter mode από τηλεχειριστήριο: T1, T2, T3, T4, TP, FT/Fr, ST (αιτία στάσης).",
   codes: [
+    [["EC55"],"Αισθητήριο θερμοκρασίας IPM εξωτερικής","Αισθητήριο/φίσα· πλακέτα εξωτερικής."],
+    [["EL11"],"Επικοινωνία κύριας – δευτερεύουσας εσωτερικής (twin)","Καλώδιο επικοινωνίας μεταξύ των εσωτερικών, ρυθμίσεις master/slave."],
+    [["EH12"],"Βλάβη της άλλης εσωτερικής (twin)","Δες τον κωδικό στη δεύτερη εσωτερική."],
     [["EH30"],"Πολύ χαμηλή τάση εξωτερικού ανεμιστήρα εσωτερικής (καναλάτα)","Τροφοδοσία/πλακέτα μοτέρ ανεμιστήρα."],
     [["EH31"],"Υπέρταση εξωτερικού ανεμιστήρα εσωτερικής (καναλάτα)","Τροφοδοσία/πλακέτα μοτέρ ανεμιστήρα."],
     [["PC03"],"Προστασία πίεσης (υψηλή ή χαμηλή – σε ορισμένα μοντέλα)","Πρεσοστάτες, πλήρωση, ανεμιστήρες, βρώμικα στοιχεία, κλειστές βάνες."],
@@ -3992,6 +3995,10 @@ var VERIF = {
   gree_split: { EA:"Πηγή: service manuals Gree για ΗΠΑ (κονσόλα, slim duct, A-coil). Δεν έχει επιβεβαιωθεί ακόμα σε ευρωπαϊκό/ελληνικό μοντέλο.", FE:"Πηγή: service manuals Gree για ΗΠΑ (κονσόλα, slim duct, A-coil). Δεν έχει επιβεβαιωθεί ακόμα σε ευρωπαϊκό/ελληνικό μοντέλο." }
 };
 function verifNote(tkey, codes){ var m = VERIF[tkey]; if(!m) return ""; for(var i=0;i<codes.length;i++){ var k=String(codes[i]).toUpperCase(); if(m[k]) return m[k]; } return ""; }
+// Σημείωση σε επίπεδο πίνακα (όταν η πηγή είναι γενική, όχι ειδικά για Ευρώπη)
+var VERIF_T = {
+  aux_split: "Πηγή: οδηγός βλαβών της AUX Imp. & Exp. (για όλες τις αγορές εξαγωγής). Το ευρωπαϊκό service manual του Έλληνα αντιπροσώπου δεν ήταν διαθέσιμο για διασταύρωση."
+};
 
 </script>
 <script>// ===== ΜΑΡΚΕΣ, ΕΡΓΟΣΤΑΣΙΑ & ΛΟΓΙΚΗ ΕΦΑΡΜΟΓΗΣ =====
@@ -4471,7 +4478,7 @@ function card(r, showPlat){
     (c[3]?'<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+esc(c[3])+'</div>':'')+
     procBox(c, t.plat)+
     partLinks(c[1]+' '+(c[2]||''), c)+
-    '<div class="rs">'+esc(t.tbl.name)+'</div>'+
+    '<div class="rs">'+esc(t.tbl.name)+(typeof VERIF_T!=="undefined" && VERIF_T[t.key] ? '<br>⚠️ '+esc(VERIF_T[t.key]) : '')+'</div>'+
   '</div>';
 }
 // ===== ΛΥΧΝΙΕΣ ΕΣΩΤΕΡΙΚΗΣ =====
