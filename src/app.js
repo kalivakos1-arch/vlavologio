@@ -634,7 +634,7 @@ function rAt(s, T){
 function fmtk(v){ return v>=100 ? v.toFixed(0) : v>=10 ? v.toFixed(1) : v.toFixed(2); }
 function sensList(){
   var pl = partPlats(), L = [], src = [];
-  pl.forEach(function(p){ var d = PSENS[p]; if(!d) return; d.list.forEach(function(x){ L.push({lab:(pl.length>1?PLAT[p].name+' – ':'')+x[0], s:x[1]}); }); src.push(d); });
+  pl.forEach(function(p){ var d = PSENS[p] || PSENS[{inv_gree:"gree",inv_mc:"midea"}[p]]; if(!d) return; d.list.forEach(function(x){ L.push({lab:(pl.length>1?PLAT[p].name+' – ':'')+x[0], s:x[1]}); }); src.push(d); });
   if(!L.length) PSENS_GENERIC.forEach(function(x){ L.push({lab:'Γενικό NTC '+x[0], s:x[1]}); });
   return {L:L, src:src};
 }
@@ -1220,7 +1220,7 @@ document.addEventListener("click", function(e){
   if(el.id==="chgBrand"){ S.bedit=true; renderBrands(); renderCats(); $("oembox").style.display="none"; setTimeout(function(){ $("bq").value=""; $("bq").focus(); },30); return; }
   if(el.id==="theme"){ var th=["auto","light","dark"], i=th.indexOf(LS.get("vl_theme","auto")); setTheme(th[(i+1)%3]); return; }
   if(el.hasAttribute("data-c")){ S.cat = el.getAttribute("data-c"); S.oem=null; S.catOpen=false; renderAll(); setTimeout(function(){ var m=$("model"); if(m && !m.value) m.focus(); else $("q").focus(); },50); return; }
-  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.bedit=false; S.fw={plate:"",rc:"",comp:"",pcb:"",ser:""}; S.fwOpen=false; S.catOpen=true; S.oem=null; S.model=""; S.ledv={}; $("bsug").innerHTML=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
+  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.bedit=false; S.fw={plate:"",rc:"",comp:"",pcb:"",ser:S.qpend||""}; S.fwOpen=!!S.qpend; S.qpend=""; S.catOpen=true; S.oem=null; S.model=""; S.ledv={}; $("bsug").innerHTML=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
   if(el.hasAttribute("data-o")){ S.oem = el.getAttribute("data-o"); markChips(); renderCtx(); renderResults(); persist(); return; }
   if(el.hasAttribute("data-del")){ var b=brandObj(), p=el.getAttribute("data-del"); myMap = myMap.filter(function(m){return !(m.brand===b.n && m.prefix===p);}); LS.set("vl_mymap",myMap); renderOem(); return; }
   if(el.hasAttribute("data-q")){ S.q = el.getAttribute("data-q"); $("q").value=S.q; renderResults(); window.scrollTo({top:$("q").getBoundingClientRect().top+window.scrollY-80,behavior:"smooth"}); return; }

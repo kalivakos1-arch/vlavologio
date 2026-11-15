@@ -34,7 +34,7 @@ header{display:flex;align-items:center;gap:12px;margin:4px 2px 14px}
 h1{font-size:19px;margin:0;letter-spacing:-.2px}
 header p{margin:0;color:var(--muted);font-size:12.5px}
 header .hgrow{flex:1;min-width:0}
-#theme{flex:none;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:18px}
+.hbtn,#theme{flex:none;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:18px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin-bottom:10px;box-shadow:var(--sh)}
 .lbl{display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin:10px 0 6px}
 .lbl.step{display:flex;align-items:center;gap:8px;color:var(--text2);font-size:13px;margin:2px 0 8px;letter-spacing:.2px;text-transform:uppercase}
@@ -218,6 +218,14 @@ details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
 .serl{padding:8px 10px;margin:6px 0;border-radius:10px;background:var(--card2);border:1px solid var(--line)}
 .serbox{margin:8px 0}
 .scanbtn{width:100%;box-sizing:border-box;white-space:normal;padding:10px 12px;margin:4px 0 8px;line-height:1.3}
+.hbtn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:18px;margin-right:6px}
+#histov{position:fixed;inset:0;z-index:9998;background:var(--bg);display:none;flex-direction:column;gap:8px;padding:12px;overflow:auto}
+.hcard{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:6px 0}
+.hcard .hm{font-size:12.5px;color:var(--muted)}
+.hform label{display:block;font-size:13px;color:var(--muted);margin-top:8px}
+.hform input,.hform textarea{width:100%;box-sizing:border-box;margin-top:4px}
+.hform textarea{min-height:64px;font:inherit;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.hseen{padding:8px 10px;border-radius:10px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.4);margin:8px 0}
 .fwiz{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:10px 0}.fwbtn{margin-top:10px;padding:9px 12px;width:100%}
 .kbh{font-size:19px;font-weight:800;margin:4px 2px 8px}
 .fmodel{border-color:var(--acc)}
@@ -239,7 +247,7 @@ details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
 <div class="wrap">
   <header>
     <div class="logo">🛠️</div>
-    <div class="hgrow"><h1>Βλαβολόγιο Κλιματισμού</h1><p>Κωδικοί, λυχνίες & μετρήσεις από τα service manuals</p></div><button id="theme" aria-label="Θέμα">🌓</button>
+    <div class="hgrow"><h1>Βλαβολόγιο Κλιματισμού</h1><p>Κωδικοί, λυχνίες & μετρήσεις από τα service manuals</p></div><button id="qscan" class="hbtn" aria-label="Σάρωση barcode" title="Σάρωση ετικέτας">📷</button><button id="histbtn" class="hbtn" aria-label="Ιστορικό" title="Ιστορικό επισκέψεων">📒</button><button id="theme" aria-label="Θέμα">🌓</button>
   </header>
 
   <div class="card" id="brandcard">
@@ -2297,6 +2305,50 @@ BEH.push(
 );
 BEHSRC.tcl = "TCL service manuals (TAC-…CHSD, FMA multi) – Protection functions";
 
+// ---------- MITSUBISHI ELECTRIC (service manuals – Abnormal point and detection method) ----------
+BEH.push(
+ {plat:"me", codes:["E6"], d:"Η πλακέτα εσωτερικής δεν λαμβάνει σωστά σήμα από την εξωτερική για 6 λεπτά μετά το άναμμα ή για 3 λεπτά κατά τη λειτουργία.", s:"Η εσωτερική ανάβει, η εξωτερική δεν ξεκινά ή σταματά· μετά από 3–6 λεπτά βγαίνει E6. Συνήθως καλωδίωση S1-S2-S3 ή πλακέτα εξωτερικής."},
+ {plat:"me", codes:["E7"], d:"Σφάλμα αποστολής: η εσωτερική στέλνει «0» αλλά διαβάζει «1» 30 φορές συνεχόμενα.", s:"Η μονάδα σταματά με E7 – ελέγχεις πλακέτα εσωτερικής και καλωδίωση επικοινωνίας."},
+ {plat:"me", codes:["U8"], d:"Ανεμιστήρας εξωτερικής: ≤100 rpm για 15″ με εξωτερική θερμοκρασία ≥20°C, ή ≤50 rpm / ≥1500 rpm για 1 λεπτό.", s:"Ο συμπιεστής ξεκινά, ο ανεμιστήρας εξωτερικής δεν γυρνά (ή γυρνά λάθος) και σε 15″–1′ η εξωτερική σταματά με U8."},
+ {plat:"me", codes:["U7"], d:"Πολύ χαμηλή υπερθέρμανση κατάθλιψης: ≤ -15 για 3 λεπτά, ενώ η εκτονωτική είναι στο ελάχιστο, μετά από 10 λεπτά λειτουργίας συμπιεστή.", s:"Δουλεύει κανονικά τα πρώτα 10+ λεπτά και μετά κόβει με U7 – ύποπτα: εκτονωτική, αισθητήριο κατάθλιψης, υπερπλήρωση."},
+ {plat:"me", codes:["P6"], d:"Αντιπαγωτική/υπερθέρμανση στοιχείου εσωτερικής: σε ψύξη ελέγχεται αν το στοιχείο είναι εκτός ορίων 3′ μετά την εκκίνηση και για 6′ – θέλει τουλάχιστον 9 λεπτά.", s:"Ψύχει κάποια λεπτά και σταματά (πάγος στο στοιχείο ή υπερθέρμανση σε θέρμανση). Βρόμικο φίλτρο, ανεμιστήρας εσωτερικής, έλλειψη ή υπερπλήρωση."}
+);
+BEHSRC.me = "Mitsubishi Electric service manuals (MSZ/MUZ, PUHZ – Abnormal point and detection method)";
+// ---------- PANASONIC (service manuals – Malfunction Decision Conditions / Error codes table) ----------
+BEH.push(
+ {plat:"panasonic", codes:["H11"], d:"Επικοινωνία εσωτερικής–εξωτερικής: ελέγχεται 1 λεπτό μετά την εκκίνηση.", s:"Μετά από ~1 λεπτό λειτουργίας γυρνά μόνο ο ανεμιστήρας εσωτερικής, η εξωτερική δεν δουλεύει και βγαίνει H11."},
+ {plat:"panasonic", codes:["H19"], d:"Ανεμιστήρας εσωτερικής: οι στροφές από το Hall IC είναι >2550 ή <50 rpm· κλειδώνει όταν συμβεί 7 φορές συνεχόμενα.", s:"Ο ανεμιστήρας εσωτερικής δεν γυρνά ή σταματά, η μονάδα ξαναπροσπαθεί και μετά από 7 φορές σταματά με H19."},
+ {plat:"panasonic", codes:["H97"], d:"Ανεμιστήρας εξωτερικής κλειδωμένος / χωρίς ανάδραση· κλειδώνει όταν συμβεί 2 φορές μέσα σε 30 λεπτά.", s:"Η εξωτερική ξεκινά, ο ανεμιστήρας της δεν γυρνά, σταματά και ξαναπροσπαθεί – τη 2η φορά σε 30′ βγαίνει H97."},
+ {plat:"panasonic", codes:["H16"], d:"Το ρεύμα που μετρά ο CT είναι κάτω από το όριο ενώ ο συμπιεστής δουλεύει σε συγκεκριμένη συχνότητα για 3 λεπτά.", s:"Ο συμπιεστής «δουλεύει» αλλά τραβά πολύ λίγο ρεύμα – μετά από 3′ H16. Ύποπτα: έλλειψη φρέον, CT/πλακέτα εξωτερικής."}
+);
+BEHSRC.panasonic = "Panasonic service manuals (CS-E/CS-Z/CS-TE – 15.4 Error Codes Table & Malfunction Decision Conditions)";
+// ---------- FUJITSU (service manuals – Trouble shooting with error code) ----------
+BEH.push(
+ {plat:"fujitsu", codes:["11"], d:"Η εσωτερική δεν λαμβάνει το σειριακό σήμα της εξωτερικής για >2 λεπτά μετά το άναμμα ή >15″ κατά τη λειτουργία (ή η εξωτερική δεν λαμβάνει από την εσωτερική για ≥10″).", s:"Η εξωτερική δεν ξεκινά ή σταματά, η εσωτερική αναβοσβήνει OPERATION 1 / TIMER 1. Μέτρα AC στα 1-3 / 2-3 της εξωτερικής – συχνά φταίει ο ανεμιστήρας εξωτερικής ή η πλακέτα της."},
+ {plat:"fujitsu", codes:["51"], d:"Ανεμιστήρας εσωτερικής: οι στροφές μένουν κάτω από το 1/3 του στόχου για πάνω από 56″.", s:"Ο ανεμιστήρας εσωτερικής δεν γυρνά ή γυρνά αργά και σε ~1 λεπτό βγαίνει 51."},
+ {plat:"fujitsu", codes:["97","98"], d:"Ανεμιστήρας εξωτερικής 1 (97) ή 2 (98): δεν φτάνει τις στροφές ή δεν γυρνά.", s:"Ο συμπιεστής σταματά επειδή δεν γυρνά ο ανεμιστήρας εξωτερικής. Γύρνα τον με το χέρι, έλεγξε τάση εξόδου πλακέτας."}
+);
+BEHSRC.fujitsu = "Fujitsu General service manuals / General Assist (E:11 Serial communication, E:51, E:97/98)";
+// ---------- SAMSUNG (service manuals – Troubleshooting) ----------
+BEH.push(
+ {plat:"samsung", codes:["E202"], d:"Επικοινωνία εσωτερικής–εξωτερικής: δεν υπάρχει απάντηση για 1 λεπτό (μετά το tracking).", s:"Η εξωτερική σταματά / δεν ξεκινά και μετά από ~1′ βγαίνει E202. Έλεγξε τροφοδοσία και καλώδιο επικοινωνίας."},
+ {plat:"samsung", codes:["E154"], d:"Ανεμιστήρας εσωτερικής: δεν έρχεται σωστή ανάδραση στροφών (Hall IC).", s:"Ο ανεμιστήρας εσωτερικής δεν γυρνά ή γυρνά αργά και η μονάδα σταματά με E154."},
+ {plat:"samsung", codes:["E458","E475"], d:"Ανεμιστήρας BLDC εξωτερικής 1 (E458) ή 2 (E475).", s:"Η εξωτερική σταματά γιατί ο ανεμιστήρας της δεν φτάνει στροφές – E458 / E475."}
+);
+BEHSRC.samsung = "Samsung service manuals (4-3 Troubleshooting: E202 1min, E154 Indoor FAN, E458/E475 Outdoor fan)";
+// ---------- TOSHIBA (RAS service manuals – Check code table) ----------
+BEH.push(
+ {plat:"toshiba", codes:["04"], d:"Το σήμα επιστροφής (return serial) δεν φτάνει στην εσωτερική από την έναρξη λειτουργίας.", s:"Η εσωτερική λειτουργεί, η εξωτερική όχι. Μέτρα το σήμα στα 2-3 της κλέμας εσωτερικής: αν δεν σταματά → πλακέτα inverter, αν σταματά → πλακέτα εσωτερικής."},
+ {plat:"toshiba", codes:["11"], d:"Κλείδωμα ανεμιστήρα εσωτερικής ή βλάβη κυκλώματος ανεμιστήρα.", s:"Ο ανεμιστήρας εσωτερικής δεν γυρνά και όλη η μονάδα σταματά με 11. Πρώτα πλακέτα, μετά μοτέρ."}
+);
+BEHSRC.toshiba = "Toshiba RAS service manuals (Check code table: 04 return serial signal, 11 indoor fan)";
+// ---------- HAIER (service manuals – Service diagnosis) ----------
+BEH.push(
+ {plat:"haier", codes:["E7"], d:"Επικοινωνία εσωτερικής–εξωτερικής (LED1 εξωτερικής αναβοσβήνει 15 φορές).", s:"Η εξωτερική δεν δουλεύει· η εσωτερική δείχνει E7 και η LED της πλακέτας εξωτερικής 15 αναλαμπές. Καλωδίωση, πλακέτα εσωτ./εξωτ., power module."},
+ {plat:"haier", codes:["F8"], d:"Ανεμιστήρας DC εξωτερικής: δεν έρχεται σήμα ανάδρασης στροφών μέσα σε 2 λεπτά (LED1 9 αναλαμπές).", s:"Ο ανεμιστήρας εξωτερικής δεν γυρνά, μετά από ~2′ η εξωτερική σταματά με F8. Μέτρα 310V DC στα pin 1–3 της φίσας του μοτέρ."}
+);
+BEHSRC.haier = "Haier service manuals (1U50KEPFRA, 1U68WEGFRA – Service diagnosis E7, F8)";
+
 function behFor(plat, codes){
   for(var i=0;i<BEH.length;i++){ var b=BEH[i]; if(b.plat!==plat) continue;
     for(var j=0;j<codes.length;j++) if(b.codes.indexOf(String(codes[j]).toUpperCase())>=0) return b; }
@@ -2686,6 +2738,24 @@ var PSENS = {
     ["Αέρα χώρου / εξωτ. αέρα (15kΩ)", {r:15, t:25, b:3950, tol:7, ok:false}],
     ["Σωλήνα – στοιχείο εσωτ./εξωτ. (20kΩ)", {r:20, t:25, b:3950, tol:7, ok:false}],
     ["Κατάθλιψης (50kΩ)", {r:50, t:25, b:3950, tol:10, ok:false}]
+  ]},
+  samsung:{src:"Samsung service manuals (4-3 Troubleshooting – Temperature sensor resistance values· E221/E231/E251)", note:"Samsung: αισθητήρια αέρα/στοιχείου εσωτ. & εξωτ. = 10kΩ/25°C. Κατάθλιψης & OLP ≈ 200kΩ (π.χ. 205,4kΩ στους 21°C).", list:[
+    ["Αέρα χώρου / EVA IN-OUT / εξωτ. (10kΩ)", {p:[[-10,42.3],[-5,33.9],[0,28.3],[5,22.0],[10,18.0],[15,14.7],[20,12.1],[25,10.0],[30,8.3],[35,6.9],[40,5.8]], tol:5, ok:true}],
+    ["Κατάθλιψης / OLP (≈200kΩ)", {r:205.4, t:21, b:3950, tol:10, ok:false}]
+  ]},
+  aux:{src:"AUX service manual (Appendix: AUX Common Sensor R-T Analysis Table 15K/20K/50K)", note:"AUX: αισθητήριο χώρου (E1) = 15kΩ/25°C, στοιχείων εσωτ./εξωτ. (E3/E2) = 20kΩ/25°C, B=3950. Υπάρχει και πίνακας 50kΩ (κατάθλιψη). Ανοχή ±3%.", list:[
+    ["Αέρα χώρου (15kΩ)", {p:[[0,49.25],[10,29.94],[20,18.75],[25,15.0],[30,12.08],[40,7.971],[50,5.382]], tol:5, ok:true}],
+    ["Στοιχείο εσωτ./εξωτ. (20kΩ)", {p:[[0,65.37],[10,39.88],[20,25.01],[25,20.0],[30,16.1],[40,10.62],[50,7.176]], tol:5, ok:true}],
+    ["Κατάθλιψης (50kΩ)", {p:[[0,163.1],[10,99.47],[20,62.47],[25,50],[30,40.27],[40,26.59],[50,17.93]], tol:5, ok:true}]
+  ]},
+  haier:{src:"Haier service manual (Value of thermistor – Room sensor and Pipe sensor R25=10KΩ±2%, B=3700K)", note:"Haier: αισθητήρια χώρου και σωλήνα = 10kΩ/25°C (B 3700). Κατάθλιψης συνήθως 50kΩ – δες τον πίνακα του manual.", list:[
+    ["Χώρου / σωλήνα (10kΩ, B3700)", {r:10, t:25, b:3700, tol:5, ok:false}]
+  ]},
+  hisense:{src:"Hisense service manual (4-2 Sensor parameter – discharge: R0=187,25kΩ, B=3979)", note:"Hisense: το αισθητήριο κατάθλιψης έχει 187kΩ στους 0°C (~55kΩ στους 25°C). Για αέρα/στοιχείο δες τον πίνακα του μοντέλου (5k ή 10k ανά σειρά).", list:[
+    ["Κατάθλιψης (187kΩ στους 0°C)", {r:187.25, t:0, b:3979, tol:7, ok:false}]
+  ]},
+  mhi:{src:"MHI technical manual (Discharge pipe thermistor temperature characteristics)", note:"MHI: κατάθλιψης 164kΩ στους 0°C, 62kΩ στους 20°C, 50kΩ στους 25°C. Για χώρου/στοιχείων δες το διάγραμμα του μοντέλου.", list:[
+    ["Κατάθλιψης (50kΩ/25°C)", {p:[[0,164],[5,127],[10,99],[15,78],[20,62],[25,50],[30,40],[35,32],[40,26]], tol:7, ok:true}]
   ]},
   fujitsu:{src:"Fujitsu General Assist (Thermistor testing / Standard thermistor values)", note:"Fujitsu: οι τιμές αλλάζουν πολύ ανά μοντέλο. Παράδειγμα (20°C): χώρου ≈12,5kΩ, στοιχείο εσωτ. ≈63kΩ, κατάθλιψης ≈64,5kΩ, στοιχείο εξωτ. ≈6,1kΩ, εξωτ. αέρα ≈12,6kΩ. Επιβεβαίωσε στον πίνακα του μοντέλου.", list:[
     ["Χώρου / εξωτ. αέρα (≈12,5kΩ στους 20°C)", {r:12.6, t:20, b:3950, tol:10, ok:false}],
@@ -3690,7 +3760,7 @@ function rAt(s, T){
 function fmtk(v){ return v>=100 ? v.toFixed(0) : v>=10 ? v.toFixed(1) : v.toFixed(2); }
 function sensList(){
   var pl = partPlats(), L = [], src = [];
-  pl.forEach(function(p){ var d = PSENS[p]; if(!d) return; d.list.forEach(function(x){ L.push({lab:(pl.length>1?PLAT[p].name+' – ':'')+x[0], s:x[1]}); }); src.push(d); });
+  pl.forEach(function(p){ var d = PSENS[p] || PSENS[{inv_gree:"gree",inv_mc:"midea"}[p]]; if(!d) return; d.list.forEach(function(x){ L.push({lab:(pl.length>1?PLAT[p].name+' – ':'')+x[0], s:x[1]}); }); src.push(d); });
   if(!L.length) PSENS_GENERIC.forEach(function(x){ L.push({lab:'Γενικό NTC '+x[0], s:x[1]}); });
   return {L:L, src:src};
 }
@@ -4276,7 +4346,7 @@ document.addEventListener("click", function(e){
   if(el.id==="chgBrand"){ S.bedit=true; renderBrands(); renderCats(); $("oembox").style.display="none"; setTimeout(function(){ $("bq").value=""; $("bq").focus(); },30); return; }
   if(el.id==="theme"){ var th=["auto","light","dark"], i=th.indexOf(LS.get("vl_theme","auto")); setTheme(th[(i+1)%3]); return; }
   if(el.hasAttribute("data-c")){ S.cat = el.getAttribute("data-c"); S.oem=null; S.catOpen=false; renderAll(); setTimeout(function(){ var m=$("model"); if(m && !m.value) m.focus(); else $("q").focus(); },50); return; }
-  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.bedit=false; S.fw={plate:"",rc:"",comp:"",pcb:"",ser:""}; S.fwOpen=false; S.catOpen=true; S.oem=null; S.model=""; S.ledv={}; $("bsug").innerHTML=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
+  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.bedit=false; S.fw={plate:"",rc:"",comp:"",pcb:"",ser:S.qpend||""}; S.fwOpen=!!S.qpend; S.qpend=""; S.catOpen=true; S.oem=null; S.model=""; S.ledv={}; $("bsug").innerHTML=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
   if(el.hasAttribute("data-o")){ S.oem = el.getAttribute("data-o"); markChips(); renderCtx(); renderResults(); persist(); return; }
   if(el.hasAttribute("data-del")){ var b=brandObj(), p=el.getAttribute("data-del"); myMap = myMap.filter(function(m){return !(m.brand===b.n && m.prefix===p);}); LS.set("vl_mymap",myMap); renderOem(); return; }
   if(el.hasAttribute("data-q")){ S.q = el.getAttribute("data-q"); $("q").value=S.q; renderResults(); window.scrollTo({top:$("q").getBoundingClientRect().top+window.scrollY-80,behavior:"smooth"}); return; }
@@ -4639,7 +4709,18 @@ function scanFound(text, fmt){
   var vb = document.querySelector("#scanov .scbox"); if(vb) vb.style.display = "none";
   var pb = document.querySelector("#scanov .scbtns"); if(pb) pb.style.display = "none";
   scanMsg("✅ Διαβάστηκε ("+String(fmt||"").replace("_","-").toUpperCase()+")");
-  box.innerHTML = '<div class="sccode">'+esc(text)+'</div>'+serHtml(text, cs)+
+  if(SCAN.target==="hist"){ var hf = document.getElementById("hf_ser"); scanStop(); var ov0 = document.getElementById("scanov"); if(ov0){ ov0.style.display="none"; ov0.innerHTML=""; } if(hf) hf.value = serClean(text); return; }
+  var quick = SCAN.target==="quick", qh = "";
+  if(quick){
+    var all = serInfo(text, null), seenB = {};
+    all.forEach(function(e){ if(!e.w) return; BRANDS.forEach(function(bb){ if(bb.own===e.o || (bb.own==="inv_gree" && e.o==="gree")) seenB[bb.n]=1; }); });
+    var bl = Object.keys(seenB);
+    qh = '<div class="lbl">Συνέχεια με μάρκα:</div><div class="chips">'+bl.map(function(n){ return '<button class="chip on" data-qb="'+esc(n)+'">'+esc(n)+'</button>'; }).join("")+
+      '<button class="chip" id="qother">Άλλη μάρκα (Inventor, Nobu…)</button></div>';
+    box.innerHTML = '<div class="sccode">'+esc(text)+'</div>'+histSeenHtml(text,"")+serHtml(text, null)+qh+'<div class="scbtns" style="margin-top:12px"><button class="mini" id="scagain">🔁 Σάρωση ξανά</button></div>';
+    return;
+  }
+  box.innerHTML = '<div class="sccode">'+esc(text)+'</div>'+histSeenHtml(text,"")+serHtml(text, cs)+
     '<div class="lbl">Πάτα τι είναι, για να το περάσω στη σωστή θέση:</div><div class="chips">'+order.map(function(k,i){ return '<button class="chip'+(i===0?' on':'')+'" data-scuse="'+k+'">'+esc(SCT[k])+'</button>'; }).join("")+'</div>'+
     (cs && cs.length>1 ? '<div class="lbl">Ξέρεις το εργοστάσιο αυτής της μονάδας; Αποθήκευσέ το για την επόμενη φορά:</div><div class="chips">'+cs.map(function(p){ return '<button class="chip" data-sclearn="'+p+'">'+esc(PLAT[p].name)+'</button>'; }).join("")+'</div>' : '')+
     '<div class="scbtns" style="margin-top:12px"><button class="mini" id="scagain">🔁 Σάρωση ξανά</button></div>';
@@ -4653,9 +4734,10 @@ function scanUse(k){
   setTimeout(function(){ var el = document.getElementById(k==="model"?"model":"fwiz"); if(el) el.scrollIntoView({behavior:"smooth", block:"center"}); }, 60);
 }
 document.addEventListener("click", function(e){
-  var el = e.target.closest("[data-scan],#scclose,#scagain,[data-scuse],[data-sclearn]"); if(!el) return;
+  var el = e.target.closest("[data-scan],#scclose,#scagain,[data-scuse],[data-sclearn],#qother"); if(!el) return;
   if(el.hasAttribute("data-scan")){ e.preventDefault(); scanOpen(el.getAttribute("data-scan")); return; }
   if(el.id==="scclose"){ scanClose(); return; }
+  if(el.id==="qother"){ var t0 = SCAN.last; scanClose(); S.qpend = serClean(t0); var cb = document.getElementById("chgBrand"); if(cb) cb.click(); var bq = document.getElementById("bq"); if(bq){ bq.focus(); } return; }
   if(el.id==="scagain"){ var tg = SCAN.target; scanClose(); scanOpen(tg); return; }
   if(el.hasAttribute("data-scuse")){ scanUse(el.getAttribute("data-scuse")); return; }
   if(el.hasAttribute("data-sclearn")){
@@ -4668,6 +4750,84 @@ document.addEventListener("click", function(e){
 function cs0(){ var b = brandObj(); return b && !b.own; }
 document.addEventListener("change", function(e){ if(e.target && e.target.id==="scfile") scanPhoto(e.target.files && e.target.files[0]); });
 window.scanFound = scanFound;
+
+// ===== Ιστορικό επισκέψεων (μόνο στο κινητό) =====
+var HIST = LS.get("vl_hist", []); // [{id,ts,cust,brand,cat,oem,model,ser,code,fix,note}]
+function histSave(){ LS.set("vl_hist", HIST); }
+function histFind(ser, model){
+  var sv = serClean(ser), mv = serClean(model);
+  return HIST.filter(function(h){ return (sv.length>=6 && serClean(h.ser)===sv) || (!sv && mv.length>=6 && serClean(h.model)===mv); });
+}
+function histSeenHtml(ser, model){
+  var r = histFind(ser, model); if(!r.length) return "";
+  return '<div class="hseen"><b>📒 Έχεις ξαναδουλέψει αυτή τη μονάδα ('+r.length+'):</b>'+r.slice(0,3).map(function(h){
+    return '<div class="small">'+esc(new Date(h.ts).toLocaleDateString("el-GR"))+(h.cust?' · '+esc(h.cust):'')+(h.code?' · κωδ. <b>'+esc(h.code)+'</b>':'')+(h.fix?' · '+esc(h.fix):'')+'</div>';
+  }).join("")+'</div>';
+}
+function histDate(ts){ var d = new Date(ts); return d.toLocaleDateString("el-GR")+" "+d.toLocaleTimeString("el-GR",{hour:"2-digit",minute:"2-digit"}); }
+function histOpen(mode, id){
+  var ov = document.getElementById("histov");
+  if(!ov){ ov = document.createElement("div"); ov.id = "histov"; document.body.appendChild(ov); }
+  ov.style.display = "flex"; document.body.style.overflow = "hidden";
+  var h = '<div class="schead"><b>📒 Ιστορικό επισκέψεων</b><button class="mini" id="histclose">✕</button></div>';
+  if(mode==="form"){
+    var e = id ? HIST.filter(function(x){ return x.id===id; })[0] : null, b = brandObj();
+    e = e || {cust:"", brand:b?b.n:"", oem:(S.oem && S.oem!=="__all" && PLAT[S.oem])?PLAT[S.oem].name:"", model:S.model||"", ser:S.fw.ser||"", code:S.q||"", fix:"", note:""};
+    var f = function(k,l,ph){ return '<label>'+esc(l)+'<input id="hf_'+k+'" value="'+esc(e[k]||"")+'" placeholder="'+esc(ph||"")+'"></label>'; };
+    h += '<div class="hform card">'+f("cust","Πελάτης / τοποθεσία","π.χ. Παπαδόπουλος – Καλαμαριά")+f("brand","Μάρκα","")+f("oem","Εργοστάσιο","")+f("model","Μοντέλο","")+
+      '<label>Σειριακός<div class="row2"><input id="hf_ser" value="'+esc(e.ser||"")+'"><button class="mini" data-scan="hist">📷</button></div></label>'+
+      f("code","Κωδικός βλάβης","π.χ. E1, F5")+
+      '<label>Τι έκανες / τι άλλαξες<textarea id="hf_fix" placeholder="π.χ. άλλαξα αισθητήριο σωλήνα εσωτ. (20kΩ)">'+esc(e.fix||"")+'</textarea></label>'+
+      '<label>Σημειώσεις<textarea id="hf_note" placeholder="μετρήσεις, πιέσεις, ανταλλακτικά που χρειάζονται…">'+esc(e.note||"")+'</textarea></label>'+
+      '<div class="scbtns" style="margin-top:10px"><button class="mini" id="histsave" data-id="'+esc(id||"")+'">💾 Αποθήκευση</button><button class="mini" id="histlist">Άκυρο</button>'+(id?'<button class="mini" id="histdel" data-id="'+esc(id)+'">🗑️ Διαγραφή</button>':'')+'</div></div>';
+  } else {
+    h += '<button class="mini scanbtn" id="histnew">➕ Νέα καταχώρηση (από την τρέχουσα βλάβη)</button>'+
+      '<input id="histq" placeholder="Αναζήτηση: πελάτης, σειριακός, μοντέλο, κωδικός…" value="'+esc(S.hq||"")+'">'+
+      '<div id="histl"></div>'+
+      '<div class="small" style="margin-top:12px">Το ιστορικό μένει μόνο σε αυτό το κινητό. Κράτα αντίγραφο πριν αλλάξεις κινητό:</div>'+
+      '<div class="scbtns"><button class="mini" id="histexp">⬇️ Εξαγωγή αντιγράφου</button><label class="mini scphoto">⬆️ Επαναφορά<input type="file" accept=".json,application/json" id="histimp" hidden></label></div>';
+  }
+  ov.innerHTML = h;
+  if(mode!=="form") histList();
+}
+function histList(){
+  var q = serClean(S.hq||""), el = document.getElementById("histl"); if(!el) return;
+  var r = HIST.slice().sort(function(a,b){ return b.ts-a.ts; }).filter(function(h){ if(!q) return true; return serClean([h.cust,h.brand,h.oem,h.model,h.ser,h.code,h.fix,h.note].join(" ")).indexOf(q)>=0; });
+  el.innerHTML = r.length ? r.map(function(h){ return '<div class="hcard" data-hid="'+esc(h.id)+'"><div><b>'+esc(h.cust||"—")+'</b>'+(h.code?' · κωδ. <b>'+esc(h.code)+'</b>':'')+'</div><div class="hm">'+esc(histDate(h.ts))+' · '+esc([h.brand,h.oem,h.model].filter(Boolean).join(" · "))+(h.ser?' · S/N '+esc(h.ser):'')+'</div>'+(h.fix?'<div class="small">🔧 '+esc(h.fix)+'</div>':'')+'</div>'; }).join("")
+    : '<div class="small">'+(HIST.length?'Δεν βρέθηκε.':'Δεν υπάρχουν καταχωρήσεις ακόμα. Μετά από μια επισκευή πάτα «Νέα καταχώρηση».')+'</div>';
+}
+function histClose(){ var ov = document.getElementById("histov"); if(ov){ ov.style.display="none"; ov.innerHTML=""; } document.body.style.overflow = ""; }
+document.addEventListener("click", function(e){
+  var el = e.target.closest("#histbtn,#histclose,#histnew,#histsave,#histlist,#histdel,#histexp,[data-hid],#qscan,[data-qb]"); if(!el) return;
+  if(el.id==="qscan"){ scanOpen("quick"); return; }
+  if(el.hasAttribute("data-qb")){ var nm = el.getAttribute("data-qb"), t = SCAN.last; scanClose(); S.brand = nm; S.bedit=false; S.catOpen=true; S.oem=null; S.model=""; S.ledv={}; S.fw={plate:"",rc:"",comp:"",pcb:"",ser:serClean(t)}; S.fwOpen = true; renderAll(); return; }
+  if(el.id==="histbtn"){ histOpen("list"); return; }
+  if(el.id==="histclose"){ histClose(); return; }
+  if(el.id==="histnew"){ histOpen("form"); return; }
+  if(el.id==="histlist"){ histOpen("list"); return; }
+  if(el.hasAttribute("data-hid")){ histOpen("form", el.getAttribute("data-hid")); return; }
+  if(el.id==="histsave"){
+    var id = el.getAttribute("data-id"), o = {}; ["cust","brand","oem","model","ser","code","fix","note"].forEach(function(k){ var x = document.getElementById("hf_"+k); o[k] = x ? x.value.trim() : ""; });
+    if(id){ HIST.forEach(function(h){ if(h.id===id){ for(var k in o) h[k]=o[k]; } }); }
+    else { o.id = "h"+Date.now().toString(36); o.ts = Date.now(); o.cat = S.cat; HIST.push(o); }
+    histSave(); histOpen("list"); return;
+  }
+  if(el.id==="histdel"){ var d = el.getAttribute("data-id"); if(el.getAttribute("data-c")!=="1"){ el.setAttribute("data-c","1"); el.textContent="Πάτα ξανά για διαγραφή"; return; } HIST = HIST.filter(function(h){ return h.id!==d; }); histSave(); histOpen("list"); return; }
+  if(el.id==="histexp"){
+    var blob = new Blob([JSON.stringify({app:"vlavologio", v:1, hist:HIST, serLearn:serLearn, myMap:LS.get("vl_mymap",[])}, null, 1)], {type:"application/json"}), fn = "vlavologio-istoriko-"+new Date().toISOString().slice(0,10)+".json";
+    try{ var file = new File([blob], fn, {type:"application/json"}); if(navigator.canShare && navigator.canShare({files:[file]})){ navigator.share({files:[file], title:"Βλαβολόγιο – αντίγραφο"}).catch(function(){}); return; } }catch(x){}
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = fn; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500); return;
+  }
+});
+document.addEventListener("input", function(e){ if(e.target && e.target.id==="histq"){ S.hq = e.target.value; histList(); } });
+document.addEventListener("change", function(e){
+  if(!e.target || e.target.id!=="histimp" || !e.target.files || !e.target.files[0]) return;
+  var rd = new FileReader(); rd.onload = function(){ try{ var d = JSON.parse(rd.result); if(!d || d.app!=="vlavologio") throw 0;
+    var ids = {}; HIST.forEach(function(h){ ids[h.id]=1; }); (d.hist||[]).forEach(function(h){ if(h && h.id && !ids[h.id]) HIST.push(h); }); histSave();
+    if(d.serLearn){ d.serLearn.forEach(function(l){ if(!serLearn.some(function(x){ return x.b===l.b && x.p===l.p; })) serLearn.push(l); }); LS.set("vl_serlearn", serLearn); }
+    histOpen("list"); } catch(x){ alert("Το αρχείο δεν είναι αντίγραφο του Βλαβολογίου."); } };
+  rd.readAsText(e.target.files[0]);
+});
 
 setTheme(LS.get("vl_theme","auto"));
 renderAll();

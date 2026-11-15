@@ -123,7 +123,18 @@ function scanFound(text, fmt){
   var vb = document.querySelector("#scanov .scbox"); if(vb) vb.style.display = "none";
   var pb = document.querySelector("#scanov .scbtns"); if(pb) pb.style.display = "none";
   scanMsg("✅ Διαβάστηκε ("+String(fmt||"").replace("_","-").toUpperCase()+")");
-  box.innerHTML = '<div class="sccode">'+esc(text)+'</div>'+serHtml(text, cs)+
+  if(SCAN.target==="hist"){ var hf = document.getElementById("hf_ser"); scanStop(); var ov0 = document.getElementById("scanov"); if(ov0){ ov0.style.display="none"; ov0.innerHTML=""; } if(hf) hf.value = serClean(text); return; }
+  var quick = SCAN.target==="quick", qh = "";
+  if(quick){
+    var all = serInfo(text, null), seenB = {};
+    all.forEach(function(e){ if(!e.w) return; BRANDS.forEach(function(bb){ if(bb.own===e.o || (bb.own==="inv_gree" && e.o==="gree")) seenB[bb.n]=1; }); });
+    var bl = Object.keys(seenB);
+    qh = '<div class="lbl">Συνέχεια με μάρκα:</div><div class="chips">'+bl.map(function(n){ return '<button class="chip on" data-qb="'+esc(n)+'">'+esc(n)+'</button>'; }).join("")+
+      '<button class="chip" id="qother">Άλλη μάρκα (Inventor, Nobu…)</button></div>';
+    box.innerHTML = '<div class="sccode">'+esc(text)+'</div>'+histSeenHtml(text,"")+serHtml(text, null)+qh+'<div class="scbtns" style="margin-top:12px"><button class="mini" id="scagain">🔁 Σάρωση ξανά</button></div>';
+    return;
+  }
+  box.innerHTML = '<div class="sccode">'+esc(text)+'</div>'+histSeenHtml(text,"")+serHtml(text, cs)+
     '<div class="lbl">Πάτα τι είναι, για να το περάσω στη σωστή θέση:</div><div class="chips">'+order.map(function(k,i){ return '<button class="chip'+(i===0?' on':'')+'" data-scuse="'+k+'">'+esc(SCT[k])+'</button>'; }).join("")+'</div>'+
     (cs && cs.length>1 ? '<div class="lbl">Ξέρεις το εργοστάσιο αυτής της μονάδας; Αποθήκευσέ το για την επόμενη φορά:</div><div class="chips">'+cs.map(function(p){ return '<button class="chip" data-sclearn="'+p+'">'+esc(PLAT[p].name)+'</button>'; }).join("")+'</div>' : '')+
     '<div class="scbtns" style="margin-top:12px"><button class="mini" id="scagain">🔁 Σάρωση ξανά</button></div>';
@@ -137,9 +148,10 @@ function scanUse(k){
   setTimeout(function(){ var el = document.getElementById(k==="model"?"model":"fwiz"); if(el) el.scrollIntoView({behavior:"smooth", block:"center"}); }, 60);
 }
 document.addEventListener("click", function(e){
-  var el = e.target.closest("[data-scan],#scclose,#scagain,[data-scuse],[data-sclearn]"); if(!el) return;
+  var el = e.target.closest("[data-scan],#scclose,#scagain,[data-scuse],[data-sclearn],#qother"); if(!el) return;
   if(el.hasAttribute("data-scan")){ e.preventDefault(); scanOpen(el.getAttribute("data-scan")); return; }
   if(el.id==="scclose"){ scanClose(); return; }
+  if(el.id==="qother"){ var t0 = SCAN.last; scanClose(); S.qpend = serClean(t0); var cb = document.getElementById("chgBrand"); if(cb) cb.click(); var bq = document.getElementById("bq"); if(bq){ bq.focus(); } return; }
   if(el.id==="scagain"){ var tg = SCAN.target; scanClose(); scanOpen(tg); return; }
   if(el.hasAttribute("data-scuse")){ scanUse(el.getAttribute("data-scuse")); return; }
   if(el.hasAttribute("data-sclearn")){
@@ -152,3 +164,81 @@ document.addEventListener("click", function(e){
 function cs0(){ var b = brandObj(); return b && !b.own; }
 document.addEventListener("change", function(e){ if(e.target && e.target.id==="scfile") scanPhoto(e.target.files && e.target.files[0]); });
 window.scanFound = scanFound;
+
+// ===== Ιστορικό επισκέψεων (μόνο στο κινητό) =====
+var HIST = LS.get("vl_hist", []); // [{id,ts,cust,brand,cat,oem,model,ser,code,fix,note}]
+function histSave(){ LS.set("vl_hist", HIST); }
+function histFind(ser, model){
+  var sv = serClean(ser), mv = serClean(model);
+  return HIST.filter(function(h){ return (sv.length>=6 && serClean(h.ser)===sv) || (!sv && mv.length>=6 && serClean(h.model)===mv); });
+}
+function histSeenHtml(ser, model){
+  var r = histFind(ser, model); if(!r.length) return "";
+  return '<div class="hseen"><b>📒 Έχεις ξαναδουλέψει αυτή τη μονάδα ('+r.length+'):</b>'+r.slice(0,3).map(function(h){
+    return '<div class="small">'+esc(new Date(h.ts).toLocaleDateString("el-GR"))+(h.cust?' · '+esc(h.cust):'')+(h.code?' · κωδ. <b>'+esc(h.code)+'</b>':'')+(h.fix?' · '+esc(h.fix):'')+'</div>';
+  }).join("")+'</div>';
+}
+function histDate(ts){ var d = new Date(ts); return d.toLocaleDateString("el-GR")+" "+d.toLocaleTimeString("el-GR",{hour:"2-digit",minute:"2-digit"}); }
+function histOpen(mode, id){
+  var ov = document.getElementById("histov");
+  if(!ov){ ov = document.createElement("div"); ov.id = "histov"; document.body.appendChild(ov); }
+  ov.style.display = "flex"; document.body.style.overflow = "hidden";
+  var h = '<div class="schead"><b>📒 Ιστορικό επισκέψεων</b><button class="mini" id="histclose">✕</button></div>';
+  if(mode==="form"){
+    var e = id ? HIST.filter(function(x){ return x.id===id; })[0] : null, b = brandObj();
+    e = e || {cust:"", brand:b?b.n:"", oem:(S.oem && S.oem!=="__all" && PLAT[S.oem])?PLAT[S.oem].name:"", model:S.model||"", ser:S.fw.ser||"", code:S.q||"", fix:"", note:""};
+    var f = function(k,l,ph){ return '<label>'+esc(l)+'<input id="hf_'+k+'" value="'+esc(e[k]||"")+'" placeholder="'+esc(ph||"")+'"></label>'; };
+    h += '<div class="hform card">'+f("cust","Πελάτης / τοποθεσία","π.χ. Παπαδόπουλος – Καλαμαριά")+f("brand","Μάρκα","")+f("oem","Εργοστάσιο","")+f("model","Μοντέλο","")+
+      '<label>Σειριακός<div class="row2"><input id="hf_ser" value="'+esc(e.ser||"")+'"><button class="mini" data-scan="hist">📷</button></div></label>'+
+      f("code","Κωδικός βλάβης","π.χ. E1, F5")+
+      '<label>Τι έκανες / τι άλλαξες<textarea id="hf_fix" placeholder="π.χ. άλλαξα αισθητήριο σωλήνα εσωτ. (20kΩ)">'+esc(e.fix||"")+'</textarea></label>'+
+      '<label>Σημειώσεις<textarea id="hf_note" placeholder="μετρήσεις, πιέσεις, ανταλλακτικά που χρειάζονται…">'+esc(e.note||"")+'</textarea></label>'+
+      '<div class="scbtns" style="margin-top:10px"><button class="mini" id="histsave" data-id="'+esc(id||"")+'">💾 Αποθήκευση</button><button class="mini" id="histlist">Άκυρο</button>'+(id?'<button class="mini" id="histdel" data-id="'+esc(id)+'">🗑️ Διαγραφή</button>':'')+'</div></div>';
+  } else {
+    h += '<button class="mini scanbtn" id="histnew">➕ Νέα καταχώρηση (από την τρέχουσα βλάβη)</button>'+
+      '<input id="histq" placeholder="Αναζήτηση: πελάτης, σειριακός, μοντέλο, κωδικός…" value="'+esc(S.hq||"")+'">'+
+      '<div id="histl"></div>'+
+      '<div class="small" style="margin-top:12px">Το ιστορικό μένει μόνο σε αυτό το κινητό. Κράτα αντίγραφο πριν αλλάξεις κινητό:</div>'+
+      '<div class="scbtns"><button class="mini" id="histexp">⬇️ Εξαγωγή αντιγράφου</button><label class="mini scphoto">⬆️ Επαναφορά<input type="file" accept=".json,application/json" id="histimp" hidden></label></div>';
+  }
+  ov.innerHTML = h;
+  if(mode!=="form") histList();
+}
+function histList(){
+  var q = serClean(S.hq||""), el = document.getElementById("histl"); if(!el) return;
+  var r = HIST.slice().sort(function(a,b){ return b.ts-a.ts; }).filter(function(h){ if(!q) return true; return serClean([h.cust,h.brand,h.oem,h.model,h.ser,h.code,h.fix,h.note].join(" ")).indexOf(q)>=0; });
+  el.innerHTML = r.length ? r.map(function(h){ return '<div class="hcard" data-hid="'+esc(h.id)+'"><div><b>'+esc(h.cust||"—")+'</b>'+(h.code?' · κωδ. <b>'+esc(h.code)+'</b>':'')+'</div><div class="hm">'+esc(histDate(h.ts))+' · '+esc([h.brand,h.oem,h.model].filter(Boolean).join(" · "))+(h.ser?' · S/N '+esc(h.ser):'')+'</div>'+(h.fix?'<div class="small">🔧 '+esc(h.fix)+'</div>':'')+'</div>'; }).join("")
+    : '<div class="small">'+(HIST.length?'Δεν βρέθηκε.':'Δεν υπάρχουν καταχωρήσεις ακόμα. Μετά από μια επισκευή πάτα «Νέα καταχώρηση».')+'</div>';
+}
+function histClose(){ var ov = document.getElementById("histov"); if(ov){ ov.style.display="none"; ov.innerHTML=""; } document.body.style.overflow = ""; }
+document.addEventListener("click", function(e){
+  var el = e.target.closest("#histbtn,#histclose,#histnew,#histsave,#histlist,#histdel,#histexp,[data-hid],#qscan,[data-qb]"); if(!el) return;
+  if(el.id==="qscan"){ scanOpen("quick"); return; }
+  if(el.hasAttribute("data-qb")){ var nm = el.getAttribute("data-qb"), t = SCAN.last; scanClose(); S.brand = nm; S.bedit=false; S.catOpen=true; S.oem=null; S.model=""; S.ledv={}; S.fw={plate:"",rc:"",comp:"",pcb:"",ser:serClean(t)}; S.fwOpen = true; renderAll(); return; }
+  if(el.id==="histbtn"){ histOpen("list"); return; }
+  if(el.id==="histclose"){ histClose(); return; }
+  if(el.id==="histnew"){ histOpen("form"); return; }
+  if(el.id==="histlist"){ histOpen("list"); return; }
+  if(el.hasAttribute("data-hid")){ histOpen("form", el.getAttribute("data-hid")); return; }
+  if(el.id==="histsave"){
+    var id = el.getAttribute("data-id"), o = {}; ["cust","brand","oem","model","ser","code","fix","note"].forEach(function(k){ var x = document.getElementById("hf_"+k); o[k] = x ? x.value.trim() : ""; });
+    if(id){ HIST.forEach(function(h){ if(h.id===id){ for(var k in o) h[k]=o[k]; } }); }
+    else { o.id = "h"+Date.now().toString(36); o.ts = Date.now(); o.cat = S.cat; HIST.push(o); }
+    histSave(); histOpen("list"); return;
+  }
+  if(el.id==="histdel"){ var d = el.getAttribute("data-id"); if(el.getAttribute("data-c")!=="1"){ el.setAttribute("data-c","1"); el.textContent="Πάτα ξανά για διαγραφή"; return; } HIST = HIST.filter(function(h){ return h.id!==d; }); histSave(); histOpen("list"); return; }
+  if(el.id==="histexp"){
+    var blob = new Blob([JSON.stringify({app:"vlavologio", v:1, hist:HIST, serLearn:serLearn, myMap:LS.get("vl_mymap",[])}, null, 1)], {type:"application/json"}), fn = "vlavologio-istoriko-"+new Date().toISOString().slice(0,10)+".json";
+    try{ var file = new File([blob], fn, {type:"application/json"}); if(navigator.canShare && navigator.canShare({files:[file]})){ navigator.share({files:[file], title:"Βλαβολόγιο – αντίγραφο"}).catch(function(){}); return; } }catch(x){}
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = fn; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500); return;
+  }
+});
+document.addEventListener("input", function(e){ if(e.target && e.target.id==="histq"){ S.hq = e.target.value; histList(); } });
+document.addEventListener("change", function(e){
+  if(!e.target || e.target.id!=="histimp" || !e.target.files || !e.target.files[0]) return;
+  var rd = new FileReader(); rd.onload = function(){ try{ var d = JSON.parse(rd.result); if(!d || d.app!=="vlavologio") throw 0;
+    var ids = {}; HIST.forEach(function(h){ ids[h.id]=1; }); (d.hist||[]).forEach(function(h){ if(h && h.id && !ids[h.id]) HIST.push(h); }); histSave();
+    if(d.serLearn){ d.serLearn.forEach(function(l){ if(!serLearn.some(function(x){ return x.b===l.b && x.p===l.p; })) serLearn.push(l); }); LS.set("vl_serlearn", serLearn); }
+    histOpen("list"); } catch(x){ alert("Το αρχείο δεν είναι αντίγραφο του Βλαβολογίου."); } };
+  rd.readAsText(e.target.files[0]);
+});
