@@ -391,12 +391,16 @@ function ledSym(key, lamps){
   return '<span class="lsym">'+lamps.map(function(l,i){ var v=vs[i]||"0"; var cls = v==="0"?" off":(v==="c"?" c":v==="s"?" s":"");
     return '<span style="--lc:'+l.col+'"><i class="dot'+cls+'"></i>'+esc(l.n)+' '+esc(lampVal(v))+'</span>'; }).join("")+'</span>';
 }
+function behBox(plat, codes){
+  var b = typeof behFor==="function" ? behFor(plat, codes) : null; if(!b) return "";
+  return '<div class="beh"><div><b>🩺 Τι κάνει το μηχάνημα:</b> '+esc(b.s)+'</div><div class="small">📘 Πότε βγαίνει (manual): '+esc(b.d)+'</div></div>';
+}
 function card(r, showPlat){
   var c = r.c, t = r.t, kd = kindOf(c[1]);
   return '<div class="res"'+(kd?' style="--kc:'+kd[1]+'"':'')+'>'+
     '<div class="rh"><span class="codes">'+(t.tbl.lamps ? ledSym(c[0][0], t.tbl.lamps) : t.tbl.pat ? '<span class="code pat">'+esc(patSym(c[0][0], t.tbl.pat.labels))+'</span>' : c[0].map(function(k){return '<span class="code">'+esc(k)+'</span>';}).join(""))+'</span>'+
     (showPlat?'<span class="plat">'+esc(PLAT[t.plat].name)+'</span>':(kd?'<span class="kind">'+esc(kd[0])+'</span>':''))+'</div>'+
-    '<div class="rt">'+esc(c[1])+'</div>'+
+    '<div class="rt">'+esc(c[1])+'</div>'+behBox(t.plat, c[0])+
     (c[4]?'<div class="rl">↔ '+esc(c[4])+'</div>':'')+
     (c[2]?(function(){ var st=stepsOf(c[2]); return st ? '<div class="rd"><b>🔧 Τι ελέγχεις – με τη σειρά:</b><ol class="steps">'+st.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol></div>' : '<div class="rd"><b>🔧 Τι ελέγχεις:</b> '+esc(c[2])+'</div>'; })():'')+
     (c[3]?'<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+esc(c[3])+'</div>':'')+
@@ -427,12 +431,13 @@ function renderLed(b, tabs, multi){
     var ts = groups[sig], lamps = ts[0].tbl.lamps;
     var cur = S.ledv[sig] || (S.ledv[sig] = lamps.map(function(){return null;}));
     var maxN = lamps.map(function(l,i){ var m=0; ts.forEach(function(t){ t.tbl.codes.forEach(function(c){ var v=c[0][0].split("-")[i]; if(/^\d+$/.test(v)) m=Math.max(m,+v); }); }); return m; });
-    html += '<div class="ledw"><h3>Πάτα αυτό που βλέπεις σε κάθε λυχνία</h3>'+lamps.map(function(l,i){
+    html += '<div class="ledw"><h3>Για κάθε λυχνία: μένει αναμμένη, είναι σβηστή ή πόσες φορές αναβοσβήνει;</h3>'+lamps.map(function(l,i){
       var opts = [];
-      l.v.forEach(function(v){ if(v==="n"){ for(var k=1;k<=maxN[i];k++) opts.push(String(k)); } else opts.push(v); });
+      ["0","on"].concat(l.v).forEach(function(v){ if(v==="n"){ for(var k=1;k<=Math.max(maxN[i],1);k++) opts.push(String(k)); } else if(opts.indexOf(v)<0) opts.push(v); });
+      if(l.v.indexOf("n")<0){ for(var k2=1;k2<=Math.max(maxN[i],0);k2++) if(opts.indexOf(String(k2))<0) opts.push(String(k2)); }
       var cv = cur[i], dcls = cv==null||cv==="0" ? " off" : cv==="c"?" c":cv==="s"?" s":"";
       return '<div class="lamp" style="--lc:'+l.col+'"><div class="lname"><i class="dot'+dcls+'"></i>'+esc(l.n)+' <small>'+esc(l.sub||"")+'</small></div><div class="lopts">'+
-        opts.map(function(v){ var lab = v==="0"?"Σβηστή":v==="on"?"Αναμμένη":v==="c"?"Συνεχώς":v==="s"?"Αργά (1Hz)":v+"×"; return '<button class="lo'+(cv===v?' on':'')+'" data-lsig="'+esc(sig)+'" data-li="'+i+'" data-lv="'+v+'">'+lab+'</button>'; }).join("")+'</div></div>';
+        opts.map(function(v){ var lab = v==="0"?"○ Σβηστή":v==="on"?"● Αναμμένη":v==="c"?"✱ Αναβοσβήνει συνεχώς":v==="s"?"✱ Αργά (1Hz)":v+"×"; return '<button class="lo'+(cv===v?' on':'')+'" data-lsig="'+esc(sig)+'" data-li="'+i+'" data-lv="'+v+'">'+lab+'</button>'; }).join("")+'</div></div>';
     }).join("")+(cur.some(function(x){return x!=null;})?'<button class="ledreset" data-lreset="'+esc(sig)+'">↺ Καθαρισμός</button>':'')+'</div>';
     var setN = cur.filter(function(x){return x!=null;}).length;
     if(!setN){ html += '<div class="empty">Μέτρησε τις αναλαμπές σε έναν πλήρη κύκλο (ανάμεσα σε δύο παύσες) και πάτα τις τιμές παραπάνω.</div>'; return; }
@@ -910,7 +915,13 @@ function mmGuide(open){
 }
 function renderSym(){
   $("notes").innerHTML = "";
-  var h = '<div class="small info">🩺 Το μηχάνημα έχει πρόβλημα αλλά δεν βγάζει κωδικό; Διάλεξε τι βλέπεις. Οι αιτίες είναι με σειρά πιθανότητας – ξεκίνα από πάνω.</div>';
+  var h = '', q = S.q.trim(), bb = brandObj();
+  if(q && bb){ var rr = search(q), seenB = {};
+    if(rr.mode!=="none") rr.res.slice(0,6).forEach(function(x){ var be = behFor(x.t.plat, x.c[0]); if(!be || seenB[be.d]) return; seenB[be.d]=1;
+      h += '<div class="beh big"><div class="small">'+esc(bb.n)+' · κωδικός <b>'+esc(x.c[0][0])+'</b>'+(candidates(bb).length>1&&!bb.own?' ('+esc(PLAT[x.t.plat].name)+')':'')+' – '+esc(x.c[1])+'</div><div style="margin-top:6px"><b>🩺 Τι κάνει το μηχάνημα:</b> '+esc(be.s)+'</div><div class="small" style="margin-top:4px">📘 Πότε βγαίνει (manual): '+esc(be.d)+'</div><div class="small">Πηγή: '+esc(BEHSRC[x.t.plat]||"")+'</div></div>'; });
+    if(!h) h = '<div class="small info">Για τον κωδικό «'+esc(q)+'» δεν έχω ακόμα περιγραφή συμπεριφοράς από manual.</div>';
+  }
+  h += '<div class="small info">🩺 Το μηχάνημα έχει πρόβλημα αλλά δεν βγάζει κωδικό; Διάλεξε τι βλέπεις. Οι αιτίες είναι με σειρά πιθανότητας – ξεκίνα από πάνω.</div>';
   h += SYMPTOMS.map(function(s,i){
     return '<details class="sym"'+(S.sym===i?' open':'')+' data-sym="'+i+'"><summary>'+esc(s[0])+'</summary><ol class="steps">'+
       s[1].map(function(c){ var p=c[2]?partById(c[2]):null; return '<li><b>'+esc(c[0])+'</b><div>'+esc(c[1])+'</div>'+(p?'<button class="plk" data-gopart="'+p.id+'">'+p.icon+' Πώς μετράω: '+esc(p.name)+'</button>':'')+'</li>'; }).join("")+

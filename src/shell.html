@@ -208,6 +208,9 @@ details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
 .kbh{font-size:19px;font-weight:800;margin:4px 2px 8px}
 .fmodel{border-color:var(--acc)}
 #ctx{display:none}
+.beh{background:var(--okbg);border:1px solid color-mix(in srgb,var(--ok) 35%,transparent);border-radius:12px;padding:8px 10px;margin:4px 0 8px;font-size:14px;line-height:1.45}
+.beh.big{background:var(--card);border-color:var(--ok);box-shadow:var(--sh);margin-bottom:10px}
+.lname+.small{margin:-2px 0 6px}
 .focus{background:var(--card);border:1px solid var(--acc);border-radius:var(--r);padding:12px;margin-bottom:10px;box-shadow:var(--sh)}
 .fz1{font-weight:800;font-size:16.5px;line-height:1.35;margin-bottom:4px}
 .fzb{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}.fzb .mini{padding:8px 12px}
@@ -227,7 +230,7 @@ details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
   <div class="card" id="brandcard">
     <label class="lbl step"><b>1</b> Μάρκα</label>
     <div id="bchosen"></div>
-    <div id="bpick"><div class="bsearch"><span class="mag">🔍</span><input id="bq" placeholder="Μάρκα – π.χ. LG ή λγ" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><button id="brandSel" aria-label="Όλες οι μάρκες">☰</button></div>
+    <div id="bpick"><div class="bsearch"><span class="mag">🔍</span><input id="bq" placeholder="Μάρκα – π.χ. LG, Daikin, Gree" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><button id="brandSel" aria-label="Όλες οι μάρκες">☰</button></div>
     <div id="bsug"></div><button class="ledreset" id="bcancel" style="display:none">✕ Άκυρο – μένω στην ίδια μάρκα</button></div>
     <div id="brandsWrap"><div id="brands"></div></div>
   </div>

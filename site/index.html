@@ -208,6 +208,9 @@ details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
 .kbh{font-size:19px;font-weight:800;margin:4px 2px 8px}
 .fmodel{border-color:var(--acc)}
 #ctx{display:none}
+.beh{background:var(--okbg);border:1px solid color-mix(in srgb,var(--ok) 35%,transparent);border-radius:12px;padding:8px 10px;margin:4px 0 8px;font-size:14px;line-height:1.45}
+.beh.big{background:var(--card);border-color:var(--ok);box-shadow:var(--sh);margin-bottom:10px}
+.lname+.small{margin:-2px 0 6px}
 .focus{background:var(--card);border:1px solid var(--acc);border-radius:var(--r);padding:12px;margin-bottom:10px;box-shadow:var(--sh)}
 .fz1{font-weight:800;font-size:16.5px;line-height:1.35;margin-bottom:4px}
 .fzb{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}.fzb .mini{padding:8px 12px}
@@ -228,7 +231,7 @@ details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
   <div class="card" id="brandcard">
     <label class="lbl step"><b>1</b> Μάρκα</label>
     <div id="bchosen"></div>
-    <div id="bpick"><div class="bsearch"><span class="mag">🔍</span><input id="bq" placeholder="Μάρκα – π.χ. LG ή λγ" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><button id="brandSel" aria-label="Όλες οι μάρκες">☰</button></div>
+    <div id="bpick"><div class="bsearch"><span class="mag">🔍</span><input id="bq" placeholder="Μάρκα – π.χ. LG, Daikin, Gree" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><button id="brandSel" aria-label="Όλες οι μάρκες">☰</button></div>
     <div id="bsug"></div><button class="ledreset" id="bcancel" style="display:none">✕ Άκυρο – μένω στην ίδια μάρκα</button></div>
     <div id="brandsWrap"><div id="brands"></div></div>
   </div>
@@ -2186,6 +2189,50 @@ var INGUIDE = {
   }); }); });
 })();
 
+// ===== Τι κάνει το μηχάνημα σε κάθε βλάβη =====
+// d: πότε βγαίνει ο κωδικός (συνθήκη από το service manual), s: τι βλέπεις συνήθως στη μονάδα (συμπέρασμα από τη συνθήκη)
+var BEH = [
+ {plat:"midea", codes:["E0","EH00","F4","EC51"],
+  d:"Ο κεντρικός επεξεργαστής της πλακέτας (εσωτερικής για E0, εξωτερικής για F4) δεν παίρνει απάντηση από τη μνήμη EEPROM.",
+  s:"Βγαίνει με το που παίρνει ρεύμα ή εντολή η μονάδα – δεν ξεκινά κανονικά."},
+ {plat:"midea", codes:["E1","EL01"],
+  d:"Η εσωτερική δεν παίρνει απάντηση από την εξωτερική για 110 δευτερόλεπτα, και αυτό γίνεται 4 φορές συνεχόμενα.",
+  s:"Η εσωτερική ανάβει και μπορεί να δουλεύει ο ανεμιστήρας της, αλλά η εξωτερική μένει νεκρή (ούτε ανεμιστήρας ούτε συμπιεστής). Ο κωδικός εμφανίζεται μετά από αρκετά λεπτά προσπάθειας (4 × 110″ ≈ 7–8 λεπτά)."},
+ {plat:"midea", codes:["E3","EH03"],
+  d:"Οι στροφές του ανεμιστήρα εσωτερικής μένουν πολύ χαμηλά (κάτω από ~300 rpm) για κάποιο διάστημα → η μονάδα σταματά.",
+  s:"Ο ανεμιστήρας της εσωτερικής δεν γυρνάει ή γυρνάει πολύ αργά, και μετά από λίγο σταματά όλη η μονάδα με τον κωδικό."},
+ {plat:"midea", codes:["E4","EH60","E5","EH61","F1","EC53","F2","EC52","F3","EC54"],
+  d:"Η τάση στο αισθητήριο είναι κάτω από 0,06V ή πάνω από 4,94V (δηλαδή κομμένο ή βραχυκυκλωμένο αισθητήριο/φίσα).",
+  s:"Ο κωδικός βγαίνει αμέσως μόλις η πλακέτα διαβάσει το αισθητήριο (συνήθως στην εκκίνηση) και η μονάδα δεν δουλεύει κανονικά."},
+ {plat:"midea", codes:["EC","EL0C"],
+  d:"Σε ψύξη, τα πρώτα 5 λεπτά μετά την εκκίνηση, η θερμοκρασία του στοιχείου εσωτερικής (T2) δεν πέφτει αρκετά (δεν μένει 2°C κάτω από την αρχική για 4″) – αυτό γίνεται 3 φορές → εμφανίζει EC και σβήνει.",
+  s:"Ξεκινά, δουλεύει ο συμπιεστής, αλλά η εσωτερική δεν βγάζει κρύο αέρα (το στοιχείο δεν κρυώνει). Μετά από μερικά λεπτά σβήνει με EC – συνήθως έλλειψη ψυκτικού ή κλειστή βάνα."},
+ {plat:"midea", codes:["F0","PC08"],
+  d:"Το κύκλωμα μέτρησης ρεύματος βλέπει απότομη αύξηση ρεύματος → η μονάδα σταματά.",
+  s:"Δουλεύει και σταματά όταν φορτώνει (ζέστη, βρόμικο στοιχείο εξωτερικής, υψηλή πίεση, σφιχτός συμπιεστής)."},
+ {plat:"midea", codes:["F5","EC07"],
+  d:"Οι στροφές του ανεμιστήρα εξωτερικής μένουν κάτω από ~100–300 rpm ή πάνω από ~2400 rpm για περίπου 60 δευτερόλεπτα → η μονάδα σταματά και δείχνει τον κωδικό.",
+  s:"Στην εκκίνηση παίρνει ο ανεμιστήρας της εσωτερικής και ξεκινά ο συμπιεστής, αλλά ο ανεμιστήρας της εξωτερικής δεν ξεκινά (ή γυρνάει ακανόνιστα). Περίπου 1 λεπτό μετά σταματά η μονάδα και βγάζει F5."},
+ {plat:"midea", codes:["P0","PC00"],
+  d:"Το σήμα που στέλνει το IPM στο chip οδήγησης του συμπιεστή είναι μη φυσιολογικό → εμφανίζει P0 και σβήνει.",
+  s:"Ο συμπιεστής πάει να ξεκινήσει ή δουλεύει λίγο και κόβει απότομα· η προσπάθεια επαναλαμβάνεται."},
+ {plat:"midea", codes:["P1","PC01"],
+  d:"Το κύκλωμα μέτρησης τάσης βλέπει μη φυσιολογική αύξηση ή πτώση τάσης → η μονάδα σταματά.",
+  s:"Δεν ξεκινά ή σταματά όταν η τάση δικτύου είναι χαμηλή/υψηλή (μακρύ ή λεπτό καλώδιο, γεννήτρια, κακή επαφή στην τροφοδοσία)."},
+ {plat:"midea", codes:["P2","PC02"],
+  d:"Ο θερμικός διακόπτης στην κεφαλή του συμπιεστή ανοίγει (η πλακέτα δεν βλέπει τα 5V στο κύκλωμά του).",
+  s:"Δουλεύει κανονικά για κάποιο διάστημα, ο συμπιεστής ζεσταίνεται πολύ και σταματά – συχνά από έλλειψη ψυκτικού."},
+ {plat:"midea", codes:["P4","PC04"],
+  d:"Το ειδικό κύκλωμα ανίχνευσης βλέπει μη φυσιολογική οδήγηση του συμπιεστή inverter.",
+  s:"Ο συμπιεστής προσπαθεί να ξεκινήσει (μπορεί να ακουστεί βουητό/κραδασμός) και κόβει· ξαναδοκιμάζει μετά από λίγα λεπτά."}
+];
+var BEHSRC = {midea:"Midea service manuals – Malfunction decision conditions (E0–P4) και Electronic function «Fan speed malfunction»"};
+function behFor(plat, codes){
+  for(var i=0;i<BEH.length;i++){ var b=BEH[i]; if(b.plat!==plat) continue;
+    for(var j=0;j<codes.length;j++) if(b.codes.indexOf(String(codes[j]).toUpperCase())>=0) return b; }
+  return null;
+}
+
 // ===== Κωδικοί πλακέτας εξωτερικής (7-segment / LED) =====
 // OUTX[πίνακας][κωδικός] = τι δείχνει η πλακέτα της εξωτερικής για αυτόν τον κωδικό (εμφανίζεται στην κάρτα)
 var OUTX = {};
@@ -3330,12 +3377,16 @@ function ledSym(key, lamps){
   return '<span class="lsym">'+lamps.map(function(l,i){ var v=vs[i]||"0"; var cls = v==="0"?" off":(v==="c"?" c":v==="s"?" s":"");
     return '<span style="--lc:'+l.col+'"><i class="dot'+cls+'"></i>'+esc(l.n)+' '+esc(lampVal(v))+'</span>'; }).join("")+'</span>';
 }
+function behBox(plat, codes){
+  var b = typeof behFor==="function" ? behFor(plat, codes) : null; if(!b) return "";
+  return '<div class="beh"><div><b>🩺 Τι κάνει το μηχάνημα:</b> '+esc(b.s)+'</div><div class="small">📘 Πότε βγαίνει (manual): '+esc(b.d)+'</div></div>';
+}
 function card(r, showPlat){
   var c = r.c, t = r.t, kd = kindOf(c[1]);
   return '<div class="res"'+(kd?' style="--kc:'+kd[1]+'"':'')+'>'+
     '<div class="rh"><span class="codes">'+(t.tbl.lamps ? ledSym(c[0][0], t.tbl.lamps) : t.tbl.pat ? '<span class="code pat">'+esc(patSym(c[0][0], t.tbl.pat.labels))+'</span>' : c[0].map(function(k){return '<span class="code">'+esc(k)+'</span>';}).join(""))+'</span>'+
     (showPlat?'<span class="plat">'+esc(PLAT[t.plat].name)+'</span>':(kd?'<span class="kind">'+esc(kd[0])+'</span>':''))+'</div>'+
-    '<div class="rt">'+esc(c[1])+'</div>'+
+    '<div class="rt">'+esc(c[1])+'</div>'+behBox(t.plat, c[0])+
     (c[4]?'<div class="rl">↔ '+esc(c[4])+'</div>':'')+
     (c[2]?(function(){ var st=stepsOf(c[2]); return st ? '<div class="rd"><b>🔧 Τι ελέγχεις – με τη σειρά:</b><ol class="steps">'+st.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol></div>' : '<div class="rd"><b>🔧 Τι ελέγχεις:</b> '+esc(c[2])+'</div>'; })():'')+
     (c[3]?'<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+esc(c[3])+'</div>':'')+
@@ -3366,12 +3417,13 @@ function renderLed(b, tabs, multi){
     var ts = groups[sig], lamps = ts[0].tbl.lamps;
     var cur = S.ledv[sig] || (S.ledv[sig] = lamps.map(function(){return null;}));
     var maxN = lamps.map(function(l,i){ var m=0; ts.forEach(function(t){ t.tbl.codes.forEach(function(c){ var v=c[0][0].split("-")[i]; if(/^\d+$/.test(v)) m=Math.max(m,+v); }); }); return m; });
-    html += '<div class="ledw"><h3>Πάτα αυτό που βλέπεις σε κάθε λυχνία</h3>'+lamps.map(function(l,i){
+    html += '<div class="ledw"><h3>Για κάθε λυχνία: μένει αναμμένη, είναι σβηστή ή πόσες φορές αναβοσβήνει;</h3>'+lamps.map(function(l,i){
       var opts = [];
-      l.v.forEach(function(v){ if(v==="n"){ for(var k=1;k<=maxN[i];k++) opts.push(String(k)); } else opts.push(v); });
+      ["0","on"].concat(l.v).forEach(function(v){ if(v==="n"){ for(var k=1;k<=Math.max(maxN[i],1);k++) opts.push(String(k)); } else if(opts.indexOf(v)<0) opts.push(v); });
+      if(l.v.indexOf("n")<0){ for(var k2=1;k2<=Math.max(maxN[i],0);k2++) if(opts.indexOf(String(k2))<0) opts.push(String(k2)); }
       var cv = cur[i], dcls = cv==null||cv==="0" ? " off" : cv==="c"?" c":cv==="s"?" s":"";
       return '<div class="lamp" style="--lc:'+l.col+'"><div class="lname"><i class="dot'+dcls+'"></i>'+esc(l.n)+' <small>'+esc(l.sub||"")+'</small></div><div class="lopts">'+
-        opts.map(function(v){ var lab = v==="0"?"Σβηστή":v==="on"?"Αναμμένη":v==="c"?"Συνεχώς":v==="s"?"Αργά (1Hz)":v+"×"; return '<button class="lo'+(cv===v?' on':'')+'" data-lsig="'+esc(sig)+'" data-li="'+i+'" data-lv="'+v+'">'+lab+'</button>'; }).join("")+'</div></div>';
+        opts.map(function(v){ var lab = v==="0"?"○ Σβηστή":v==="on"?"● Αναμμένη":v==="c"?"✱ Αναβοσβήνει συνεχώς":v==="s"?"✱ Αργά (1Hz)":v+"×"; return '<button class="lo'+(cv===v?' on':'')+'" data-lsig="'+esc(sig)+'" data-li="'+i+'" data-lv="'+v+'">'+lab+'</button>'; }).join("")+'</div></div>';
     }).join("")+(cur.some(function(x){return x!=null;})?'<button class="ledreset" data-lreset="'+esc(sig)+'">↺ Καθαρισμός</button>':'')+'</div>';
     var setN = cur.filter(function(x){return x!=null;}).length;
     if(!setN){ html += '<div class="empty">Μέτρησε τις αναλαμπές σε έναν πλήρη κύκλο (ανάμεσα σε δύο παύσες) και πάτα τις τιμές παραπάνω.</div>'; return; }
@@ -3849,7 +3901,13 @@ function mmGuide(open){
 }
 function renderSym(){
   $("notes").innerHTML = "";
-  var h = '<div class="small info">🩺 Το μηχάνημα έχει πρόβλημα αλλά δεν βγάζει κωδικό; Διάλεξε τι βλέπεις. Οι αιτίες είναι με σειρά πιθανότητας – ξεκίνα από πάνω.</div>';
+  var h = '', q = S.q.trim(), bb = brandObj();
+  if(q && bb){ var rr = search(q), seenB = {};
+    if(rr.mode!=="none") rr.res.slice(0,6).forEach(function(x){ var be = behFor(x.t.plat, x.c[0]); if(!be || seenB[be.d]) return; seenB[be.d]=1;
+      h += '<div class="beh big"><div class="small">'+esc(bb.n)+' · κωδικός <b>'+esc(x.c[0][0])+'</b>'+(candidates(bb).length>1&&!bb.own?' ('+esc(PLAT[x.t.plat].name)+')':'')+' – '+esc(x.c[1])+'</div><div style="margin-top:6px"><b>🩺 Τι κάνει το μηχάνημα:</b> '+esc(be.s)+'</div><div class="small" style="margin-top:4px">📘 Πότε βγαίνει (manual): '+esc(be.d)+'</div><div class="small">Πηγή: '+esc(BEHSRC[x.t.plat]||"")+'</div></div>'; });
+    if(!h) h = '<div class="small info">Για τον κωδικό «'+esc(q)+'» δεν έχω ακόμα περιγραφή συμπεριφοράς από manual.</div>';
+  }
+  h += '<div class="small info">🩺 Το μηχάνημα έχει πρόβλημα αλλά δεν βγάζει κωδικό; Διάλεξε τι βλέπεις. Οι αιτίες είναι με σειρά πιθανότητας – ξεκίνα από πάνω.</div>';
   h += SYMPTOMS.map(function(s,i){
     return '<details class="sym"'+(S.sym===i?' open':'')+' data-sym="'+i+'"><summary>'+esc(s[0])+'</summary><ol class="steps">'+
       s[1].map(function(c){ var p=c[2]?partById(c[2]):null; return '<li><b>'+esc(c[0])+'</b><div>'+esc(c[1])+'</div>'+(p?'<button class="plk" data-gopart="'+p.id+'">'+p.icon+' Πώς μετράω: '+esc(p.name)+'</button>':'')+'</li>'; }).join("")+
