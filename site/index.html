@@ -2261,6 +2261,29 @@ BEH.push(
 );
 BEHSRC.aux = "AUX air conditioner service manual (Troubleshooting – PG motor / TA / TE)";
 
+// ---------- LG (LG support / service) ----------
+BEH.push(
+ {plat:"lg", codes:["5"], d:"Μη φυσιολογική επικοινωνία εσωτερικής–εξωτερικής (inverter).", s:"Η εξωτερική δεν ξεκινά ή σταματά· η εσωτερική δείχνει CH05. Αν βγαίνει αμέσως μετά την εγκατάσταση → συνήθως καλωδίωση."},
+ {plat:"lg", codes:["10"], d:"Πρόβλημα στον ανεμιστήρα της εσωτερικής (μοτέρ BLDC κλειδωμένο / χωρίς στροφές).", s:"Ο ανεμιστήρας της εσωτερικής δεν γυρνά ή σταματά και η μονάδα κόβει με CH10."},
+ {plat:"lg", codes:["67"], d:"Πρόβλημα στον ανεμιστήρα της εξωτερικής (μοτέρ BLDC κλειδωμένο / χωρίς στροφές).", s:"Ο ανεμιστήρας της εξωτερικής δεν γυρνά (συχνά εμπόδιο ή χιόνι/πάγος) και η μονάδα σταματά με CH67."},
+ {plat:"lg", codes:["61"], d:"Υπερθέρμανση: της εξωτερικής σε ψύξη ή της εσωτερικής σε θέρμανση.", s:"Δουλεύει και κόβει όταν ζεσταθεί το στοιχείο (βρόμικο στοιχείο/φίλτρο, κακός αερισμός). Το CH61 δεν φεύγει μόνο του – χρειάζεται κλείσιμο/άνοιγμα ρεύματος."}
+);
+BEHSRC.lg = "LG support – Guide to error codes (CH05, CH10/CH67, CH61)";
+// ---------- MITSUBISHI HEAVY (service manual – protective controls) ----------
+BEH.push(
+ {plat:"mhi", codes:["E42"], d:"Το ρεύμα εξόδου του inverter μετριέται με αντίσταση shunt· αν ξεπεράσει το όριο, ο συμπιεστής σταματά αμέσως.", s:"Ο συμπιεστής κόβει απότομα (στην εκκίνηση ή σε φορτίο) – η εσωτερική ζητά λειτουργία αλλά η εξωτερική σταματά."},
+ {plat:"mhi", codes:["E16"], d:"Προστασία μοτέρ ανεμιστήρα εσωτερικής: αν όσο λειτουργεί ο ανεμιστήρας οι στροφές μείνουν πολύ χαμηλές, σταματά ο συμπιεστής.", s:"Ο ανεμιστήρας της εσωτερικής δεν γυρνά ή γυρνά πολύ αργά και η μονάδα σταματά με E16."},
+ {plat:"mhi", codes:["E48"], d:"Προστασία μοτέρ ανεμιστήρα εξωτερικής: αν οι στροφές του μείνουν πολύ χαμηλές, σταματά ο συμπιεστής.", s:"Ο ανεμιστήρας της εξωτερικής δεν γυρνά και η μονάδα σταματά με E48."},
+ {plat:"mhi", codes:["E5"], d:"Προστασία σφάλματος σειριακής επικοινωνίας εσωτερικής ↔ εξωτερικής.", s:"Η εξωτερική σταματά / δεν ξεκινά και η μονάδα δείχνει E5."}
+);
+BEHSRC.mhi = "MHI service manual (SRR/FDTC R32) – Protective control: overcurrent, fan motor protection, serial signal transmission error";
+// ---------- TCL (TCL service manuals) ----------
+BEH.push(
+ {plat:"tcl", codes:["P0","E9"], d:"Το IPM έχει δική του προστασία υπερθέρμανσης και υπερέντασης· όταν στέλνει σήμα, η εξωτερική σβήνει.", s:"Η εξωτερική σταματά απότομα και η LED της πλακέτας εξωτερικής δείχνει τον κωδικό."},
+ {plat:"tcl", codes:["P6"], d:"Προστασία συμπυκνωτή: θερμοκρασία στοιχείου εξωτερικής ≥ 65°C για 10″ → η μονάδα σβήνει και δείχνει κωδικό.", s:"Δουλεύει σε ψύξη και κόβει όταν ζεσταθεί πολύ η εξωτερική (βρόμικο στοιχείο, κακός αερισμός, ανεμιστήρας εξωτερικής)."}
+);
+BEHSRC.tcl = "TCL service manuals (TAC-…CHSD, FMA multi) – Protection functions";
+
 function behFor(plat, codes){
   for(var i=0;i<BEH.length;i++){ var b=BEH[i]; if(b.plat!==plat) continue;
     for(var j=0;j<codes.length;j++) if(b.codes.indexOf(String(codes[j]).toUpperCase())>=0) return b; }
@@ -3334,7 +3357,7 @@ var FW = {
   plate: [["Zhuhai – Gree Electric Appliances","gree"],["Foshan / Shunde – GD Midea","midea"],["Ningbo – AUX","aux"],["Zhongshan – TCL","tcl"],["Qingdao – Haier","haier"],["Hisense (Shandong / Qingdao)","hisense"],["Δεν γράφει / δεν ξέρω",""]],
   rc: [[/^R(G\d{2}|5[17]|05|06|11)/,"midea","Τα τηλεχειριστήρια RG57/RG66/R51/R05 είναι της Midea."],[/^Y[A-Z]{1,3}\d?F/,"gree","Τα τηλεχειριστήρια Y…1F (YAP1F, YAN1F, YB1F, YAC1F…) είναι της Gree."],[/^YKR-/,"aux","Τα τηλεχειριστήρια YKR-… είναι της AUX."],[/^GYKQ/,"tcl","Τα τηλεχειριστήρια GYKQ-… είναι της TCL."]]
 };
-FW.pcb = [[/^3013\d|^30002\d|^GR[JZ]W?\d/,"gree",2,"Πλακέτα Gree (κωδικός 30138…/30002… ή τυπωμένο GRJ…)."],[/^171[2-3]\d{3}/,"midea",2,"Πλακέτα Midea (κωδικός ανταλλακτικού 17122…/17123…)."],[/^00(10|11)\d{5}/,"haier",1,"Κωδικός πλακέτας τύπου Haier (0010…/0011…) – λιγότερο σίγουρο."],[/^SX-/,"aux",1,"Τυπωμένο SX-… – συναντάται σε πλακέτες AUX (λιγότερο σίγουρο)."],[/^DB9\d/,"samsung",2,"Πλακέτα Samsung (DB92/DB93…)."]];
+FW.pcb = [[/^3013\d|^30002\d|^GR[JZ]W?\d/,"gree",2,"Πλακέτα Gree (κωδικός 30138…/30002… ή τυπωμένο GRJ…)."],[/^171[2-3]\d{3}/,"midea",2,"Πλακέτα Midea (κωδικός ανταλλακτικού 17122…/17123…)."],[/^00(10|11)\d{5}/,"haier",1,"Κωδικός πλακέτας τύπου Haier (0010…/0011…) – λιγότερο σίγουρο."],[/^SX-/,"aux",1,"Τυπωμένο SX-… – συναντάται σε πλακέτες AUX (λιγότερο σίγουρο)."],[/^DB9\d/,"samsung",2,"Πλακέτα Samsung (DB92/DB93…)."],[/^2109\d{5}/,"tcl",2,"Κωδικός ανταλλακτικού TCL (2109…)."],[/^K2\d{6}|^PCB-?HTSD|^PCB05-/,"hisense",2,"Πλακέτα Hisense (κωδικός K2…… ή τυπωμένο PCB-HTSD…/PCB05-…)."],[/^EBR\d{8}/,"lg",2,"Πλακέτα LG (EBR…)."],[/^MCC-?\d{3,4}/,"toshiba",2,"Πλακέτα Toshiba (MCC-…)."],[/^E[12]2[A-Z]\d{5}/,"me",2,"Πλακέτα Mitsubishi Electric (E22…/E12…)."],[/^EZ-?\d{6}/,"fujitsu",2,"Πλακέτα Fujitsu (ετικέτα EZ-……)."]];
 S.fw = {plate:"", rc:"", comp:"", pcb:""};
 function fwMap(o, cs){ if(!o || o==="?") return null; if(cs.indexOf(o)>=0) return o; if(o==="gree" && cs.indexOf("inv_gree")>=0) return "inv_gree"; return o; }
 function fwScore(cs){
@@ -3356,7 +3379,7 @@ function fwizHtml(b, cs){
     '<div class="small"><b>1. Ταμπελάκι εξωτερικής:</b> τι γράφει για κατασκευαστή ή πόλη (Manufacturer / Made in / διεύθυνση);</div>'+chips("plate",FW.plate)+
     '<div class="small" style="margin-top:8px"><b>2. Τηλεχειριστήριο:</b> γράψε τον κωδικό στην πλάτη ή μέσα στη θήκη μπαταριών</div><input id="fwrc" placeholder="π.χ. RG57A6/BGEF, YAP1F, YKR-…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.rc)+'">'+
     '<div class="small" style="margin-top:8px"><b>3. Ετικέτα συμπιεστή</b> (βγάλε το πλαϊνό καπάκι της εξωτερικής – γράψε το μοντέλο του συμπιεστή):</div><input id="fwcomp" placeholder="π.χ. QXA-A091zE190, KSK103D33UEZ3" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.comp)+'">'+
-    '<div class="small" style="margin-top:8px"><b>4. Πλακέτα εξωτερικής</b> (ρεύμα κλειστό): γράψε τον κωδικό από το λευκό αυτοκόλλητο της πλακέτας ή ό,τι είναι τυπωμένο στην άκρη της</div><input id="fwpcb" placeholder="π.χ. 30138000…, 17122000…, GRJW…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.pcb)+'">'+
+    '<div class="small" style="margin-top:8px"><b>4. Πλακέτα εξωτερικής</b> (ρεύμα κλειστό): γράψε τον κωδικό από το λευκό αυτοκόλλητο της πλακέτας ή ό,τι είναι τυπωμένο στην άκρη της</div><input id="fwpcb" placeholder="π.χ. 30138000…, 17122000…, EBR…, MCC-…, K20…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.pcb)+'">'+
     '<div class="small" style="margin-top:8px">💡 <b>5. Ο κωδικός βλάβης:</b> γράψε τον στο πεδίο του κωδικού παρακάτω – αν υπάρχει μόνο στο βλαβολόγιο ενός εργοστασίου, θα σου το πω.</div>'+
     '<div id="fwres">'+fwResult(b, cs)+'</div></div>';
   return h;
