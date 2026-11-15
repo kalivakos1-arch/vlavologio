@@ -199,6 +199,15 @@ details.note p{font-size:13.5px;color:var(--text2)}
 .proc summary{font-weight:700;color:var(--acctx);cursor:pointer;font-size:14.5px}
 .chk{color:var(--ok)}
 .det{color:var(--ok);font-weight:700}
+.chg.ico{width:44px;height:44px;padding:0;font-size:22px;line-height:1;border-radius:12px;display:grid;place-items:center}
+.catsel{display:flex;align-items:center;gap:12px}.catsel b{flex:1;font-size:16px}
+.cico{width:44px;height:44px;border-radius:12px;background:var(--accbg);display:grid;place-items:center;font-size:22px;flex:none}
+#catwrap .cats{margin-bottom:0}#catwrap .cat{box-shadow:none;background:var(--card2)}
+.allh{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin:22px 2px 6px}
+details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
+.kbh{font-size:19px;font-weight:800;margin:4px 2px 8px}
+.fmodel{border-color:var(--acc)}
+#ctx{display:none}
 .focus{background:var(--card);border:1px solid var(--acc);border-radius:var(--r);padding:12px;margin-bottom:10px;box-shadow:var(--sh)}
 .fz1{font-weight:800;font-size:16.5px;line-height:1.35;margin-bottom:4px}
 .fzb{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}.fzb .mini{padding:8px 12px}
@@ -222,10 +231,10 @@ details.note p{font-size:13.5px;color:var(--text2)}
     <div id="bsug"></div><button class="ledreset" id="bcancel" style="display:none">✕ Άκυρο – μένω στην ίδια μάρκα</button></div>
     <div id="brandsWrap"><div id="brands"></div></div>
   </div>
-  <div id="catwrap" style="display:none"><label class="lbl step"><b>2</b> Με τι έχεις να κάνεις;</label><div class="cats" id="cats"></div></div>
+  <div id="catwrap" class="card" style="display:none"><label class="lbl step"><b>2</b> Με τι έχεις να κάνεις;</label><div class="cats" id="cats"></div></div>
   <div class="card" id="oembox" style="display:none"></div>
   <div class="search"><div class="ctx" id="ctx"></div>
-    <div class="srcbox" id="srcbox"><button data-s="in"><i>🔢</i>Κωδικός</button><button data-s="led"><i>💡</i>Λυχνίες εσωτ.</button><button data-s="out"><i>📟</i>Πλακέτα εξωτ.</button><button data-s="parts"><i>🔧</i>Εξαρτήματα</button><button data-s="sym"><i>🩺</i>Συμπτώματα</button></div>
+    <div class="srcbox" id="srcbox"><button data-s="in"><i>🔢</i>Κωδικός</button><button data-s="led"><i>💡</i>Λυχνίες εσωτ.</button><button data-s="out"><i>📟</i>Πλακέτα εξωτ.</button><button data-s="sym"><i>🩺</i>Συμπτώματα</button><button data-s="parts"><i>📚</i>Γνώσεις</button></div>
     <div class="sbox">
       <input id="q" placeholder="Κωδικός βλάβης ή λέξη" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="search">
       <button id="clr" aria-label="Καθαρισμός">✕</button>

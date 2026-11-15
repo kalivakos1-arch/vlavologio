@@ -280,7 +280,15 @@ function search(q){
 function renderCats(){
   var b = brandObj(); var av = CATS.filter(function(c){ return !b || candidatesFor(b,c.id).length; });
   if(b && av.length && !av.some(function(c){return c.id===S.cat;})) S.cat = av[0].id;
-  $("catwrap").style.display = b ? "" : "none";
+  $("catwrap").style.display = b && !S.bedit ? "" : "none";
+  var cur = null; av.forEach(function(c){ if(c.id===S.cat) cur=c; });
+  if(av.length===1) S.catOpen = false;
+  if(cur && !S.catOpen){
+    $("cats").className = "";
+    $("cats").innerHTML = '<div class="catsel"><span class="cico">'+cur.icon+'</span><b>'+esc(cur.label)+'</b>'+(av.length>1?'<button class="chg ico" id="chgCat" aria-label="Αλλαγή κατηγορίας" title="Αλλαγή κατηγορίας">⇄</button>':'')+'</div>';
+    return;
+  }
+  $("cats").className = "cats";
   $("cats").innerHTML = av.map(function(c){
     return '<button class="cat'+(c.id===S.cat?' on':'')+'" data-c="'+c.id+'"><span>'+c.icon+'</span>'+esc(c.label)+'</button>';
   }).join("");
@@ -290,7 +298,7 @@ function renderBrands(){
   var own = list.filter(function(b){return b.own;}), reb = list.filter(function(b){return !b.own;});
   function btn(b){ return '<button class="br'+(b.n===S.brand?' on':'')+(b.own?'':' reb')+'" data-b="'+esc(b.n)+'">'+badge(b.n,"sm")+esc(b.n)+'</button>'; }
   var cb = brandObj(), editing = !cb || S.bedit;
-  $("bchosen").innerHTML = (cb && !editing) ? '<div class="bchosen">'+badge(cb.n,"lg")+'<div class="bt"><b>'+esc(cb.n)+'</b><small>'+esc(bSub(cb))+'</small></div><button class="chg" id="chgBrand">Αλλαγή</button></div>' : "";
+  $("bchosen").innerHTML = (cb && !editing) ? '<div class="bchosen">'+badge(cb.n,"lg")+'<div class="bt"><b>'+esc(cb.n)+'</b><small>'+esc(bSub(cb))+'</small></div><button class="chg ico" id="chgBrand" aria-label="Αλλαγή μάρκας" title="Αλλαγή μάρκας">⇄</button></div>' : "";
   $("bpick").style.display = editing ? "" : "none";
   $("bcancel").style.display = (cb && S.bedit) ? "" : "none";
   if(!editing) $("brandsWrap").classList.remove("open");
@@ -302,9 +310,11 @@ function renderBrands(){
 }
 function renderOem(){
   var b = brandObj(); var box = $("oembox");
-  if(!b){ box.style.display="none"; return; }
+  if(!b || S.bedit){ box.style.display="none"; return; }
   if(b.own){
-    box.style.display = "block";
+    box.style.display = b.hint ? "block" : "none";
+    box.innerHTML = b.hint ? '<div class="hint" style="margin:0">'+esc(b.hint)+'</div>' : "";
+    return;
     box.innerHTML = (b.hint ? '<div class="hint">'+esc(b.hint)+'</div>' : "")+
       '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι – προαιρετικό)</label><input id="model" placeholder="π.χ. '+esc(b.n==="LG"?"S12EQ / HU071MR":b.n==="Daikin"?"FTXM35R":b.n==="Gree"?"GWH12ACC-K6DNA1D":"μοντέλο εσωτερικής ή εξωτερικής")+'" autocapitalize="characters" spellcheck="false">'+
       '<div class="small" id="mapMsg">Με το μοντέλο βλέπεις και στοιχεία εξαρτημάτων (Ω, χρώματα) στον «Έλεγχο εξαρτημάτων».</div>';
@@ -509,9 +519,10 @@ function renderResults(){
   }
   out.innerHTML = html;
   // σημειώσεις & πλήρης λίστα
-  var seen={}, nh="";
+  var seen={}, nh='<div class="allh">📋 Όλοι οι κωδικοί – '+esc(b.n)+'</div>', ntab = 0;
+  tabs.forEach(function(t){ if(!seen[t.key]) ntab++; }); seen = {};
   tabs.forEach(function(t){ if(seen[t.key]) return; seen[t.key]=1;
-    nh += '<details class="note"><summary>📘 '+esc(t.tbl.name)+' – τιμές & όλοι οι κωδικοί ('+t.tbl.codes.length+')</summary>'+
+    nh += '<details class="note allc"'+(!q && ntab===1?' open':'')+'><summary>'+esc(t.tbl.name)+' ('+t.tbl.codes.length+' κωδικοί)</summary>'+
       '<p>'+esc(t.tbl.note)+'</p>'+(OUTNOTE[t.key]?'<p>📟 '+esc(OUTNOTE[t.key])+'</p>':'')+'<p class="small">Πηγή: '+esc(t.tbl.src)+'</p>'+(t.tbl.chk?'<p class="small chk">✔ Έλεγχος: '+esc(t.tbl.chk)+'</p>':'')+
       '<div class="all">'+t.tbl.codes.map(function(c){return '<div class="ar" data-q="'+esc(c[0][0])+'"><span class="code">'+esc(c[0].join(" / "))+'</span> '+esc(c[1])+'</div>';}).join("")+'</div></details>';
   });
@@ -1042,6 +1053,7 @@ function renderParts(){
     var P0 = partById(S.part), d = modelDiag(S.part);
     if(S.focus.side && S.part==="fan") S.fw = S.focus.side;
     var hf = focusHead();
+    if(!mkey(S.model) || mkey(S.model).length<4) hf += '<div class="pcalcw fmodel"><div class="lbl">🏷️ Γράψε το μοντέλο από το ταμπελάκι (εσωτερικής ή εξωτερικής)</div><input id="fmodel" placeholder="π.χ. FTXM35R, GWH12ACC, V5MFO32-60" autocapitalize="characters" spellcheck="false" value="'+esc(S.model||"")+'"><div class="small">Με το μοντέλο βρίσκω τις προδιαγραφές του ανταλλακτικού (Ω, φίσες, χρώματα). Χωρίς μοντέλο σου δείχνω τη γενική μέθοδο.</div></div>';
     hf += '<div class="pwarn">⚡ Πριν ακουμπήσεις: κλείσε ρεύμα, περίμενε 5–10′ να αδειάσουν οι πυκνωτές της πλακέτας (μέτρα DC < 5V). Μετρήσεις «με ρεύμα» μόνο με μονωμένους ακροδέκτες.</div>';
     if(d) hf += renderDiag(d);
     else hf += '<div id="pmodelinfo"></div>' + (S.part==="fan" ? fanCountBox() : '');
@@ -1059,7 +1071,7 @@ function renderParts(){
     if(MEAS[S.part]) measUpdate();
     return;
   }
-  var h = '<div class="pbox"><label class="lbl">Μοντέλο κλιματιστικού (ταμπελάκι)</label>'+
+  var h = '<div class="kbh">📚 Τράπεζα γνώσεων</div><div class="small" style="margin:-4px 2px 10px">Οδηγοί πολυμέτρου, μετρήσεις εξαρτημάτων, πιέσεις. Για να ελέγξεις μια βλάβη, ξεκίνα από τον κωδικό – θα σε φέρει εδώ μόνο με ό,τι χρειάζεσαι.</div><div class="pbox"><label class="lbl">Μοντέλο κλιματιστικού (ταμπελάκι)</label>'+
     '<input id="pmodel" placeholder="π.χ. GWH12AGB-K6DNA1A" autocapitalize="characters" spellcheck="false" value="'+esc(S.model||"")+'">'+
     '<div class="small pinfo" id="pplat"></div><div id="pmodelinfo"></div><div id="pmine"></div></div>';
   h += mmGuide(!S.part);
@@ -1095,8 +1107,10 @@ function renderParts(){
   if(P && MEAS[P.id]) measUpdate();
   if(P && P.id==="pres") presCalc();
 }
+var fmT=null;
 document.addEventListener("input", function(e){
   var id = e.target.id;
+  if(id==="fmodel"){ S.model = e.target.value; if($("model")) $("model").value=S.model; clearTimeout(fmT); fmT=setTimeout(function(){ if(mkey(S.model).length>=4 && (modelDiag(S.part) || fanKnown().some(function(f){return f.re;}) || modelInfo().some(function(m){return m.re;}))){ renderParts(); } },700); return; }
   if(id==="pmodel"){ if(applyModel(e.target.value)){ var pos=e.target.selectionStart; renderParts(); var mi=$("pmodel"); mi.focus(); try{mi.setSelectionRange(pos,pos);}catch(x){} } else { renderMine(); renderModelBox(); if($("fanw")){ $("fanw").innerHTML=fanWizard(); fanColsUpdate(); fanVerdict(); } } if($("model")) $("model").value = S.model; }
   if(id==="ptemp"){ S.ptemp = e.target.value; calcSens(); }
   if(id==="pmeas") calcSens();
@@ -1125,14 +1139,15 @@ function renderAll(){ renderCats(); renderBrands(); renderOem(); renderCtx(); re
 
 // ===== events =====
 document.addEventListener("click", function(e){
-  var el = e.target.closest("[data-c],[data-b],[data-o],[data-del],[data-q],#brandSel,#chgBrand,#theme,#bcancel");
+  var el = e.target.closest("[data-c],[data-b],[data-o],[data-del],[data-q],#brandSel,#chgBrand,#theme,#bcancel,#chgCat");
   if(!el) return;
   if(el.id==="brandSel"){ $("brandsWrap").classList.toggle("open"); $("brandSel").classList.toggle("on", $("brandsWrap").classList.contains("open")); return; }
-  if(el.id==="bcancel"){ S.bedit=false; $("bsug").innerHTML=""; renderBrands(); return; }
-  if(el.id==="chgBrand"){ S.bedit=true; renderBrands(); setTimeout(function(){ $("bq").value=""; $("bq").focus(); },30); return; }
+  if(el.id==="chgCat"){ S.catOpen=true; renderCats(); return; }
+  if(el.id==="bcancel"){ S.bedit=false; $("bsug").innerHTML=""; renderAll(); return; }
+  if(el.id==="chgBrand"){ S.bedit=true; renderBrands(); renderCats(); $("oembox").style.display="none"; setTimeout(function(){ $("bq").value=""; $("bq").focus(); },30); return; }
   if(el.id==="theme"){ var th=["auto","light","dark"], i=th.indexOf(LS.get("vl_theme","auto")); setTheme(th[(i+1)%3]); return; }
-  if(el.hasAttribute("data-c")){ S.cat = el.getAttribute("data-c"); S.oem=null; renderAll(); setTimeout(function(){ var m=$("model"); if(m && !m.value) m.focus(); else $("q").focus(); },50); return; }
-  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.bedit=false; S.oem=null; S.model=""; S.ledv={}; $("bsug").innerHTML=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
+  if(el.hasAttribute("data-c")){ S.cat = el.getAttribute("data-c"); S.oem=null; S.catOpen=false; renderAll(); setTimeout(function(){ var m=$("model"); if(m && !m.value) m.focus(); else $("q").focus(); },50); return; }
+  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.bedit=false; S.catOpen=true; S.oem=null; S.model=""; S.ledv={}; $("bsug").innerHTML=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
   if(el.hasAttribute("data-o")){ S.oem = el.getAttribute("data-o"); markChips(); renderCtx(); renderResults(); persist(); return; }
   if(el.hasAttribute("data-del")){ var b=brandObj(), p=el.getAttribute("data-del"); myMap = myMap.filter(function(m){return !(m.brand===b.n && m.prefix===p);}); LS.set("vl_mymap",myMap); renderOem(); return; }
   if(el.hasAttribute("data-q")){ S.q = el.getAttribute("data-q"); $("q").value=S.q; renderResults(); window.scrollTo({top:$("q").getBoundingClientRect().top+window.scrollY-80,behavior:"smooth"}); return; }
