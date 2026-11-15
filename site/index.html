@@ -205,6 +205,19 @@ details.note p{font-size:13.5px;color:var(--text2)}
 #catwrap .cats{margin-bottom:0}#catwrap .cat{box-shadow:none;background:var(--card2)}
 .allh{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin:22px 2px 6px}
 details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
+#scanov{position:fixed;inset:0;z-index:9999;background:var(--bg);display:none;flex-direction:column;gap:8px;padding:12px;overflow:auto}
+.schead{display:flex;justify-content:space-between;align-items:center;font-size:17px}
+.scbox{position:relative;width:100%;max-width:640px;margin:0 auto;border-radius:14px;overflow:hidden;background:#000;aspect-ratio:4/3}
+.scbox video{width:100%;height:100%;object-fit:cover;display:block}
+.scguide{position:absolute;left:6%;right:6%;top:32%;bottom:32%;border:3px solid #34d399;border-radius:10px;box-shadow:0 0 0 999px rgba(0,0,0,.35)}
+.scguide:after{content:"";position:absolute;left:4%;right:4%;top:50%;height:2px;background:#ef4444;opacity:.8}
+.scmsg{text-align:center;font-size:14px}
+.scbtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.scphoto{cursor:pointer;padding:10px 14px}
+.sccode{font:700 20px ui-monospace,Menlo,monospace;word-break:break-all;text-align:center;padding:10px;border:1px dashed var(--line);border-radius:12px;background:var(--card2)}
+.serl{padding:8px 10px;margin:6px 0;border-radius:10px;background:var(--card2);border:1px solid var(--line)}
+.serbox{margin:8px 0}
+.scanbtn{width:100%;box-sizing:border-box;white-space:normal;padding:10px 12px;margin:4px 0 8px;line-height:1.3}
 .fwiz{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:10px 0}.fwbtn{margin-top:10px;padding:9px 12px;width:100%}
 .kbh{font-size:19px;font-weight:800;margin:4px 2px 8px}
 .fmodel{border-color:var(--acc)}
@@ -3358,7 +3371,7 @@ var FW = {
   rc: [[/^R(G\d{2}|5[17]|05|06|11)/,"midea","Τα τηλεχειριστήρια RG57/RG66/R51/R05 είναι της Midea."],[/^Y[A-Z]{1,3}\d?F/,"gree","Τα τηλεχειριστήρια Y…1F (YAP1F, YAN1F, YB1F, YAC1F…) είναι της Gree."],[/^YKR-/,"aux","Τα τηλεχειριστήρια YKR-… είναι της AUX."],[/^GYKQ/,"tcl","Τα τηλεχειριστήρια GYKQ-… είναι της TCL."]]
 };
 FW.pcb = [[/^3013\d|^30002\d|^GR[JZ]W?\d/,"gree",2,"Πλακέτα Gree (κωδικός 30138…/30002… ή τυπωμένο GRJ…)."],[/^171[2-3]\d{3}/,"midea",2,"Πλακέτα Midea (κωδικός ανταλλακτικού 17122…/17123…)."],[/^00(10|11)\d{5}/,"haier",1,"Κωδικός πλακέτας τύπου Haier (0010…/0011…) – λιγότερο σίγουρο."],[/^SX-/,"aux",1,"Τυπωμένο SX-… – συναντάται σε πλακέτες AUX (λιγότερο σίγουρο)."],[/^DB9\d/,"samsung",2,"Πλακέτα Samsung (DB92/DB93…)."],[/^2109\d{5}/,"tcl",2,"Κωδικός ανταλλακτικού TCL (2109…)."],[/^K2\d{6}|^PCB-?HTSD|^PCB05-/,"hisense",2,"Πλακέτα Hisense (κωδικός K2…… ή τυπωμένο PCB-HTSD…/PCB05-…)."],[/^EBR\d{8}/,"lg",2,"Πλακέτα LG (EBR…)."],[/^MCC-?\d{3,4}/,"toshiba",2,"Πλακέτα Toshiba (MCC-…)."],[/^E[12]2[A-Z]\d{5}/,"me",2,"Πλακέτα Mitsubishi Electric (E22…/E12…)."],[/^EZ-?\d{6}/,"fujitsu",2,"Πλακέτα Fujitsu (ετικέτα EZ-……)."]];
-S.fw = {plate:"", rc:"", comp:"", pcb:""};
+S.fw = {plate:"", rc:"", comp:"", pcb:"", ser:""};
 function fwMap(o, cs){ if(!o || o==="?") return null; if(cs.indexOf(o)>=0) return o; if(o==="gree" && cs.indexOf("inv_gree")>=0) return "inv_gree"; return o; }
 function fwScore(cs){
   var sc = {}, why = {};
@@ -3367,6 +3380,7 @@ function fwScore(cs){
   if(cp.length>=3) FW.comp.forEach(function(x){ if(x[0].test(cp)) add(x[1],x[2],x[3]); });
   var pb = String(S.fw.pcb||"").toUpperCase().replace(/\s/g,"");
   if(pb.length>=4) FW.pcb.forEach(function(x){ if(x[0].test(pb)) add(x[1],x[2],x[3]); });
+  if(S.fw.ser && typeof serInfo==="function") serInfo(S.fw.ser, null).forEach(function(e){ if(e.w && !e.model) add(e.o, e.w, e.k+(e.d?" · "+dateTxt(e.d).replace("📅 ",""):"")); });
   FW.plate.forEach(function(a){ if(S.fw.plate===a[0]) add(a[1],2,"ταμπελάκι: "+a[0]); });
   var r = String(S.fw.rc||"").toUpperCase().replace(/\s/g,"");
   if(r.length>=3) FW.rc.forEach(function(x){ if(x[0].test(r)) add(x[1],2,x[2]); });
@@ -3376,10 +3390,12 @@ function fwizHtml(b, cs){
   if(!S.fwOpen) return '<button class="mini fwbtn" id="fwopen">🔎 Δεν ξέρω το εργοστάσιο – βοήθησέ με</button>';
   var chips = function(key, list){ return '<div class="chips">'+list.map(function(a){ return '<button class="chip'+(S.fw[key]===a[0]?' on':'')+'" data-fwk="'+key+'" data-fwv="'+esc(a[0])+'">'+esc(a[0])+'</button>'; }).join("")+'</div>'; };
   var h = '<div class="fwiz"><div class="lbl" style="margin-top:0">🔎 Βρες το εργοστάσιο – απάντησε ό,τι ξέρεις</div>'+
+    '<button class="mini scanbtn" data-scan="ser">📷 Σκάναρε το barcode της ετικέτας (σειριακός)</button>'+
+    (S.fw.ser ? '<div class="serbox"><div class="small"><b>Σειριακός:</b> '+esc(S.fw.ser)+' <button class="x" data-fwclr="ser">✕</button></div>'+serHtml(S.fw.ser, cs)+'</div>' : '')+
     '<div class="small"><b>1. Ταμπελάκι εξωτερικής:</b> τι γράφει για κατασκευαστή ή πόλη (Manufacturer / Made in / διεύθυνση);</div>'+chips("plate",FW.plate)+
     '<div class="small" style="margin-top:8px"><b>2. Τηλεχειριστήριο:</b> γράψε τον κωδικό στην πλάτη ή μέσα στη θήκη μπαταριών</div><input id="fwrc" placeholder="π.χ. RG57A6/BGEF, YAP1F, YKR-…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.rc)+'">'+
-    '<div class="small" style="margin-top:8px"><b>3. Ετικέτα συμπιεστή</b> (βγάλε το πλαϊνό καπάκι της εξωτερικής – γράψε το μοντέλο του συμπιεστή):</div><input id="fwcomp" placeholder="π.χ. QXA-A091zE190, KSK103D33UEZ3" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.comp)+'">'+
-    '<div class="small" style="margin-top:8px"><b>4. Πλακέτα εξωτερικής</b> (ρεύμα κλειστό): γράψε τον κωδικό από το λευκό αυτοκόλλητο της πλακέτας ή ό,τι είναι τυπωμένο στην άκρη της</div><input id="fwpcb" placeholder="π.χ. 30138000…, 17122000…, EBR…, MCC-…, K20…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.pcb)+'">'+
+    '<div class="small" style="margin-top:8px"><b>3. Ετικέτα συμπιεστή</b> (βγάλε το πλαϊνό καπάκι της εξωτερικής – γράψε το μοντέλο του συμπιεστή):</div><div class="row2"><input id="fwcomp" placeholder="π.χ. QXA-A091zE190, KSK103D33UEZ3" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.comp)+'"><button class="mini" data-scan="comp" title="Σάρωση">📷</button></div>'+
+    '<div class="small" style="margin-top:8px"><b>4. Πλακέτα εξωτερικής</b> (ρεύμα κλειστό): γράψε τον κωδικό από το λευκό αυτοκόλλητο της πλακέτας ή ό,τι είναι τυπωμένο στην άκρη της</div><div class="row2"><input id="fwpcb" placeholder="π.χ. 30138000…, 17122000…, EBR…, MCC-…, K20…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.pcb)+'"><button class="mini" data-scan="pcb" title="Σάρωση">📷</button></div>'+
     '<div class="small" style="margin-top:8px">💡 <b>5. Ο κωδικός βλάβης:</b> γράψε τον στο πεδίο του κωδικού παρακάτω – αν υπάρχει μόνο στο βλαβολόγιο ενός εργοστασίου, θα σου το πω.</div>'+
     '<div id="fwres">'+fwResult(b, cs)+'</div></div>';
   return h;
@@ -3389,13 +3405,15 @@ function fwResult(b, cs){
   if(!ks.length) return '<div class="small" style="margin-top:8px">Απάντησε τουλάχιστον ένα για να σου πω το πιθανό εργοστάσιο.</div>';
   var top = ks[0], tie = ks.length>1 && r.sc[ks[1]]===r.sc[top];
   if(tie) return '<div class="pver mid" style="margin-top:8px">⚠️ Τα στοιχεία δείχνουν διαφορετικά εργοστάσια ('+ks.map(function(k){return esc(PLAT[k]?PLAT[k].name:k);}).join(" / ")+'). Έλεγξε ξανά – συχνά το τηλεχειριστήριο έχει αλλαχτεί με γενικό.</div>';
-  var name = PLAT[top] ? PLAT[top].name : top, inC = cs.indexOf(top)>=0, sure = r.sc[top]>=4;
-  return '<div class="pver '+(sure?'good':'mid')+'" style="margin-top:8px">'+(sure?'✅ Σχεδόν σίγουρα':'🟡 Πιθανότατα')+' <b>'+esc(name)+'</b><div class="small" style="font-weight:500">Γιατί: '+esc(r.why[top].join(" · "))+(sure?'':' – με ένα ακόμα στοιχείο που ταιριάζει θα είναι σίγουρο.')+'</div></div>'+
+  var name = PLAT[top] ? PLAT[top].name : top, inC = cs.indexOf(top)>=0, conf = ks.length>1 && r.sc[ks[1]]>=2, sure = r.sc[top]>=4 && !conf;
+  var cw = conf ? '<div class="pver mid" style="margin-top:8px">⚠️ Αντικρουόμενα στοιχεία: '+esc(PLAT[ks[1]]?PLAT[ks[1]].name:ks[1])+' ('+esc(r.why[ks[1]].join(" · "))+'). Ίσως έχει αλλαχτεί πλακέτα ή τηλεχειριστήριο – έλεγξε ξανά.</div>' : '';
+  return '<div class="pver '+(sure?'good':'mid')+'" style="margin-top:8px">'+(sure?'✅ Σχεδόν σίγουρα':'🟡 Πιθανότατα')+' <b>'+esc(name)+'</b><div class="small" style="font-weight:500">Γιατί: '+esc(r.why[top].join(" · "))+(sure||conf?'':' – με ένα ακόμα στοιχείο που ταιριάζει θα είναι σίγουρο.')+'</div></div>'+cw+
     (inC ? '<button class="mini" style="margin-top:6px" data-o="'+top+'">Χρησιμοποίησε '+esc(name)+'</button>' : '<div class="small">Το '+esc(name)+' δεν είναι στα συνήθη εργοστάσια της '+esc(b.n)+' σε αυτή την κατηγορία – έλεγξε ξανά.</div>');
 }
 document.addEventListener("click", function(e){
-  var el = e.target.closest("#fwopen,[data-fwk]"); if(!el) return;
+  var el = e.target.closest("#fwopen,[data-fwk],[data-fwclr]"); if(!el) return;
   if(el.id==="fwopen"){ S.fwOpen = true; renderOem(); return; }
+  if(el.hasAttribute("data-fwclr")){ S.fw[el.getAttribute("data-fwclr")] = ""; renderOem(); return; }
   var k = el.getAttribute("data-fwk"), v = el.getAttribute("data-fwv"); S.fw[k] = S.fw[k]===v ? "" : v;
   var b = brandObj(); if(b && $("fwiz")){ $("fwiz").innerHTML = fwizHtml(b, candidates(b)); }
 });
@@ -3404,8 +3422,10 @@ function renderOem(){
   var b = brandObj(); var box = $("oembox");
   if(!b || S.bedit){ box.style.display="none"; return; }
   if(b.own){
-    box.style.display = b.hint ? "block" : "none";
-    box.innerHTML = b.hint ? '<div class="hint" style="margin:0">'+esc(b.hint)+'</div>' : "";
+    box.style.display = "block";
+    box.innerHTML = (b.hint ? '<div class="hint" style="margin:0 0 8px">'+esc(b.hint)+'</div>' : "")+
+      '<button class="mini scanbtn" data-scan="ser">📷 Σκάναρε το barcode της ετικέτας – ημερομηνία κατασκευής</button>'+
+      (S.fw.ser ? '<div class="serbox"><div class="small"><b>Σειριακός:</b> '+esc(S.fw.ser)+' <button class="x" data-fwclr="ser">✕</button></div>'+serHtml(S.fw.ser, null)+'</div>' : '');
     return;
     box.innerHTML = (b.hint ? '<div class="hint">'+esc(b.hint)+'</div>' : "")+
       '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι – προαιρετικό)</label><input id="model" placeholder="π.χ. '+esc(b.n==="LG"?"S12EQ / HU071MR":b.n==="Daikin"?"FTXM35R":b.n==="Gree"?"GWH12ACC-K6DNA1D":"μοντέλο εσωτερικής ή εξωτερικής")+'" autocapitalize="characters" spellcheck="false">'+
@@ -3421,7 +3441,7 @@ function renderOem(){
   box.innerHTML =
     (b.hint?'<div class="hint">'+esc(b.hint)+'</div>':'<div class="hint">Η '+esc(b.n)+' δεν έχει δικό της εργοστάσιο. Διάλεξε εργοστάσιο ή άφησε «Σύγκριση» για να δεις τι σημαίνει ο κωδικός σε κάθε πιθανό εργοστάσιο.</div>')+
     '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι)</label>'+
-    '<div class="row2"><input id="model" placeholder="μοντέλο εξωτερικής ή εσωτερικής – π.χ. V5MFO32-60" autocapitalize="characters" spellcheck="false"><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
+    '<div class="row2"><input id="model" placeholder="μοντέλο εξωτερικής ή εσωτερικής – π.χ. V5MFO32-60" autocapitalize="characters" spellcheck="false"><button class="mini" data-scan="model" title="Σάρωση barcode">📷</button><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
     '<div id="mapMsg" class="small"></div>'+
     '<label class="lbl">Εργοστάσιο παραγωγής</label>'+
     '<div class="chips">'+(cs.length>1?'<button class="chip'+(S.oem==="__all"?' on':'')+'" data-o="__all">Σύγκριση όλων</button>':'')+
@@ -4256,7 +4276,7 @@ document.addEventListener("click", function(e){
   if(el.id==="chgBrand"){ S.bedit=true; renderBrands(); renderCats(); $("oembox").style.display="none"; setTimeout(function(){ $("bq").value=""; $("bq").focus(); },30); return; }
   if(el.id==="theme"){ var th=["auto","light","dark"], i=th.indexOf(LS.get("vl_theme","auto")); setTheme(th[(i+1)%3]); return; }
   if(el.hasAttribute("data-c")){ S.cat = el.getAttribute("data-c"); S.oem=null; S.catOpen=false; renderAll(); setTimeout(function(){ var m=$("model"); if(m && !m.value) m.focus(); else $("q").focus(); },50); return; }
-  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.bedit=false; S.catOpen=true; S.oem=null; S.model=""; S.ledv={}; $("bsug").innerHTML=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
+  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.bedit=false; S.fw={plate:"",rc:"",comp:"",pcb:"",ser:""}; S.fwOpen=false; S.catOpen=true; S.oem=null; S.model=""; S.ledv={}; $("bsug").innerHTML=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
   if(el.hasAttribute("data-o")){ S.oem = el.getAttribute("data-o"); markChips(); renderCtx(); renderResults(); persist(); return; }
   if(el.hasAttribute("data-del")){ var b=brandObj(), p=el.getAttribute("data-del"); myMap = myMap.filter(function(m){return !(m.brand===b.n && m.prefix===p);}); LS.set("vl_mymap",myMap); renderOem(); return; }
   if(el.hasAttribute("data-q")){ S.q = el.getAttribute("data-q"); $("q").value=S.q; renderResults(); window.scrollTo({top:$("q").getBoundingClientRect().top+window.scrollY-80,behavior:"smooth"}); return; }
@@ -4307,6 +4327,348 @@ function setTheme(t){ LS.set("vl_theme",t); var r=document.documentElement; if(t
   $("theme").textContent = t==="light"?"☀️":t==="dark"?"🌙":"🌓"; $("theme").title = t==="light"?"Φωτεινό θέμα":t==="dark"?"Σκούρο θέμα":"Αυτόματο θέμα (όπως το κινητό)";
   var dark = t==="dark" || (t==="auto" && !(window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches));
   var m=document.querySelector('meta[name=theme-color]'); if(m) m.setAttribute("content", dark?"#0b1220":"#eef2f8"); }
+// ===== Barcode decoder (pure JS, works on iPhone & Android) =====
+// Code128, Code39, EAN-13/UPC-A, ITF (Interleaved 2 of 5). Tables cross-checked with ReportLab.
+var BC = (function(){
+  var P128 = "212222,222122,222221,121223,121322,131222,122213,122312,132212,221213,221312,231212,112232,122132,122231,113222,123122,123221,223211,221132,221231,213212,223112,312131,311222,321122,321221,312212,322112,322211,212123,212321,232121,111323,131123,131321,112313,132113,132311,211313,231113,231311,112133,112331,132131,113123,113321,133121,313121,211331,231131,213113,213311,213131,311123,311321,331121,312113,312311,332111,314111,221411,431111,111224,111422,121124,121421,141122,141221,112214,112412,122114,122411,142112,142211,241211,221114,413111,241112,134111,111242,121142,121241,114212,124112,124211,411212,421112,421211,212141,214121,412121,111143,111341,131141,114113,114311,411113,411311,113141,114131,311141,411131,211412,211214,211232".split(",").map(function(p){ return p.split("").map(Number); });
+  var STOP = [2,3,3,1,1,1,2];
+  var C39 = {"000110100":"0","100100001":"1","001100001":"2","101100000":"3","000110001":"4","100110000":"5","001110000":"6","000100101":"7","100100100":"8","001100100":"9","100001001":"A","001001001":"B","101001000":"C","000011001":"D","100011000":"E","001011000":"F","000001101":"G","100001100":"H","001001100":"I","000011100":"J","100000011":"K","001000011":"L","101000010":"M","000010011":"N","100010010":"O","001010010":"P","000000111":"Q","100000110":"R","001000110":"S","000010110":"T","110000001":"U","011000001":"V","111000000":"W","010010001":"X","110010000":"Y","011010000":"Z","010000101":"-","110000100":".","011000100":" ","010010100":"*","010101000":"$","010100010":"/","010001010":"+","000101010":"%"};
+  var EL = [[3,2,1,1],[2,2,2,1],[2,1,2,2],[1,4,1,1],[1,1,3,2],[1,2,3,1],[1,1,1,4],[1,3,1,2],[1,2,1,3],[3,1,1,2]];
+  var EG = EL.map(function(p){ return p.slice().reverse(); });
+  var EPAR = ["LLLLLL","LLGLGG","LLGGLG","LLGGGL","LGLLGG","LGGLLG","LGGGLL","LGLGLG","LGLGGL","LGGLGL"];
+  var ITF = ["00110","10001","01001","11000","00101","10100","01100","00011","10010","01010"];
+
+  // line of gray values -> run lengths; bar[i] true for dark runs
+  function runs(g, mode){
+    var n0 = g.length, i; if(n0 < 40) return null;
+    var n = mode ? n0*2-1 : n0, s = new Float32Array(n);
+    if(mode){
+      // upsample x2 (linear) then unsharp mask – recovers thin bars on blurry camera frames
+      var up = new Float32Array(n); for(i=0;i<n0;i++){ up[2*i]=g[i]; if(i<n0-1) up[2*i+1]=(g[i]+g[i+1])/2; }
+      var bl = new Float32Array(n), R = 4;
+      for(i=0;i<n;i++){ var t=0, c=0; for(var q=Math.max(0,i-R);q<=Math.min(n-1,i+R);q++){ t+=up[q]; c++; } bl[i]=t/c; }
+      for(i=0;i<n;i++) s[i] = up[i] + 1.5*(up[i]-bl[i]);
+    } else { s[0]=g[0]; s[n-1]=g[n-1]; for(i=1;i<n-1;i++) s[i] = (g[i-1]+2*g[i]+g[i+1])/4; }
+    var half = Math.max(8, (n/24)|0), pre = new Float64Array(n+1);
+    for(i=0;i<n;i++) pre[i+1] = pre[i]+s[i];
+    var bs = Math.max(4, half>>1), nb = Math.ceil(n/bs), bmn = new Float32Array(nb), bmx = new Float32Array(nb), b, j;
+    for(b=0;b<nb;b++){ var mn=255, mx=0; for(j=b*bs;j<Math.min(n,(b+1)*bs);j++){ if(s[j]<mn) mn=s[j]; if(s[j]>mx) mx=s[j]; } bmn[b]=mn; bmx[b]=mx; }
+    var w = [], bar = [], cur = null, len = 0;
+    for(i=0;i<n;i++){
+      var a = Math.max(0,i-half), e = Math.min(n,i+half+1), mean = (pre[e]-pre[a])/(e-a);
+      var b0 = (a/bs)|0, b1 = Math.min(nb-1,((e-1)/bs)|0), lo=255, hi=0;
+      for(b=b0;b<=b1;b++){ if(bmn[b]<lo) lo=bmn[b]; if(bmx[b]>hi) hi=bmx[b]; }
+      var d = (hi-lo) >= 30 && s[i] < (lo+hi)/2;
+      if(d===cur) len++; else { if(cur!==null){ w.push(len); bar.push(cur); } cur=d; len=1; }
+    }
+    w.push(len); bar.push(cur);
+    return {w:w, bar:bar};
+  }
+  function err(w, i, p, u){ var e=0; for(var k=0;k<p.length;k++) e += Math.abs(w[i+k]/u - p[k]); return e; }
+  function sum(w, i, k){ var t=0; for(var j=0;j<k;j++) t+=w[i+j]; return t; }
+
+  function c128(w, bar){
+    var n = w.length;
+    for(var i=1;i+12<n;i++){
+      if(!bar[i]) continue;
+      var u = sum(w,i,6)/11, st = -1, be = 1.6;
+      for(var v=103;v<=105;v++){ var e = err(w,i,P128[v],u); if(e<be){ be=e; st=v; } }
+      if(st<0 || w[i-1] < 4*u) continue;
+      var vals = [st], j = i+6, ok = false;
+      while(j+6 < n){
+        var uu = sum(w,j,6)/11;
+        if(Math.abs(uu-u)/u > 0.4) break;
+        var es = j+7<=n ? err(w,j,STOP,sum(w,j,7)/13) : 99, bv = -1, bd = 2.2;
+        for(var q=0;q<106;q++){ var e2 = err(w,j,P128[q],uu); if(e2<bd){ bd=e2; bv=q; } }
+        if(es < 1.6 && es <= bd+0.3 && vals.length>=3){ ok = true; break; }
+        if(bv<0) break;
+        vals.push(bv); j += 6; u = (u*3+uu)/4;
+      }
+      if(!ok) continue;
+      var cs = vals[0]; for(var k=1;k<vals.length-1;k++) cs += k*vals[k];
+      if(cs % 103 !== vals[vals.length-1]) continue;
+      var t = c128text(vals.slice(0,-1)); if(t && t.length>=3) return t;
+    }
+    return null;
+  }
+  function c128text(v){
+    var set = v[0]===103?"A":v[0]===104?"B":"C", out = "", shift = false;
+    for(var k=1;k<v.length;k++){
+      var x = v[k], cur = shift ? (set==="A"?"B":"A") : set; shift = false;
+      if(cur==="C"){ if(x<100) out += (x<10?"0":"")+x; else if(x===100) set="B"; else if(x===101) set="A"; continue; }
+      if(x<96){ if(cur==="B" || x<64) out += String.fromCharCode(x+32); continue; }
+      if(x===98) shift = true; else if(x===99) set = "C";
+      else if(x===100 && cur==="A") set = "B"; else if(x===101 && cur==="B") set = "A";
+    }
+    return out;
+  }
+  function c39(w, bar){
+    var n = w.length;
+    for(var i=1;i+9<n;i++){
+      if(!bar[i]) continue;
+      var out = "", j = i, started = false, nw = 0;
+      while(j+9 <= n){
+        var seg = w.slice(j,j+9), srt = seg.slice().sort(function(a,b){return b-a;}), thr = (srt[2]+srt[3])/2;
+        if(srt[2] < srt[3]*1.4) break;
+        var key = seg.map(function(x){ return x>thr?"1":"0"; }).join(""), ch = C39[key];
+        if(!ch) break;
+        if(!started){ if(ch!=="*" || w[j-1] < srt[8]*5) break; started = true; nw = srt[8]; }
+        else if(ch==="*"){ return out.length>=3 ? out : null; }
+        else out += ch;
+        j += 10;
+      }
+    }
+    return null;
+  }
+  function ean(w, bar){
+    var n = w.length;
+    for(var i=1;i+59<n;i++){
+      if(!bar[i]) continue;
+      var u = sum(w,i,3)/3; if(err(w,i,[1,1,1],u)>1.0 || w[i-1] < 5*u) continue;
+      var j = i+3, digs = [], par = "", bad = false, d, k;
+      for(k=0;k<6;k++){
+        var uu = sum(w,j,4)/7, bl=-1, bg=-1, el=1.4, eg=1.4;
+        for(d=0;d<10;d++){ var a=err(w,j,EL[d],uu), b=err(w,j,EG[d],uu); if(a<el){el=a;bl=d;} if(b<eg){eg=b;bg=d;} }
+        if(bl<0 && bg<0){ bad=true; break; }
+        if(bl>=0 && (bg<0 || el<=eg)){ digs.push(bl); par+="L"; } else { digs.push(bg); par+="G"; }
+        j += 4;
+      }
+      if(bad) continue;
+      if(err(w,j,[1,1,1,1,1],sum(w,j,5)/5) > 1.6) continue;
+      j += 5;
+      for(k=0;k<6;k++){
+        var u3 = sum(w,j,4)/7, br=-1, er=1.4;
+        for(d=0;d<10;d++){ var c=err(w,j,EL[d],u3); if(c<er){er=c;br=d;} }
+        if(br<0){ bad=true; break; } digs.push(br); j += 4;
+      }
+      if(bad) continue;
+      var f = EPAR.indexOf(par); if(f<0) continue;
+      var all = [f].concat(digs), cs = 0;
+      for(k=0;k<12;k++) cs += all[k]*(k%2?3:1);
+      if((10 - cs%10)%10 !== all[12]) continue;
+      return all.join("");
+    }
+    return null;
+  }
+  function itf(w, bar){
+    var n = w.length;
+    for(var i=1;i+14<n;i++){
+      if(!bar[i]) continue;
+      var u = sum(w,i,4)/4; if(err(w,i,[1,1,1,1],u)>1.0 || w[i-1] < 5*u) continue;
+      var j = i+4, out = "";
+      while(j+10 <= n){
+        var b5 = [w[j],w[j+2],w[j+4],w[j+6],w[j+8]], s5 = [w[j+1],w[j+3],w[j+5],w[j+7],w[j+9]];
+        var d1 = itfd(b5), d2 = itfd(s5);
+        if(d1<0 || d2<0) break;
+        out += d1+""+d2; j += 10;
+      }
+      if(out.length>=6 && j+3<=n && w[j] > w[j+1]*1.3) return out;
+    }
+    return null;
+  }
+  function itfd(a){
+    var s = a.slice().sort(function(x,y){return y-x;}); if(s[1] < s[2]*1.4) return -1;
+    var thr = (s[1]+s[2])/2, k = a.map(function(x){ return x>thr?"1":"0"; }).join("");
+    return ITF.indexOf(k);
+  }
+  function decodeRuns(r){
+    if(!r || r.w.length < 20) return null;
+    var res = c128(r.w, r.bar);
+    if(res) return {t:res, f:"code128", strong:true};
+    res = ean(r.w, r.bar); if(res) return {t:res, f:"ean13", strong:true};
+    res = c39(r.w, r.bar); if(res) return {t:res, f:"code39", strong:false};
+    res = itf(r.w, r.bar); if(res) return {t:res, f:"itf", strong:false};
+    return null;
+  }
+  function decodeLine(g){
+    for(var m=0;m<2;m++){
+      var r = runs(g, m); if(!r) return null;
+      var x = decodeRuns(r); if(x) return x;
+      r.w.reverse(); r.bar.reverse();
+      x = decodeRuns(r); if(x) return x;
+    }
+    return null;
+  }
+  // gray: Uint8Array w*h. Scans rows (and columns if cols) in the band [y0,y1] fractions
+  function decodeGray(gray, W, H, opt){
+    opt = opt||{}; var rows = opt.rows||24, y0 = opt.y0==null?0.2:opt.y0, y1 = opt.y1==null?0.8:opt.y1, hits = {};
+    function take(x){ if(!x) return null; var k=x.f+":"+x.t; hits[k]=(hits[k]||0)+1; if(x.strong || hits[k]>=2) return x; return null; }
+    var line = new Uint8Array(Math.max(W,H)), i, k, y, x, res;
+    for(i=0;i<rows;i++){
+      y = Math.round(H*(y0 + (y1-y0)*(i+0.5)/rows));
+      for(k=0;k<W;k++) line[k] = gray[y*W+k];
+      res = take(decodeLine(line.subarray(0,W))); if(res) return res;
+    }
+    if(opt.cols){
+      for(i=0;i<rows;i++){
+        x = Math.round(W*(y0 + (y1-y0)*(i+0.5)/rows));
+        for(k=0;k<H;k++) line[k] = gray[k*W+x];
+        res = take(decodeLine(line.subarray(0,H))); if(res) return res;
+      }
+    }
+    return null;
+  }
+  function grayOf(img){ var d = img.data, n = img.width*img.height, g = new Uint8Array(n); for(var i=0,p=0;i<n;i++,p+=4) g[i] = (d[p]*77+d[p+1]*150+d[p+2]*29)>>8; return g; }
+  return {decodeGray:decodeGray, grayOf:grayOf, decodeLine:decodeLine, _runs:runs, _dr:decodeRuns};
+})();
+if(typeof module!=="undefined") module.exports = BC;
+
+
+// ===== Serial / label interpretation (sources in .src) =====
+var GRM = ["","Ιανουάριος","Φεβρουάριος","Μάρτιος","Απρίλιος","Μάιος","Ιούνιος","Ιούλιος","Αύγουστος","Σεπτέμβριος","Οκτώβριος","Νοέμβριος","Δεκέμβριος"];
+function yFromDigit(d){ var now = new Date().getFullYear(), y = now - ((now - d) % 10 + 10) % 10; return y; }
+function moX(c){ return c==="X"?10:c==="Y"?11:c==="Z"?12:c==="A"?10:c==="B"?11:c==="C"?12:+c; }
+var SER = [
+  {o:"lg", re:/^(\d)(0[1-9]|1[0-2])[A-Z0-9]{9}$/, w:2, k:"Σειριακός LG", d:function(m){ return {y:yFromDigit(+m[1]), mo:+m[2], dec:1}; },
+   src:"LG support: ο σειριακός ξεκινά με 3 ψηφία – το 1ο είναι το έτος (τελευταίο ψηφίο), τα 2 επόμενα ο μήνας."},
+  {o:"me", re:/^(\d)([1-9XYZ])([UM])\d{5}/, w:2, k:"Σειριακός Mitsubishi Electric", d:function(m){ return {y:yFromDigit(+m[1]), mo:moX(m[2]), dec:1, x:m[3]==="U"?"εξωτερική μονάδα":"εσωτερική μονάδα"}; },
+   src:"Εγχειρίδιο Mitsubishi Electric: έτος (τελευταίο ψηφίο) · μήνας 1–9, X=10, Y=11, Z=12 · M=εσωτερική / U=εξωτερική · αύξων αριθμός 00001–99999."},
+  {o:"me", re:/^(\d)([A-HJ-M])U\d{5}/, w:2, k:"Σειριακός Mitsubishi Electric", d:function(m){ return {y:yFromDigit(+m[1]), mo:"ABCDEFGHJKLM".indexOf(m[2])+1, dec:1, x:"εξωτερική μονάδα"}; },
+   src:"Εγχειρίδιο Mitsubishi Electric (μεγάλες εξωτερικές): μήνας A=1 … M=12 (χωρίς I)."},
+  {o:"midea", re:/^[0-9A-Z]{11}(\d{2})([1-9ABC])[0-9A-Z]{8}$/, w:1, k:"Σειριακός 22 χαρακτήρων τύπου Midea", d:function(m){ return {y:2000+(+m[1]), mo:moX(m[2])}; },
+   src:"Midea: ο σειριακός (λευκό αυτοκόλλητο με barcode) έχει 22 χαρακτήρες· έτος στις θέσεις 12–13, μήνας στη 14η (building-center.org). Μετρά λίγο για εργοστάσιο – επιβεβαίωσε."},
+  {o:"samsung", re:/^[0-9A-Z]{7}([A-Z])([1-9ABC])[0-9A-Z]{5}[A-Z]$/, w:1, k:"Σειριακός 15 χαρακτήρων τύπου Samsung", d:function(m){ return {mo:moX(m[2]), yl:m[1]}; },
+   src:"Samsung: ο σειριακός έχει 15 χαρακτήρες και τελειώνει σε γράμμα· 8ος χαρακτήρας = έτος (γράμμα), 9ος = μήνας. Δεν υπάρχει επίσημος πίνακας γραμμάτων – δες την ημερομηνία στο ταμπελάκι."},
+  {o:"hisense", re:/^1KA[0-9A-Z]{20}$/, w:2, k:"Σειριακός εσωτερικής Hisense (1KA…, 23 χαρ.)", src:"Hisense – How to identify the model and the serial number: οι επίτοιχες εσωτερικές έχουν σειριακό 23 χαρακτήρων που ξεκινά με 1KA."},
+  {o:"hisense", re:/^Q[0-9A-Z]{11}$/, w:1, k:"Σειριακός Hisense (Q…, 12 χαρ.)", src:"Hisense – How to identify the model and the serial number: ο σειριακός έχει 12 χαρακτήρες και ξεκινά με Q (κυρίως VRF/επαγγελματικά)."},
+  {o:"gree", re:/^C[A-Z]\d{3}[A-Z]\d{5}$/, w:2, k:"Κωδικός προϊόντος Gree (Product Code)", src:"Εγχειρίδια σέρβις Gree: «Product Code» της μορφής CU050W01701 / CB…"},
+  {o:"fujitsu", re:/^[A-Z]{1,3}\d{6}$/, w:0, k:"Μορφή σειριακού Fujitsu (γράμματα + 6 ψηφία)", src:"Fujitsu: αύξουσα αρίθμηση, η ημερομηνία δεν κωδικοποιείται στον σειριακό (building-center.org) – βρίσκεται από την Fujitsu με τον σειριακό."}
+];
+var QRDOM = [[/gree/i,"gree"],[/midea/i,"midea"],[/hisense/i,"hisense"],[/haier/i,"haier"],[/daikin/i,"daikin"],[/tcl\./i,"tcl"],[/aux(group|air)?\./i,"aux"],[/samsung/i,"samsung"],[/lg\.com/i,"lg"],[/mitsubishielectric|mitsubishi-electric/i,"me"],[/toshiba/i,"toshiba"],[/panasonic/i,"panasonic"],[/fujitsu/i,"fujitsu"]];
+var serLearn = LS.get("vl_serlearn", []); // [{b, p, o}]
+function serClean(t){ return String(t||"").toUpperCase().replace(/[\s\-\.\/]/g,""); }
+function serInfo(t, cs){
+  var raw = String(t||""), v = serClean(raw), out = [];
+  function ok(o){ return !cs || cs.indexOf(o)>=0 || (o==="gree" && cs.indexOf("inv_gree")>=0); }
+  if(/^https?:\/\//i.test(raw)){ QRDOM.forEach(function(q){ if(q[0].test(raw)) out.push({o:q[1], w:2, k:"QR με σελίδα της "+(PLAT[q[1]]?PLAT[q[1]].name:q[1]), src:"Ο QR οδηγεί στον ιστότοπο του κατασκευαστή."}); }); return out; }
+  if(v.length < 5) return out;
+  FW.pcb.forEach(function(x){ if(x[0].test(v)) out.push({o:x[1], w:x[2], k:"Κωδικός πλακέτας", src:x[3], pcb:1}); });
+  SER.forEach(function(r){ var m = v.match(r.re); if(!m) return; var e = {o:r.o, w:r.w, k:r.k, src:r.src}; if(r.d) e.d = r.d(m); if(!ok(r.o)) e.w = Math.min(e.w,1), e.off = 1; out.push(e); });
+  var b = brandObj();
+  if(b && !b.own){ var dm = detectOem(b, v); if(dm) out.push({o:dm.o, w:2, k:"Μοντέλο "+b.n, src:dm.w, model:1}); }
+  serLearn.forEach(function(l){ if(b && l.b===b.n && v.indexOf(l.p)===0) out.push({o:l.o, w:3, k:"Δική σου αντιστοίχιση ("+l.p+"…)", src:"Το αποθήκευσες εσύ από προηγούμενη μονάδα."}); });
+  return out;
+}
+function dateTxt(d){
+  if(!d) return "";
+  var s = d.mo ? GRM[d.mo]+" " : "";
+  if(d.y) s += d.y + (d.dec ? " (ή "+(d.y-10)+")" : "");
+  else if(d.yl) s += "έτος: γράμμα «"+d.yl+"»";
+  return "📅 Κατασκευή: "+s+(d.x?" · "+d.x:"");
+}
+function serHtml(t, cs){
+  var r = serInfo(t, cs);
+  if(!r.length) return '<div class="small">Δεν αναγνώρισα τη μορφή. Αν ξέρεις το εργοστάσιο, πάτα το παρακάτω για να το θυμάμαι την επόμενη φορά.</div>';
+  return r.map(function(e){
+    var nm = PLAT[e.o] ? PLAT[e.o].name : e.o;
+    return '<div class="serl"><b>'+esc(e.k)+'</b>'+(e.w?' → <span class="det">'+esc(nm)+'</span>':'')+(e.off?' <span class="small">(δεν είναι στα συνήθη εργοστάσια αυτής της μάρκας)</span>':'')+
+      (e.d?'<div>'+esc(dateTxt(e.d))+'</div>':'')+'<div class="small">'+esc(e.src)+'</div></div>';
+  }).join("");
+}
+
+// ===== Scanner UI =====
+var SCAN = {st:null, timer:0, det:null, target:"ser", busy:false, hits:{}};
+function scanOpen(target){
+  SCAN.target = target||"ser"; SCAN.hits = {};
+  var ov = document.getElementById("scanov");
+  if(!ov){ ov = document.createElement("div"); ov.id = "scanov"; document.body.appendChild(ov); }
+  ov.innerHTML = '<div class="schead"><b>📷 Σάρωση barcode</b><button class="mini" id="scclose">✕</button></div>'+
+    '<div class="scbox"><video id="scvid" playsinline muted autoplay></video><div class="scguide"></div></div>'+
+    '<div class="scmsg" id="scmsg">Άνοιγμα κάμερας…</div>'+
+    '<div class="scbtns"><label class="mini scphoto">📸 Φωτογραφία του barcode<input type="file" accept="image/*" capture="environment" id="scfile" hidden></label></div>'+
+    '<div id="scres"></div>';
+  ov.style.display = "flex"; document.body.style.overflow = "hidden";
+  if("BarcodeDetector" in window){
+    try{ BarcodeDetector.getSupportedFormats().then(function(f){ var want = ["code_128","code_39","ean_13","itf","qr_code","data_matrix","upc_a"].filter(function(x){ return f.indexOf(x)>=0; }); if(want.length) SCAN.det = new BarcodeDetector({formats:want}); }).catch(function(){}); }catch(e){ SCAN.det = null; }
+  }
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ scanMsg("Η κάμερα δεν είναι διαθέσιμη εδώ – πάτα «📸 Φωτογραφία του barcode»."); return; }
+  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}, width:{ideal:1920}, height:{ideal:1080}}, audio:false}).then(function(st){
+    SCAN.st = st; var v = document.getElementById("scvid"); if(!v){ scanStop(); return; }
+    v.srcObject = st; v.play().catch(function(){});
+    try{ var tr = st.getVideoTracks()[0], cap = tr.getCapabilities ? tr.getCapabilities() : {}; if(cap.focusMode && cap.focusMode.indexOf("continuous")>=0) tr.applyConstraints({advanced:[{focusMode:"continuous"}]}); }catch(e){}
+    scanMsg("Βάλε το barcode οριζόντια μέσα στο πλαίσιο, να γεμίζει το πλάτος. Κράτα σταθερά 10–20 εκ. μακριά.");
+    scanLoop();
+  }).catch(function(){ scanMsg("Δεν δόθηκε άδεια για την κάμερα (ή δεν υποστηρίζεται εδώ). Πάτα «📸 Φωτογραφία του barcode» – δουλεύει πάντα."); });
+}
+function scanMsg(t){ var m = document.getElementById("scmsg"); if(m) m.textContent = t; }
+function scanStop(){ clearTimeout(SCAN.timer); if(SCAN.st){ SCAN.st.getTracks().forEach(function(t){ t.stop(); }); SCAN.st = null; } }
+function scanClose(){ scanStop(); var ov = document.getElementById("scanov"); if(ov){ ov.style.display = "none"; ov.innerHTML = ""; } document.body.style.overflow = ""; }
+var scanCv = null, scanN = 0;
+function scanLoop(){
+  var v = document.getElementById("scvid"); if(!v || !SCAN.st) return;
+  SCAN.timer = setTimeout(scanLoop, 140);
+  if(SCAN.busy || v.readyState < 2 || !v.videoWidth) return;
+  SCAN.busy = true; scanN++;
+  if(SCAN.det){
+    SCAN.det.detect(v).then(function(r){ SCAN.busy = false; if(r && r.length) scanFound(r[0].rawValue, r[0].format); else scanGray(v); }).catch(function(){ SCAN.busy = false; scanGray(v); });
+    return;
+  }
+  scanGray(v); SCAN.busy = false;
+}
+function scanGray(v){
+  var W = v.videoWidth, H = v.videoHeight; if(!W) return;
+  scanCv = scanCv || document.createElement("canvas"); scanCv.width = W; scanCv.height = H;
+  var cx = scanCv.getContext("2d", {willReadFrequently:true}); cx.drawImage(v, 0, 0, W, H);
+  var g = BC.grayOf(cx.getImageData(0, 0, W, H));
+  var r = BC.decodeGray(g, W, H, {rows:18, y0:0.3, y1:0.7, cols:scanN%3===0});
+  if(r){ var k = r.f+":"+r.t; SCAN.hits[k] = (SCAN.hits[k]||0)+1; if(r.strong || SCAN.hits[k]>=2) scanFound(r.t, r.f); }
+}
+function scanPhoto(file){
+  if(!file) return; scanMsg("Ανάλυση φωτογραφίας…");
+  var url = URL.createObjectURL(file), img = new Image();
+  img.onload = function(){
+    var sc = Math.min(1, 2400/Math.max(img.width, img.height)), W = Math.round(img.width*sc), H = Math.round(img.height*sc);
+    var c = document.createElement("canvas"); c.width = W; c.height = H; var cx = c.getContext("2d", {willReadFrequently:true}); cx.drawImage(img, 0, 0, W, H);
+    URL.revokeObjectURL(url);
+    var done = function(){ var r = BC.decodeGray(BC.grayOf(cx.getImageData(0,0,W,H)), W, H, {rows:70, y0:0.02, y1:0.98, cols:true});
+      if(r) scanFound(r.t, r.f); else scanMsg("Δεν διάβασα barcode στη φωτογραφία. Βγάλε την πιο κοντά, ίσια, με καλό φως και χωρίς αντανάκλαση – να γεμίζει το barcode την οθόνη."); };
+    if(SCAN.det) SCAN.det.detect(c).then(function(r){ if(r && r.length) scanFound(r[0].rawValue, r[0].format); else done(); }).catch(done); else setTimeout(done, 30);
+  };
+  img.onerror = function(){ scanMsg("Δεν άνοιξε η φωτογραφία."); };
+  img.src = url;
+}
+var SCT = {ser:"σειριακός μονάδας", model:"μοντέλο", pcb:"κωδικός πλακέτας", comp:"συμπιεστής"};
+function scanFound(text, fmt){
+  scanStop(); SCAN.last = text;
+  if(navigator.vibrate) try{ navigator.vibrate(60); }catch(e){}
+  var b = brandObj(), cs = b && !b.own ? candidates(b) : null, info = serInfo(text, cs);
+  var guess = SCAN.target;
+  if(info.some(function(e){ return e.pcb; })) guess = "pcb"; else if(info.some(function(e){ return e.model; })) guess = "model";
+  var order = [guess].concat(["ser","model","pcb","comp"].filter(function(x){ return x!==guess; }));
+  var box = document.getElementById("scres"); if(!box) return;
+  var vb = document.querySelector("#scanov .scbox"); if(vb) vb.style.display = "none";
+  var pb = document.querySelector("#scanov .scbtns"); if(pb) pb.style.display = "none";
+  scanMsg("✅ Διαβάστηκε ("+String(fmt||"").replace("_","-").toUpperCase()+")");
+  box.innerHTML = '<div class="sccode">'+esc(text)+'</div>'+serHtml(text, cs)+
+    '<div class="lbl">Πάτα τι είναι, για να το περάσω στη σωστή θέση:</div><div class="chips">'+order.map(function(k,i){ return '<button class="chip'+(i===0?' on':'')+'" data-scuse="'+k+'">'+esc(SCT[k])+'</button>'; }).join("")+'</div>'+
+    (cs && cs.length>1 ? '<div class="lbl">Ξέρεις το εργοστάσιο αυτής της μονάδας; Αποθήκευσέ το για την επόμενη φορά:</div><div class="chips">'+cs.map(function(p){ return '<button class="chip" data-sclearn="'+p+'">'+esc(PLAT[p].name)+'</button>'; }).join("")+'</div>' : '')+
+    '<div class="scbtns" style="margin-top:12px"><button class="mini" id="scagain">🔁 Σάρωση ξανά</button></div>';
+}
+function scanUse(k){
+  var t = SCAN.last||"", v = serClean(t);
+  if(k==="model"){ S.model = t.trim(); var mi = document.getElementById("model"); if(mi){ mi.value = S.model; mi.dispatchEvent(new Event("input")); } }
+  else { S.fwOpen = true; S.fw[k] = k==="ser" ? v : t.trim(); }
+  scanClose();
+  if(k!=="model"){ renderOem(); }
+  setTimeout(function(){ var el = document.getElementById(k==="model"?"model":"fwiz"); if(el) el.scrollIntoView({behavior:"smooth", block:"center"}); }, 60);
+}
+document.addEventListener("click", function(e){
+  var el = e.target.closest("[data-scan],#scclose,#scagain,[data-scuse],[data-sclearn]"); if(!el) return;
+  if(el.hasAttribute("data-scan")){ e.preventDefault(); scanOpen(el.getAttribute("data-scan")); return; }
+  if(el.id==="scclose"){ scanClose(); return; }
+  if(el.id==="scagain"){ var tg = SCAN.target; scanClose(); scanOpen(tg); return; }
+  if(el.hasAttribute("data-scuse")){ scanUse(el.getAttribute("data-scuse")); return; }
+  if(el.hasAttribute("data-sclearn")){
+    var b = brandObj(), p = serClean(SCAN.last).slice(0,5), o = el.getAttribute("data-sclearn"); if(!b || p.length<5) return;
+    serLearn = serLearn.filter(function(l){ return !(l.b===b.n && l.p===p); }); serLearn.push({b:b.n, p:p, o:o}); LS.set("vl_serlearn", serLearn);
+    el.parentNode.innerHTML = '<div class="small det">✔ Αποθηκεύτηκε: '+esc(b.n)+' με σειριακό '+esc(p)+'… = '+esc(PLAT[o].name)+'</div>';
+    if(cs0()) { S.fwOpen = true; S.fw.ser = serClean(SCAN.last); }
+  }
+});
+function cs0(){ var b = brandObj(); return b && !b.own; }
+document.addEventListener("change", function(e){ if(e.target && e.target.id==="scfile") scanPhoto(e.target.files && e.target.files[0]); });
+window.scanFound = scanFound;
+
 setTheme(LS.get("vl_theme","auto"));
 renderAll();
 })();

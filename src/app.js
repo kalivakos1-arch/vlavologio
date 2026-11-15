@@ -315,7 +315,7 @@ var FW = {
   rc: [[/^R(G\d{2}|5[17]|05|06|11)/,"midea","Τα τηλεχειριστήρια RG57/RG66/R51/R05 είναι της Midea."],[/^Y[A-Z]{1,3}\d?F/,"gree","Τα τηλεχειριστήρια Y…1F (YAP1F, YAN1F, YB1F, YAC1F…) είναι της Gree."],[/^YKR-/,"aux","Τα τηλεχειριστήρια YKR-… είναι της AUX."],[/^GYKQ/,"tcl","Τα τηλεχειριστήρια GYKQ-… είναι της TCL."]]
 };
 FW.pcb = [[/^3013\d|^30002\d|^GR[JZ]W?\d/,"gree",2,"Πλακέτα Gree (κωδικός 30138…/30002… ή τυπωμένο GRJ…)."],[/^171[2-3]\d{3}/,"midea",2,"Πλακέτα Midea (κωδικός ανταλλακτικού 17122…/17123…)."],[/^00(10|11)\d{5}/,"haier",1,"Κωδικός πλακέτας τύπου Haier (0010…/0011…) – λιγότερο σίγουρο."],[/^SX-/,"aux",1,"Τυπωμένο SX-… – συναντάται σε πλακέτες AUX (λιγότερο σίγουρο)."],[/^DB9\d/,"samsung",2,"Πλακέτα Samsung (DB92/DB93…)."],[/^2109\d{5}/,"tcl",2,"Κωδικός ανταλλακτικού TCL (2109…)."],[/^K2\d{6}|^PCB-?HTSD|^PCB05-/,"hisense",2,"Πλακέτα Hisense (κωδικός K2…… ή τυπωμένο PCB-HTSD…/PCB05-…)."],[/^EBR\d{8}/,"lg",2,"Πλακέτα LG (EBR…)."],[/^MCC-?\d{3,4}/,"toshiba",2,"Πλακέτα Toshiba (MCC-…)."],[/^E[12]2[A-Z]\d{5}/,"me",2,"Πλακέτα Mitsubishi Electric (E22…/E12…)."],[/^EZ-?\d{6}/,"fujitsu",2,"Πλακέτα Fujitsu (ετικέτα EZ-……)."]];
-S.fw = {plate:"", rc:"", comp:"", pcb:""};
+S.fw = {plate:"", rc:"", comp:"", pcb:"", ser:""};
 function fwMap(o, cs){ if(!o || o==="?") return null; if(cs.indexOf(o)>=0) return o; if(o==="gree" && cs.indexOf("inv_gree")>=0) return "inv_gree"; return o; }
 function fwScore(cs){
   var sc = {}, why = {};
@@ -324,6 +324,7 @@ function fwScore(cs){
   if(cp.length>=3) FW.comp.forEach(function(x){ if(x[0].test(cp)) add(x[1],x[2],x[3]); });
   var pb = String(S.fw.pcb||"").toUpperCase().replace(/\s/g,"");
   if(pb.length>=4) FW.pcb.forEach(function(x){ if(x[0].test(pb)) add(x[1],x[2],x[3]); });
+  if(S.fw.ser && typeof serInfo==="function") serInfo(S.fw.ser, null).forEach(function(e){ if(e.w && !e.model) add(e.o, e.w, e.k+(e.d?" · "+dateTxt(e.d).replace("📅 ",""):"")); });
   FW.plate.forEach(function(a){ if(S.fw.plate===a[0]) add(a[1],2,"ταμπελάκι: "+a[0]); });
   var r = String(S.fw.rc||"").toUpperCase().replace(/\s/g,"");
   if(r.length>=3) FW.rc.forEach(function(x){ if(x[0].test(r)) add(x[1],2,x[2]); });
@@ -333,10 +334,12 @@ function fwizHtml(b, cs){
   if(!S.fwOpen) return '<button class="mini fwbtn" id="fwopen">🔎 Δεν ξέρω το εργοστάσιο – βοήθησέ με</button>';
   var chips = function(key, list){ return '<div class="chips">'+list.map(function(a){ return '<button class="chip'+(S.fw[key]===a[0]?' on':'')+'" data-fwk="'+key+'" data-fwv="'+esc(a[0])+'">'+esc(a[0])+'</button>'; }).join("")+'</div>'; };
   var h = '<div class="fwiz"><div class="lbl" style="margin-top:0">🔎 Βρες το εργοστάσιο – απάντησε ό,τι ξέρεις</div>'+
+    '<button class="mini scanbtn" data-scan="ser">📷 Σκάναρε το barcode της ετικέτας (σειριακός)</button>'+
+    (S.fw.ser ? '<div class="serbox"><div class="small"><b>Σειριακός:</b> '+esc(S.fw.ser)+' <button class="x" data-fwclr="ser">✕</button></div>'+serHtml(S.fw.ser, cs)+'</div>' : '')+
     '<div class="small"><b>1. Ταμπελάκι εξωτερικής:</b> τι γράφει για κατασκευαστή ή πόλη (Manufacturer / Made in / διεύθυνση);</div>'+chips("plate",FW.plate)+
     '<div class="small" style="margin-top:8px"><b>2. Τηλεχειριστήριο:</b> γράψε τον κωδικό στην πλάτη ή μέσα στη θήκη μπαταριών</div><input id="fwrc" placeholder="π.χ. RG57A6/BGEF, YAP1F, YKR-…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.rc)+'">'+
-    '<div class="small" style="margin-top:8px"><b>3. Ετικέτα συμπιεστή</b> (βγάλε το πλαϊνό καπάκι της εξωτερικής – γράψε το μοντέλο του συμπιεστή):</div><input id="fwcomp" placeholder="π.χ. QXA-A091zE190, KSK103D33UEZ3" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.comp)+'">'+
-    '<div class="small" style="margin-top:8px"><b>4. Πλακέτα εξωτερικής</b> (ρεύμα κλειστό): γράψε τον κωδικό από το λευκό αυτοκόλλητο της πλακέτας ή ό,τι είναι τυπωμένο στην άκρη της</div><input id="fwpcb" placeholder="π.χ. 30138000…, 17122000…, EBR…, MCC-…, K20…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.pcb)+'">'+
+    '<div class="small" style="margin-top:8px"><b>3. Ετικέτα συμπιεστή</b> (βγάλε το πλαϊνό καπάκι της εξωτερικής – γράψε το μοντέλο του συμπιεστή):</div><div class="row2"><input id="fwcomp" placeholder="π.χ. QXA-A091zE190, KSK103D33UEZ3" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.comp)+'"><button class="mini" data-scan="comp" title="Σάρωση">📷</button></div>'+
+    '<div class="small" style="margin-top:8px"><b>4. Πλακέτα εξωτερικής</b> (ρεύμα κλειστό): γράψε τον κωδικό από το λευκό αυτοκόλλητο της πλακέτας ή ό,τι είναι τυπωμένο στην άκρη της</div><div class="row2"><input id="fwpcb" placeholder="π.χ. 30138000…, 17122000…, EBR…, MCC-…, K20…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.pcb)+'"><button class="mini" data-scan="pcb" title="Σάρωση">📷</button></div>'+
     '<div class="small" style="margin-top:8px">💡 <b>5. Ο κωδικός βλάβης:</b> γράψε τον στο πεδίο του κωδικού παρακάτω – αν υπάρχει μόνο στο βλαβολόγιο ενός εργοστασίου, θα σου το πω.</div>'+
     '<div id="fwres">'+fwResult(b, cs)+'</div></div>';
   return h;
@@ -346,13 +349,15 @@ function fwResult(b, cs){
   if(!ks.length) return '<div class="small" style="margin-top:8px">Απάντησε τουλάχιστον ένα για να σου πω το πιθανό εργοστάσιο.</div>';
   var top = ks[0], tie = ks.length>1 && r.sc[ks[1]]===r.sc[top];
   if(tie) return '<div class="pver mid" style="margin-top:8px">⚠️ Τα στοιχεία δείχνουν διαφορετικά εργοστάσια ('+ks.map(function(k){return esc(PLAT[k]?PLAT[k].name:k);}).join(" / ")+'). Έλεγξε ξανά – συχνά το τηλεχειριστήριο έχει αλλαχτεί με γενικό.</div>';
-  var name = PLAT[top] ? PLAT[top].name : top, inC = cs.indexOf(top)>=0, sure = r.sc[top]>=4;
-  return '<div class="pver '+(sure?'good':'mid')+'" style="margin-top:8px">'+(sure?'✅ Σχεδόν σίγουρα':'🟡 Πιθανότατα')+' <b>'+esc(name)+'</b><div class="small" style="font-weight:500">Γιατί: '+esc(r.why[top].join(" · "))+(sure?'':' – με ένα ακόμα στοιχείο που ταιριάζει θα είναι σίγουρο.')+'</div></div>'+
+  var name = PLAT[top] ? PLAT[top].name : top, inC = cs.indexOf(top)>=0, conf = ks.length>1 && r.sc[ks[1]]>=2, sure = r.sc[top]>=4 && !conf;
+  var cw = conf ? '<div class="pver mid" style="margin-top:8px">⚠️ Αντικρουόμενα στοιχεία: '+esc(PLAT[ks[1]]?PLAT[ks[1]].name:ks[1])+' ('+esc(r.why[ks[1]].join(" · "))+'). Ίσως έχει αλλαχτεί πλακέτα ή τηλεχειριστήριο – έλεγξε ξανά.</div>' : '';
+  return '<div class="pver '+(sure?'good':'mid')+'" style="margin-top:8px">'+(sure?'✅ Σχεδόν σίγουρα':'🟡 Πιθανότατα')+' <b>'+esc(name)+'</b><div class="small" style="font-weight:500">Γιατί: '+esc(r.why[top].join(" · "))+(sure||conf?'':' – με ένα ακόμα στοιχείο που ταιριάζει θα είναι σίγουρο.')+'</div></div>'+cw+
     (inC ? '<button class="mini" style="margin-top:6px" data-o="'+top+'">Χρησιμοποίησε '+esc(name)+'</button>' : '<div class="small">Το '+esc(name)+' δεν είναι στα συνήθη εργοστάσια της '+esc(b.n)+' σε αυτή την κατηγορία – έλεγξε ξανά.</div>');
 }
 document.addEventListener("click", function(e){
-  var el = e.target.closest("#fwopen,[data-fwk]"); if(!el) return;
+  var el = e.target.closest("#fwopen,[data-fwk],[data-fwclr]"); if(!el) return;
   if(el.id==="fwopen"){ S.fwOpen = true; renderOem(); return; }
+  if(el.hasAttribute("data-fwclr")){ S.fw[el.getAttribute("data-fwclr")] = ""; renderOem(); return; }
   var k = el.getAttribute("data-fwk"), v = el.getAttribute("data-fwv"); S.fw[k] = S.fw[k]===v ? "" : v;
   var b = brandObj(); if(b && $("fwiz")){ $("fwiz").innerHTML = fwizHtml(b, candidates(b)); }
 });
@@ -361,8 +366,10 @@ function renderOem(){
   var b = brandObj(); var box = $("oembox");
   if(!b || S.bedit){ box.style.display="none"; return; }
   if(b.own){
-    box.style.display = b.hint ? "block" : "none";
-    box.innerHTML = b.hint ? '<div class="hint" style="margin:0">'+esc(b.hint)+'</div>' : "";
+    box.style.display = "block";
+    box.innerHTML = (b.hint ? '<div class="hint" style="margin:0 0 8px">'+esc(b.hint)+'</div>' : "")+
+      '<button class="mini scanbtn" data-scan="ser">📷 Σκάναρε το barcode της ετικέτας – ημερομηνία κατασκευής</button>'+
+      (S.fw.ser ? '<div class="serbox"><div class="small"><b>Σειριακός:</b> '+esc(S.fw.ser)+' <button class="x" data-fwclr="ser">✕</button></div>'+serHtml(S.fw.ser, null)+'</div>' : '');
     return;
     box.innerHTML = (b.hint ? '<div class="hint">'+esc(b.hint)+'</div>' : "")+
       '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι – προαιρετικό)</label><input id="model" placeholder="π.χ. '+esc(b.n==="LG"?"S12EQ / HU071MR":b.n==="Daikin"?"FTXM35R":b.n==="Gree"?"GWH12ACC-K6DNA1D":"μοντέλο εσωτερικής ή εξωτερικής")+'" autocapitalize="characters" spellcheck="false">'+
@@ -378,7 +385,7 @@ function renderOem(){
   box.innerHTML =
     (b.hint?'<div class="hint">'+esc(b.hint)+'</div>':'<div class="hint">Η '+esc(b.n)+' δεν έχει δικό της εργοστάσιο. Διάλεξε εργοστάσιο ή άφησε «Σύγκριση» για να δεις τι σημαίνει ο κωδικός σε κάθε πιθανό εργοστάσιο.</div>')+
     '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι)</label>'+
-    '<div class="row2"><input id="model" placeholder="μοντέλο εξωτερικής ή εσωτερικής – π.χ. V5MFO32-60" autocapitalize="characters" spellcheck="false"><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
+    '<div class="row2"><input id="model" placeholder="μοντέλο εξωτερικής ή εσωτερικής – π.χ. V5MFO32-60" autocapitalize="characters" spellcheck="false"><button class="mini" data-scan="model" title="Σάρωση barcode">📷</button><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
     '<div id="mapMsg" class="small"></div>'+
     '<label class="lbl">Εργοστάσιο παραγωγής</label>'+
     '<div class="chips">'+(cs.length>1?'<button class="chip'+(S.oem==="__all"?' on':'')+'" data-o="__all">Σύγκριση όλων</button>':'')+
@@ -1213,7 +1220,7 @@ document.addEventListener("click", function(e){
   if(el.id==="chgBrand"){ S.bedit=true; renderBrands(); renderCats(); $("oembox").style.display="none"; setTimeout(function(){ $("bq").value=""; $("bq").focus(); },30); return; }
   if(el.id==="theme"){ var th=["auto","light","dark"], i=th.indexOf(LS.get("vl_theme","auto")); setTheme(th[(i+1)%3]); return; }
   if(el.hasAttribute("data-c")){ S.cat = el.getAttribute("data-c"); S.oem=null; S.catOpen=false; renderAll(); setTimeout(function(){ var m=$("model"); if(m && !m.value) m.focus(); else $("q").focus(); },50); return; }
-  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.bedit=false; S.catOpen=true; S.oem=null; S.model=""; S.ledv={}; $("bsug").innerHTML=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
+  if(el.hasAttribute("data-b")){ S.brand = el.getAttribute("data-b"); S.bedit=false; S.fw={plate:"",rc:"",comp:"",pcb:"",ser:""}; S.fwOpen=false; S.catOpen=true; S.oem=null; S.model=""; S.ledv={}; $("bsug").innerHTML=""; $("brandsWrap").classList.remove("open"); $("bq").blur(); renderAll(); setTimeout(function(){ var c=$("catwrap"); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); },50); return; }
   if(el.hasAttribute("data-o")){ S.oem = el.getAttribute("data-o"); markChips(); renderCtx(); renderResults(); persist(); return; }
   if(el.hasAttribute("data-del")){ var b=brandObj(), p=el.getAttribute("data-del"); myMap = myMap.filter(function(m){return !(m.brand===b.n && m.prefix===p);}); LS.set("vl_mymap",myMap); renderOem(); return; }
   if(el.hasAttribute("data-q")){ S.q = el.getAttribute("data-q"); $("q").value=S.q; renderResults(); window.scrollTo({top:$("q").getBoundingClientRect().top+window.scrollY-80,behavior:"smooth"}); return; }
