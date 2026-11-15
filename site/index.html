@@ -199,6 +199,11 @@ details.note p{font-size:13.5px;color:var(--text2)}
 .proc summary{font-weight:700;color:var(--acctx);cursor:pointer;font-size:14.5px}
 .chk{color:var(--ok)}
 .det{color:var(--ok);font-weight:700}
+.focus{background:var(--card);border:1px solid var(--acc);border-radius:var(--r);padding:12px;margin-bottom:10px;box-shadow:var(--sh)}
+.fz1{font-weight:800;font-size:16.5px;line-height:1.35;margin-bottom:4px}
+.fzb{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}.fzb .mini{padding:8px 12px}
+.pmod.diag{border-color:color-mix(in srgb,var(--acc) 45%,transparent)}
+.pmod.diag .pmi b{color:var(--text)}
 .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:22px;line-height:1.5}
 @media (max-width:380px){.srcbox button{font-size:10.5px}.srcbox button i{font-size:17px}}
 </style>
@@ -2729,6 +2734,7 @@ var COMPDB = {
 // type: dc5 (1 φίσα, driver μέσα στο μοτέρ) · uvw (3 καλώδια από πλακέτα) · uvwh (3 + φίσα Hall 5) · two (φίσα ισχύος + φίσα σήματος) · ac (με πυκνωτή)
 // col: [[χρώμα, λειτουργία], ...]  · ohm: [min,max] ανά ζεύγος U-V-W
 var FANKNOWN = [
+ {re:/^[VU]\dM[CDFR]\D*\d*-?(48|50|55|60)/, w:"out", t:"uvw", col:null, pins:"U-V, V-W, W-U στη λευκή φίσα 3 pin κάθε μοτέρ (FAN_1 και FAN_2)", n:2, src:"Midea service manual εμπορικών 48/60k (εξωτερικές MOE30U-48/60: FAN_DC → FAN_1/FAN_2)"},
  {re:/^M[SU]Z-?LN(25|35)VG/, w:"out", t:"uvw", col:[["Κόκκινο","U/V/W"],["Μαύρο","U/V/W"],["Άσπρο","U/V/W"]], ohm:[15,20], src:"ME service manual MUZ-LN (Outdoor fan motor)"},
  {re:/^M[SU]Z-?LN(50|60)VG/, w:"out", t:"uvw", col:[["Κόκκινο","U/V/W"],["Μαύρο","U/V/W"],["Άσπρο","U/V/W"]], ohm:[25,43], src:"ME service manual MUZ-LN (Outdoor fan motor)"},
  {re:/^A?RXM\d{2}R|^A?FTXM\d{2}R/, w:"out", t:"uvw", col:null, pins:"pin 1-3, 1-5, 3-5 της φίσας", ohm:[51.9,57.3], src:"Daikin service manual Split New Perfera R32 (DC fan motor)"},
@@ -2757,6 +2763,27 @@ var PLATVAL = {
   fujitsu:{eevOhm:[45,50]},
   me:{}
 };
+
+// ===== Οδηγοί διάγνωσης ανά μοντέλο & εξάρτημα (μόνο ό,τι αφορά το εξάρτημα) =====
+// re: regex μοντέλου, part, side, n: τίτλος, info: [γραμμές], steps: [[τίτλος, κείμενο]], src
+var MODELDIAG = [
+ {re:/^[VU]\dM[CDFR]\D*\d*-?(48|50|55|60)/, part:"fan", side:"out",
+  n:"Inventor V5M… 48–60k (εργοστάσιο Midea) – εξωτερική με 2 ανεμιστήρες",
+  info:[
+   "Η εξωτερική αυτής της κατηγορίας έχει <b>2 DC ανεμιστήρες</b>. Ο κωδικός δεν λέει ποιος από τους δύο φταίει – έλεγξε <b>και τους δύο</b>.",
+   "Τα μοτέρ είναι <b>DC 3 καλωδίων (U-V-W)</b>: ο έλεγχος στροφών γίνεται στην πλακέτα, όχι μέσα στο μοτέρ.",
+   "<b>Πού κουμπώνουν:</b> στις φίσες <b>FAN_1</b> και <b>FAN_2</b> (λευκές, 3 pin) της πλακέτας οδήγησης/IPM (έξοδος FAN_DC). Ακολούθησε το καλώδιο κάθε μοτέρ ως την πλακέτα· στο wiring diagram (αυτοκόλλητο στο καπάκι) φαίνεται ποια φίσα είναι ποιο μοτέρ.",
+   "Το F5 (EC 07) βγαίνει όταν οι στροφές μένουν πολύ χαμηλά (~300 rpm) ή πολύ ψηλά (~2400 rpm) για κάποιο διάστημα."
+  ],
+  steps:[
+   ["Φτερωτές με το χέρι","Ρεύμα κλειστό. Γύρνα με το χέρι και τις δύο φτερωτές: να γυρνούν ελεύθερα, χωρίς τρίξιμο ή σφίξιμο ρουλεμάν, και να είναι σφιχτές στον άξονα. Κοίτα για φύλλα/πάγο/σπασμένο πτερύγιο."],
+   ["Δουλεύει η πλακέτα; (πρακτικός έλεγχος)","Δώσε ψύξη στη χαμηλότερη θερμοκρασία και κοίτα τι γίνεται: αν ξεκινά ο ένας ανεμιστήρας και ο άλλος όχι, το πρόβλημα είναι στον ακίνητο ή στη δική του φίσα. Με τη φίσα κουμπωμένη, μέτρα AC Volt από την πίσω πλευρά της ανάμεσα U-V, V-W, W-U τη στιγμή που πάει να ξεκινήσει: πρέπει να εμφανιστεί τάση και στα 3 ζεύγη, περίπου ίδια. 0V σε όλα → η πλακέτα δεν οδηγεί αυτή την έξοδο (ή δεν δίνει εντολή εκείνη τη στιγμή – ξαναδοκίμασε στην εκκίνηση)."],
+   ["Μέτρηση κάθε μοτέρ","Ρεύμα κλειστό, περίμενε 5–10′ να αδειάσουν οι πυκνωτές (DC < 5V). Βγάλε τη φίσα FAN_1, πολύμετρο σε Ω: U-V, V-W, W-U → και οι 3 τιμές ΙΔΙΕΣ. Άνισες, ~0Ω ή OL → χαλασμένο μοτέρ. Κάθε καλώδιο προς σασί → OL. Κάνε το ίδιο στο FAN_2. Γράψε τις τιμές παρακάτω για να τις κρίνω."],
+   ["Διασταύρωση (τα 2 μοτέρ είναι ίδια)","Αν τα δύο μοτέρ έχουν τον ίδιο κωδικό στο ταμπελάκι τους, άλλαξε τις φίσες: το μοτέρ του FAN_1 στη FAN_2 και αντίστροφα. Αν η βλάβη ακολουθεί το μοτέρ → φταίει το μοτέρ. Αν μένει στην ίδια φίσα της πλακέτας → φταίει η πλακέτα οδήγησης."],
+   ["Συμπέρασμα","Και τα δύο μοτέρ σωστά στα Ω, γυρνούν ελεύθερα, αλλά κάποιο δεν παίρνει τάση/δεν ξεκινά → πλακέτα οδήγησης ανεμιστήρων (IPM/driver). Αν βγει EC 71 (υπερένταση ανεμιστήρα) ή EC 72 (έλλειψη φάσης), έλεγξε καλωδίωση και Ω των 3 φάσεων του μοτέρ."]
+  ],
+  src:"Midea service manuals εμπορικών 48/60k (MOE30U-48/60HFN1: FAN_DC → FAN_1/FAN_2) και διάγνωση E8/EC 07"}
+];
 
 // ===== ΟΔΗΓΟΣ ΠΟΛΥΜΕΤΡΟΥ (αρχάριοι) =====
 var MMGUIDE = [
@@ -3294,7 +3321,7 @@ function card(r, showPlat){
     (c[2]?(function(){ var st=stepsOf(c[2]); return st ? '<div class="rd"><b>🔧 Τι ελέγχεις – με τη σειρά:</b><ol class="steps">'+st.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol></div>' : '<div class="rd"><b>🔧 Τι ελέγχεις:</b> '+esc(c[2])+'</div>'; })():'')+
     (c[3]?'<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+esc(c[3])+'</div>':'')+
     procBox(c, t.plat)+
-    partLinks(c[1]+' '+(c[2]||''))+
+    partLinks(c[1]+' '+(c[2]||''), c)+
     '<div class="rs">'+esc(t.tbl.name)+'</div>'+
   '</div>';
 }
@@ -3431,11 +3458,13 @@ var PKEYS = [
   ["comp", /συμπιεστ/i]
 ];
 function partById(id){ for(var i=0;i<PARTS.length;i++) if(PARTS[i].id===id) return PARTS[i]; return null; }
-function partLinks(txt){
+function partLinks(txt, c){
   var ids = [];
   PKEYS.forEach(function(k){ if(ids.length<3 && k[1].test(txt) && !(k[0]==="sensor" && ids.indexOf("pswitch")>=0 && !/θερμ/i.test(txt))) ids.push(k[0]); });
   if(!ids.length) return "";
-  return '<div class="plinks">'+ids.map(function(id){ var p=partById(id); return '<button class="plk" data-gopart="'+id+'">'+p.icon+' Πώς μετράω: '+esc(p.name)+'</button>'; }).join("")+'</div>';
+  var side = c && /εξωτερ/i.test(c[1]) ? "out" : c && /εσωτερ/i.test(c[1]) ? "in" : "";
+  var ctx = c ? ' data-fcode="'+esc(c[0][0])+'" data-ftitle="'+esc(c[1])+'" data-fside="'+side+'"' : '';
+  return '<div class="plinks">'+ids.map(function(id){ var p=partById(id); return '<button class="plk" data-gopart="'+id+'"'+ctx+'>'+p.icon+' Πώς μετράω: '+esc(p.name)+'</button>'; }).join("")+'</div>';
 }
 function partPlats(){
   var b = brandObj(); if(!b) return [];
@@ -3478,7 +3507,8 @@ function calcSens(){
 }
 function renderMine(){
   var el = $("pmine"); if(!el) return;
-  var k = mkey(S.model), b = brandObj(), mine = meas.filter(function(m){ return k && m.m===k; });
+  var k = mkey(S.model), b = brandObj(), mine = meas.filter(function(m){ return k && m.m===k && (!S.focus || m.part===S.part); });
+  if(S.focus){ el.innerHTML = mine.length ? '<div class="small" style="margin-top:8px"><b>📒 Οι μετρήσεις μου:</b></div>'+mine.map(function(m){ return '<div class="mm"><span>'+esc(m.v)+' <span class="small">· '+esc(m.d)+'</span></span><button class="x" data-mdel="'+m.id+'">✕</button></div>'; }).join("") : ""; return; }
   el.innerHTML = (k ? (mine.length ? '<div class="small"><b>📒 Οι μετρήσεις μου για '+esc(k)+':</b></div>'+mine.map(function(m){ var p=partById(m.part); return '<div class="mm"><span>'+(p?p.icon+' ':'')+esc(m.v)+' <span class="small">· '+esc(m.d)+'</span></span><button class="x" data-mdel="'+m.id+'">✕</button></div>'; }).join("") : '<div class="small">Δεν έχεις αποθηκεύσει ακόμα μετρήσεις για '+esc(k)+'. Όταν μετρήσεις ένα καλό εξάρτημα, γράψε την τιμή παρακάτω για να την έχεις την επόμενη φορά.</div>') : '<div class="small">Γράψε το μοντέλο από το ταμπελάκι για να δεις/κρατήσεις τις δικές σου μετρήσεις.</div>');
   var info = $("pplat"); if(!info) return;
   var pl = partPlats();
@@ -3502,6 +3532,8 @@ function modelInfo(){
 function renderModelBox(){
   var el = $("pmodelinfo"); if(!el) return;
   var hits = modelInfo(), k = mkey(S.model);
+  if(S.focus){ hits = hits.map(function(e){ return {n:e.n, src:e.src, it:e.it.filter(function(x){ return x[0]===S.part && !(S.part==="fan" && fanKnown().some(function(f){return f.re;}) && !e.re); })}; }).filter(function(e){ return e.it.length; });
+    if(!hits.length){ el.innerHTML=""; return; } }
   if(!hits.length){ el.innerHTML = k ? '<div class="small">Για «'+esc(k)+'» δεν έχω ακόμα καταχωρημένα στοιχεία από manual – δες τις γενικές οδηγίες του εξαρτήματος και κράτα τη μέτρησή σου παρακάτω.</div>' : ''; return; }
   el.innerHTML = hits.map(function(e){
     var its = e.it.slice().sort(function(a,b){ return (b[0]===S.part)-(a[0]===S.part); });
@@ -3519,7 +3551,9 @@ function compLookup(){
 var fanCol = LS.get("vl_fancol", {});
 function fanKnown(){
   var k = mkey(S.model), pl = partPlats(), r = [];
-  FANKNOWN.forEach(function(e){ if((e.re && k && e.re.test(k)) || (!e.re && e.plat && pl.indexOf(e.plat)>=0)) r.push(e); });
+  FANKNOWN.forEach(function(e){ if(e.re && k && e.re.test(k)) r.push(e); });
+  var ws = {}; r.forEach(function(e){ ws[e.w]=1; });
+  FANKNOWN.forEach(function(e){ if(!e.re && e.plat && pl.indexOf(e.plat)>=0 && !ws[e.w]) r.push(e); });
   return r;
 }
 function fanN(t){ return t==="dc5"?5 : t==="uvw"?3 : t==="uvwh"?8 : t==="two"?6 : 5; }
@@ -3552,8 +3586,8 @@ function num(id){ var e=$(id); if(!e) return NaN; return parseFloat(String(e.val
 function fanVerdict(){
   var el = $("fverd"); if(!el) return;
   var t = S.ft, kn = fanKnown().filter(function(e){return e.t===t && e.w===(S.fw||"out");})[0], out = [];
-  function pairCheck(){
-    var a=num("fr1"), b=num("fr2"), c=num("fr3");
+  function pairCheck(i0, lab){
+    var a=num("fr"+(i0||1)), b=num("fr"+((i0||1)+1)), c=num("fr"+((i0||1)+2));
     if(isNaN(a)||isNaN(b)||isNaN(c)) return '';
     var mx=Math.max(a,b,c), mn=Math.min(a,b,c), g=$("fgnd")?$("fgnd").value:"";
     var r = '';
@@ -3566,7 +3600,11 @@ function fanVerdict(){
     return r;
   }
   if(t==="uvw" || t==="uvwh"){
-    out.push(pairCheck());
+    if(fanTwo() && t==="uvw"){ var p1=pairCheck(1), p2=pairCheck(4);
+      if(p1) out.push('<div class="small"><b>FAN_1:</b></div>'+p1); if(p2) out.push('<div class="small"><b>FAN_2:</b></div>'+p2);
+      if(p1 && p2 && p1.indexOf("bad")<0 && p2.indexOf("bad")<0){ var m1=Math.max(num("fr1"),num("fr2"),num("fr3")), m2=Math.max(num("fr4"),num("fr5"),num("fr6"));
+        if(Math.abs(m1-m2)/Math.max(m1,m2)>0.15) out.push('<div class="pver mid">⚠️ Τα δύο μοτέρ δίνουν διαφορετικές τιμές μεταξύ τους – αν είναι ίδιος τύπος μοτέρ, κάποιο είναι ύποπτο· αν είναι διαφορετικοί τύποι, είναι φυσιολογικό.</div>'); }
+    } else out.push(pairCheck(1));
     if(t==="uvwh"){ var vh=num("fvh"), tg=$("fhall")?$("fhall").value:"";
       if(!isNaN(vh)) out.push(vh<4||vh>5.5 ? '<div class="pver bad">❌ Τροφοδοσία Hall '+vh+'V (πρέπει ~5V) → πρόβλημα πλακέτας ή βραχυκύκλωμα Hall.</div>' : '<div class="pver good">✅ Τροφοδοσία Hall εντάξει (~5V).</div>');
       if(tg==="no") out.push('<div class="pver bad">❌ Κάποιο Hall δεν αλλάζει 0↔5V όταν γυρνάς τη φτερωτή → χαλασμένος αισθητήρας Hall → αλλαγή μοτέρ.</div>');
@@ -3595,17 +3633,20 @@ function fanVerdict(){
   }
   el.innerHTML = out.join("");
 }
+function fanTwo(){ return S.fcount===2 || fanKnown().some(function(e){ return e.n===2 && e.w===(S.fw||"out"); }); }
 function fanWizard(){
-  var kn = fanKnown(), w = S.fw||"out";
-  var h = '<div class="pcalcw"><div class="lbl">🧭 Βήμα 1 – Ποιος ανεμιστήρας;</div><div class="pchips">'+
-    [["out","Εξωτερικής"],["in","Εσωτερικής"]].map(function(x){return '<button class="pc'+(w===x[0]?' on':'')+'" data-fw="'+x[0]+'">'+x[1]+'</button>';}).join("")+'</div>';
+  var kn = fanKnown(), w = S.fw||"out", fz = S.focus && S.focus.side;
+  var h = '<div class="pcalcw">'+(fz ? '<div class="lbl">🧭 Μέτρηση ανεμιστήρα '+(w==="out"?"εξωτερικής":"εσωτερικής")+'</div>' : '<div class="lbl">🧭 Βήμα 1 – Ποιος ανεμιστήρας;</div><div class="pchips">'+
+    [["out","Εξωτερικής"],["in","Εσωτερικής"]].map(function(x){return '<button class="pc'+(w===x[0]?' on':'')+'" data-fw="'+x[0]+'">'+x[1]+'</button>';}).join("")+'</div>');
   var sug = kn.filter(function(e){return e.w===w;});
-  h += '<div class="lbl">Βήμα 2 – Τι φίσα έχει το μοτέρ;</div>';
+  if(S.focus && !S.ft && sug.length && sug[0].re) S.ft = sug[0].t;
+  h += '<div class="lbl">'+(fz?'':'Βήμα 2 – ')+'Τι φίσα έχει το μοτέρ;</div>';
   if(sug.length) h += '<div class="pext">📘 Για αυτό το μοντέλο το manual λέει: <b>'+esc(FTYPES.filter(function(f){return f[0]===sug[0].t;})[0][1])+'</b>. Αν βλέπεις κάτι άλλο, διάλεξε αυτό που βλέπεις.</div>';
   h += '<div class="ftypes">'+FTYPES.map(function(f){return '<button class="pc'+(S.ft===f[0]?' on':'')+'" data-ft="'+f[0]+'"><b>'+esc(f[1])+'</b><br><span class="small">'+esc(f[2])+'</span></button>';}).join("")+'</div>';
   if(S.ft){
     var e = sug.filter(function(x){return x.t===S.ft;})[0];
-    h += '<div class="lbl">Βήμα 3 – Χρώματα καλωδίων</div>';
+    if(S.ft==="uvw" && !(e && e.col)){ h += '<div class="small" style="margin:6px 0">Στο μοτέρ 3 καλωδίων U-V-W τα χρώματα δεν χρειάζονται: είναι 3 ίδιες περιελίξεις'+(e&&e.pins?' – μέτρα '+esc(e.pins):'')+'.</div>'; }
+    else { h += '<div class="lbl">Βήμα 3 – Χρώματα καλωδίων</div>';
     if(e && (e.col || e.cap)){
       if(e.col) h += '<div class="pext">📘 Από το manual:<br>'+e.col.map(function(c){return '<b>'+esc(c[0])+'</b> = '+esc(c[1]);}).join('<br>')+(e.hall?'<br><b>Φίσα Hall:</b> '+e.hall.map(function(c){return '<b>'+esc(c[0])+'</b>='+esc(c[1]);}).join(', '):'')+(e.ohm?'<br>Τιμή περιέλιξης: <b>'+e.ohm[0]+'–'+e.ohm[1]+'Ω</b> σε κάθε ζεύγος':'')+'<br><span class="small">Πηγή: '+esc(e.src)+'</span></div>';
       if(e.cap) h += '<div class="pext">📘 Από το manual: AC μοτέρ με πυκνωτή <b>'+e.cap+'μF</b>. Πηγή: '+esc(e.src)+'</div>';
@@ -3613,12 +3654,14 @@ function fanWizard(){
       var saved = fanCol[fkey()] || [];
       h += '<div class="small">'+(e&&e.pins?'📘 Manual: μέτρα '+esc(e.pins)+(e.ohm?' = <b>'+e.ohm[0]+'–'+e.ohm[1]+'Ω</b>':'')+'. ':'')+'Δεν βρήκα χρώματα στο manual'+(S.model?' για '+esc(mkey(S.model)):'')+'. Γράψε τα χρώματα που βλέπεις, με τη σειρά στη φίσα:</div><div class="fcols">'+
         fanLabels(S.ft).map(function(l,i){ return '<label>'+esc(l)+'<select data-fc="'+i+'"><option value="">—</option>'+FCOLORS.map(function(c){return '<option'+(saved[i]===c?' selected':'')+'>'+c+'</option>';}).join("")+'</select></label>'; }).join("")+'</div><div id="fcj" class="pext"></div>';
-    }
-    h += '<div class="lbl">Βήμα 4 – Μέτρηση</div>';
+    } }
+    h += '<div class="lbl">'+(S.ft==="uvw"?'Μέτρηση':'Βήμα 4 – Μέτρηση')+'</div>';
     var ins = '';
     if(S.ft==="uvw"||S.ft==="uvwh"||S.ft==="ac"){
       ins += '<div class="small">'+(S.ft==="ac"?'Χωρίς ρεύμα, φίσα έξω, πολύμετρο σε Ω. Μέτρα 1–2, 2–3, 1–3 (αριθμός = σειρά καλωδίου όπως τα έγραψες).':'Χωρίς ρεύμα (DC < 5V στους πυκνωτές), φίσα U-V-W έξω, φτερωτή ακίνητη, πολύμετρο σε Ω. Μέτρα τα 3 ζεύγη:')+'</div>'+
-        '<div class="row3"><label>'+(S.ft==="ac"?'1–2':'Ζεύγος 1')+' Ω<input id="fr1" inputmode="decimal"></label><label>'+(S.ft==="ac"?'2–3':'Ζεύγος 2')+' Ω<input id="fr2" inputmode="decimal"></label><label>'+(S.ft==="ac"?'1–3':'Ζεύγος 3')+' Ω<input id="fr3" inputmode="decimal"></label></div>';
+        (fanTwo()?'<div class="small" style="margin-top:6px"><b>FAN_1</b></div>':'')+
+        '<div class="row3"><label>'+(S.ft==="ac"?'1–2':'U-V')+' Ω<input id="fr1" inputmode="decimal"></label><label>'+(S.ft==="ac"?'2–3':'V-W')+' Ω<input id="fr2" inputmode="decimal"></label><label>'+(S.ft==="ac"?'1–3':'W-U')+' Ω<input id="fr3" inputmode="decimal"></label></div>'+
+        (fanTwo() && S.ft!=="ac"?'<div class="small"><b>FAN_2</b></div><div class="row3"><label>U-V Ω<input id="fr4" inputmode="decimal"></label><label>V-W Ω<input id="fr5" inputmode="decimal"></label><label>W-U Ω<input id="fr6" inputmode="decimal"></label></div>':'');
       if(S.ft!=="ac") ins += '<label class="small">Κάθε καλώδιο προς σασί/άξονα:<select id="fgnd"><option value="">—</option><option value="ol">OL (άπειρο)</option><option value="val">Δείχνει τιμή</option></select></label>';
       if(S.ft==="uvwh") ins += '<div class="small" style="margin-top:6px">Φίσα Hall κουμπωμένη, ρεύμα ON, μηχάνημα σβηστό: μαύρος ακροδέκτης στο GND.</div><div class="row3"><label>Vcc Hall (V)<input id="fvh" inputmode="decimal" placeholder="~5"></label><label>Hu/Hv/Hw αλλάζουν 0↔5V όταν γυρνάς αργά τη φτερωτή;<select id="fhall"><option value="">—</option><option value="yes">Ναι, και τα 3</option><option value="no">Όχι, κάποιο μένει σταθερό</option></select></label></div>';
       if(S.ft==="ac") ins += '<div class="row3"><label>Πυκνωτής ετικέτα μF<input id="fcapr" inputmode="decimal" value="'+((e&&e.cap)||"")+'"></label><label>Μέτρησα μF<input id="fcap" inputmode="decimal"></label></div>';
@@ -3644,7 +3687,7 @@ document.addEventListener("click", function(e){
   renderParts(); fanColsUpdate();
 });
 document.addEventListener("change", function(e){ if(e.target.hasAttribute && e.target.hasAttribute("data-fc")) fanColsUpdate(); if(/^(fgnd|fhall|frot)$/.test(e.target.id)) fanVerdict(); });
-document.addEventListener("input", function(e){ if(/^(fr1|fr2|fr3|fvh|fvm|fvc|fvs|fcap|fcapr)$/.test(e.target.id)) fanVerdict(); });
+document.addEventListener("input", function(e){ if(/^(fr[1-6]|fvh|fvm|fvc|fvs|fcap|fcapr)$/.test(e.target.id)) fanVerdict(); });
 
 // ===== Οδηγοί μέτρησης με κρίση (όλα τα εξαρτήματα) =====
 function knownVal(key){
@@ -3899,9 +3942,53 @@ function presGuide(){
 document.addEventListener("input", function(e){ if(e.target.classList && e.target.classList.contains("pv")) presCalc(); });
 document.addEventListener("change", function(e){ if(e.target.classList && e.target.classList.contains("pv")) presCalc(); });
 
+function modelDiag(part){
+  var k = mkey(S.model), r = null;
+  MODELDIAG.forEach(function(e){ if(!r && e.part===part && k && e.re.test(k)) r = e; });
+  return r;
+}
+function focusHead(){
+  var f = S.focus, b = brandObj(), P = partById(S.part);
+  var pl = partPlats(), plat = pl.length===1 ? PLAT[pl[0]].name : "";
+  return '<div class="focus"><div class="fz1">🎯 Κωδικός <span class="code">'+esc(f.code)+'</span> – '+esc(f.title)+'</div>'+
+    '<div class="small">'+(b?esc(b.n):'')+(S.model?' · '+esc(mkey(S.model)):'')+(plat && b && !b.own?' · εργοστάσιο '+esc(plat):'')+'</div>'+
+    '<div class="fzb"><button class="mini" id="fzback">← Πίσω στον κωδικό</button><button class="mini" id="fzall">Όλα τα εξαρτήματα</button></div></div>';
+}
+function renderDiag(d){
+  return '<div class="pmod diag"><div class="pst">📋 '+esc(d.n)+'</div>'+d.info.map(function(x){return '<div class="pmi">'+x+'</div>';}).join("")+
+    '<ol class="steps">'+d.steps.map(function(s){return '<li><b>'+esc(s[0])+'</b><div>'+esc(s[1])+'</div></li>';}).join("")+'</ol><div class="small">Πηγή: '+esc(d.src)+'</div></div>';
+}
+function fanCountBox(){
+  var n = S.fcount||0;
+  return '<div class="pcalcw"><div class="lbl">Πόσους ανεμιστήρες έχει η '+((S.fw||"out")==="out"?"εξωτερική":"εσωτερική")+';</div><div class="pchips">'+
+    [[1,"1 ανεμιστήρα"],[2,"2 ανεμιστήρες"]].map(function(x){return '<button class="pc'+(n===x[0]?' on':'')+'" data-fcount="'+x[0]+'">'+x[1]+'</button>';}).join("")+'</div>'+
+    (n===2?'<div class="pext">Με 2 ανεμιστήρες: ο κωδικός δεν λέει ποιος φταίει – έλεγξε <b>και τους δύο</b>. Αν τα μοτέρ είναι ίδια (ίδιος κωδικός στο ταμπελάκι τους), άλλαξε τις φίσες μεταξύ τους στην πλακέτα: αν η βλάβη ακολουθεί το μοτέρ → μοτέρ· αν μένει στην ίδια φίσα → πλακέτα.</div>':'')+'</div>';
+}
 function renderParts(){
   var out = $("results"); $("notes").innerHTML = "";
   var pl = partPlats();
+  if(S.focus && S.focus.part!==S.part) S.focus = null;
+  if(S.focus){
+    var P0 = partById(S.part), d = modelDiag(S.part);
+    if(S.focus.side && S.part==="fan") S.fw = S.focus.side;
+    var hf = focusHead();
+    hf += '<div class="pwarn">⚡ Πριν ακουμπήσεις: κλείσε ρεύμα, περίμενε 5–10′ να αδειάσουν οι πυκνωτές της πλακέτας (μέτρα DC < 5V). Μετρήσεις «με ρεύμα» μόνο με μονωμένους ακροδέκτες.</div>';
+    if(d) hf += renderDiag(d);
+    else hf += '<div id="pmodelinfo"></div>' + (S.part==="fan" ? fanCountBox() : '');
+    if(S.part==="fan") hf += '<div id="fanw">'+fanWizard()+'</div>';
+    if(S.part==="comp") hf += '<div class="pcalcw"><div class="lbl">🔎 Κωδικός συμπιεστή (ετικέτα πάνω στον συμπιεστή)</div><input id="pcomp" placeholder="π.χ. ASN98D22UFZ" autocapitalize="characters" spellcheck="false"><div id="pcompres"></div></div>';
+    if(MEAS[S.part]) hf += measBox(S.part);
+    if(S.part==="sensor"){ S.focus = null; return renderParts(); }
+    var ex0 = pl.map(function(p){ return PEXTRA[p] && PEXTRA[p][S.part] ? '<div class="pext">📘 <b>'+esc(PLAT[p].name)+':</b> '+esc(PEXTRA[p][S.part])+'</div>' : ''; }).join("");
+    if(!d) hf += ex0;
+    hf += '<details class="note"><summary>📖 Γενικές οδηγίες για '+esc(P0.name)+'</summary>'+P0.body.map(function(s){ return '<div class="psec"><div class="pst">'+esc(s[0])+'</div><div class="psb">'+esc(s[1])+'</div></div>'; }).join("")+'</details>';
+    hf += '<div class="psave"><div class="lbl">📒 Κράτα τη μέτρησή σου για αυτό το μοντέλο</div><div class="row2"><input id="pval" placeholder="π.χ. FAN_1 U-V-W 12Ω · FAN_2 12Ω"><button id="psave" class="mini">Αποθήκευση</button></div><div id="psmsg" class="small"></div><div id="pmine"></div></div>';
+    out.innerHTML = hf;
+    renderMine(); renderModelBox();
+    if(S.part==="fan"){ fanColsUpdate(); fanVerdict(); }
+    if(MEAS[S.part]) measUpdate();
+    return;
+  }
   var h = '<div class="pbox"><label class="lbl">Μοντέλο κλιματιστικού (ταμπελάκι)</label>'+
     '<input id="pmodel" placeholder="π.χ. GWH12AGB-K6DNA1A" autocapitalize="characters" spellcheck="false" value="'+esc(S.model||"")+'">'+
     '<div class="small pinfo" id="pplat"></div><div id="pmodelinfo"></div><div id="pmine"></div></div>';
@@ -3947,9 +4034,12 @@ document.addEventListener("input", function(e){
 });
 document.addEventListener("change", function(e){ if(e.target.id==="psel") calcSens(); });
 document.addEventListener("click", function(e){
-  var el = e.target.closest("[data-pc],[data-gopart],[data-mdel],#psave"); if(!el) return;
-  if(el.hasAttribute("data-pc")){ S.part = el.getAttribute("data-pc"); persist(); renderParts(); return; }
-  if(el.hasAttribute("data-gopart")){ S.part = el.getAttribute("data-gopart"); S.src="parts"; renderSrc(); persist(); renderParts(); window.scrollTo({top:$("srcbox").getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); return; }
+  var el = e.target.closest("[data-pc],[data-gopart],[data-mdel],#psave,#fzback,#fzall,[data-fcount]"); if(!el) return;
+  if(el.id==="fzback"){ S.focus=null; S.src="in"; renderSrc(); persist(); renderResults(); return; }
+  if(el.id==="fzall"){ S.focus=null; renderParts(); return; }
+  if(el.hasAttribute("data-fcount")){ S.fcount = +el.getAttribute("data-fcount"); renderParts(); return; }
+  if(el.hasAttribute("data-pc")){ S.focus=null; S.part = el.getAttribute("data-pc"); persist(); renderParts(); return; }
+  if(el.hasAttribute("data-gopart")){ S.part = el.getAttribute("data-gopart"); S.focus = el.hasAttribute("data-fcode") ? {part:S.part, code:el.getAttribute("data-fcode"), title:el.getAttribute("data-ftitle"), side:el.getAttribute("data-fside")} : null; S.fcount=0; S.src="parts"; renderSrc(); persist(); renderParts(); window.scrollTo({top:$("srcbox").getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); return; }
   if(el.hasAttribute("data-mdel")){ var id=+el.getAttribute("data-mdel"); meas = meas.filter(function(m){return m.id!==id;}); LS.set("vl_meas",meas); renderMine(); return; }
   if(el.id==="psave"){
     var k = mkey(S.model), v = ($("pval").value||"").trim();
@@ -4007,7 +4097,7 @@ $("q").addEventListener("input", function(){ S.q = this.value; renderResults(); 
 $("q").addEventListener("keydown", function(e){ if(e.key==="Enter"){ this.blur(); saveRecent(); } });
 renderRecent();
 function renderSrc(){ var bs=$("srcbox").querySelectorAll("[data-s]"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("on", bs[i].getAttribute("data-s")===S.src); var pp=S.src==="parts"||S.src==="sym"||S.src==="led"; document.querySelector(".sbox").style.display=pp?"none":""; $("recent").style.display=pp?"none":""; document.querySelector(".search").style.position=pp?"static":""; }
-$("srcbox").addEventListener("click", function(e){ var el=e.target.closest("[data-s]"); if(!el) return; S.src=el.getAttribute("data-s"); renderSrc(); renderResults(); persist(); });
+$("srcbox").addEventListener("click", function(e){ var el=e.target.closest("[data-s]"); if(!el) return; S.focus=null; S.src=el.getAttribute("data-s"); renderSrc(); renderResults(); persist(); });
 renderSrc();
 document.addEventListener("click", function(e){
   var el = e.target.closest("[data-pi]"); if(!el) return;
