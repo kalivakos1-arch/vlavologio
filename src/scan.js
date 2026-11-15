@@ -425,11 +425,17 @@ document.addEventListener("change", function(e){ if(e.target && e.target.id==="c
 
 // ===== 🧪 Βρες το εργοστάσιο προκαλώντας γνωστή βλάβη =====
 var FTEST = [
- {k:"room", t:"Αισθητήριο χώρου (εσωτερική)", rx:/^(αισθητήρ|θερμίστορ)[^.;]{0,40}(χώρου|αέρα εισόδου|εισόδου αέρα|αέρα επιστροφής)|^(αισθητήρ|θερμίστορ).{0,30}\b(T1|TA|TH1)\b/i,
+ {k:"amb", side:"out", t:"Αισθητήριο εξωτερικού αέρα (εξωτερική)", rx:/^(αισθητήρ|θερμίστορ)[^.;]{0,40}(εξωτερικού αέρα|εξωτ\. αέρα|περιβάλλοντος|εξωτερικής θερμοκρασίας)|^(αισθητήρ|θερμίστορ).{0,30}\b(T4|TO|TH7)\b|^θερμίστορ εξωτερικής/i,
+  how:["Κλείσε το ρεύμα από την ασφάλεια και περίμενε 3–5 λεπτά (οι πυκνωτές της εξωτερικής κρατάνε τάση).","Άνοιξε το καπάκι της εξωτερικής και βγάλε τη φίσα του αισθητηρίου εξωτερικού αέρα (το αισθητήριο που κρέμεται στον αέρα πίσω από το στοιχείο, σε πλαστική βάση – ΟΧΙ σε σωλήνα).","Δώσε ρεύμα. Περίμενε 1–2 λεπτά ΧΩΡΙΣ να ανάψεις τη μονάδα – τα αισθητήρια ελέγχονται αμέσως, πριν ξεκινήσει ανεμιστήρας ή συμπιεστής.","Αν δεν βγει κωδικός, άναψε με το τηλεχειριστήριο και περίμενε έως 3 λεπτά.","Γράψε τον κωδικό της οθόνης της εσωτερικής. Κλείσε ρεύμα, περίμενε και ξανάβαλε τη φίσα."]},
+ {k:"oc", side:"out", t:"Αισθητήριο στοιχείου εξωτερικής", rx:/^(αισθητήρ|θερμίστορ)[^.;]{0,40}(στοιχείου εξωτ|σωλήνα εξωτ|συμπυκνωτή|απόψυξης|COND|εξωτερικού στοιχείου|μέσου στοιχείου ε)|^(αισθητήρ|θερμίστορ).{0,30}\b(T3|TE|TH3)\b|^θερμίστορ εξωτερικής/i,
+  how:["Κλείσε το ρεύμα και περίμενε 3–5 λεπτά.","Βγάλε τη φίσα του αισθητηρίου στοιχείου εξωτερικής (μπαίνει σε θήκη πάνω σε σωληνάκι του στοιχείου).","Δώσε ρεύμα και περίμενε 1–2 λεπτά χωρίς να ανάψεις· αν δεν βγει κωδικός, άναψε και περίμενε έως 3 λεπτά.","Γράψε τον κωδικό της εσωτερικής. Κλείσε ρεύμα, περίμενε και ξανάβαλε τη φίσα."]},
+ {k:"dis", side:"out", t:"Αισθητήριο κατάθλιψης (εξωτερική)", rx:/^(αισθητήρ|θερμίστορ)[^.;]{0,30}κατάθλιψ|^(αισθητήρ|θερμίστορ).{0,20}\b(TP|TD|T5|TH4)\b/i, warn:"Σε αρκετές μονάδες το αισθητήριο κατάθλιψης ελέγχεται μόνο αφού ξεκινήσει ο συμπιεστής – αν η αρχική βλάβη σταματά τον συμπιεστή πριν, προτίμησε τα άλλα δύο αισθητήρια.",
+  how:["Κλείσε το ρεύμα και περίμενε 3–5 λεπτά.","Βγάλε τη φίσα του αισθητηρίου κατάθλιψης (στον σωλήνα που βγαίνει από την κορυφή του συμπιεστή).","Δώσε ρεύμα, άναψε τη μονάδα και περίμενε έως 3–5 λεπτά.","Γράψε τον κωδικό. Κλείσε ρεύμα, περίμενε και ξανάβαλε τη φίσα."]},
+ {k:"room", side:"in", t:"Αισθητήριο χώρου (εσωτερική)", rx:/^(αισθητήρ|θερμίστορ)[^.;]{0,40}(χώρου|αέρα εισόδου|εισόδου αέρα|αέρα επιστροφής)|^(αισθητήρ|θερμίστορ).{0,30}\b(T1|TA|TH1)\b/i,
   how:["Κλείσε το ρεύμα από την ασφάλεια.","Βγάλε τη φίσα του αισθητηρίου χώρου από την πλακέτα εσωτερικής (2 καλώδια – το αισθητήριο κρέμεται στη ροή αέρα μπροστά από το στοιχείο, όχι κολλημένο πάνω στον σωλήνα).","Δώσε ρεύμα και άναψε τη μονάδα με το τηλεχειριστήριο.","Περίμενε έως 2–3 λεπτά και γράψε τον κωδικό που βγάζει.","Κλείσε ρεύμα και ξανάβαλε τη φίσα."]},
- {k:"coil", t:"Αισθητήριο στοιχείου εσωτερικής", rx:/^(αισθητήρ|θερμίστορ)[^.;]{0,40}(στοιχείου εσωτ|σωλήνα εσωτ|εσωτερικού στοιχείου|EVA|μέσης θερμ|μέσου σωλήνα εσωτ)|^(αισθητήρ|θερμίστορ).{0,30}\b(T2|TC|TH2)\b/i,
+ {k:"coil", side:"in", t:"Αισθητήριο στοιχείου εσωτερικής", rx:/^(αισθητήρ|θερμίστορ)[^.;]{0,40}(στοιχείου εσωτ|σωλήνα εσωτ|εσωτερικού στοιχείου|EVA|μέσης θερμ|μέσου σωλήνα εσωτ)|^(αισθητήρ|θερμίστορ).{0,30}\b(T2|TC|TH2)\b/i,
   how:["Κλείσε το ρεύμα.","Βγάλε τη φίσα του αισθητηρίου στοιχείου (σωλήνα) – είναι αυτό που μπαίνει σε θήκη πάνω στον χαλκοσωλήνα του στοιχείου.","Δώσε ρεύμα, άναψε τη μονάδα σε ψύξη.","Περίμενε έως 2–3 λεπτά και γράψε τον κωδικό.","Κλείσε ρεύμα και ξανάβαλε τη φίσα."]},
- {k:"fan", t:"Μοτέρ ανεμιστήρα εσωτερικής", rx:/(ανεμιστήρ|μοτέρ)[^.;]{0,25}εσωτερικ/i, warn:"Η φίσα των DC μοτέρ έχει ~310V: βγάλ' τη ΜΟΝΟ με κλειστό ρεύμα και αφού περιμένεις 2–3 λεπτά. Κάνε αυτή τη δοκιμή μόνο αν δεν αρκούν οι άλλες.",
+ {k:"fan", side:"in", t:"Μοτέρ ανεμιστήρα εσωτερικής", rx:/(ανεμιστήρ|μοτέρ)[^.;]{0,25}εσωτερικ/i, warn:"Η φίσα των DC μοτέρ έχει ~310V: βγάλ' τη ΜΟΝΟ με κλειστό ρεύμα και αφού περιμένεις 2–3 λεπτά. Κάνε αυτή τη δοκιμή μόνο αν δεν αρκούν οι άλλες.",
   how:["Κλείσε το ρεύμα και περίμενε 2–3 λεπτά.","Βγάλε τη φίσα του μοτέρ ανεμιστήρα εσωτερικής από την πλακέτα.","Δώσε ρεύμα και άναψε τη μονάδα.","Περίμενε έως 1–2 λεπτά και γράψε τον κωδικό.","Κλείσε ρεύμα, περίμενε και ξανάβαλε τη φίσα."]}
 ];
 S.fz = null; // {orig, tests:[{k,code}], scope:[plats]|null, step:k}
@@ -445,6 +451,15 @@ function ftEval(){
     steps.push({lab:T0.t+" → «"+ts.code+"»", list:cur.slice()});
   });
   return {cur:cur, steps:steps};
+}
+function ftSide(cands){
+  if(S.fz.side) return S.fz.side;
+  var o = 0, n = 0;
+  cands.forEach(function(p){ var d = ftFind(p, S.fz.orig)[0]; if(!d) return; var t = String(d[1]);
+    if(/επικοιν|σήμα|μετάδοσ|transmission/i.test(t)) n++;
+    else if(/εξωτερικ|συμπιεστ|IPM|inverter|κατάθλιψ|πίεσ|PFC|υπερέντ|τάση|ρεύμα|4οδη|εκτονωτ|ψύκτρ|module/i.test(t)) o++;
+    else n++; });
+  return o > n || (o===n && o>0 && S.cat==="multi") ? "out" : "in";
 }
 function ftHtml(){
   var f = S.fz; if(!f) return "";
@@ -464,15 +479,21 @@ function ftHtml(){
     return h + '</div>';
   }
   var done = {}; f.tests.forEach(function(t){ if(t.code) done[t.k]=1; });
-  var next = FTEST.filter(function(t){ return !done[t.k]; }).filter(function(t){
+  var side = ftSide(ev.cur);
+  h += '<div class="small" style="margin-top:8px">Η βλάβη αφορά:</div><div class="chips"><button class="chip'+(side==="in"?' on':'')+'" data-fzside="in">🏠 Εσωτερική</button><button class="chip'+(side==="out"?' on':'')+'" data-fzside="out">🌳 Εξωτερική</button></div>'+
+    '<div class="small">💡 Η μονάδα δείχνει τη βλάβη που ελέγχει πρώτη. Γι\' αυτό προκαλούμε βλάβη σε αισθητήριο <b>της ίδιας μονάδας</b> με τη βλάβη, που διαβάζεται αμέσως με το ρεύμα – αλλιώς θα συνεχίσει να δείχνει την παλιά βλάβη. Σε multi, κάνε τις δοκιμές στην εξωτερική.</div>';
+  var useful = FTEST.filter(function(t){ return !done[t.k]; }).filter(function(t){
     // χρήσιμη μόνο αν ξεχωρίζει τα υποψήφια (διαφορετικός κωδικός ανά εργοστάσιο)
     var codes = {}; ev.cur.forEach(function(p){ var c = ftCodes(p).filter(function(c){ return t.rx.test(String(c[1])); })[0]; codes[c ? c[0].join("/") : "?"+p] = 1; });
     return Object.keys(codes).length > 1;
   });
+  var next = useful.filter(function(t){ return t.side===side; }), otherSide = false;
+  if(!next.length && useful.length){ next = useful; otherSide = true; }
   if(ev.cur.length>1) h += '<div class="small" style="margin-top:8px">Υποψήφια: <b>'+ev.cur.map(nm).join(", ")+'</b>'+(ev.cur.length<=3 ? '<br>'+ev.cur.map(function(p){ var d = ftFind(p, f.orig)[0]; return '· '+esc(nm(p))+': '+esc(f.orig)+' = '+esc(d?d[1]:"—"); }).join("<br>") : '')+'</div>';
   var st = FTEST.filter(function(t){ return t.k===(f.step||(next[0]&&next[0].k)); })[0];
   if(!next.length){ h += '<div class="hint" style="margin-top:8px">Τα υποψήφια έχουν τους ίδιους κωδικούς για αυτές τις δοκιμές (ίδια οικογένεια βλαβολογίου) – ο κωδικός «'+esc(f.orig)+'» σημαίνει το ίδιο ή δες το ταμπελάκι/πλακέτα στον οδηγό παραπάνω.</div>'; return h+'</div>'; }
-  if(!st || done[st.k]) st = next[0];
+  if(!st || done[st.k] || next.indexOf(st)<0) st = next[0];
+  if(otherSide) h += '<div class="hint" style="margin-top:8px">Δεν βρίσκω δοκιμή στην '+(side==="out"?"εξωτερική":"εσωτερική")+' που να ξεχωρίζει τα υποψήφια – δοκίμασε στην άλλη μονάδα (αν η αρχική βλάβη το επιτρέπει).</div>';
   // τι κωδικό θα βγάλει κάθε υποψήφιο σε αυτή τη δοκιμή
   var exp = ev.cur.map(function(p){ var c = ftCodes(p).filter(function(c){ return st.rx.test(String(c[1])); })[0]; return nm(p)+': '+(c?c[0].join("/"):"—"); }).join(" · ");
   h += '<div class="ftstep"><div class="lbl" style="margin-top:0">Επόμενη δοκιμή: '+esc(st.t)+'</div>'+(next.length>1?'<div class="chips">'+next.map(function(t){ return '<button class="chip'+(t.k===st.k?' on':'')+'" data-fzstep="'+t.k+'">'+esc(t.t)+'</button>'; }).join("")+'</div>':'')+
@@ -489,9 +510,10 @@ function ftUseBtn(p){
 }
 function ftRefresh(){ var w = document.getElementById("ftbox"); if(w) w.innerHTML = ftHtml(); }
 document.addEventListener("click", function(e){
-  var el = e.target.closest("[data-fzopen],[data-fz],[data-fzstep],[data-fzdel],[data-fzdone]"); if(!el) return;
+  var el = e.target.closest("[data-fzopen],[data-fz],[data-fzstep],[data-fzdel],[data-fzdone],[data-fzside]"); if(!el) return;
   if(el.hasAttribute("data-fzdone")){ S.fz = null; return; }
   if(el.hasAttribute("data-fzopen")){ S.fz = {orig:(el.getAttribute("data-fzopen")||S.q||"").trim().toUpperCase(), tests:[]}; var w = document.getElementById("ftbox"); if(w){ w.innerHTML = ftHtml(); w.scrollIntoView({behavior:"smooth", block:"start"}); } return; }
+  if(el.hasAttribute("data-fzside")){ S.fz.side = el.getAttribute("data-fzside"); S.fz.step = null; ftRefresh(); return; }
   if(el.hasAttribute("data-fzstep")){ S.fz.step = el.getAttribute("data-fzstep"); ftRefresh(); return; }
   if(el.hasAttribute("data-fzdel")){ S.fz.tests.splice(+el.getAttribute("data-fzdel"),1); ftRefresh(); return; }
   var a = el.getAttribute("data-fz");
