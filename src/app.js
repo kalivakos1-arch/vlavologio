@@ -460,7 +460,7 @@ function card(r, showPlat){
   return '<div class="res"'+(kd?' style="--kc:'+kd[1]+'"':'')+'>'+
     '<div class="rh"><span class="codes">'+(t.tbl.lamps ? ledSym(c[0][0], t.tbl.lamps) : t.tbl.pat ? '<span class="code pat">'+esc(patSym(c[0][0], t.tbl.pat.labels))+'</span>' : c[0].map(function(k){return '<span class="code">'+esc(k)+'</span>';}).join(""))+'</span>'+
     (showPlat?'<span class="plat">'+esc(PLAT[t.plat].name)+'</span>':(kd?'<span class="kind">'+esc(kd[0])+'</span>':''))+'</div>'+
-    '<div class="rt">'+esc(c[1])+'</div>'+(t.key==='midea_multi_out' ? '' : behBox(t.plat, c[0]))+
+    '<div class="rt">'+esc(c[1])+'</div>'+(/_outled$|_multi_out$|_multiled$/.test(t.key) ? '' : behBox(t.plat, c[0]))+
     (c[4]?'<div class="rl">↔ '+esc(c[4])+'</div>':'')+
     (c[2]?(function(){ var st=stepsOf(c[2]); return st ? '<div class="rd"><b>🔧 Τι ελέγχεις – με τη σειρά:</b><ol class="steps">'+st.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol></div>' : '<div class="rd"><b>🔧 Τι ελέγχεις:</b> '+esc(c[2])+'</div>'; })():'')+
     (c[3]?'<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+esc(c[3])+'</div>':'')+
@@ -552,7 +552,8 @@ function renderResults(){
   if(S.src==="out"){
     var gp = {}; candidates(b).forEach(function(p){ if(!(b.own || !S.oem || S.oem==="__all" || S.oem===p)) return; if(OUTGUIDE[p]) gp[p]=OUTGUIDE[p]; });
     var gk = Object.keys(gp);
-    if(gk.length) html += '<div class="guide">👀 <b>Τι κοιτάς στην πλακέτα:</b>'+gk.map(function(p){ return '<div>'+(gk.length>1?'<b>'+esc(PLAT[p].name)+':</b> ':'')+esc(gp[p])+'</div>'; }).join("")+'</div>';
+    if(typeof multiOutGuide==="function") html += multiOutGuide();
+    if(gk.length && S.cat!=="multi") html += '<div class="guide">👀 <b>Τι κοιτάς στην πλακέτα:</b>'+gk.map(function(p){ return '<div>'+(gk.length>1?'<b>'+esc(PLAT[p].name)+':</b> ':'')+esc(gp[p])+'</div>'; }).join("")+'</div>';
     var pt = null; tabs.forEach(function(x){ if(!pt && x.tbl.pat) pt = x.tbl.pat; });
     if(pt && !activeTables.outMissing){
       var cur = (S.q.trim().length===pt.n && /^[0-2]+$/.test(S.q.trim())) ? S.q.trim() : new Array(pt.n+1).join("0");

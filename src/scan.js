@@ -553,7 +553,7 @@ function multiOutNote(q){
   var n = norm(q), plats = activeTables.plats || [], h = "";
   plats.forEach(function(p){
     var ot = (OUTP[p] && OUTP[p].multi) || [], main = PLAT[p].multi || [];
-    ot.forEach(function(tn){ if(main.indexOf(tn)>=0 || !T[tn]) return;
+    ot.forEach(function(tn){ if(main.indexOf(tn)>=0 || !T[tn] || !T[tn].disp) return;
       T[tn].codes.forEach(function(c){ if(c[0].some(function(k){ return norm(k)===n; }))
         h += '<div class="hint">⚠️ <b>Από πού διάβασες τον «'+esc(q.toUpperCase())+'»;</b> Στα multi '+esc(PLAT[p].name)+' η οθόνη της <b>πλακέτας εξωτερικής</b> έχει δικούς της κωδικούς. Αν τον είδες στην εξωτερική, σημαίνει: <b>'+esc(String(c[1]).replace(/^Εξωτερική:\s*/,""))+'</b>. Παρακάτω είναι το νόημα αν τον είδες στην <b>εσωτερική</b>.<div style="margin-top:6px"><button class="mini" data-goout="1">Δες τον ως κωδικό εξωτερικής →</button></div></div>';
       });
@@ -563,3 +563,28 @@ function multiOutNote(q){
 }
 
 document.addEventListener("click", function(e){ if(!e.target.closest("[data-goout]")) return; var b = document.querySelector('#srcbox [data-s="out"]'); if(b) b.click(); });
+
+// ===== Multi: τι δείχνει η πλακέτα εξωτερικής ανά εργοστάσιο =====
+var MULTIOUT = {
+  midea:"Οθόνη 2 ψηφίων με ΔΙΚΟΥΣ της κωδικούς (π.χ. E2 = επικοινωνία, ενώ η εσωτερική δείχνει E1). Πίνακας από το Midea Multi service manual.",
+  gree:"Η κεντρική πλακέτα εξωτερικής δείχνει τους ίδιους κωδικούς με το χειριστήριο· η κίτρινη/κόκκινη λυχνία αναβοσβήνει με τον πίνακα λυχνιών.",
+  inv_gree:"Όπως Gree: ίδιοι κωδικοί στην πλακέτα εξωτερικής + κίτρινη/κόκκινη λυχνία.",
+  aux:"3 λυχνίες (D1–D3) – γράψε την κατάσταση κάθε λυχνίας (0/1/2).",
+  tcl:"1 λυχνία στην πλακέτα τροφοδοσίας – μέτρα τις αναλαμπές (πίνακας από το TCL Multi service manual).",
+  hisense:"Οι λυχνίες δείχνουν τον αριθμό του κωδικού (δεκάδες / μονάδες) – ίδιοι αριθμοί με την εσωτερική.",
+  haier:"LED1 αναβοσβήνει n φορές – ο πίνακας δείχνει και τον αντίστοιχο κωδικό εσωτερικής.",
+  daikin:"5 λυχνίες – συνδυασμός αναμμένων/σβηστών.",
+  me:"Λυχνία με αναλαμπές (πίνακας λυχνιών εξωτερικής).",
+  fujitsu:"LED1–LED4: LED1 γενικά + δωμάτιο A, LED2/3/4 δωμάτια B/C/D (πίνακας από το Fujitsu multi installation manual).",
+  lg:"LED01G/LED02G αναβοσβήνουν δεκάδες/μονάδες του ίδιου αριθμού με τον κωδικό CH της εσωτερικής.",
+  samsung:"Η πλακέτα εξωτερικής δείχνει τους ίδιους κωδικούς E (π.χ. E201, E202, E221).",
+  panasonic:"Δεν έχει ξεχωριστό κωδικό εξωτερικής – διάβασε τον κωδικό από κάθε εσωτερική με το τηλεχειριστήριο (κάθε εσωτερική κρατά τον δικό της).",
+  toshiba:"5 λυχνίες (1 κίτρινη + 4 κόκκινες) – δεν έχω ακόμα τον πίνακα· χρησιμοποίησε τον κωδικό ελέγχου από το τηλεχειριστήριο.",
+  mhi:"Κόκκινη λυχνία ελέγχου με αναλαμπές – δεν έχω ακόμα τον πίνακα· χρησιμοποίησε τον κωδικό του χειριστηρίου.",
+  hitachi:"Λυχνία LD301 με αναλαμπές – δεν έχω ακόμα τον πίνακα· χρησιμοποίησε τον κωδικό του χειριστηρίου."
+};
+function multiOutGuide(){
+  if(S.cat!=="multi") return "";
+  var pl = activeTables.plats || [], h = pl.filter(function(p){ return MULTIOUT[p]; }).map(function(p){ return '<div>'+(pl.length>1?'<b>'+esc(PLAT[p].name)+':</b> ':'')+esc(MULTIOUT[p])+'</div>'; }).join("");
+  return h ? '<div class="guide">🔀 <b>Multi – τι δείχνει η πλακέτα εξωτερικής:</b>'+h+'</div>' : '';
+}
