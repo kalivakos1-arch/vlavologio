@@ -20,7 +20,7 @@ var SER = [
 ];
 var QRDOM = [[/gree/i,"gree"],[/midea/i,"midea"],[/hisense/i,"hisense"],[/haier/i,"haier"],[/daikin/i,"daikin"],[/tcl\./i,"tcl"],[/aux(group|air)?\./i,"aux"],[/samsung/i,"samsung"],[/lg\.com/i,"lg"],[/mitsubishielectric|mitsubishi-electric/i,"me"],[/toshiba/i,"toshiba"],[/panasonic/i,"panasonic"],[/fujitsu/i,"fujitsu"]];
 var serLearn = LS.get("vl_serlearn", []); // [{b, p, o}]
-function serClean(t){ return String(t||"").toUpperCase().replace(/[\s\-\.\/]/g,""); }
+function serClean(t){ return gr2lat(String(t||"")).toUpperCase().replace(/[\s\-\.\/]/g,""); }
 function serInfo(t, cs){
   var raw = String(t||""), v = serClean(raw), out = [];
   function ok(o){ return !cs || cs.indexOf(o)>=0 || (o==="gree" && cs.indexOf("inv_gree")>=0); }
@@ -536,16 +536,16 @@ function ftRefresh(){ var w = document.getElementById("ftbox"); if(w) w.innerHTM
 document.addEventListener("click", function(e){
   var el = e.target.closest("[data-fzopen],[data-fz],[data-fzstep],[data-fzdel],[data-fzdone],[data-fzside],[data-fzsrc]"); if(!el) return;
   if(el.hasAttribute("data-fzdone")){ S.fz = null; return; }
-  if(el.hasAttribute("data-fzopen")){ S.fz = {orig:(el.getAttribute("data-fzopen")||S.q||"").trim().toUpperCase(), tests:[]}; var w = document.getElementById("ftbox"); if(w){ w.innerHTML = ftHtml(); w.scrollIntoView({behavior:"smooth", block:"start"}); } return; }
+  if(el.hasAttribute("data-fzopen")){ S.fz = {orig:gr2lat((el.getAttribute("data-fzopen")||S.q||"").trim()).toUpperCase(), tests:[]}; var w = document.getElementById("ftbox"); if(w){ w.innerHTML = ftHtml(); w.scrollIntoView({behavior:"smooth", block:"start"}); } return; }
   if(el.hasAttribute("data-fzsrc")){ S.fz.src = el.getAttribute("data-fzsrc"); S.fz.tests = []; if(S.fz.src==="led") S.fz.side = "out"; ftRefresh(); return; }
   if(el.hasAttribute("data-fzside")){ S.fz.side = el.getAttribute("data-fzside"); S.fz.step = null; ftRefresh(); return; }
   if(el.hasAttribute("data-fzstep")){ S.fz.step = el.getAttribute("data-fzstep"); ftRefresh(); return; }
   if(el.hasAttribute("data-fzdel")){ S.fz.tests.splice(+el.getAttribute("data-fzdel"),1); ftRefresh(); return; }
   var a = el.getAttribute("data-fz");
   if(a==="close"){ S.fz = null; ftRefresh(); return; }
-  if(a==="add"){ var v = (document.getElementById("ft_new").value||"").trim().toUpperCase(); if(!v) return; S.fz.tests.push({k:el.getAttribute("data-fzk"), code:v}); S.fz.step = null; ftRefresh(); return; }
+  if(a==="add"){ var v = gr2lat((document.getElementById("ft_new").value||"").trim()).toUpperCase(); if(!v) return; S.fz.tests.push({k:el.getAttribute("data-fzk"), code:v}); S.fz.step = null; ftRefresh(); return; }
 });
-document.addEventListener("change", function(e){ if(e.target && e.target.id==="ft_orig" && S.fz){ var nv = e.target.value.trim().toUpperCase(); if(nv!==S.fz.orig){ S.fz.orig = nv; S.fz.tests = []; S.fz.step = null; } ftRefresh(); } });
+document.addEventListener("change", function(e){ if(e.target && e.target.id==="ft_orig" && S.fz){ var nv = gr2lat(e.target.value.trim()).toUpperCase(); if(nv!==S.fz.orig){ S.fz.orig = nv; S.fz.tests = []; S.fz.step = null; } ftRefresh(); } });
 document.addEventListener("keydown", function(e){ if(e.key==="Enter" && e.target && e.target.id==="ft_new"){ var b = document.querySelector('[data-fz="add"]'); if(b) b.click(); } });
 
 // ===== Multi: ο ίδιος κωδικός στην οθόνη της εξωτερικής σημαίνει άλλο πράγμα =====
@@ -590,7 +590,7 @@ function multiOutGuide(){
 }
 
 // ===== Σωλήνες & καλώδια ανά μοντέλο =====
-function instKey(v){ return (v||"").toUpperCase().replace(/[^A-Z0-9]/g,""); }
+function instKey(v){ return gr2lat(v||"").toUpperCase().replace(/[^A-Z0-9]/g,""); }
 function instForm(){
   var bs = Object.keys(INST), cur = INST[S.brand] ? S.brand : (S.instB && INST[S.instB] ? S.instB : bs[0]);
   return '<div class="pcalcw"><div class="lbl">📐 Μάρκα και μοντέλο</div>'+

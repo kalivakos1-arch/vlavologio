@@ -182,7 +182,7 @@ var OEMRX = [
   {b:null, re:/^[1-5]U\d{2}[A-Z]|^AS\d{2}[A-Z]{2}\d|^AD\d{2}[A-Z]|^AB\d{2}[A-Z]|^HSU-/, o:"haier", w:"Η ονομασία 1U/2U…, AS25…, AD/AB… είναι του εργοστασίου Haier."}
 ];
 function detectOem(b, model){
-  var v = String(model||"").toUpperCase().replace(/\s/g,""); if(v.length<3) return null;
+  var v = gr2lat(String(model||"")).toUpperCase().replace(/\s/g,""); if(v.length<3) return null;
   for(var i=0;i<OEMRX.length;i++){ var r=OEMRX[i];
     if(r.b && r.b.indexOf(b.n)<0) continue;
     if(r.re.test(v)) return r;
@@ -242,9 +242,18 @@ function activeTables(){
   return out;
 }
 
+// ===== ελληνικά γράμματα σε κωδικούς → λατινικά (ε5 → E5, Η6 → H6, ρ1 → P1) =====
+var GR2LAT = {"Α":"A","Β":"B","Γ":"G","Δ":"D","Ε":"E","Ζ":"Z","Η":"H","Θ":"U","Ι":"I","Κ":"K","Λ":"L","Μ":"M","Ν":"N","Ξ":"J","Ο":"O","Π":"P","Ρ":"P","Σ":"S","Τ":"T","Υ":"U","Φ":"F","Χ":"X","Ψ":"C","Ω":"V"};
+function gr2lat(s){
+  s = String(s||"");
+  if(!/[\u0370-\u03FF\u1F00-\u1FFF]/.test(s)) return s;
+  s = s.normalize ? s.normalize("NFD").replace(/[\u0300-\u036f]/g,"") : s;
+  return s.toUpperCase().replace(/[\u0391-\u03A9]/g, function(ch){ return GR2LAT[ch] || ch; });
+}
+function cq(){ var q = S.q.trim(); return isTextQuery(q) ? q : gr2lat(q); }
 // ===== κανονικοποίηση κωδικών =====
 function norm(s){
-  s = String(s).toUpperCase().replace(/[\s\-\.\/_:]/g,"");
+  s = gr2lat(String(s)).toUpperCase().replace(/[\s\-\.\/_:]/g,"");
   s = s.replace(/^CH(?=\d)/,"");             // LG CH05 -> 05
   if(/^E\d{3}$/.test(s)===false && /^C\d{3}$/.test(s)) s = "E"+s.slice(1); // Samsung C101 -> E101
   if(/^\d+$/.test(s) && !(s.length>=3 && s[0]==="0")) s = String(parseInt(s,10)); // 05 -> 5 (όχι συνδυασμοί LED όπως 011)
@@ -398,7 +407,7 @@ function renderOem(){
   var mi = $("model");
   mi.value = S.model||"";
   mi.addEventListener("input", function(){
-    S.model = mi.value; var v = mi.value.toUpperCase().replace(/\s/g,"");
+    S.model = mi.value; var v = gr2lat(mi.value).toUpperCase().replace(/\s/g,"");
     var hit = null;
     myMap.forEach(function(m){ if(m.brand===b.n && v && v.indexOf(m.prefix)===0 && (!hit || m.prefix.length>hit.prefix.length)) hit=m; });
     if(hit && cs.indexOf(hit.oem)>=0){ S.oem = hit.oem; $("mapMsg").textContent = "Βρέθηκε στις αντιστοιχίες σου: "+hit.prefix+"… = "+PLAT[hit.oem].name; markChips(); renderCtx(); renderResults(); persist(); return; }
@@ -408,7 +417,7 @@ function renderOem(){
     else $("mapMsg").textContent = v.length>=4 ? "Δεν αναγνωρίστηκε το εργοστάσιο από το μοντέλο – διάλεξέ το παρακάτω ή δες «Πώς βρίσκω το εργοστάσιο»." : "";
   });
   $("saveMap").addEventListener("click", function(){
-    var v = (mi.value||"").toUpperCase().replace(/\s/g,"");
+    var v = gr2lat(mi.value||"").toUpperCase().replace(/\s/g,"");
     if(!v){ $("mapMsg").textContent="Γράψε πρώτα το μοντέλο."; return; }
     if(!S.oem || S.oem==="__all"){ $("mapMsg").textContent="Διάλεξε πρώτα εργοστάσιο (όχι «Σύγκριση»)."; return; }
     var pre = v.replace(/[-_].*$/,""); if(pre.length>8) pre = pre.slice(0,8); if(pre.length<2) pre=v;
@@ -541,12 +550,12 @@ function renderResults(){
   var out = $("results"); var b = brandObj();
   if(S.src==="parts"){ renderParts(); return; }
   if(S.src==="sym"){ renderSym(); return; }
-  if(!b){ var q0 = S.q.trim(); out.innerHTML = (q0 && S.src==="in" && !isTextQuery(q0)) ? reverseHtml(q0) : '<div class="empty">Διάλεξε κατηγορία και μάρκα – ή γράψε κατευθείαν τον κωδικό για να δεις σε ποια εργοστάσια υπάρχει.</div>'; $("notes").innerHTML=""; return; }
+  if(!b){ var q0 = cq(); out.innerHTML = (q0 && S.src==="in" && !isTextQuery(q0)) ? reverseHtml(q0) : '<div class="empty">Διάλεξε κατηγορία και μάρκα – ή γράψε κατευθείαν τον κωδικό για να δεις σε ποια εργοστάσια υπάρχει.</div>'; $("notes").innerHTML=""; return; }
   var tabs = activeTables();
   if(!tabs.length && S.src==="led"){ out.innerHTML = ledGuideOnly(b); $("notes").innerHTML=""; return; }
   if(!tabs.length){ out.innerHTML = '<div class="empty">Δεν υπάρχει ακόμα βλαβολόγιο για '+esc(b.n)+' σε αυτή την κατηγορία.</div>'; $("notes").innerHTML=""; return; }
   var plats = {}; tabs.forEach(function(t){plats[t.plat]=1;}); var multi = Object.keys(plats).length>1;
-  var q = S.q.trim();
+  var q = cq();
   var html = "";
   if(S.src==="led"){ out.innerHTML = renderLed(b, tabs, multi); ledNotes(tabs); return; }
   if(S.src==="out"){
@@ -624,7 +633,7 @@ function partPlats(){
   return cs;
 }
 var meas = LS.get("vl_meas", []);
-function mkey(v){ return String(v||"").toUpperCase().replace(/\s/g,""); }
+function mkey(v){ return gr2lat(String(v||"")).toUpperCase().replace(/\s/g,""); }
 function rAt(s, T){
   if(s.p){
     var p = s.p, i;
@@ -979,7 +988,7 @@ function mmGuide(open){
 }
 function renderSym(){
   $("notes").innerHTML = "";
-  var h = '', q = S.q.trim(), bb = brandObj();
+  var h = '', q = cq(), bb = brandObj();
   if(q && bb){ var rr = search(q), seenB = {};
     if(rr.mode!=="none") rr.res.slice(0,6).forEach(function(x){ var be = behFor(x.t.plat, x.c[0]); if(!be || seenB[be.d]) return; seenB[be.d]=1;
       h += '<div class="beh big"><div class="small">'+esc(bb.n)+' · κωδικός <b>'+esc(x.c[0][0])+'</b>'+(!bb.own?' – <b>μόνο αν είναι '+esc(PLAT[x.t.plat].name)+'</b>':'')+' – '+esc(x.c[1])+'</div><div style="margin-top:6px"><b>🩺 Τι κάνει το μηχάνημα:</b> '+esc(be.s)+'</div><div class="small" style="margin-top:4px">📘 Πότε βγαίνει (manual): '+esc(be.d)+'</div><div class="small">Πηγή: '+esc(BEHSRC[x.t.plat]||"")+'</div></div>'; });
@@ -1240,7 +1249,7 @@ document.addEventListener("click", function(e){
 var recent = LS.get("vl_recent", []);
 var recT = null;
 function saveRecent(){
-  var q = S.q.trim(); if(!q || !S.brand || isTextQuery(q)) return;
+  var q = cq(); if(!q || !S.brand || isTextQuery(q)) return;
   var r = search(q); if(r.mode!=="exact" && r.mode!=="detail") return;
   var item = {cat:S.cat, brand:S.brand, oem:S.oem, q:q.toUpperCase()};
   recent = recent.filter(function(x){return !(x.cat===item.cat && x.brand===item.brand && x.q===item.q);});
