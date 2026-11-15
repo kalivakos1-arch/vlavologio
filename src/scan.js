@@ -426,9 +426,9 @@ document.addEventListener("change", function(e){ if(e.target && e.target.id==="c
 // ===== 🧪 Βρες το εργοστάσιο προκαλώντας γνωστή βλάβη =====
 var FTEST = [
  {k:"amb", side:"out", t:"Αισθητήριο εξωτερικού αέρα (εξωτερική)", rx:/^(αισθητήρ|θερμίστορ)[^.;]{0,40}(εξωτερικού αέρα|εξωτ\. αέρα|περιβάλλοντος|εξωτερικής θερμοκρασίας)|^(αισθητήρ|θερμίστορ).{0,30}\b(T4|TO|TH7)\b|^θερμίστορ εξωτερικής/i,
-  how:["Κλείσε το ρεύμα από την ασφάλεια και περίμενε 3–5 λεπτά (οι πυκνωτές της εξωτερικής κρατάνε τάση).","Άνοιξε το καπάκι της εξωτερικής και βγάλε τη φίσα του αισθητηρίου εξωτερικού αέρα (το αισθητήριο που κρέμεται στον αέρα πίσω από το στοιχείο, σε πλαστική βάση – ΟΧΙ σε σωλήνα).","Δώσε ρεύμα. Περίμενε 1–2 λεπτά ΧΩΡΙΣ να ανάψεις τη μονάδα – τα αισθητήρια ελέγχονται αμέσως, πριν ξεκινήσει ανεμιστήρας ή συμπιεστής.","Αν δεν βγει κωδικός, άναψε με το τηλεχειριστήριο και περίμενε έως 3 λεπτά.","Γράψε τον κωδικό της οθόνης της εσωτερικής. Κλείσε ρεύμα, περίμενε και ξανάβαλε τη φίσα."]},
+  how:["Κλείσε το ρεύμα από την ασφάλεια και περίμενε 3–5 λεπτά (οι πυκνωτές της εξωτερικής κρατάνε τάση).","Άνοιξε το καπάκι της εξωτερικής και βγάλε τη φίσα του αισθητηρίου εξωτερικού αέρα (το αισθητήριο που κρέμεται στον αέρα πίσω από το στοιχείο, σε πλαστική βάση – ΟΧΙ σε σωλήνα).","Δώσε ρεύμα. Περίμενε 1–2 λεπτά ΧΩΡΙΣ να ανάψεις τη μονάδα – τα αισθητήρια ελέγχονται αμέσως, πριν ξεκινήσει ανεμιστήρας ή συμπιεστής.","Αν δεν βγει κωδικός, άναψε με το τηλεχειριστήριο και περίμενε έως 3 λεπτά.","Γράψε τον κωδικό (στην οθόνη της εσωτερικής ή τις αναλαμπές της πλακέτας εξωτερικής – όπως διάλεξες πάνω). Κλείσε ρεύμα, περίμενε και ξανάβαλε τη φίσα."]},
  {k:"oc", side:"out", t:"Αισθητήριο στοιχείου εξωτερικής", rx:/^(αισθητήρ|θερμίστορ)[^.;]{0,40}(στοιχείου εξωτ|σωλήνα εξωτ|συμπυκνωτή|απόψυξης|COND|εξωτερικού στοιχείου|μέσου στοιχείου ε)|^(αισθητήρ|θερμίστορ).{0,30}\b(T3|TE|TH3)\b|^θερμίστορ εξωτερικής/i,
-  how:["Κλείσε το ρεύμα και περίμενε 3–5 λεπτά.","Βγάλε τη φίσα του αισθητηρίου στοιχείου εξωτερικής (μπαίνει σε θήκη πάνω σε σωληνάκι του στοιχείου).","Δώσε ρεύμα και περίμενε 1–2 λεπτά χωρίς να ανάψεις· αν δεν βγει κωδικός, άναψε και περίμενε έως 3 λεπτά.","Γράψε τον κωδικό της εσωτερικής. Κλείσε ρεύμα, περίμενε και ξανάβαλε τη φίσα."]},
+  how:["Κλείσε το ρεύμα και περίμενε 3–5 λεπτά.","Βγάλε τη φίσα του αισθητηρίου στοιχείου εξωτερικής (μπαίνει σε θήκη πάνω σε σωληνάκι του στοιχείου).","Δώσε ρεύμα και περίμενε 1–2 λεπτά χωρίς να ανάψεις· αν δεν βγει κωδικός, άναψε και περίμενε έως 3 λεπτά.","Γράψε τον κωδικό (οθόνη εσωτερικής ή αναλαμπές εξωτερικής). Κλείσε ρεύμα, περίμενε και ξανάβαλε τη φίσα."]},
  {k:"dis", side:"out", t:"Αισθητήριο κατάθλιψης (εξωτερική)", rx:/^(αισθητήρ|θερμίστορ)[^.;]{0,30}κατάθλιψ|^(αισθητήρ|θερμίστορ).{0,20}\b(TP|TD|T5|TH4)\b/i, warn:"Σε αρκετές μονάδες το αισθητήριο κατάθλιψης ελέγχεται μόνο αφού ξεκινήσει ο συμπιεστής – αν η αρχική βλάβη σταματά τον συμπιεστή πριν, προτίμησε τα άλλα δύο αισθητήρια.",
   how:["Κλείσε το ρεύμα και περίμενε 3–5 λεπτά.","Βγάλε τη φίσα του αισθητηρίου κατάθλιψης (στον σωλήνα που βγαίνει από την κορυφή του συμπιεστή).","Δώσε ρεύμα, άναψε τη μονάδα και περίμενε έως 3–5 λεπτά.","Γράψε τον κωδικό. Κλείσε ρεύμα, περίμενε και ξανάβαλε τη φίσα."]},
  {k:"room", side:"in", t:"Αισθητήριο χώρου (εσωτερική)", rx:/^(αισθητήρ|θερμίστορ)[^.;]{0,40}(χώρου|αέρα εισόδου|εισόδου αέρα|αέρα επιστροφής)|^(αισθητήρ|θερμίστορ).{0,30}\b(T1|TA|TH1)\b/i,
@@ -439,9 +439,26 @@ var FTEST = [
   how:["Κλείσε το ρεύμα και περίμενε 2–3 λεπτά.","Βγάλε τη φίσα του μοτέρ ανεμιστήρα εσωτερικής από την πλακέτα.","Δώσε ρεύμα και άναψε τη μονάδα.","Περίμενε έως 1–2 λεπτά και γράψε τον κωδικό.","Κλείσε ρεύμα, περίμενε και ξανάβαλε τη φίσα."]}
 ];
 S.fz = null; // {orig, tests:[{k,code}], scope:[plats]|null, step:k}
-function ftCodes(p){ var r = []; (PLAT[p][S.cat]||[]).forEach(function(tn){ var t = T[tn]; if(t && t.codes) t.codes.forEach(function(c){ r.push(c); }); }); return r; }
+function ftMain(p){ var r = []; (PLAT[p][S.cat]||[]).forEach(function(tn){ var t = T[tn]; if(t && t.codes) t.codes.forEach(function(c){ r.push(c); }); }); return r; }
+function ftHasLed(p){ return !!(OUTP[p] && (OUTP[p][S.cat]||[]).some(function(tn){ return T[tn] && T[tn].codes; })); }
+// λυχνίες εξωτερικής: [κλειδιά, νόημα] – αν η λυχνία παραπέμπει σε κωδικό εσωτερικής (→ E2), παίρνει το νόημα εκείνου
+function ftLed(p){
+  var r = [], main = ftMain(p);
+  ((OUTP[p] && OUTP[p][S.cat])||[]).forEach(function(tn){ var t = T[tn]; if(!t || !t.codes) return;
+    if((PLAT[p][S.cat]||[]).indexOf(tn)>=0){ t.codes.forEach(function(c){ r.push(c); }); return; }
+    t.codes.forEach(function(c){ var keys = c[0].map(function(k){ return String(k).split("/")[0]; });
+      String(c[1]).split("|").forEach(function(part){ var txt = part.trim(), d = txt, lab = "", m = txt.match(/^(.*?)→\s*(?:εσωτερική\s*)?([A-Z]{0,3}\d{1,3}[A-Z]?)\b\s*(.*)$/);
+        if(m){ lab = m[1].trim(); var n = norm(m[2]), mc = main.filter(function(x){ return x[0].some(function(k){ return norm(k)===n; }); })[0]; d = mc ? String(mc[1]) : (m[3]||txt); }
+        else { var m2 = txt.match(/[–-]\s*(.+)$/); if(m2) d = m2[1]; }
+        var q = d.search(/αισθητήρ|θερμίστορ|ανεμιστήρ|μοτέρ/i); if(q>0) d = d.slice(q);
+        r.push([keys, d, lab ? lab.replace(/\s*×\s*/, " × ") : keys.join("/")]); });
+    });
+  });
+  return r;
+}
+function ftCodes(p){ return S.fz && S.fz.src==="led" ? ftLed(p) : ftMain(p); }
 function ftFind(p, code){ var n = norm(code); return ftCodes(p).filter(function(c){ return c[0].some(function(k){ return norm(k)===n; }); }); }
-function ftScope(){ var b = brandObj(); if(b && !b.own) return candidates(b); return Object.keys(PLAT).filter(function(p){ return p!=="inv_mc" && (PLAT[p][S.cat]||[]).length; }); }
+function ftScope(){ var b = brandObj(), sc = (b && !b.own) ? candidates(b) : Object.keys(PLAT).filter(function(p){ return p!=="inv_mc" && (PLAT[p][S.cat]||[]).length; }); return S.fz && S.fz.src==="led" ? sc.filter(ftHasLed) : sc; }
 function ftEval(){
   var f = S.fz, sc = ftScope(), steps = [];
   var cur = sc.filter(function(p){ return f.orig ? ftFind(p, f.orig).length : true; });
@@ -464,14 +481,21 @@ function ftSide(cands){
 function ftHtml(){
   var f = S.fz; if(!f) return "";
   var h = '<div class="ftw"><div class="dthead"><b>🧪 Βρες το εργοστάσιο με γνωστή βλάβη</b><button class="x" data-fz="close">✕</button></div>';
-  h += '<div class="small">Ο αρχικός κωδικός:</div><div class="row2"><input id="ft_orig" value="'+esc(f.orig||"")+'" placeholder="π.χ. E5" autocapitalize="characters"></div>';
+  var led = f.src==="led";
+  h += '<div class="small">Πού βλέπεις τη βλάβη;</div><div class="chips"><button class="chip'+(!led?' on':'')+'" data-fzsrc="in">📺 Οθόνη εσωτερικής</button><button class="chip'+(led?' on':'')+'" data-fzsrc="led">💡 Λυχνίες πλακέτας εξωτερικής</button></div>'+
+    (led ? '<div class="small">Γράψε πόσες φορές αναβοσβήνει η λυχνία (π.χ. <b>5</b>). Σε πλακέτες με 3–5 λυχνίες (AUX, Hisense, Daikin multi) γράψε την κατάσταση κάθε λυχνίας με τη σειρά: 0 = σβηστή, 1 = αναμμένη, 2 = αναβοσβήνει (π.χ. <b>221</b>).</div>' : '')+
+    '<div class="small">Ο αρχικός κωδικός:</div><div class="row2"><input id="ft_orig" value="'+esc(f.orig||"")+'" placeholder="'+(led?'π.χ. 5 ή 221':'π.χ. E5')+'" autocapitalize="characters"></div>';
+  if(led){ var nol = (function(){ var b = brandObj(), sc = (b && !b.own) ? candidates(b) : Object.keys(PLAT).filter(function(p){ return p!=="inv_mc" && (PLAT[p][S.cat]||[]).length; }); return sc.filter(function(p){ return !ftHasLed(p); }); })();
+    if(nol.length) h += '<div class="small">ℹ️ Δεν έχω πίνακα λυχνιών εξωτερικής για: '+esc(nol.map(function(p){ return PLAT[p].name; }).join(", "))+' – αυτά δεν ελέγχονται με λυχνίες.</div>'; }
   if(!f.orig){ return h + '<div class="small">Γράψε τον κωδικό που βγάζει η μονάδα.</div></div>'; }
   var ev = ftEval(), nm = function(p){ return PLAT[p].name; };
   h += '<div class="small" style="margin-top:6px">Ο «'+esc(f.orig)+'» υπάρχει σε: <b>'+(ev.steps[0].list.map(nm).join(", ")||"κανένα")+'</b></div>';
   f.tests.forEach(function(ts,i){ var T0 = FTEST.filter(function(x){ return x.k===ts.k; })[0]; if(ts.code) h += '<div class="small">✔ '+esc(T0.t)+': βγήκε <b>'+esc(ts.code)+'</b> <button class="x" data-fzdel="'+i+'">✕</button> → μένουν: <b>'+esc(ev.steps[i+1] ? ev.steps[i+1].list.map(nm).join(", ") || "κανένα" : "")+'</b></div>'; });
-  if(ev.cur.length===1){
-    var p = ev.cur[0], d = ftFind(p, f.orig)[0];
-    h += '<div class="pver good" style="margin-top:8px">✅ Το εργοστάσιο είναι <b>'+esc(nm(p))+'</b><div style="font-weight:500;margin-top:4px">Ο αρχικός κωδικός <b>'+esc(f.orig)+'</b> σημαίνει: '+esc(d?d[1]:"")+'</div></div>'+ftUseBtn(p);
+  var mean = function(p){ return ftFind(p, f.orig).map(function(c){ return (f.src==="led" && c[2] && c[2]!==c[0].join("/") ? c[2]+": " : "")+c[1]; }).join(" · "); };
+  var same = ev.cur.length>1 && f.tests.some(function(t){ return t.code; }) && (ev.cur.every(function(p){ return mean(p)===mean(ev.cur[0]); }) || ev.cur.every(function(p){ return p==='gree' || p==='inv_gree'; }));
+  if(ev.cur.length===1 || same){
+    var p = ev.cur[0];
+    h += '<div class="pver good" style="margin-top:8px">✅ Το εργοστάσιο είναι <b>'+esc(ev.cur.map(nm).join(" / "))+'</b>'+(same?' <span class="small">(ίδιο βλαβολόγιο)</span>':'')+'<div style="font-weight:500;margin-top:4px">Ο αρχικός κωδικός <b>'+esc(f.orig)+'</b> σημαίνει: '+esc(mean(p))+'</div></div>'+ev.cur.map(ftUseBtn).join(" ");
     return h + '</div>';
   }
   if(!ev.cur.length){
@@ -495,11 +519,11 @@ function ftHtml(){
   if(!st || done[st.k] || next.indexOf(st)<0) st = next[0];
   if(otherSide) h += '<div class="hint" style="margin-top:8px">Δεν βρίσκω δοκιμή στην '+(side==="out"?"εξωτερική":"εσωτερική")+' που να ξεχωρίζει τα υποψήφια – δοκίμασε στην άλλη μονάδα (αν η αρχική βλάβη το επιτρέπει).</div>';
   // τι κωδικό θα βγάλει κάθε υποψήφιο σε αυτή τη δοκιμή
-  var exp = ev.cur.map(function(p){ var c = ftCodes(p).filter(function(c){ return st.rx.test(String(c[1])); })[0]; return nm(p)+': '+(c?c[0].join("/"):"—"); }).join(" · ");
+  var exp = ev.cur.map(function(p){ var c = ftCodes(p).filter(function(c){ return st.rx.test(String(c[1])); })[0]; return nm(p)+': '+(c?(c[2]||c[0].join("/")):"—"); }).join(" · ");
   h += '<div class="ftstep"><div class="lbl" style="margin-top:0">Επόμενη δοκιμή: '+esc(st.t)+'</div>'+(next.length>1?'<div class="chips">'+next.map(function(t){ return '<button class="chip'+(t.k===st.k?' on':'')+'" data-fzstep="'+t.k+'">'+esc(t.t)+'</button>'; }).join("")+'</div>':'')+
     (st.warn?'<div class="pver mid">⚠️ '+esc(st.warn)+'</div>':'')+'<ol class="steps">'+st.how.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join("")+'</ol>'+
     '<div class="small">Αναμενόμενο: '+esc(exp)+'</div>'+
-    '<div class="row2" style="margin-top:6px"><input id="ft_new" placeholder="Ο νέος κωδικός που βγήκε" autocapitalize="characters"><button class="mini" data-fz="add" data-fzk="'+st.k+'">OK</button></div></div>';
+    '<div class="row2" style="margin-top:6px"><input id="ft_new" placeholder="'+(f.src==="led"?'Νέες αναλαμπές (π.χ. 3 ή 220)':'Ο νέος κωδικός που βγήκε')+'" autocapitalize="characters"><button class="mini" data-fz="add" data-fzk="'+st.k+'">OK</button></div></div>';
   return h + '</div>';
 }
 function ftUseBtn(p){
@@ -510,9 +534,10 @@ function ftUseBtn(p){
 }
 function ftRefresh(){ var w = document.getElementById("ftbox"); if(w) w.innerHTML = ftHtml(); }
 document.addEventListener("click", function(e){
-  var el = e.target.closest("[data-fzopen],[data-fz],[data-fzstep],[data-fzdel],[data-fzdone],[data-fzside]"); if(!el) return;
+  var el = e.target.closest("[data-fzopen],[data-fz],[data-fzstep],[data-fzdel],[data-fzdone],[data-fzside],[data-fzsrc]"); if(!el) return;
   if(el.hasAttribute("data-fzdone")){ S.fz = null; return; }
   if(el.hasAttribute("data-fzopen")){ S.fz = {orig:(el.getAttribute("data-fzopen")||S.q||"").trim().toUpperCase(), tests:[]}; var w = document.getElementById("ftbox"); if(w){ w.innerHTML = ftHtml(); w.scrollIntoView({behavior:"smooth", block:"start"}); } return; }
+  if(el.hasAttribute("data-fzsrc")){ S.fz.src = el.getAttribute("data-fzsrc"); S.fz.tests = []; if(S.fz.src==="led") S.fz.side = "out"; ftRefresh(); return; }
   if(el.hasAttribute("data-fzside")){ S.fz.side = el.getAttribute("data-fzside"); S.fz.step = null; ftRefresh(); return; }
   if(el.hasAttribute("data-fzstep")){ S.fz.step = el.getAttribute("data-fzstep"); ftRefresh(); return; }
   if(el.hasAttribute("data-fzdel")){ S.fz.tests.splice(+el.getAttribute("data-fzdel"),1); ftRefresh(); return; }
@@ -520,5 +545,5 @@ document.addEventListener("click", function(e){
   if(a==="close"){ S.fz = null; ftRefresh(); return; }
   if(a==="add"){ var v = (document.getElementById("ft_new").value||"").trim().toUpperCase(); if(!v) return; S.fz.tests.push({k:el.getAttribute("data-fzk"), code:v}); S.fz.step = null; ftRefresh(); return; }
 });
-document.addEventListener("change", function(e){ if(e.target && e.target.id==="ft_orig" && S.fz){ S.fz.orig = e.target.value.trim().toUpperCase(); ftRefresh(); } });
+document.addEventListener("change", function(e){ if(e.target && e.target.id==="ft_orig" && S.fz){ var nv = e.target.value.trim().toUpperCase(); if(nv!==S.fz.orig){ S.fz.orig = nv; S.fz.tests = []; S.fz.step = null; } ftRefresh(); } });
 document.addEventListener("keydown", function(e){ if(e.key==="Enter" && e.target && e.target.id==="ft_new"){ var b = document.querySelector('[data-fz="add"]'); if(b) b.click(); } });
