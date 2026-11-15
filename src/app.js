@@ -303,7 +303,8 @@ function renderBrands(){
   $("bcancel").style.display = (cb && S.bedit) ? "" : "none";
   if(!editing) $("brandsWrap").classList.remove("open");
   $("brandSel").classList.toggle("on", $("brandsWrap").classList.contains("open"));
-  $("brands").innerHTML = '<div class="grp">Δικό τους εργοστάσιο</div><div class="bgrid">'+own.map(btn).join("")+'</div>'+
+  var rb = []; recent.forEach(function(x){ if(rb.indexOf(x.brand)<0) rb.push(x.brand); }); rb = rb.slice(0,6).map(function(n){ return BRANDS.filter(function(b){ return b.n===n; })[0]; }).filter(Boolean);
+  $("brands").innerHTML = (rb.length?'<div class="grp">⭐ Πρόσφατες</div><div class="bgrid">'+rb.map(btn).join("")+'</div>':'')+'<div class="grp">Δικό τους εργοστάσιο</div><div class="bgrid">'+own.map(btn).join("")+'</div>'+
     (reb.length?'<div class="grp">Χωρίς δικό τους εργοστάσιο (θα χρειαστεί μοντέλο/ταμπελάκι)</div><div class="bgrid">'+reb.map(btn).join("")+'</div>':'');
   if(document.activeElement!==$("bq")) $("bq").value = S.bedit ? "" : (S.brand || "");
   $("bsug").innerHTML = "";
@@ -539,7 +540,7 @@ function renderResults(){
   var out = $("results"); var b = brandObj();
   if(S.src==="parts"){ renderParts(); return; }
   if(S.src==="sym"){ renderSym(); return; }
-  if(!b){ out.innerHTML = '<div class="empty">Διάλεξε κατηγορία και μάρκα.</div>'; $("notes").innerHTML=""; return; }
+  if(!b){ var q0 = S.q.trim(); out.innerHTML = (q0 && S.src==="in" && !isTextQuery(q0)) ? reverseHtml(q0) : '<div class="empty">Διάλεξε κατηγορία και μάρκα – ή γράψε κατευθείαν τον κωδικό για να δεις σε ποια εργοστάσια υπάρχει.</div>'; $("notes").innerHTML=""; return; }
   var tabs = activeTables();
   if(!tabs.length && S.src==="led"){ out.innerHTML = ledGuideOnly(b); $("notes").innerHTML=""; return; }
   if(!tabs.length){ out.innerHTML = '<div class="empty">Δεν υπάρχει ακόμα βλαβολόγιο για '+esc(b.n)+' σε αυτή την κατηγορία.</div>'; $("notes").innerHTML=""; return; }
@@ -1159,6 +1160,8 @@ function renderParts(){
     if(MEAS[P.id]) h += measBox(P.id);
     if(P.id==="pres") h += presForm() + presGuide();
     if(P.id==="charge") h += chargeForm();
+    if(P.id==="conv") h += convForm();
+    if(P.id==="cap") h += capForm();
     if(P.id==="sensor"){
       var sl = sensList();
       h += '<div class="pcalcw"><div class="lbl">🧮 Υπολογιστής αισθητηρίου</div>'+

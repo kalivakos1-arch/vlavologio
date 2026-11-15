@@ -366,3 +366,58 @@ document.addEventListener("input", function(e){ var t = e.target; if(t && /^chg_
 function setField(on){ LS.set("vl_field", !!on); document.documentElement.classList.toggle("field", !!on); var b = document.getElementById("fieldbtn"); if(b){ b.classList.toggle("on", !!on); b.title = on ? "Λειτουργία πεδίου: ΝΑΙ" : "Λειτουργία πεδίου (μεγάλα γράμματα, έντονη αντίθεση)"; } }
 document.addEventListener("click", function(e){ if(e.target.closest("#fieldbtn")) setField(!document.documentElement.classList.contains("field")); });
 setField(LS.get("vl_field", false));
+
+// ===== Αναζήτηση κωδικού χωρίς μάρκα (σε ποια εργοστάσια υπάρχει) =====
+function reverseHtml(q){
+  var n = norm(q), seen = {}, rows = [];
+  Object.keys(PLAT).forEach(function(p){
+    (PLAT[p][S.cat]||[]).forEach(function(tn){ var t = T[tn]; if(!t || !t.codes) return;
+      t.codes.forEach(function(c){ if(seen[p]) return; if(c[0].some(function(k){ return norm(k)===n; })){ seen[p]=1; rows.push({p:p, c:c}); } });
+    });
+  });
+  if(!rows.length) return '<div class="empty">Ο κωδικός «'+esc(q)+'» δεν βρέθηκε σε κανένα βλαβολόγιο αυτής της κατηγορίας. Διάλεξε μάρκα ή άλλη κατηγορία.</div>';
+  return '<div class="small info">🔎 Δεν διάλεξες μάρκα – ο κωδικός <b>'+esc(q.toUpperCase())+'</b> υπάρχει σε <b>'+rows.length+'</b> εργοστάσια. Το νόημα αλλάζει ανά εργοστάσιο:</div>'+
+    rows.map(function(r){
+      var bb = null; BRANDS.forEach(function(b){ if(!bb && b.own===r.p) bb = b; });
+      if(!bb && r.p==="inv_gree") BRANDS.forEach(function(b){ if(!bb && b.n==="Inventor") bb = b; });
+      return '<div class="hcard"><b>'+esc(PLAT[r.p].name)+'</b> – '+esc(r.c[1])+(bb?'<div style="margin-top:6px"><button class="mini" data-b="'+esc(bb.n)+'">Άνοιξε '+esc(bb.n)+' →</button></div>':'')+'</div>';
+    }).join("");
+}
+
+// ===== Μετατροπές μονάδων =====
+var CONV = {
+  p:{t:"Πίεση", u:[["bar","bar (μανόμετρο)",1],["psi","psi",1/14.5038],["mpa","MPa",10],["kpa","kPa",0.01]]},
+  t:{t:"Θερμοκρασία", u:[["c","°C"],["f","°F"],["k","K"]]},
+  w:{t:"Ισχύς", u:[["btu","BTU/h",1/3412.14],["kw","kW",1],["ton","τόνοι ψύξης (TR)",3.5169]]}
+};
+function convForm(){
+  return '<div class="pcalcw"><div class="lbl">🔁 Μετατροπές μονάδων</div>'+Object.keys(CONV).map(function(k){ var c = CONV[k];
+    return '<div class="convr"><div class="small"><b>'+c.t+'</b></div><div class="row2"><input id="cv_'+k+'" class="pv" inputmode="decimal" placeholder="τιμή"><select id="cvu_'+k+'" class="pv">'+c.u.map(function(u){ return '<option value="'+u[0]+'">'+esc(u[1])+'</option>'; }).join("")+'</select></div><div id="cvo_'+k+'" class="small"></div></div>'; }).join("")+
+    '<div class="small" style="margin-top:6px">Τα «χιλιάρικα» (9.000/12.000/18.000/24.000) είναι BTU/h. 12.000 BTU/h ≈ 3,5 kW ≈ 1 τόνος ψύξης.</div></div>';
+}
+function convCalc(k){
+  var o = document.getElementById("cvo_"+k); if(!o) return;
+  var v = parseFloat(String(document.getElementById("cv_"+k).value).replace(",",".")), u = document.getElementById("cvu_"+k).value, c = CONV[k];
+  if(isNaN(v)){ o.textContent = ""; return; }
+  var f = function(x,d){ return (Math.round(x*Math.pow(10,d))/Math.pow(10,d)).toString().replace(".",","); };
+  if(k==="t"){ var cc = u==="c"?v:u==="f"?(v-32)*5/9:v-273.15; o.innerHTML = '= <b>'+f(cc,1)+' °C</b> · '+f(cc*9/5+32,1)+' °F · '+f(cc+273.15,1)+' K'; return; }
+  var base = v * c.u.filter(function(x){ return x[0]===u; })[0][2];
+  o.innerHTML = '= '+c.u.filter(function(x){ return x[0]!==u; }).map(function(x){ return '<b>'+f(base/x[2], k==="p"&&x[0]==="psi"?0:2)+'</b> '+esc(x[1].replace(/ \(.*\)/,"")); }).join(" · ")+(k==="p"?' · απόλυτη: '+f(base+1.013,2)+' bar':'');
+}
+document.addEventListener("input", function(e){ var m = e.target && e.target.id && e.target.id.match(/^cv_(\w)$/); if(m) convCalc(m[1]); });
+document.addEventListener("change", function(e){ var m = e.target && e.target.id && e.target.id.match(/^cvu_(\w)$/); if(m) convCalc(m[1]); });
+
+// ===== Έλεγχος πυκνωτή =====
+function capForm(){
+  return '<div class="pcalcw"><div class="lbl">🔋 Έλεγχος πυκνωτή</div><div class="row2"><label class="small">Ετικέτα (μF)<input id="cap_n" class="pv" inputmode="decimal" placeholder="π.χ. 35"></label><label class="small">Μέτρησα (μF)<input id="cap_m" class="pv" inputmode="decimal" placeholder="π.χ. 31,2"></label><label class="small">Ανοχή ετικέτας<select id="cap_t" class="pv"><option value="5">±5%</option><option value="10">±10%</option><option value="6">±6%</option></select></label></div><div id="cap_o"></div></div>';
+}
+function capCalc(){
+  var o = document.getElementById("cap_o"); if(!o) return;
+  var n = parseFloat(String(document.getElementById("cap_n").value).replace(",",".")), m = parseFloat(String(document.getElementById("cap_m").value).replace(",",".")), t = +document.getElementById("cap_t").value;
+  if(isNaN(n) || isNaN(m) || n<=0){ o.innerHTML = ""; return; }
+  var d = (m-n)/n*100, ad = Math.abs(d), cls = ad<=t ? "good" : ad<=10 ? "mid" : "bad";
+  var msg = ad<=t ? "✅ Εντάξει – μέσα στην ανοχή της ετικέτας" : ad<=10 ? "🟡 Οριακός – εκτός ανοχής ετικέτας αλλά <10%. Αν το μοτέρ/συμπιεστής δυσκολεύεται, άλλαξέ τον." : (m<n ? "❌ Χαλασμένος – έχει πέσει πάνω από 10%. Άλλαξέ τον με ίδια μF και ίδια ή μεγαλύτερη τάση (V)." : "❌ Μετράει πολύ πάνω από την ετικέτα – ξαναμέτρησε (ξεφόρτωσέ τον πρώτα) ή άλλαξέ τον.");
+  o.innerHTML = '<div class="pver '+cls+'" style="margin-top:8px">'+msg+'<div class="small" style="font-weight:500">Απόκλιση: '+(d>0?"+":"")+d.toFixed(1).replace(".",",")+'% (επιτρεπτό ±'+t+'%: '+(n*(1-t/100)).toFixed(1).replace(".",",")+'–'+(n*(1+t/100)).toFixed(1).replace(".",",")+' μF)</div></div>';
+}
+document.addEventListener("input", function(e){ if(e.target && /^cap_[nm]$/.test(e.target.id)) capCalc(); });
+document.addEventListener("change", function(e){ if(e.target && e.target.id==="cap_t") capCalc(); });
