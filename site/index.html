@@ -3334,13 +3334,16 @@ var FW = {
   plate: [["Zhuhai – Gree Electric Appliances","gree"],["Foshan / Shunde – GD Midea","midea"],["Ningbo – AUX","aux"],["Zhongshan – TCL","tcl"],["Qingdao – Haier","haier"],["Hisense (Shandong / Qingdao)","hisense"],["Δεν γράφει / δεν ξέρω",""]],
   rc: [[/^R(G\d{2}|5[17]|05|06|11)/,"midea","Τα τηλεχειριστήρια RG57/RG66/R51/R05 είναι της Midea."],[/^Y[A-Z]{1,3}\d?F/,"gree","Τα τηλεχειριστήρια Y…1F (YAP1F, YAN1F, YB1F, YAC1F…) είναι της Gree."],[/^YKR-/,"aux","Τα τηλεχειριστήρια YKR-… είναι της AUX."],[/^GYKQ/,"tcl","Τα τηλεχειριστήρια GYKQ-… είναι της TCL."]]
 };
-S.fw = {plate:"", rc:"", comp:""};
+FW.pcb = [[/^3013\d|^30002\d|^GR[JZ]W?\d/,"gree",2,"Πλακέτα Gree (κωδικός 30138…/30002… ή τυπωμένο GRJ…)."],[/^171[2-3]\d{3}/,"midea",2,"Πλακέτα Midea (κωδικός ανταλλακτικού 17122…/17123…)."],[/^00(10|11)\d{5}/,"haier",1,"Κωδικός πλακέτας τύπου Haier (0010…/0011…) – λιγότερο σίγουρο."],[/^SX-/,"aux",1,"Τυπωμένο SX-… – συναντάται σε πλακέτες AUX (λιγότερο σίγουρο)."],[/^DB9\d/,"samsung",2,"Πλακέτα Samsung (DB92/DB93…)."]];
+S.fw = {plate:"", rc:"", comp:"", pcb:""};
 function fwMap(o, cs){ if(!o || o==="?") return null; if(cs.indexOf(o)>=0) return o; if(o==="gree" && cs.indexOf("inv_gree")>=0) return "inv_gree"; return o; }
 function fwScore(cs){
   var sc = {}, why = {};
   function add(o, w, t){ o = fwMap(o, cs); if(!o) return; sc[o]=(sc[o]||0)+w; (why[o]=why[o]||[]).push(t); }
   var cp = String(S.fw.comp||"").toUpperCase().replace(/[\s\-]/g,"");
   if(cp.length>=3) FW.comp.forEach(function(x){ if(x[0].test(cp)) add(x[1],x[2],x[3]); });
+  var pb = String(S.fw.pcb||"").toUpperCase().replace(/\s/g,"");
+  if(pb.length>=4) FW.pcb.forEach(function(x){ if(x[0].test(pb)) add(x[1],x[2],x[3]); });
   FW.plate.forEach(function(a){ if(S.fw.plate===a[0]) add(a[1],2,"ταμπελάκι: "+a[0]); });
   var r = String(S.fw.rc||"").toUpperCase().replace(/\s/g,"");
   if(r.length>=3) FW.rc.forEach(function(x){ if(x[0].test(r)) add(x[1],2,x[2]); });
@@ -3353,7 +3356,8 @@ function fwizHtml(b, cs){
     '<div class="small"><b>1. Ταμπελάκι εξωτερικής:</b> τι γράφει για κατασκευαστή ή πόλη (Manufacturer / Made in / διεύθυνση);</div>'+chips("plate",FW.plate)+
     '<div class="small" style="margin-top:8px"><b>2. Τηλεχειριστήριο:</b> γράψε τον κωδικό στην πλάτη ή μέσα στη θήκη μπαταριών</div><input id="fwrc" placeholder="π.χ. RG57A6/BGEF, YAP1F, YKR-…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.rc)+'">'+
     '<div class="small" style="margin-top:8px"><b>3. Ετικέτα συμπιεστή</b> (βγάλε το πλαϊνό καπάκι της εξωτερικής – γράψε το μοντέλο του συμπιεστή):</div><input id="fwcomp" placeholder="π.χ. QXA-A091zE190, KSK103D33UEZ3" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.comp)+'">'+
-    '<div class="small" style="margin-top:8px">💡 <b>4. Ο κωδικός βλάβης:</b> γράψε τον στο πεδίο του κωδικού παρακάτω – αν υπάρχει μόνο στο βλαβολόγιο ενός εργοστασίου, θα σου το πω.</div>'+
+    '<div class="small" style="margin-top:8px"><b>4. Πλακέτα εξωτερικής</b> (ρεύμα κλειστό): γράψε τον κωδικό από το λευκό αυτοκόλλητο της πλακέτας ή ό,τι είναι τυπωμένο στην άκρη της</div><input id="fwpcb" placeholder="π.χ. 30138000…, 17122000…, GRJW…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.pcb)+'">'+
+    '<div class="small" style="margin-top:8px">💡 <b>5. Ο κωδικός βλάβης:</b> γράψε τον στο πεδίο του κωδικού παρακάτω – αν υπάρχει μόνο στο βλαβολόγιο ενός εργοστασίου, θα σου το πω.</div>'+
     '<div id="fwres">'+fwResult(b, cs)+'</div></div>';
   return h;
 }
@@ -3372,7 +3376,7 @@ document.addEventListener("click", function(e){
   var k = el.getAttribute("data-fwk"), v = el.getAttribute("data-fwv"); S.fw[k] = S.fw[k]===v ? "" : v;
   var b = brandObj(); if(b && $("fwiz")){ $("fwiz").innerHTML = fwizHtml(b, candidates(b)); }
 });
-document.addEventListener("input", function(e){ if(e.target.id!=="fwrc" && e.target.id!=="fwcomp") return; S.fw[e.target.id==="fwrc"?"rc":"comp"] = e.target.value; var b=brandObj(); if(b && $("fwres")) $("fwres").innerHTML = fwResult(b, candidates(b)); });
+document.addEventListener("input", function(e){ var m = {fwrc:"rc", fwcomp:"comp", fwpcb:"pcb"}[e.target.id]; if(!m) return; S.fw[m] = e.target.value; var b=brandObj(); if(b && $("fwres")) $("fwres").innerHTML = fwResult(b, candidates(b)); });
 function renderOem(){
   var b = brandObj(); var box = $("oembox");
   if(!b || S.bedit){ box.style.display="none"; return; }
