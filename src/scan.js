@@ -56,7 +56,7 @@ function scanOpen(target){
   SCAN.target = target||"ser"; SCAN.hits = {};
   var ov = document.getElementById("scanov");
   if(!ov){ ov = document.createElement("div"); ov.id = "scanov"; document.body.appendChild(ov); }
-  ov.innerHTML = '<div class="schead"><b>📷 Σάρωση barcode</b><button class="mini" id="scclose">✕</button></div>'+
+  ov.innerHTML = '<div class="schead"><b><svg class="ic"><use href="#i-scan"/></svg> Σάρωση barcode</b><button class="mini" id="scclose">✕</button></div>'+
     '<div class="scbox"><video id="scvid" playsinline muted autoplay></video><div class="scguide"></div></div>'+
     '<div class="scmsg" id="scmsg">Άνοιγμα κάμερας…</div>'+
     '<div class="scbtns"><label class="mini scphoto">📸 Φωτογραφία του barcode<input type="file" accept="image/*" capture="environment" id="scfile" hidden></label></div>'+
@@ -191,7 +191,7 @@ function histOpen(mode, id){
     e = e || {cust:"", brand:b?b.n:"", oem:(S.oem && S.oem!=="__all" && PLAT[S.oem])?PLAT[S.oem].name:"", model:S.model||"", ser:S.fw.ser||"", code:S.q||"", fix:"", note:""};
     var f = function(k,l,ph){ return '<label>'+esc(l)+'<input id="hf_'+k+'" value="'+esc(e[k]||"")+'" placeholder="'+esc(ph||"")+'"></label>'; };
     h += '<div class="hform card">'+f("cust","Πελάτης / τοποθεσία","π.χ. Παπαδόπουλος – Καλαμαριά")+f("brand","Μάρκα","")+f("oem","Εργοστάσιο","")+f("model","Μοντέλο","")+
-      '<label>Σειριακός<div class="row2"><input id="hf_ser" value="'+esc(e.ser||"")+'"><button class="mini" data-scan="hist">📷</button></div></label>'+
+      '<label>Σειριακός<div class="row2"><input id="hf_ser" value="'+esc(e.ser||"")+'"><button class="mini" data-scan="hist"><svg class="ic"><use href="#i-scan"/></svg></button></div></label>'+
       f("code","Κωδικός βλάβης","π.χ. E1, F5")+
       '<label>Τι έκανες / τι άλλαξες<textarea id="hf_fix" placeholder="π.χ. άλλαξα αισθητήριο σωλήνα εσωτ. (20kΩ)">'+esc(e.fix||"")+'</textarea></label>'+
       '<label>Σημειώσεις<textarea id="hf_note" placeholder="μετρήσεις, πιέσεις, ανταλλακτικά που χρειάζονται…">'+esc(e.note||"")+'</textarea></label>'+
@@ -581,7 +581,7 @@ var MULTIOUT = {
   panasonic:"Δεν έχει ξεχωριστό κωδικό εξωτερικής – διάβασε τον κωδικό από κάθε εσωτερική με το τηλεχειριστήριο (κάθε εσωτερική κρατά τον δικό της).",
   toshiba:"5 λυχνίες (1 κίτρινη + 4 κόκκινες) – δεν έχω ακόμα τον πίνακα· χρησιμοποίησε τον κωδικό ελέγχου από το τηλεχειριστήριο.",
   mhi:"Κόκκινη λυχνία ελέγχου με αναλαμπές – δεν έχω ακόμα τον πίνακα· χρησιμοποίησε τον κωδικό του χειριστηρίου.",
-  hitachi:"Λυχνία LD301 με αναλαμπές – δεν έχω ακόμα τον πίνακα· χρησιμοποίησε τον κωδικό του χειριστηρίου."
+  hitachi:"LD301 αναβοσβήνει n φορές (ή LD301 αναμμένη + LD302 αναλαμπές για θερμίστορ) – πίνακας από τον Hitachi technical catalogue."
 };
 function multiOutGuide(){
   if(S.cat!=="multi") return "";

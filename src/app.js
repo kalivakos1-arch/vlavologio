@@ -3,11 +3,11 @@
 var T = window.T;
 
 var CATS = [
-  {id:"split", label:"Split (τοίχου, κασέτα, κανάλι)", icon:"❄️"},
-  {id:"multi", label:"Multi split", icon:"🔀"},
-  {id:"hp",    label:"Αντλία θερμότητας (νερού)", icon:"🔥"},
-  {id:"vrf",   label:"VRF", icon:"🏢"},
-  {id:"vrfhr", label:"VRF Heat Recovery", icon:"🔁"}
+  {id:"split", label:"Split (τοίχου, κασέτα, κανάλι)", icon:'<svg class="ic"><use href="#i-split"/></svg>'},
+  {id:"multi", label:"Multi split", icon:'<svg class="ic"><use href="#i-multi"/></svg>'},
+  {id:"hp",    label:"Αντλία θερμότητας (νερού)", icon:'<svg class="ic"><use href="#i-hp"/></svg>'},
+  {id:"vrf",   label:"VRF", icon:'<svg class="ic"><use href="#i-vrf"/></svg>'},
+  {id:"vrfhr", label:"VRF Heat Recovery", icon:'<svg class="ic"><use href="#i-vrfhr"/></svg>'}
 ];
 
 // Πλατφόρμες εργοστασίων -> πίνακες ανά κατηγορία
@@ -285,7 +285,7 @@ function renderCats(){
   if(av.length===1) S.catOpen = false;
   if(cur && !S.catOpen){
     $("cats").className = "";
-    $("cats").innerHTML = '<div class="catsel"><span class="cico">'+cur.icon+'</span><b>'+esc(cur.label)+'</b>'+(av.length>1?'<button class="chg ico" id="chgCat" aria-label="Αλλαγή κατηγορίας" title="Αλλαγή κατηγορίας">⇄</button>':'')+'</div>';
+    $("cats").innerHTML = '<div class="catsel"><span class="cico">'+cur.icon+'</span><b>'+esc(cur.label)+'</b>'+(av.length>1?'<button class="chg ico" id="chgCat" aria-label="Αλλαγή κατηγορίας" title="Αλλαγή κατηγορίας"><svg class="ic"><use href="#i-swap"/></svg></button>':'')+'</div>';
     return;
   }
   $("cats").className = "cats";
@@ -298,7 +298,7 @@ function renderBrands(){
   var own = list.filter(function(b){return b.own;}), reb = list.filter(function(b){return !b.own;});
   function btn(b){ return '<button class="br'+(b.n===S.brand?' on':'')+(b.own?'':' reb')+'" data-b="'+esc(b.n)+'">'+badge(b.n,"sm")+esc(b.n)+'</button>'; }
   var cb = brandObj(), editing = !cb || S.bedit;
-  $("bchosen").innerHTML = (cb && !editing) ? '<div class="bchosen">'+badge(cb.n,"lg")+'<div class="bt"><b>'+esc(cb.n)+'</b><small>'+esc(bSub(cb))+'</small></div><button class="chg ico" id="chgBrand" aria-label="Αλλαγή μάρκας" title="Αλλαγή μάρκας">⇄</button></div>' : "";
+  $("bchosen").innerHTML = (cb && !editing) ? '<div class="bchosen">'+badge(cb.n,"lg")+'<div class="bt"><b>'+esc(cb.n)+'</b><small>'+esc(bSub(cb))+'</small></div><button class="chg ico" id="chgBrand" aria-label="Αλλαγή μάρκας" title="Αλλαγή μάρκας"><svg class="ic"><use href="#i-swap"/></svg></button></div>' : "";
   $("bpick").style.display = editing ? "" : "none";
   $("bcancel").style.display = (cb && S.bedit) ? "" : "none";
   if(!editing) $("brandsWrap").classList.remove("open");
@@ -335,12 +335,12 @@ function fwizHtml(b, cs){
   if(!S.fwOpen) return '<button class="mini fwbtn" id="fwopen">🔎 Δεν ξέρω το εργοστάσιο – βοήθησέ με</button>';
   var chips = function(key, list){ return '<div class="chips">'+list.map(function(a){ return '<button class="chip'+(S.fw[key]===a[0]?' on':'')+'" data-fwk="'+key+'" data-fwv="'+esc(a[0])+'">'+esc(a[0])+'</button>'; }).join("")+'</div>'; };
   var h = '<div class="fwiz"><div class="lbl" style="margin-top:0">🔎 Βρες το εργοστάσιο – απάντησε ό,τι ξέρεις</div>'+
-    '<button class="mini scanbtn" data-scan="ser">📷 Σκάναρε το barcode της ετικέτας (σειριακός)</button>'+
+    '<button class="mini scanbtn" data-scan="ser"><svg class="ic"><use href="#i-scan"/></svg> Σκάναρε το barcode της ετικέτας (σειριακός)</button>'+
     (S.fw.ser ? '<div class="serbox"><div class="small"><b>Σειριακός:</b> '+esc(S.fw.ser)+' <button class="x" data-fwclr="ser">✕</button></div>'+serHtml(S.fw.ser, cs)+'</div>' : '')+
     '<div class="small"><b>1. Ταμπελάκι εξωτερικής:</b> τι γράφει για κατασκευαστή ή πόλη (Manufacturer / Made in / διεύθυνση);</div>'+chips("plate",FW.plate)+
     '<div class="small" style="margin-top:8px"><b>2. Τηλεχειριστήριο:</b> γράψε τον κωδικό στην πλάτη ή μέσα στη θήκη μπαταριών</div><input id="fwrc" placeholder="π.χ. RG57A6/BGEF, YAP1F, YKR-…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.rc)+'">'+
-    '<div class="small" style="margin-top:8px"><b>3. Ετικέτα συμπιεστή</b> (βγάλε το πλαϊνό καπάκι της εξωτερικής – γράψε το μοντέλο του συμπιεστή):</div><div class="row2"><input id="fwcomp" placeholder="π.χ. QXA-A091zE190, KSK103D33UEZ3" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.comp)+'"><button class="mini" data-scan="comp" title="Σάρωση">📷</button></div>'+
-    '<div class="small" style="margin-top:8px"><b>4. Πλακέτα εξωτερικής</b> (ρεύμα κλειστό): γράψε τον κωδικό από το λευκό αυτοκόλλητο της πλακέτας ή ό,τι είναι τυπωμένο στην άκρη της</div><div class="row2"><input id="fwpcb" placeholder="π.χ. 30138000…, 17122000…, EBR…, MCC-…, K20…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.pcb)+'"><button class="mini" data-scan="pcb" title="Σάρωση">📷</button></div>'+
+    '<div class="small" style="margin-top:8px"><b>3. Ετικέτα συμπιεστή</b> (βγάλε το πλαϊνό καπάκι της εξωτερικής – γράψε το μοντέλο του συμπιεστή):</div><div class="row2"><input id="fwcomp" placeholder="π.χ. QXA-A091zE190, KSK103D33UEZ3" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.comp)+'"><button class="mini" data-scan="comp" title="Σάρωση"><svg class="ic"><use href="#i-scan"/></svg></button></div>'+
+    '<div class="small" style="margin-top:8px"><b>4. Πλακέτα εξωτερικής</b> (ρεύμα κλειστό): γράψε τον κωδικό από το λευκό αυτοκόλλητο της πλακέτας ή ό,τι είναι τυπωμένο στην άκρη της</div><div class="row2"><input id="fwpcb" placeholder="π.χ. 30138000…, 17122000…, EBR…, MCC-…, K20…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.pcb)+'"><button class="mini" data-scan="pcb" title="Σάρωση"><svg class="ic"><use href="#i-scan"/></svg></button></div>'+
     '<div class="small" style="margin-top:8px"><b>🧪 Ή με γνωστή βλάβη:</b> βγάζεις μια φίσα αισθητηρίου, βλέπεις τι κωδικό βγάζει, και βρίσκω ποιο εργοστάσιο ταιριάζει και με τον αρχικό κωδικό.</div><button class="mini scanbtn" data-fzopen="">🧪 Ξεκίνα τη δοκιμή</button><div id="ftbox">'+(S.fz?ftHtml():'')+'</div>'+
     '<div class="small" style="margin-top:8px">💡 <b>5. Ο κωδικός βλάβης:</b> γράψε τον στο πεδίο του κωδικού παρακάτω – αν υπάρχει μόνο στο βλαβολόγιο ενός εργοστασίου, θα σου το πω.</div>'+
     '<div id="fwres">'+fwResult(b, cs)+'</div></div>';
@@ -370,7 +370,7 @@ function renderOem(){
   if(b.own){
     box.style.display = "block";
     box.innerHTML = (b.hint ? '<div class="hint" style="margin:0 0 8px">'+esc(b.hint)+'</div>' : "")+
-      '<button class="mini scanbtn" data-scan="ser">📷 Σκάναρε το barcode της ετικέτας – ημερομηνία κατασκευής</button>'+
+      '<button class="mini scanbtn" data-scan="ser"><svg class="ic"><use href="#i-scan"/></svg> Σκάναρε το barcode της ετικέτας – ημερομηνία κατασκευής</button>'+
       (S.fw.ser ? '<div class="serbox"><div class="small"><b>Σειριακός:</b> '+esc(S.fw.ser)+' <button class="x" data-fwclr="ser">✕</button></div>'+serHtml(S.fw.ser, null)+'</div>' : '');
     return;
     box.innerHTML = (b.hint ? '<div class="hint">'+esc(b.hint)+'</div>' : "")+
@@ -387,7 +387,7 @@ function renderOem(){
   box.innerHTML =
     (b.hint?'<div class="hint">'+esc(b.hint)+'</div>':'<div class="hint">Η '+esc(b.n)+' δεν έχει δικό της εργοστάσιο. Διάλεξε εργοστάσιο ή άφησε «Σύγκριση» για να δεις τι σημαίνει ο κωδικός σε κάθε πιθανό εργοστάσιο.</div>')+
     '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι)</label>'+
-    '<div class="row2"><input id="model" placeholder="μοντέλο εξωτερικής ή εσωτερικής – π.χ. V5MFO32-60" autocapitalize="characters" spellcheck="false"><button class="mini" data-scan="model" title="Σάρωση barcode">📷</button><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
+    '<div class="row2"><input id="model" placeholder="μοντέλο εξωτερικής ή εσωτερικής – π.χ. V5MFO32-60" autocapitalize="characters" spellcheck="false"><button class="mini" data-scan="model" title="Σάρωση barcode"><svg class="ic"><use href="#i-scan"/></svg></button><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
     '<div id="mapMsg" class="small"></div>'+
     '<label class="lbl">Εργοστάσιο παραγωγής</label>'+
     '<div class="chips">'+(cs.length>1?'<button class="chip'+(S.oem==="__all"?' on':'')+'" data-o="__all">Σύγκριση όλων</button>':'')+
@@ -1277,9 +1277,9 @@ $("clr").addEventListener("click", function(){ S.q=""; $("q").value=""; renderRe
 
 
 function setTheme(t){ LS.set("vl_theme",t); var r=document.documentElement; if(t==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",t);
-  $("theme").textContent = t==="light"?"☀️":t==="dark"?"🌙":"🌓"; $("theme").title = t==="light"?"Φωτεινό θέμα":t==="dark"?"Σκούρο θέμα":"Αυτόματο θέμα (όπως το κινητό)";
+  $("theme").innerHTML = '<svg class="ic"><use href="#i-'+(t==="light"?"sun":t==="dark"?"moon":"theme")+'"/></svg>'; $("theme").title = t==="light"?"Φωτεινό θέμα":t==="dark"?"Σκούρο θέμα":"Αυτόματο θέμα (όπως το κινητό)";
   var dark = t==="dark" || (t==="auto" && !(window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches));
-  var m=document.querySelector('meta[name=theme-color]'); if(m) m.setAttribute("content", dark?"#0b1220":"#eef2f8"); }
+  var m=document.querySelector('meta[name=theme-color]'); if(m) m.setAttribute("content", dark?"#0F1B25":"#E4E9ED"); }
 setTheme(LS.get("vl_theme","auto"));
 renderAll();
 })();
