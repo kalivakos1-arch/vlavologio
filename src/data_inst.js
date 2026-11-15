@@ -137,16 +137,18 @@ var INST = {
   srcEl: "Midea Owner's & Installation manual (CS445UI)"
  },
  "Samsung": {
-  cap: function(k){ var m = k.match(/^F?AR(\d{2})/); return m ? +m[1] : null; },
+  cap: function(k){ var f = k.match(/^AR\d{2}F(\d{2})/); if(f) return +f[1]; var m = k.match(/^F?AR(\d{2})/); return m ? +m[1] : null; },
   capLbl: "κλάση σε χιλ. Btu",
   rows: [
+   {re:/^AR70F(07|09|12|15|18|24)C/, c:[7,24], liqBy:{7:"1/4",9:"1/4",12:"1/4",15:"1/4",18:"1/4",24:"1/4"}, gasBy:{7:"3/8",9:"3/8",12:"3/8",15:"3/8",18:"1/2",24:"5/8"}, lenBy:{7:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m",9:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m",12:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m",15:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m",18:"Μέγ. μήκος 30m · ελάχ. 3m · υψομετρική 15m",24:"Μέγ. μήκος 30m · ελάχ. 3m · υψομετρική 15m"}, src:"Samsung PI sheet WindFree Avant S2 / Avant Black / Elite S2 (AR70F…)"},
+   {re:/^AR[56]0F(09|12|18|24)C/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{9:"Μέγ. μήκος 15m · ελάχ. 3m · υψομετρική 8m",12:"Μέγ. μήκος 15m · ελάχ. 3m · υψομετρική 8m",18:"Μέγ. μήκος 30m · ελάχ. 3m · υψομετρική 15m",24:"Μέγ. μήκος 30m · ελάχ. 3m · υψομετρική 15m"}, src:"Samsung PI sheet WindFree Comfort S2 (AR60F…) · Luzon S2 (AR50F…)"},
    {re:/^F?AR(09|12|18|24)TXFC/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{9:"Μέγ. μήκος 15m · ελάχ. 3m · υψομετρική 8m · επιπλέον 15 g/m",12:"Μέγ. μήκος 15m · ελάχ. 3m · υψομετρική 8m · επιπλέον 15 g/m",18:"Μέγ. μήκος 30m · ελάχ. 3m · υψομετρική 15m · επιπλέον 15 g/m",24:"Μέγ. μήκος 30m · ελάχ. 3m · υψομετρική 15m · επιπλέον 15 g/m"}, src:"Samsung Specifications Wind-Free Comfort AR09/12/18/24TXFCAWKNEU"},
    {c:[7,12], brk:"16A (Type GL)", src:"Samsung Installation manual AR**TXFY / AR**TXHZ · AR**TY / TXEA"},
    {c:[18,24], brk:"20A (Type GL)", src:"Samsung Installation manual AR**TS / TV / 24 (πίνακας Type GL)"}
   ],
   comm: "Δύο καλώδια: τροφοδοσία εξωτερικής→εσωτερικής 3G × 1,0 mm² H07RN-F και καλώδιο επικοινωνίας F1/F2 2 × 0,75 mm² H05RN-F. Τροφοδοσία + επικοινωνία έως 30m.",
   pwr: "3G × 2,5 mm² H07RN-F στην εξωτερική",
-  noRow: "Για αυτή τη σειρά Samsung δεν έχω πίνακα σωλήνων από manual. Στη σειρά Wind-Free Comfort (TXFC): 09/12 → 1/4\" + 3/8\", 18 → 1/4\" + 1/2\", 24 → 1/4\" + 5/8\".",
+  noRow: "Για αυτή τη σειρά Samsung δεν έχω πίνακα σωλήνων από manual. Σε όλες τις σειρές τοίχου που βρήκα (Avant, Elite, Comfort, Luzon, TXFC): 09/12 → 1/4\" + 3/8\", 18 → 1/4\" + 1/2\", 24 → 1/4\" + 5/8\".",
   srcEl: "Samsung Installation manual AR**TXFY / AR**TXHZ (Connecting the power and communication cables)"
  },
  "Hisense": {
