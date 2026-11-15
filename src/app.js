@@ -310,16 +310,17 @@ function renderBrands(){
 }
 // ===== Οδηγός «Βρες το εργοστάσιο» (χωρίς μοντέλο) =====
 var FW = {
-  app: [["MSmartHome / NetHome Plus","midea"],["Gree+ / EWPE Smart","gree"],["AC Freedom","aux"],["TCL Home","tcl"],["ConnectLife","hisense"],["hOn","haier"],["Smart Life / Tuya","?"],["Δεν έχει / δεν ξέρω",""]],
+  comp: [[/^(QX[AF]|FTZ|QXAS)/,"gree",2,"Συμπιεστής Gree (QXA/QXF/FTz) – η Gree βάζει δικούς της συμπιεστές."],[/^(K[ST][KMN]|AS[KMN]|ATM|ATF)\d/,"midea",1,"Συμπιεστής GMCC – συνήθως σε μονάδες Midea (αλλά τον αγοράζουν κι άλλοι, γι' αυτό μετρά λιγότερο)."]],
   plate: [["Zhuhai – Gree Electric Appliances","gree"],["Foshan / Shunde – GD Midea","midea"],["Ningbo – AUX","aux"],["Zhongshan – TCL","tcl"],["Qingdao – Haier","haier"],["Hisense (Shandong / Qingdao)","hisense"],["Δεν γράφει / δεν ξέρω",""]],
   rc: [[/^R(G\d{2}|5[17]|05|06|11)/,"midea","Τα τηλεχειριστήρια RG57/RG66/R51/R05 είναι της Midea."],[/^Y[A-Z]{1,3}\d?F/,"gree","Τα τηλεχειριστήρια Y…1F (YAP1F, YAN1F, YB1F, YAC1F…) είναι της Gree."],[/^YKR-/,"aux","Τα τηλεχειριστήρια YKR-… είναι της AUX."],[/^GYKQ/,"tcl","Τα τηλεχειριστήρια GYKQ-… είναι της TCL."]]
 };
-S.fw = {app:"", plate:"", rc:""};
+S.fw = {plate:"", rc:"", comp:""};
 function fwMap(o, cs){ if(!o || o==="?") return null; if(cs.indexOf(o)>=0) return o; if(o==="gree" && cs.indexOf("inv_gree")>=0) return "inv_gree"; return o; }
 function fwScore(cs){
   var sc = {}, why = {};
   function add(o, w, t){ o = fwMap(o, cs); if(!o) return; sc[o]=(sc[o]||0)+w; (why[o]=why[o]||[]).push(t); }
-  FW.app.forEach(function(a){ if(S.fw.app===a[0]) add(a[1],2,"εφαρμογή «"+a[0]+"»"); });
+  var cp = String(S.fw.comp||"").toUpperCase().replace(/[\s\-]/g,"");
+  if(cp.length>=3) FW.comp.forEach(function(x){ if(x[0].test(cp)) add(x[1],x[2],x[3]); });
   FW.plate.forEach(function(a){ if(S.fw.plate===a[0]) add(a[1],2,"ταμπελάκι: "+a[0]); });
   var r = String(S.fw.rc||"").toUpperCase().replace(/\s/g,"");
   if(r.length>=3) FW.rc.forEach(function(x){ if(x[0].test(r)) add(x[1],2,x[2]); });
@@ -329,15 +330,15 @@ function fwizHtml(b, cs){
   if(!S.fwOpen) return '<button class="mini fwbtn" id="fwopen">🔎 Δεν ξέρω το εργοστάσιο – βοήθησέ με</button>';
   var chips = function(key, list){ return '<div class="chips">'+list.map(function(a){ return '<button class="chip'+(S.fw[key]===a[0]?' on':'')+'" data-fwk="'+key+'" data-fwv="'+esc(a[0])+'">'+esc(a[0])+'</button>'; }).join("")+'</div>'; };
   var h = '<div class="fwiz"><div class="lbl" style="margin-top:0">🔎 Βρες το εργοστάσιο – απάντησε ό,τι ξέρεις</div>'+
-    '<div class="small"><b>1. Εφαρμογή Wi-Fi</b> που χρησιμοποιεί ο πελάτης (ή γράφει το εγχειρίδιο):</div>'+chips("app",FW.app)+
+    '<div class="small"><b>1. Ταμπελάκι εξωτερικής:</b> τι γράφει για κατασκευαστή ή πόλη (Manufacturer / Made in / διεύθυνση);</div>'+chips("plate",FW.plate)+
     '<div class="small" style="margin-top:8px"><b>2. Τηλεχειριστήριο:</b> γράψε τον κωδικό στην πλάτη ή μέσα στη θήκη μπαταριών</div><input id="fwrc" placeholder="π.χ. RG57A6/BGEF, YAP1F, YKR-…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.rc)+'">'+
-    '<div class="small" style="margin-top:8px"><b>3. Ταμπελάκι εξωτερικής:</b> τι γράφει για κατασκευαστή ή πόλη (Manufacturer / Made in / διεύθυνση);</div>'+chips("plate",FW.plate)+
+    '<div class="small" style="margin-top:8px"><b>3. Ετικέτα συμπιεστή</b> (βγάλε το πλαϊνό καπάκι της εξωτερικής – γράψε το μοντέλο του συμπιεστή):</div><input id="fwcomp" placeholder="π.χ. QXA-A091zE190, KSK103D33UEZ3" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.comp)+'">'+
+    '<div class="small" style="margin-top:8px">💡 <b>4. Ο κωδικός βλάβης:</b> γράψε τον στο πεδίο του κωδικού παρακάτω – αν υπάρχει μόνο στο βλαβολόγιο ενός εργοστασίου, θα σου το πω.</div>'+
     '<div id="fwres">'+fwResult(b, cs)+'</div></div>';
   return h;
 }
 function fwResult(b, cs){
   var r = fwScore(cs), ks = Object.keys(r.sc).sort(function(x,y){ return r.sc[y]-r.sc[x]; });
-  if(S.fw.app==="Smart Life / Tuya" && !ks.length) return '<div class="small" style="margin-top:8px">Η Smart Life / Tuya είναι γενική εφαρμογή που τη χρησιμοποιούν πολλά εργοστάσια – δεν βοηθά. Δοκίμασε τηλεχειριστήριο ή ταμπελάκι.</div>';
   if(!ks.length) return '<div class="small" style="margin-top:8px">Απάντησε τουλάχιστον ένα για να σου πω το πιθανό εργοστάσιο.</div>';
   var top = ks[0], tie = ks.length>1 && r.sc[ks[1]]===r.sc[top];
   if(tie) return '<div class="pver mid" style="margin-top:8px">⚠️ Τα στοιχεία δείχνουν διαφορετικά εργοστάσια ('+ks.map(function(k){return esc(PLAT[k]?PLAT[k].name:k);}).join(" / ")+'). Έλεγξε ξανά – συχνά το τηλεχειριστήριο έχει αλλαχτεί με γενικό.</div>';
@@ -351,7 +352,7 @@ document.addEventListener("click", function(e){
   var k = el.getAttribute("data-fwk"), v = el.getAttribute("data-fwv"); S.fw[k] = S.fw[k]===v ? "" : v;
   var b = brandObj(); if(b && $("fwiz")){ $("fwiz").innerHTML = fwizHtml(b, candidates(b)); }
 });
-document.addEventListener("input", function(e){ if(e.target.id!=="fwrc") return; S.fw.rc = e.target.value; var b=brandObj(); if(b && $("fwres")) $("fwres").innerHTML = fwResult(b, candidates(b)); });
+document.addEventListener("input", function(e){ if(e.target.id!=="fwrc" && e.target.id!=="fwcomp") return; S.fw[e.target.id==="fwrc"?"rc":"comp"] = e.target.value; var b=brandObj(); if(b && $("fwres")) $("fwres").innerHTML = fwResult(b, candidates(b)); });
 function renderOem(){
   var b = brandObj(); var box = $("oembox");
   if(!b || S.bedit){ box.style.display="none"; return; }
@@ -560,7 +561,9 @@ function renderResults(){
       if(multi && r.mode!=="text"){
         var by = {}; r.res.forEach(function(x){ (by[x.t.plat]=by[x.t.plat]||[]).push(x); });
         var missing = Object.keys(plats).filter(function(p){return !by[p];});
-        html += '<div class="small info">⚠️ Το εργοστάσιο δεν έχει επιλεγεί – ο ίδιος κωδικός σημαίνει διαφορετικά πράγματα ανά εργοστάσιο:</div>';
+        var found = Object.keys(by);
+        if(found.length===1 && Object.keys(plats).length>1) html += '<div class="pver good">✅ Ο κωδικός «'+esc(q.toUpperCase())+'» υπάρχει μόνο στο βλαβολόγιο <b>'+esc(PLAT[found[0]].name)+'</b> από τα πιθανά εργοστάσια της '+esc(b.n)+' – πιθανότατα το μηχάνημα είναι '+esc(PLAT[found[0]].name)+'. <button class="mini" data-o="'+found[0]+'">Χρησιμοποίησε '+esc(PLAT[found[0]].name)+'</button></div>';
+        else html += '<div class="small info">⚠️ Το εργοστάσιο δεν έχει επιλεγεί – ο ίδιος κωδικός σημαίνει διαφορετικά πράγματα ανά εργοστάσιο:</div>';
         Object.keys(by).forEach(function(p){ html += '<div class="pgrp">Αν είναι <b>'+esc(PLAT[p].name)+'</b>:</div>' + by[p].map(function(x){return card(x,false);}).join(""); });
         if(missing.length) html += '<div class="small">Δεν υπάρχει στο βλαβολόγιο: '+missing.map(function(p){return PLAT[p].name;}).join(", ")+'.</div>';
       } else {
