@@ -393,7 +393,8 @@ function ledSym(key, lamps){
 }
 function behBox(plat, codes){
   var b = typeof behFor==="function" ? behFor(plat, codes) : null; if(!b) return "";
-  return '<div class="beh"><div><b>🩺 Τι κάνει το μηχάνημα:</b> '+esc(b.s)+'</div><div class="small">📘 Πότε βγαίνει (manual): '+esc(b.d)+'</div></div>';
+  var bo = brandObj(), lab = bo && !bo.own && PLAT[plat] ? ' <span class="small">(εργοστάσιο '+esc(PLAT[plat].name)+')</span>' : '';
+  return '<div class="beh"><div><b>🩺 Τι κάνει το μηχάνημα'+lab+':</b> '+esc(b.s)+'</div><div class="small">📘 Πότε βγαίνει (manual): '+esc(b.d)+'</div></div>';
 }
 function card(r, showPlat){
   var c = r.c, t = r.t, kd = kindOf(c[1]);
@@ -918,8 +919,10 @@ function renderSym(){
   var h = '', q = S.q.trim(), bb = brandObj();
   if(q && bb){ var rr = search(q), seenB = {};
     if(rr.mode!=="none") rr.res.slice(0,6).forEach(function(x){ var be = behFor(x.t.plat, x.c[0]); if(!be || seenB[be.d]) return; seenB[be.d]=1;
-      h += '<div class="beh big"><div class="small">'+esc(bb.n)+' · κωδικός <b>'+esc(x.c[0][0])+'</b>'+(candidates(bb).length>1&&!bb.own?' ('+esc(PLAT[x.t.plat].name)+')':'')+' – '+esc(x.c[1])+'</div><div style="margin-top:6px"><b>🩺 Τι κάνει το μηχάνημα:</b> '+esc(be.s)+'</div><div class="small" style="margin-top:4px">📘 Πότε βγαίνει (manual): '+esc(be.d)+'</div><div class="small">Πηγή: '+esc(BEHSRC[x.t.plat]||"")+'</div></div>'; });
+      h += '<div class="beh big"><div class="small">'+esc(bb.n)+' · κωδικός <b>'+esc(x.c[0][0])+'</b>'+(!bb.own?' – <b>μόνο αν είναι '+esc(PLAT[x.t.plat].name)+'</b>':'')+' – '+esc(x.c[1])+'</div><div style="margin-top:6px"><b>🩺 Τι κάνει το μηχάνημα:</b> '+esc(be.s)+'</div><div class="small" style="margin-top:4px">📘 Πότε βγαίνει (manual): '+esc(be.d)+'</div><div class="small">Πηγή: '+esc(BEHSRC[x.t.plat]||"")+'</div></div>'; });
     if(!h) h = '<div class="small info">Για τον κωδικό «'+esc(q)+'» δεν έχω ακόμα περιγραφή συμπεριφοράς από manual.</div>';
+    if(h && !bb.own){ var pls = partPlats(), have = {}; BEH.forEach(function(x){ have[x.plat]=1; }); var miss = pls.filter(function(p){ return !have[p]; });
+      if(pls.length>1 || miss.length) h += '<div class="hint">⚠️ Η '+esc(bb.n)+' έχει σειρές από διαφορετικά εργοστάσια'+(miss.length?' (π.χ. '+esc(miss.map(function(p){return PLAT[p].name;}).join(", "))+', για τα οποία δεν έχω ακόμα περιγραφή συμπεριφοράς)':'')+'. Η περιγραφή ισχύει μόνο αν το δικό σου μηχάνημα είναι από το εργοστάσιο που γράφει – δες το ταμπελάκι ή γράψε το μοντέλο στο βήμα 3.</div>'; }
   }
   h += '<div class="small info">🩺 Το μηχάνημα έχει πρόβλημα αλλά δεν βγάζει κωδικό; Διάλεξε τι βλέπεις. Οι αιτίες είναι με σειρά πιθανότητας – ξεκίνα από πάνω.</div>';
   h += SYMPTOMS.map(function(s,i){
