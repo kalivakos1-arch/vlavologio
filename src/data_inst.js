@@ -23,6 +23,11 @@ var INST = {
   cap: function(k){ var m = k.match(/^M[SU][ZY]?-?[A-Z]{2}(\d{2})/) || k.match(/^M[SU]-?[A-Z]{2}(\d{2})/); return m ? +m[1] : null; },
   capLbl: "κλάση (π.χ. 35 = 3,5kW)",
   rows: [
+   {re:/^M[SU]Z?LN(25|35)VGHZ|^M[SU]Z?FH35VEHZ/, c:[25,35], liq:"1/4", gas:"3/8", brk:"12A", pwr:"3πολικό 1,5 mm²", comm:"4πολικό 1,0 mm²", src:"ME Installation manual MSZ-LN VG2 (JG79J514H25) · MSZ-FH VE"},
+   {re:/^M[SU]Z?(LN|FH)(18|25|35)/, c:[18,35], liq:"1/4", gas:"3/8", brk:"10A", pwr:"3πολικό 1,0 mm²", comm:"4πολικό 1,0 mm²", len:"Μέγ. μήκος 20m (LN25/35)", src:"ME Installation manual MSZ-LN VG / VG2 (JG79J514H25) · MSZ-FH VE"},
+   {re:/^M[SU]Z?LN50/, c:[50,50], liq:"1/4", gas:"1/2", brk:"16A", comm:"4πολικό 1,0 mm²", len:"Μέγ. μήκος 30m (LN50/60)", src:"ME Installation manual MSZ-LN VG2 (JG79J514H25)"},
+   {re:/^M[SU]Z?(HR|RZ)(25|35)/, c:[25,35], liq:"1/4", gas:"3/8", comm:"4πολικό 1,0 mm²", src:"ME Installation manual MSZ-HR VF / MSZ-RZ VU (1-3. SPECIFICATIONS)"},
+   {re:/^M[SU]Z?RZ50/, c:[50,50], liq:"1/4", gas:"1/2", src:"ME Installation manual MSZ-RZ VU (1-3. SPECIFICATIONS)"},
    {re:/^M[SU]Z?(AP|EF|GE|GC)/, c:[15,42], liq:"1/4", gas:"3/8", brk:"10A", pwr:"3πολικό 1,0 mm²", comm:"4πολικό 1,0 mm²", len:"Μέγ. μήκος 20m · μέγ. υψομετρική 12m · χωρίς επιπλέον φορτίο έως 10m, μετά 20 g/m (AP)", src:"ME Installation manual MSZ-AP (JG79Y335H01) · MSZ-EF · MSZ-GE · MSZ-GC (SG79Y762H04)"},
    {re:/^M[SU]GF/, c:[20,35], liq:"1/4", gas:"3/8", brk:"10A", pwr:"3πολικό 2,5 mm²", comm:"4πολικό 1,0 mm²", len:"Μέγ. μήκος 20m (GF20/25) / 25m (GF35) · υψομετρική 10m", src:"ME Installation manual MS-GF20/25/35VA"},
    {re:/^M[SU]Z?FD/, c:[25,35], liq:"1/4", gas:"3/8", brk:"10–12A ανά έκδοση εξωτερικής", pwr:"3πολικό 1,0–1,5 mm² ανά έκδοση", comm:"4πολικό 1,0 mm²", len:"Μέγ. μήκος 20m · υψομετρική 12m", src:"ME Installation manual MSZ-FD25/35VA"},
@@ -30,7 +35,7 @@ var INST = {
    {re:/^M[SU]Z?AP/, c:[60,60], liq:"1/4", gas:"1/2", brk:"16A", pwr:"3πολικό 2,0 mm²", comm:"4πολικό 1,0 mm²", len:"Μέγ. μήκος 30m · υψομετρική 15m", src:"ME Installation manual MSZ-AP60-71VG(K) (JG79J380H01)"},
    {re:/^M[SU]Z?AP/, c:[71,71], liq:"1/4", gas:"1/2", brk:"20A", pwr:"3πολικό 2,5 mm²", comm:"4πολικό 1,0 mm²", len:"Μέγ. μήκος 30m · υψομετρική 15m", src:"ME Installation manual MSZ-AP60-71VG(K) (JG79J380H01)", note:"Στον πίνακα του manual οι σωλήνες και το καλώδιο διασύνδεσης είναι κοινό κελί για AP60 και AP71."}
   ],
-  noRow: "Για αυτή τη σειρά της Mitsubishi Electric δεν έχω τον πίνακα του manual. Στις σειρές AP / EF / GE / GC: κλάση 15–42 → 1/4\" + 3/8\", κλάση 50–60 → 1/4\" + 1/2\". Επιβεβαίωσε στο manual της σειράς σου (πίνακας «1-3. SPECIFICATIONS»).",
+  noRow: "Για αυτή τη σειρά της Mitsubishi Electric δεν έχω τον πίνακα του manual. Στις σειρές AP / EF / GE / GC / LN / FH / HR / RZ: κλάση 15–42 → 1/4\" + 3/8\", κλάση 50–60 → 1/4\" + 1/2\". Επιβεβαίωσε στο manual της σειράς σου (πίνακας «1-3. SPECIFICATIONS»).",
   srcEl: "Πίνακας «1-3. SPECIFICATIONS» του installation manual κάθε σειράς"
  },
  "Toshiba": {
@@ -95,9 +100,10 @@ var INST = {
   cap: function(k){ var m = k.match(/^[A-Z]{1,3}(09|12|18|24)/); return m ? +m[1] : null; },
   capLbl: "κλάση σε χιλ. Btu",
   rows: [
-   {c:[9,12], liq:"1/4", gas:"3/8", len:"Τυπικό μήκος 7,5m · ελάχ. 2m · μέγ. 20m · επιπλέον 20 g/m", pwr:"H07RN-F 1,0 mm² (2,5–3,5kW)", comm:"H07RN-F 1,0 mm² (εσωτερική: H05VV-F 1,0 mm²)", src:"LG Installation manual 2,5k / 3,5k (Piping length and elevation · Cable type)"}
+   {c:[9,12], liq:"1/4", gas:"3/8", len:"Τυπικό μήκος 7,5m · ελάχ. 2m · μέγ. 20m · επιπλέον 20 g/m", pwr:"H07RN-F 1,0 mm² (2,5–3,5kW)", comm:"H07RN-F 1,0 mm² (εσωτερική: H05VV-F 1,0 mm²)", src:"LG Installation manual 2,5k / 3,5k (Piping length and elevation · Cable type)"},
+   {c:[18,18], liq:"1/4", gas:"1/2", len:"Τυπικό μήκος 7,5m · μέγ. 20m · επιπλέον 30 g/m", src:"LG Installation manual MFL67647124 (wall mounted 18k/24k – έκδοση Αμερικής)", note:"Ο πίνακας 18k/24k είναι από το manual της LG για Αμερική – τα καλώδια εκεί είναι σε AWG και δεν ισχύουν για Ελλάδα."},
+   {c:[24,24], liq:"1/4", gas:"5/8", len:"Τυπικό μήκος 7,5m · μέγ. 20m · επιπλέον 30 g/m", src:"LG Installation manual MFL67647124 (wall mounted 18k/24k – έκδοση Αμερικής)", note:"Ο πίνακας 18k/24k είναι από το manual της LG για Αμερική – τα καλώδια εκεί είναι σε AWG και δεν ισχύουν για Ελλάδα."}
   ],
-  noRow: "Για LG 18K / 24K δεν έχω πίνακα από ευρωπαϊκό manual που να μπορώ να διαβάσω.",
   srcEl: "LG Installation manual"
  },
  "Midea": {
@@ -113,6 +119,76 @@ var INST = {
   pwr: "Εξωτερική: H07RN-F (εσωτερική, αν τροφοδοτείται χωριστά: H05VV-F ή H05V2V2-F). Διατομή με τον ίδιο πίνακα ρεύματος.",
   brkNote: "Γενικός διακόπτης και προστασία υπέρτασης 1,5 × το μέγιστο ρεύμα · ΔΔΡ ≤30mA · αποζεύκτης όλων των πόλων με άνοιγμα ≥3mm.",
   srcEl: "Midea Owner's & Installation manual (CS445UI)"
+ },
+ "Samsung": {
+  cap: function(k){ var m = k.match(/^F?AR(\d{2})/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu",
+  rows: [
+   {re:/^F?AR(09|12|18|24)TXFC/, c:[9,24], liqBy:{9:"1/4",12:"1/4",18:"1/4",24:"1/4"}, gasBy:{9:"3/8",12:"3/8",18:"1/2",24:"5/8"}, lenBy:{9:"Μέγ. μήκος 15m · ελάχ. 3m · υψομετρική 8m · επιπλέον 15 g/m",12:"Μέγ. μήκος 15m · ελάχ. 3m · υψομετρική 8m · επιπλέον 15 g/m",18:"Μέγ. μήκος 30m · ελάχ. 3m · υψομετρική 15m · επιπλέον 15 g/m",24:"Μέγ. μήκος 30m · ελάχ. 3m · υψομετρική 15m · επιπλέον 15 g/m"}, src:"Samsung Specifications Wind-Free Comfort AR09/12/18/24TXFCAWKNEU"},
+   {c:[7,12], brk:"16A (Type GL)", src:"Samsung Installation manual AR**TXFY / AR**TXHZ · AR**TY / TXEA"},
+   {c:[18,24], brk:"20A (Type GL)", src:"Samsung Installation manual AR**TS / TV / 24 (πίνακας Type GL)"}
+  ],
+  comm: "Δύο καλώδια: τροφοδοσία εξωτερικής→εσωτερικής 3G × 1,0 mm² H07RN-F και καλώδιο επικοινωνίας F1/F2 2 × 0,75 mm² H05RN-F. Τροφοδοσία + επικοινωνία έως 30m.",
+  pwr: "3G × 2,5 mm² H07RN-F στην εξωτερική",
+  noRow: "Για αυτή τη σειρά Samsung δεν έχω πίνακα σωλήνων από manual. Στη σειρά Wind-Free Comfort (TXFC): 09/12 → 1/4\" + 3/8\", 18 → 1/4\" + 1/2\", 24 → 1/4\" + 5/8\".",
+  srcEl: "Samsung Installation manual AR**TXFY / AR**TXHZ (Connecting the power and communication cables)"
+ },
+ "Hisense": {
+  cap: function(k){ var kw = k.match(/^[A-Z]{2}(25|35|50|70)[A-Z]/); if(kw) return {25:9,35:12,50:18,70:24}[kw[1]]; var m = k.match(/(09|12|18|24)/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu (25/35/50/70 kW → 9/12/18/24)",
+  rows: [
+   {c:[9,12], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 20m · υψομετρική 10m", src:"Hisense European Air conditioners 2023 (τεχνικά στοιχεία, όλες οι σειρές τοίχου 09/12)"},
+   {c:[18,18], liq:"1/4", gas:"1/2", len:"Μέγ. μήκος 20m", src:"Hisense European Air conditioners 2023 (τεχνικά στοιχεία 18)"}
+  ],
+  noRow: "Στα 24 της Hisense ο σωλήνας αλλάζει ανά σειρά (1/4\"+5/8\", 3/8\"+5/8\" ή 1/4\"+1/2\" στους καταλόγους της) – επιβεβαίωσε στο manual / ταμπέλα της σειράς σου.",
+  srcEl: "Δεν βρήκα manual της Hisense με διατομές καλωδίων σε κείμενο που να μπορώ να διαβάσω."
+ },
+ "Mitsubishi Heavy": {
+  cap: function(k){ var m = k.match(/^S[RC][KCM](\d{2})/); return m ? +m[1] : null; },
+  capLbl: "κλάση (25 = 2,5kW)",
+  multi: /^SCM/,
+  rows: [
+   {re:/^SR[KC](20|25|35)Z/, c:[20,35], liq:"1/4", gas:"3/8", brk:"16A", comm:"1,5 mm² (καλώδια διασύνδεσης – αριθμός αγωγών στον πίνακα του manual)", len:"Μέγ. μήκος 25m", src:"MHI Technical manual \'18•SRK-T-250 (SRK ZS-W) · \'17•SRK-T-203 (SRK ZSX-W)"},
+   {re:/^SR[KC](45|50)Z/, c:[45,50], liq:"1/4", gas:"1/2", comm:"1,5 mm² (πίνακας Interconnecting wires)", len:"Μέγ. μήκος 30m", src:"MHI Technical manual SRK ZS-W / ZSP-W (Selecting connecting pipe: SRK45/50 → ø12,7 / ø6,35)"}
+  ],
+  brkNote: "Στον πίνακα του technical manual: 16A στα SRK20–35. Για SRK50 δες τον πίνακα «Recommended breaker size».",
+  srcEl: "MHI Technical manual (Recommended breaker size · Interconnecting wires)"
+ },
+ "Hitachi": {
+  cap: function(k){ var m = k.match(/^RA[KC](?:DJ)?(\d{2})/); return m ? +m[1] : null; },
+  capLbl: "κλάση (25 = 2,5kW)",
+  rows: [
+   {re:/^RA[KC](25|35)(RX|WX)D/, c:[25,35], liq:"1/4", gas:"3/8", comm:"1,5 mm² × 3 + γείωση", len:"Μέγ. μήκος 20m · ελάχ. 3m · υψομετρική 10m", src:"Hitachi Technical catalogue Mono split RAK-25/35/50RXD · RAC-25/35/50WXD"},
+   {re:/^RA[KC]50(RX|WX)D/, c:[50,50], liq:"1/4", gas:"1/2", comm:"2,5 mm² × 3 + γείωση", len:"Μέγ. μήκος 30m · ελάχ. 3m · υψομετρική 10m", src:"Hitachi Technical catalogue Mono split RAK-25/35/50RXD · RAC-25/35/50WXD"},
+   {c:[15,42], liq:"1/4", gas:"3/8", comm:"1,5 mm² × 3 + γείωση", src:"Hitachi Technical catalogue RXD (25/35)", generic:true},
+   {c:[50,50], liq:"1/4", gas:"1/2", comm:"2,5 mm² × 3 + γείωση", src:"Hitachi Technical catalogue RXD (50)", generic:true}
+  ],
+  brkNote: "Τα παλιότερα manuals της Hitachi γράφουν ασφάλεια αργής τήξης (time delay) ανά μοντέλο – π.χ. RAC-50WPB: 25A. Για τη δική σου σειρά δες τον πίνακα «Fuse capacity».",
+  srcEl: "Hitachi Technical catalogue RXD · Installation manual RAK-35/50PPB (Fuse capacity)"
+ },
+ "Haier": {
+  cap: function(k){ var m = k.match(/^1U(\d{2,3})/) || k.match(/^A[SBD](\d{2})/); return m ? +m[1] : null; },
+  capLbl: "κλάση (π.χ. 71 = 7,1kW)",
+  rows: [
+   {re:/^1U(71|100|105|125)S2S[SN]/, c:[71,125], liq:"3/8", pwr:"H05RN-F 3G 4,0 mm²", comm:"H05RN-F 4G 2,5 mm²", src:"Haier Installation manual 1U71S2SS5FA / 1U100S2SN5FA (7.2 Piping size for single split)"},
+   {re:/^1U(125|140|160|180)S2SP/, c:[125,180], pwr:"H05RN-F 3G 6,0 mm²", comm:"H05RN-F 4G 2,5 mm²", src:"Haier Installation manual 1U125-180S2SP5FA"}
+  ],
+  noRow: "Για τα οικιακά κλιματιστικά τοίχου της Haier δεν βρήκα manual με πίνακα σωλήνων που να μπορώ να διαβάσω. Υπάρχουν στοιχεία μόνο για τις επαγγελματικές εξωτερικές 1U71–1U180.",
+  srcEl: "Haier Installation manual (εξωτερικές 1U…)"
+ },
+ "Inventor": {
+  cap: function(k){ var m = k.match(/(09|12|18|24|36)/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu",
+  rows: [
+   {c:[7,14], len:"Μέγ. μήκος 25m · υψομετρική 10m", src:"Inventor Installation manual OMNIA (O1MVI/O1MVO-09/12/18/24)"},
+   {c:[15,23], len:"Μέγ. μήκος 30m · υψομετρική 20m", src:"Inventor Installation manual OMNIA"},
+   {c:[24,35], len:"Μέγ. μήκος 50m · υψομετρική 25m", src:"Inventor Installation manual OMNIA"}
+  ],
+  pipeNote: "Το installation manual της Inventor δεν αντιστοιχίζει σωλήνες σε μοντέλο – γράφει να ρωτήσεις τον αντιπρόσωπο. Δες την ταμπέλα της εξωτερικής ή το φύλλο τεχνικών στοιχείων.",
+  comm: "H07RN-F, διατομή από το μέγιστο ρεύμα της ταμπέλας: >3–6A: 0,75 · >6–10A: 1 · >10–16A: 1,5 · >16–25A: 2,5 · >25–32A: 4 · >32–40A: 6 mm²",
+  pwr: "Εξωτερική: H07RN-F (εσωτερική, αν τροφοδοτείται χωριστά: H05VV-F ή H05V2V2-F). Διατομή με τον ίδιο πίνακα ρεύματος.",
+  brkNote: "Γενικός διακόπτης και προστασία υπέρτασης 1,5 × το μέγιστο ρεύμα · αποζεύκτης όλων των πόλων με άνοιγμα ≥3mm · αποκλειστική γραμμή.",
+  srcEl: "Inventor Installation manual OMNIA"
  }
 };
 var INCH_MM = {"1/4":"6,35","3/8":"9,52","1/2":"12,70","5/8":"15,88","3/4":"19,05"};

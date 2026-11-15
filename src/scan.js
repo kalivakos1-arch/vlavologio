@@ -599,7 +599,7 @@ function instForm(){
     '<div id="inst_o"></div>'+
     '<div class="small" style="margin-top:8px">Μάρκες με στοιχεία από manual: '+esc(bs.join(", "))+'. Για τις υπόλοιπες δεν βρήκα ακόμα επίσημο πίνακα που να μπορώ να διαβάσω.</div></div>';
 }
-function instPipe(x){ return x ? '<b>'+x+'"</b> <span class="small">('+(INCH_MM[x]||"")+' mm)</span>' : ''; }
+function instPipe(x){ return x ? '<b>'+x+'"</b> <span class="small">('+(INCH_MM[x]||"")+' mm)</span>' : '<span style="color:var(--warn)">Δεν βρέθηκε στο manual</span>'; }
 function instCalc(){
   var o = document.getElementById("inst_o"); if(!o) return;
   var bn = (document.getElementById("inst_b")||{}).value, B = INST[bn], k = instKey((document.getElementById("inst_m")||{}).value);
@@ -610,15 +610,15 @@ function instCalc(){
   var cap = B.cap(k);
   if(cap==null){ o.innerHTML = '<div class="small" style="margin-top:8px">Δεν αναγνώρισα την ισχύ από το μοντέλο ('+esc(B.capLbl)+'). Έλεγξε ότι γράφτηκε σωστά.</div>'; return; }
   var rows = B.rows.filter(function(r){ return (!r.re || r.re.test(k)) && cap>=r.c[0] && cap<=r.c[1]; });
-  var pr = null; rows.forEach(function(r){ if(!pr && (r.liq || (r.liqBy && r.liqBy[cap]))) pr = r; });
-  var lr = null; rows.forEach(function(r){ if(!lr && r.len) lr = r; });
-  var er = rows.filter(function(r){ return r.pwr || r.comm || r.brk || r.brkBy; })[0] || {};
-  var brk = er.brk || (er.brkBy && er.brkBy[cap]) || null;
+  var pr = null; rows.forEach(function(r){ if(!pr && (r.liq || r.gas || (r.liqBy && r.liqBy[cap]))) pr = r; });
+  var lr = null; rows.forEach(function(r){ if(!lr && (r.len || (r.lenBy && r.lenBy[cap]))) lr = r; });
+  var er = {}; rows.forEach(function(r){ ["pwr","comm","brk"].forEach(function(f){ if(!er[f] && r[f]){ er[f]=r[f]; er[f+"S"]=r.src; } }); if(!er.brk && r.brkBy && r.brkBy[cap]){ er.brk=r.brkBy[cap]; er.brkS=r.src; } });
+  var brk = er.brk || null;
   if(!brk && B.brk) B.brk.forEach(function(x){ if(!brk && x[0].test(k)) brk = x[1]; });
   var L = [];
   L.push('<div class="instr"><span>Κλάση από το μοντέλο</span><b>'+cap+'</b></div>');
   if(pr){
-    var lq = pr.liq || pr.liqBy[cap], gs = pr.gas || pr.gasBy[cap];
+    var lq = pr.liq || (pr.liqBy && pr.liqBy[cap]), gs = pr.gas || (pr.gasBy && pr.gasBy[cap]);
     L.push('<div class="instr"><span>Σωλήνας υγρού (λεπτός)</span><div>'+instPipe(lq)+'</div></div>');
     L.push('<div class="instr"><span>Σωλήνας αερίου (χοντρός)</span><div>'+instPipe(gs)+'</div></div>');
   } else {
@@ -627,12 +627,12 @@ function instCalc(){
   L.push('<div class="instr"><span>Καλώδιο διασύνδεσης</span><div>'+esc(er.comm || B.comm || "Δεν βρέθηκε στο manual.")+'</div></div>');
   L.push('<div class="instr"><span>Καλώδιο τροφοδοσίας</span><div>'+esc(er.pwr || B.pwr || "Δεν βρέθηκε στο manual.")+'</div></div>');
   L.push('<div class="instr'+(brk?'':' miss')+'"><span>Ασφάλεια</span><div>'+esc(brk || B.brkNote || "Δεν βρέθηκε στο manual.")+'</div></div>');
-  if(lr) L.push('<div class="instr"><span>Μήκη</span><div>'+esc(lr.len)+'</div></div>');
+  if(lr) L.push('<div class="instr"><span>Μήκη</span><div>'+esc(lr.len || lr.lenBy[cap])+'</div></div>');
   var notes = rows.filter(function(r){ return r.note; }).map(function(r){ return r.note; });
   if(pr && pr.generic) notes.push("Οι σωλήνες είναι από τον γενικό πίνακα του manual της εταιρίας και όχι από πίνακα της συγκεκριμένης σειράς.");
   if(pr && pr.kw) notes.push("Η Panasonic δίνει τους σωλήνες ανά Btu· εδώ αντιστοιχίστηκαν από την ισχύ σε kW.");
   if(!pr && B.noRow && B.pipeNote) notes.push(B.noRow);
-  var srcs = []; rows.forEach(function(r){ if(r.src && srcs.indexOf(r.src)<0 && (r===pr || r===lr || r===er)) srcs.push(r.src); });
+  var srcs = []; [pr&&pr.src, lr&&lr.src, er.pwrS, er.commS, er.brkS].forEach(function(x){ if(x && srcs.indexOf(x)<0) srcs.push(x); });
   if(B.srcEl && srcs.indexOf(B.srcEl)<0) srcs.push(B.srcEl);
   o.innerHTML = '<div class="instw">'+L.join("")+'</div>'+
     notes.map(function(n){ return '<div class="pext">ℹ️ '+esc(n)+'</div>'; }).join("")+
