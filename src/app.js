@@ -469,7 +469,7 @@ function card(r, showPlat){
   return '<div class="res"'+(kd?' style="--kc:'+kd[1]+'"':'')+'>'+
     '<div class="rh"><span class="codes">'+(t.tbl.lamps ? ledSym(c[0][0], t.tbl.lamps) : t.tbl.pat ? '<span class="code pat">'+esc(patSym(c[0][0], t.tbl.pat.labels))+'</span>' : c[0].map(function(k){return '<span class="code">'+esc(k)+'</span>';}).join(""))+'</span>'+
     (showPlat?'<span class="plat">'+esc(PLAT[t.plat].name)+'</span>':(kd?'<span class="kind">'+esc(kd[0])+'</span>':''))+'</div>'+
-    '<div class="rt">'+esc(c[1])+'</div>'+(/_outled$|_multi_out$|_multiled$/.test(t.key) ? '' : behBox(t.plat, c[0]))+
+    '<div class="rt">'+esc(c[1])+'</div>'+(function(){ var vn = typeof verifNote==="function" ? verifNote(t.key, c[0]) : ""; return vn ? '<div class="vn">⚠️ <b>Μη επιβεβαιωμένο για Ελλάδα/Ευρώπη.</b> '+esc(vn)+'</div>' : ''; })()+(/_outled$|_multi_out$|_multiled$/.test(t.key) ? '' : behBox(t.plat, c[0]))+
     (c[4]?'<div class="rl">↔ '+esc(c[4])+'</div>':'')+
     (c[2]?(function(){ var st=stepsOf(c[2]); return st ? '<div class="rd"><b>🔧 Τι ελέγχεις – με τη σειρά:</b><ol class="steps">'+st.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol></div>' : '<div class="rd"><b>🔧 Τι ελέγχεις:</b> '+esc(c[2])+'</div>'; })():'')+
     (c[3]?'<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+esc(c[3])+'</div>':'')+

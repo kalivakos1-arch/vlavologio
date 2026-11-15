@@ -136,6 +136,7 @@ input:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--accb
 .lsym span{display:inline-flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:2px 9px 2px 6px}
 .lsym .dot{width:10px;height:10px}
 .ledreset{background:none;border:0;color:var(--acc);font-size:13.5px;font-weight:700;padding:6px 0 0}
+.vn{font-size:13px;color:var(--warntx);background:var(--warnbg);border:1px solid color-mix(in srgb,var(--warn) 45%,transparent);border-radius:10px;padding:6px 9px;margin:2px 0 8px}
 .rs{font-size:11.5px;color:var(--muted);margin-top:8px}
 .pgrp{font-size:14px;margin:12px 2px 6px;color:var(--warn)}
 .info{margin:2px 2px 8px}
@@ -3980,6 +3981,18 @@ PARTS.push({id:"inst", icon:"📐", name:"Σωλήνες & καλώδια ανά
  ["Τι δείχνει","Διάμετρο σωλήνα υγρού και αερίου (ίντσες και mm), καλώδιο διασύνδεσης εσωτερικής–εξωτερικής, καλώδιο τροφοδοσίας, ασφάλεια και μέγιστα μήκη – μόνο ό,τι γράφει το manual της εταιρίας, με την πηγή. Ό,τι δεν βρέθηκε γράφεται ότι λείπει."],
  ["Πώς το γράφω","Γράψε το μοντέλο όπως στο ταμπελάκι (εσωτερικής ή εξωτερικής). Για την ασφάλεια σε Daikin προτίμησε το μοντέλο της εξωτερικής."],
  ["Προσοχή","Η διατομή του καλωδίου τροφοδοσίας ελέγχεται πάντα και με το μήκος της γραμμής και τον κανονισμό εσωτερικών ηλεκτρικών εγκαταστάσεων. Τα manuals γράφουν ελάχιστες τιμές."]]});
+// Ετικέτες προέλευσης: κωδικοί που ΔΕΝ έχουν επιβεβαιωθεί ακόμα σε manual ευρωπαϊκού/ελληνικού μοντέλου.
+// Μένουν στην εφαρμογή με ετικέτα μέχρι να βρεθεί ευρωπαϊκή/ελληνική πηγή.
+var VN_ASIA_PAN = "Πηγή: επίσημη σελίδα Panasonic για Ασία. Δεν υπάρχει στον πίνακα του ευρωπαϊκού service manual (π.χ. CS-NZ25YKE) – μπορεί να μη βγαίνει σε μοντέλα Ελλάδας.";
+var VN_US = "Πηγή: manual μοντέλου για ΗΠΑ. Δεν έχει επιβεβαιωθεί ακόμα σε ευρωπαϊκό/ελληνικό μοντέλο.";
+var VERIF = {
+  panasonic_split: { H17:VN_ASIA_PAN, H26:VN_ASIA_PAN, H31:VN_ASIA_PAN, H35:VN_ASIA_PAN, H50:VN_ASIA_PAN, H51:VN_ASIA_PAN, H52:VN_ASIA_PAN, H71:VN_ASIA_PAN, H72:VN_ASIA_PAN, H79:VN_ASIA_PAN },
+  fujitsu_all: { A8:VN_US, "45":VN_US },
+  midea_split: { EHC1:VN_US, EHC2:VN_US, EHC3:VN_US, ECC1:VN_US, FHCC:VN_US },
+  gree_split: { EA:"Πηγή: service manuals Gree για ΗΠΑ (κονσόλα, slim duct, A-coil). Δεν έχει επιβεβαιωθεί ακόμα σε ευρωπαϊκό/ελληνικό μοντέλο.", FE:"Πηγή: service manuals Gree για ΗΠΑ (κονσόλα, slim duct, A-coil). Δεν έχει επιβεβαιωθεί ακόμα σε ευρωπαϊκό/ελληνικό μοντέλο." }
+};
+function verifNote(tkey, codes){ var m = VERIF[tkey]; if(!m) return ""; for(var i=0;i<codes.length;i++){ var k=String(codes[i]).toUpperCase(); if(m[k]) return m[k]; } return ""; }
+
 </script>
 <script>// ===== ΜΑΡΚΕΣ, ΕΡΓΟΣΤΑΣΙΑ & ΛΟΓΙΚΗ ΕΦΑΡΜΟΓΗΣ =====
 (function(){
@@ -4452,7 +4465,7 @@ function card(r, showPlat){
   return '<div class="res"'+(kd?' style="--kc:'+kd[1]+'"':'')+'>'+
     '<div class="rh"><span class="codes">'+(t.tbl.lamps ? ledSym(c[0][0], t.tbl.lamps) : t.tbl.pat ? '<span class="code pat">'+esc(patSym(c[0][0], t.tbl.pat.labels))+'</span>' : c[0].map(function(k){return '<span class="code">'+esc(k)+'</span>';}).join(""))+'</span>'+
     (showPlat?'<span class="plat">'+esc(PLAT[t.plat].name)+'</span>':(kd?'<span class="kind">'+esc(kd[0])+'</span>':''))+'</div>'+
-    '<div class="rt">'+esc(c[1])+'</div>'+(/_outled$|_multi_out$|_multiled$/.test(t.key) ? '' : behBox(t.plat, c[0]))+
+    '<div class="rt">'+esc(c[1])+'</div>'+(function(){ var vn = typeof verifNote==="function" ? verifNote(t.key, c[0]) : ""; return vn ? '<div class="vn">⚠️ <b>Μη επιβεβαιωμένο για Ελλάδα/Ευρώπη.</b> '+esc(vn)+'</div>' : ''; })()+(/_outled$|_multi_out$|_multiled$/.test(t.key) ? '' : behBox(t.plat, c[0]))+
     (c[4]?'<div class="rl">↔ '+esc(c[4])+'</div>':'')+
     (c[2]?(function(){ var st=stepsOf(c[2]); return st ? '<div class="rd"><b>🔧 Τι ελέγχεις – με τη σειρά:</b><ol class="steps">'+st.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol></div>' : '<div class="rd"><b>🔧 Τι ελέγχεις:</b> '+esc(c[2])+'</div>'; })():'')+
     (c[3]?'<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+esc(c[3])+'</div>':'')+
