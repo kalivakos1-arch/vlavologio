@@ -1,6 +1,6 @@
 import os
 os.chdir('/home/claude/vl')
-d=''.join(open(f).read()+'\n' for f in ['data_split.js','data_hp_vrf.js','data_extra.js','data_inled.js','data_beh.js','data_out.js','data_parts.js','data_models.js','data_guide.js'])
+d=''.join(open(f).read()+'\n' for f in ['data_split.js','data_hp_vrf.js','data_extra.js','data_inled.js','data_beh.js','data_out.js','data_parts.js','data_models.js','data_guide.js','data_tree.js'])
 a=open('app.js').read(); _t='setTheme(LS.get("vl_theme","auto"));\nrenderAll();\n})();'; assert a.rstrip().endswith(_t), 'tail'; a=a.rstrip()[:-len(_t)]+open('bc.js').read()+'\n'+open('scan.js').read()+'\n'+_t+'\n'; sh=open('shell.html').read()
 h=sh.replace('/*DATA*/',d).replace('/*APP*/',a)
 open('/home/claude/vlavologio_offline.html','w').write(h)

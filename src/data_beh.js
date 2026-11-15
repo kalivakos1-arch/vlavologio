@@ -136,6 +136,13 @@ BEH.push(
 );
 BEHSRC.haier = "Haier service manuals (1U50KEPFRA, 1U68WEGFRA – Service diagnosis E7, F8)";
 
+// ---------- HITACHI (Hitachi alarm code list – Utopia / Set Free) ----------
+BEH.push(
+ {plat:"hitachi", codes:["03"], d:"Μη φυσιολογική μετάδοση μεταξύ εσωτερικής και εξωτερικής (ή μεταξύ εξωτερικών).", s:"Η μονάδα σταματά με 03. Ύποπτα: λάθος/χαλαρή καλωδίωση, κομμένο καλώδιο, καμένη ασφάλεια πλακέτας."},
+ {plat:"hitachi", codes:["08"], d:"Αύξηση θερμοκρασίας κατάθλιψης/συμπιεστή.", s:"Δουλεύει και κόβει όταν ζεσταθεί πολύ η κατάθλιψη. Ύποπτα: έλλειψη φρέον, φραγμένο κύκλωμα, κλειστή εκτονωτική (εξωτ. σε θέρμανση / εσωτ. σε ψύξη)."}
+);
+BEHSRC.hitachi = "Hitachi alarm code list (Utopia/Set Free – 03 abnormal transmission, 08 increase of discharge gas temperature)";
+
 function behFor(plat, codes){
   for(var i=0;i<BEH.length;i++){ var b=BEH[i]; if(b.plat!==plat) continue;
     for(var j=0;j<codes.length;j++) if(b.codes.indexOf(String(codes[j]).toUpperCase())>=0) return b; }

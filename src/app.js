@@ -983,6 +983,7 @@ function renderSym(){
     if(h && !bb.own){ var pls = partPlats(), have = {}; BEH.forEach(function(x){ have[x.plat]=1; }); var miss = pls.filter(function(p){ return !have[p]; });
       if(pls.length>1 || miss.length) h += '<div class="hint">⚠️ Η '+esc(bb.n)+' έχει σειρές από διαφορετικά εργοστάσια'+(miss.length?' (π.χ. '+esc(miss.map(function(p){return PLAT[p].name;}).join(", "))+', για τα οποία δεν έχω ακόμα περιγραφή συμπεριφοράς)':'')+'. Η περιγραφή ισχύει μόνο αν το δικό σου μηχάνημα είναι από το εργοστάσιο που γράφει – δες το ταμπελάκι ή γράψε το μοντέλο στο βήμα 3.</div>'; }
   }
+  h += dtreeHtml();
   h += '<div class="small info">🩺 Το μηχάνημα έχει πρόβλημα αλλά δεν βγάζει κωδικό; Διάλεξε τι βλέπεις. Οι αιτίες είναι με σειρά πιθανότητας – ξεκίνα από πάνω.</div>';
   h += SYMPTOMS.map(function(s,i){
     return '<details class="sym"'+(S.sym===i?' open':'')+' data-sym="'+i+'"><summary>'+esc(s[0])+'</summary><ol class="steps">'+
@@ -1157,6 +1158,7 @@ function renderParts(){
     if(P.id==="comp") h += '<div class="pcalcw"><div class="lbl">🔎 Κωδικός συμπιεστή (ετικέτα πάνω στον συμπιεστή)</div><input id="pcomp" placeholder="π.χ. ASN98D22UFZ" autocapitalize="characters" spellcheck="false"><div id="pcompres"></div></div>';
     if(MEAS[P.id]) h += measBox(P.id);
     if(P.id==="pres") h += presForm() + presGuide();
+    if(P.id==="charge") h += chargeForm();
     if(P.id==="sensor"){
       var sl = sensList();
       h += '<div class="pcalcw"><div class="lbl">🧮 Υπολογιστής αισθητηρίου</div>'+
@@ -1179,6 +1181,7 @@ function renderParts(){
   if(P && P.id==="fan"){ fanColsUpdate(); fanVerdict(); }
   if(P && MEAS[P.id]) measUpdate();
   if(P && P.id==="pres") presCalc();
+  if(P && P.id==="charge") chargeFill();
 }
 var fmT=null;
 document.addEventListener("input", function(e){

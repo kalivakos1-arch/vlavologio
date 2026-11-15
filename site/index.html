@@ -218,7 +218,7 @@ details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
 .serl{padding:8px 10px;margin:6px 0;border-radius:10px;background:var(--card2);border:1px solid var(--line)}
 .serbox{margin:8px 0}
 .scanbtn{width:100%;box-sizing:border-box;white-space:normal;padding:10px 12px;margin:4px 0 8px;line-height:1.3}
-.hbtn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:18px;margin-right:6px}
+.hbtn{width:38px;height:40px;font-weight:800;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:18px;margin-right:6px}
 #histov{position:fixed;inset:0;z-index:9998;background:var(--bg);display:none;flex-direction:column;gap:8px;padding:12px;overflow:auto}
 .hcard{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:6px 0}
 .hcard .hm{font-size:12.5px;color:var(--muted)}
@@ -226,6 +226,24 @@ details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
 .hform input,.hform textarea{width:100%;box-sizing:border-box;margin-top:4px}
 .hform textarea{min-height:64px;font:inherit;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text)}
 .hseen{padding:8px 10px;border-radius:10px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.4);margin:8px 0}
+.hbtn.on{background:var(--acc,#0284c7);color:#fff}
+.dtw{border:2px solid var(--line2);border-radius:14px;padding:10px 12px;margin:10px 0;background:var(--card)}
+.dthead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.dtq{font-size:17px;font-weight:700;line-height:1.35;margin:6px 0 10px}
+.dtr{font-size:15.5px;line-height:1.45;padding:10px;border-radius:10px;background:var(--card2);margin:6px 0}
+.dtbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.dtbtns .mini{padding:10px 14px;white-space:normal;text-align:left;max-width:100%;box-sizing:border-box}
+.dty{background:#16a34a!important;color:#fff!important;border-color:#16a34a!important;min-width:100px}.dtn{background:#dc2626!important;color:#fff!important;border-color:#dc2626!important;min-width:100px}
+.prow{position:relative;padding-right:40px}.prow .x{position:absolute;right:8px;top:8px}.pdone b{text-decoration:line-through;opacity:.6}
+.htabs{margin:2px 0 6px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 16px;border-radius:12px;z-index:10000;font-size:14px}
+#printarea{display:none}
+@media print{html.printing body>*:not(#printarea){display:none!important}html.printing #printarea{display:block!important;color:#000;font:15px/1.5 -apple-system,Segoe UI,Arial;padding:20px}}
+html.field{font-size:118%}
+html.field body{--muted:var(--text2)}
+html.field .mini,html.field .chip,html.field button{min-height:46px;font-size:1.02em}
+html.field .card,html.field .hcard,html.field .dtw,html.field @media (max-width:440px){.hgrow p{display:none}.hbtn{width:36px;margin-right:4px}}
+.fwiz{border-width:2px;border-color:var(--text2)}
+html.field .small{font-size:.95em}
 .fwiz{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:10px 0}.fwbtn{margin-top:10px;padding:9px 12px;width:100%}
 .kbh{font-size:19px;font-weight:800;margin:4px 2px 8px}
 .fmodel{border-color:var(--acc)}
@@ -247,7 +265,7 @@ details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
 <div class="wrap">
   <header>
     <div class="logo">🛠️</div>
-    <div class="hgrow"><h1>Βλαβολόγιο Κλιματισμού</h1><p>Κωδικοί, λυχνίες & μετρήσεις από τα service manuals</p></div><button id="qscan" class="hbtn" aria-label="Σάρωση barcode" title="Σάρωση ετικέτας">📷</button><button id="histbtn" class="hbtn" aria-label="Ιστορικό" title="Ιστορικό επισκέψεων">📒</button><button id="theme" aria-label="Θέμα">🌓</button>
+    <div class="hgrow"><h1>Βλαβολόγιο Κλιματισμού</h1><p>Κωδικοί, λυχνίες & μετρήσεις από τα service manuals</p></div><button id="qscan" class="hbtn" aria-label="Σάρωση barcode" title="Σάρωση ετικέτας">📷</button><button id="histbtn" class="hbtn" aria-label="Ιστορικό" title="Ιστορικό επισκέψεων">📒</button><button id="fieldbtn" class="hbtn" aria-label="Λειτουργία πεδίου">Aa</button><button id="theme" aria-label="Θέμα">🌓</button>
   </header>
 
   <div class="card" id="brandcard">
@@ -2349,6 +2367,13 @@ BEH.push(
 );
 BEHSRC.haier = "Haier service manuals (1U50KEPFRA, 1U68WEGFRA – Service diagnosis E7, F8)";
 
+// ---------- HITACHI (Hitachi alarm code list – Utopia / Set Free) ----------
+BEH.push(
+ {plat:"hitachi", codes:["03"], d:"Μη φυσιολογική μετάδοση μεταξύ εσωτερικής και εξωτερικής (ή μεταξύ εξωτερικών).", s:"Η μονάδα σταματά με 03. Ύποπτα: λάθος/χαλαρή καλωδίωση, κομμένο καλώδιο, καμένη ασφάλεια πλακέτας."},
+ {plat:"hitachi", codes:["08"], d:"Αύξηση θερμοκρασίας κατάθλιψης/συμπιεστή.", s:"Δουλεύει και κόβει όταν ζεσταθεί πολύ η κατάθλιψη. Ύποπτα: έλλειψη φρέον, φραγμένο κύκλωμα, κλειστή εκτονωτική (εξωτ. σε θέρμανση / εσωτ. σε ψύξη)."}
+);
+BEHSRC.hitachi = "Hitachi alarm code list (Utopia/Set Free – 03 abnormal transmission, 08 increase of discharge gas temperature)";
+
 function behFor(plat, codes){
   for(var i=0;i<BEH.length;i++){ var b=BEH[i]; if(b.plat!==plat) continue;
     for(var j=0;j<codes.length;j++) if(b.codes.indexOf(String(codes[j]).toUpperCase())>=0) return b; }
@@ -3122,6 +3147,91 @@ var PROCS = [
   };
   for(var k in C){ if(T[k]) T[k].chk=M+C[k]+". Σε σπάνιες σειρές ένας κωδικός μπορεί να διαφέρει – αν η περιγραφή δεν ταιριάζει, κοίτα το manual του μοντέλου."; }
 })();
+
+// ===== Οδηγός βήμα-βήμα χωρίς κωδικό (πρακτική σειρά ελέγχου – από τα απλά στα ακριβά) =====
+// κόμβος: {q, y, n} (ερώτηση) ή {r, p} (αποτέλεσμα, p = id εξαρτήματος για «Πώς μετράω»), go = μετάβαση σε άλλο δέντρο
+var DTREE = {
+ cool:{t:"❄️ Δεν ψύχει / δεν ζεσταίνει καλά", start:"c1", n:{
+  c1:{q:"Είναι καθαρά τα φίλτρα της εσωτερικής και το στοιχείο της εξωτερικής;", y:"c2", n:"c1r"},
+  c1r:{r:"Καθάρισε φίλτρα και στοιχεία και άφησέ το να δουλέψει 15 λεπτά πριν ξαναμετρήσεις. Είναι η πιο συχνή αιτία."},
+  c2:{q:"Δουλεύει ο συμπιεστής; (ακούγεται, ζεσταίνεται, η χοντρή σωλήνα κρυώνει σε ψύξη)", y:"c3", n:"c2g"},
+  c2g:{go:"out"},
+  c3:{q:"Γυρνά ο ανεμιστήρας της εξωτερικής κανονικά;", y:"c4", n:"c3r"},
+  c3r:{pl:"Μοτέρ ανεμιστήρα εξωτερικής", r:"Ο ανεμιστήρας εξωτερικής δεν γυρνά: γύρνα τον με το χέρι (σφίξιμο/εμπόδιο), μέτρα τάση εξόδου πλακέτας και περιελίξεις μοτέρ.", p:"fan"},
+  c4:{q:"Με το εργαλείο «Πιέσεις»: η πίεση αναρρόφησης βγαίνει χαμηλή;", y:"c5", n:"c6"},
+  c5:{q:"Η υπερθέρμανση είναι μεγάλη (πάνω από ~10K);", y:"c5a", n:"c5b"},
+  c5a:{pl:"Φρέον + υλικά επισκευής διαρροής", r:"Έλλειψη φρέον → υπάρχει διαρροή. Βρες και επισκεύασε τη διαρροή (ρακόρ, βάνες, στοιχεία), κάνε κενό και ζύγισε την ποσότητα από το ταμπελάκι (+ επιπλέον μήκος).", p:"pres"},
+  c5b:{pl:"Εκτονωτική (πηνίο/σώμα)", r:"Χαμηλή πίεση με μικρή υπερθέρμανση: λίγος αέρας στην εσωτερική (ανεμιστήρας, φίλτρα) ή μπλοκαρισμένη/κολλημένη εκτονωτική.", p:"eev"},
+  c6:{q:"Η πίεση κατάθλιψης/συμπύκνωσης είναι υψηλή και ο συμπιεστής τραβά πολύ ρεύμα;", y:"c6a", n:"c6b"},
+  c6a:{r:"Υπερπλήρωση ή κακός αερισμός εξωτερικής (βρόμικο στοιχείο, ζεστός αέρας που ξαναμπαίνει, ανεμιστήρας). Έλεγξε και την υπόψυξη.", p:"pres"},
+  c6b:{pl:"Αισθητήριο (τύπος από τον έλεγχο αισθητήρων)", r:"Πιέσεις φυσιολογικές: έλεγξε τα αισθητήρια (υπολογιστής αισθητήρων) και τη διαφορά θερμοκρασίας αέρα εισόδου–εξόδου εσωτερικής. Σε θέρμανση έλεγξε και τη 4οδη.", p:"sensor"}
+ }},
+ out:{t:"🔇 Η εσωτερική δουλεύει, η εξωτερική όχι", start:"o1", n:{
+  o1:{q:"Περίμενες τουλάχιστον 3 λεπτά μετά την εντολή; (προστασία επανεκκίνησης)", y:"o2", n:"o1r"},
+  o1r:{r:"Περίμενε 3–5 λεπτά – οι περισσότερες μονάδες έχουν καθυστέρηση εκκίνησης συμπιεστή."},
+  o2:{q:"Υπάρχουν 230V στην κλέμα L–N της εξωτερικής;", y:"o3", n:"o2r"},
+  o2r:{r:"Δεν φτάνει ρεύμα: έλεγξε ασφάλεια/διακόπτη, καλωδίωση και (σε μονάδες που τροφοδοτούνται από την εσωτερική) το ρελέ της πλακέτας εσωτερικής."},
+  o3:{q:"Ανάβει LED στην πλακέτα της εξωτερικής;", y:"o4", n:"o3a"},
+  o3a:{q:"Είναι καμένη η ασφάλεια της πλακέτας εξωτερικής;", y:"o3b", n:"o3c"},
+  o3b:{pl:"Ασφάλεια πλακέτας εξωτερικής", r:"Μην αλλάξεις μόνο την ασφάλεια: πρώτα μέτρα συμπιεστή (U-V-W και προς γείωση), IPM (P-N) και μοτέρ ανεμιστήρα για βραχυκύκλωμα – αλλιώς θα ξανακαεί.", p:"ipm"},
+  o3c:{pl:"Πλακέτα εξωτερικής", r:"Τροφοδοτικό πλακέτας εξωτερικής ή γέφυρα: μέτρα ~310V DC στους μεγάλους πυκνωτές και τις χαμηλές τάσεις (15V/5V).", p:"ipm"},
+  o4:{q:"Η LED της εξωτερικής αναβοσβήνει με κωδικό (ρυθμικές αναλαμπές);", y:"o4r", n:"o5"},
+  o4r:{r:"Μέτρα τις αναλαμπές και γράψ' τες στην καρτέλα «Πλακέτα εξωτ.» – θα σου πει τι σημαίνουν για το εργοστάσιο της μονάδας."},
+  o5:{q:"Η τάση στο καλώδιο επικοινωνίας (S ή 2/3) «κινείται» στο πολύμετρο;", y:"o5r", n:"o5n"},
+  o5n:{r:"Δεν υπάρχει επικοινωνία: έλεγξε καλώδιο και κλέμες (λάθος σειρά, κομμένο, οξείδωση) και μετά την πλακέτα εσωτερικής."},
+  o5r:{pl:"Πλακέτα inverter / IPM", r:"Υπάρχει επικοινωνία αλλά δεν ξεκινά: έλεγξε συμπιεστή (περιελίξεις, κλίξον) και IPM/πλακέτα inverter.", p:"comp"}
+ }},
+ trip:{t:"⚡ Πέφτει η ασφάλεια ή το ρελέ διαρροής", start:"t1", n:{
+  t1:{q:"Πέφτει το ρελέ διαρροής (διαφορικό) – όχι η απλή ασφάλεια;", y:"t2", n:"t5"},
+  t2:{q:"Με αποσυνδεδεμένο τον συμπιεστή, πέφτει ακόμα;", y:"t3", n:"t2r"},
+  t2r:{pl:"Συμπιεστής", r:"Διαρροή στον συμπιεστή: μέτρα κάθε ακροδέκτη (U, V, W) προς γείωση – πρέπει να είναι πολύ μεγάλη αντίσταση (MΩ). Αν έχει πάρει υγρασία, μπορεί να συνέλθει με θέρμανση κάρτερ· αλλιώς αλλαγή.", p:"comp"},
+  t3:{q:"Με αποσυνδεδεμένο το μοτέρ ανεμιστήρα εξωτερικής, πέφτει ακόμα;", y:"t4", n:"t3r"},
+  t3r:{pl:"Μοτέρ ανεμιστήρα εξωτερικής", r:"Διαρροή στο μοτέρ ανεμιστήρα εξωτερικής (νερά/καμένο) – άλλαξε το μοτέρ και έλεγξε την έξοδο της πλακέτας.", p:"fan"},
+  t4:{r:"Έλεγξε νερά/υγρασία στην κλέμα και στην πλακέτα, θερμαντικές αντιστάσεις (κάρτερ/βάσης) και τα καλώδια διασύνδεσης προς γείωση."},
+  t5:{q:"Πέφτει αμέσως μόλις δώσεις ρεύμα;", y:"t5r", n:"t6r"},
+  t5r:{pl:"IPM / πλακέτα inverter", r:"Βραχυκύκλωμα στην είσοδο: γέφυρα ανόρθωσης, IPM (μέτρα P-N και P/N προς U-V-W), πυκνωτές. Μην ξαναδίνεις ρεύμα πριν μετρήσεις.", p:"ipm"},
+  t6r:{r:"Πέφτει μετά από ώρα: υπερφόρτωση – μέτρα ρεύμα συμπιεστή, τάση δικτύου, μέγεθος ασφάλειας/καλωδίου, και αν ο συμπιεστής «κολλάει» στην εκκίνηση.", p:"comp"}
+ }},
+ water:{t:"💧 Τρέχει νερό από την εσωτερική", start:"w1", n:{
+  w1:{q:"Βλέπεις πάγο στο στοιχείο ή στα σωληνάκια της εσωτερικής;", y:"w1g", n:"w2"},
+  w1g:{go:"ice"},
+  w2:{q:"Αν ρίξεις νερό στη λεκάνη, φεύγει γρήγορα από τον σωλήνα αποχέτευσης;", y:"w3", n:"w2r"},
+  w2r:{r:"Βουλωμένη αποχέτευση: καθάρισε λεκάνη και σωλήνα (φύσημα/αναρρόφηση), έλεγξε για κάμψη ή «σιφώνι» στον σωλήνα."},
+  w3:{q:"Έχει η μονάδα σωστή κλίση προς την πλευρά της αποχέτευσης;", y:"w4", n:"w3r"},
+  w3r:{r:"Διόρθωσε την κλίση της εσωτερικής (ελαφρώς προς την έξοδο της αποχέτευσης)."},
+  w4:{pl:"Αντλία συμπυκνωμάτων / φλοτέρ", r:"Έλεγξε μόνωση σωλήνων/ρακόρ (στάζει υγρασία από άμόνωτο σημείο). Σε κασέτες/κανάλια έλεγξε αντλία συμπυκνωμάτων και φλοτέρ."}
+ }},
+ ice:{t:"🧊 Παγώνει το στοιχείο / οι σωλήνες", start:"i1", n:{
+  i1:{q:"Είναι καθαρά τα φίλτρα και γυρνά κανονικά ο ανεμιστήρας εσωτερικής;", y:"i2", n:"i1r"},
+  i1r:{pl:"Φίλτρα εσωτερικής", r:"Λίγος αέρας στην εσωτερική: καθάρισε φίλτρα/φτερωτή, έλεγξε ταχύτητα ανεμιστήρα.", p:"fan"},
+  i2:{q:"Με το εργαλείο «Πιέσεις»: χαμηλή πίεση και μεγάλη υπερθέρμανση;", y:"i2r", n:"i3"},
+  i2r:{r:"Έλλειψη φρέον → διαρροή. Επισκευή, κενό, ζύγισμα.", p:"pres"},
+  i3:{pl:"Αισθητήριο στοιχείου εσωτερικής", r:"Έλεγξε αισθητήριο στοιχείου εσωτερικής (αν διαβάζει λάθος, δεν μπαίνει αντιπαγωτική) και εκτονωτική.", p:"sensor"}
+ }},
+ noise:{t:"🔊 Θόρυβος / κραδασμοί", start:"n1", n:{
+  n1:{q:"Ο θόρυβος έρχεται από την εσωτερική;", y:"n2", n:"n4"},
+  n2:{q:"Αλλάζει με την ταχύτητα του ανεμιστήρα;", y:"n2r", n:"n3r"},
+  n2r:{pl:"Φτερωτή / μοτέρ ανεμιστήρα εσωτερικής", r:"Φτερωτή (σκόνη, ράγισμα, ακουμπά) ή ρουλεμάν μοτέρ. Καθάρισε/έλεγξε τη φτερωτή και γύρνα τη με το χέρι.", p:"fan"},
+  n3r:{r:"«Γουργουρητό»/σφύριγμα: ροή φρέον (φυσιολογικό λίγο, έντονο σε έλλειψη) ή νερό στην αποχέτευση. Τρίξιμο: διαστολή πλαστικών – φυσιολογικό."},
+  n4:{q:"Κραδασμός που περνά στον τοίχο/βάσεις;", y:"n4r", n:"n5r"},
+  n4r:{pl:"Αντικραδασμικά λαστιχάκια", r:"Λαστιχάκια συμπιεστή/αντικραδασμικά βάσης, βίδες, σωληνάκια που ακουμπούν μεταξύ τους – απομόνωσε και στερέωσε."},
+  n5r:{r:"Ανεμιστήρας εξωτερικής (φτερωτή, ρουλεμάν) ή μεταλλικός θόρυβος από συμπιεστή – σύγκρινε με το ρεύμα του συμπιεστή.", p:"comp"}
+ }}
+};
+
+// ===== Επιπλέον φρέον ανά μήκος σωληνώσεων (από installation manuals) =====
+// std = μήκος χωρίς επιπλέον φόρτιση (m), g = g/m για υγρό 1/4", base = από πού μετράει το επιπλέον (αν διαφέρει)
+var CHARGE = [
+ {k:"daikin", n:"Daikin split R32 (RXF, RXM, ARXD, RXA)", std:10, g:20, src:"Daikin installation manual R32 split: ≤10m καμία προσθήκη· >10m: R=(μήκος υγρού−10)×0,020 kg."},
+ {k:"daikinmx", n:"Daikin multi R32 (2/3/4/5MXM)", std:20, g:20, src:"Daikin 2MXM installation manual: αν το συνολικό μήκος όλων των δωματίων ξεπερνά τα 20m, +20 g ανά επιπλέον μέτρο."},
+ {k:"midea", n:"Midea & OEM Midea (Inventor, Nobu, Carrier…) R32", std:5, g:12, g38:24, src:"Midea/OEM installation manuals: πρότυπο μήκος 5m (7,5m σε Β. Αμερική)· R32 υγρό 1/4\": 12 g/m, 3/8\": 24 g/m."},
+ {k:"gree", n:"Gree & OEM Gree (Argo, Inventor τύπου Gree…) R32", std:5, g:16, src:"Gree/Argo R32 installation manual: πρόσθετη φόρτιση στο υγρό 1/4\" = 16 g/m πάνω από το πρότυπο μήκος (το πρότυπο μήκος γράφει το ταμπελάκι/manual – συνήθως 5m)."},
+ {k:"me", n:"Mitsubishi Electric MSZ/MUZ (μικρά split)", std:7, base:5, g:20, src:"Mitsubishi Electric installation manual: αν το μήκος ξεπερνά τα 7m, επιπλέον = 20 g/m × (μήκος − 5)."},
+ {k:"r410", n:"Γενικό R410A (υγρό 1/4\")", std:5, g:15, src:"Installation manuals OEM Midea/Carrier: R410A υγρό 1/4\": 15 g/m πάνω από το πρότυπο μήκος."},
+ {k:"r290", n:"Γενικό R290 (υγρό 1/4\")", std:5, g:10, src:"Installation manuals OEM Midea/Carrier: R290 υγρό 1/4\": 10 g/m. Προσοχή στο μέγιστο επιτρεπτό φορτίο R290 ανά μέγεθος δωματίου."},
+ {k:"own", n:"Άλλο – γράφω εγώ από το ταμπελάκι", std:5, g:20, src:"Πάρε «μήκος χωρίς επιπλέον φόρτιση» και «g/m» από το ταμπελάκι της εξωτερικής ή το installation manual."}
+];
+PARTS.push({id:"charge", icon:"⚖️", name:"Επιπλέον φρέον για μακριές σωληνώσεις", body:[["Πώς υπολογίζεται","Η εξωτερική έρχεται φορτωμένη για ένα μήκος σωληνώσεων (π.χ. 5m ή 10m). Για κάθε μέτρο πάνω από αυτό προσθέτεις γραμμάρια ανά μέτρο, ανάλογα με τη διάμετρο του σωλήνα υγρού. Μετράς το μήκος της μίας κατεύθυνσης (όχι πήγαινε-έλα). Ζύγιζε πάντα με ζυγαριά και γράψε την προσθήκη στο ταμπελάκι."]]});
 
 </script>
 <script>// ===== ΜΑΡΚΕΣ, ΕΡΓΟΣΤΑΣΙΑ & ΛΟΓΙΚΗ ΕΦΑΡΜΟΓΗΣ =====
@@ -4109,6 +4219,7 @@ function renderSym(){
     if(h && !bb.own){ var pls = partPlats(), have = {}; BEH.forEach(function(x){ have[x.plat]=1; }); var miss = pls.filter(function(p){ return !have[p]; });
       if(pls.length>1 || miss.length) h += '<div class="hint">⚠️ Η '+esc(bb.n)+' έχει σειρές από διαφορετικά εργοστάσια'+(miss.length?' (π.χ. '+esc(miss.map(function(p){return PLAT[p].name;}).join(", "))+', για τα οποία δεν έχω ακόμα περιγραφή συμπεριφοράς)':'')+'. Η περιγραφή ισχύει μόνο αν το δικό σου μηχάνημα είναι από το εργοστάσιο που γράφει – δες το ταμπελάκι ή γράψε το μοντέλο στο βήμα 3.</div>'; }
   }
+  h += dtreeHtml();
   h += '<div class="small info">🩺 Το μηχάνημα έχει πρόβλημα αλλά δεν βγάζει κωδικό; Διάλεξε τι βλέπεις. Οι αιτίες είναι με σειρά πιθανότητας – ξεκίνα από πάνω.</div>';
   h += SYMPTOMS.map(function(s,i){
     return '<details class="sym"'+(S.sym===i?' open':'')+' data-sym="'+i+'"><summary>'+esc(s[0])+'</summary><ol class="steps">'+
@@ -4283,6 +4394,7 @@ function renderParts(){
     if(P.id==="comp") h += '<div class="pcalcw"><div class="lbl">🔎 Κωδικός συμπιεστή (ετικέτα πάνω στον συμπιεστή)</div><input id="pcomp" placeholder="π.χ. ASN98D22UFZ" autocapitalize="characters" spellcheck="false"><div id="pcompres"></div></div>';
     if(MEAS[P.id]) h += measBox(P.id);
     if(P.id==="pres") h += presForm() + presGuide();
+    if(P.id==="charge") h += chargeForm();
     if(P.id==="sensor"){
       var sl = sensList();
       h += '<div class="pcalcw"><div class="lbl">🧮 Υπολογιστής αισθητηρίου</div>'+
@@ -4305,6 +4417,7 @@ function renderParts(){
   if(P && P.id==="fan"){ fanColsUpdate(); fanVerdict(); }
   if(P && MEAS[P.id]) measUpdate();
   if(P && P.id==="pres") presCalc();
+  if(P && P.id==="charge") chargeFill();
 }
 var fmT=null;
 document.addEventListener("input", function(e){
@@ -4769,7 +4882,9 @@ function histOpen(mode, id){
   var ov = document.getElementById("histov");
   if(!ov){ ov = document.createElement("div"); ov.id = "histov"; document.body.appendChild(ov); }
   ov.style.display = "flex"; document.body.style.overflow = "hidden";
-  var h = '<div class="schead"><b>📒 Ιστορικό επισκέψεων</b><button class="mini" id="histclose">✕</button></div>';
+  var h = '<div class="schead"><b>📒 Ιστορικό & ανταλλακτικά</b><button class="mini" id="histclose">✕</button></div>'+
+    '<div class="chips htabs"><button class="chip'+(mode!=="parts"?' on':'')+'" id="htab_h">📒 Επισκέψεις ('+HIST.length+')</button><button class="chip'+(mode==="parts"?' on':'')+'" id="htab_p">🧾 Ανταλλακτικά ('+PLIST.filter(function(p){return !p.done;}).length+')</button></div>';
+  if(mode==="parts"){ ov.innerHTML = h + plistHtml(); return; }
   if(mode==="form"){
     var e = id ? HIST.filter(function(x){ return x.id===id; })[0] : null, b = brandObj();
     e = e || {cust:"", brand:b?b.n:"", oem:(S.oem && S.oem!=="__all" && PLAT[S.oem])?PLAT[S.oem].name:"", model:S.model||"", ser:S.fw.ser||"", code:S.q||"", fix:"", note:""};
@@ -4779,6 +4894,7 @@ function histOpen(mode, id){
       f("code","Κωδικός βλάβης","π.χ. E1, F5")+
       '<label>Τι έκανες / τι άλλαξες<textarea id="hf_fix" placeholder="π.χ. άλλαξα αισθητήριο σωλήνα εσωτ. (20kΩ)">'+esc(e.fix||"")+'</textarea></label>'+
       '<label>Σημειώσεις<textarea id="hf_note" placeholder="μετρήσεις, πιέσεις, ανταλλακτικά που χρειάζονται…">'+esc(e.note||"")+'</textarea></label>'+
+      '<div class="scbtns" style="margin-top:10px"><button class="mini" id="hrep" data-id="'+esc(id||"")+'">📤 Αναφορά για πελάτη</button><button class="mini" id="hprint" data-id="'+esc(id||"")+'">🖨️ Εκτύπωση / PDF</button></div>'+
       '<div class="scbtns" style="margin-top:10px"><button class="mini" id="histsave" data-id="'+esc(id||"")+'">💾 Αποθήκευση</button><button class="mini" id="histlist">Άκυρο</button>'+(id?'<button class="mini" id="histdel" data-id="'+esc(id)+'">🗑️ Διαγραφή</button>':'')+'</div></div>';
   } else {
     h += '<button class="mini scanbtn" id="histnew">➕ Νέα καταχώρηση (από την τρέχουσα βλάβη)</button>'+
@@ -4828,6 +4944,127 @@ document.addEventListener("change", function(e){
     histOpen("list"); } catch(x){ alert("Το αρχείο δεν είναι αντίγραφο του Βλαβολογίου."); } };
   rd.readAsText(e.target.files[0]);
 });
+
+// ===== Οδηγός βήμα-βήμα (DTREE) =====
+S.dt = null; // {t:key, path:[nodeIds]}
+function dtreeHtml(){
+  if(typeof DTREE==="undefined") return "";
+  if(!S.dt) return '<div class="dtw"><div class="lbl" style="margin-top:0">🧭 Οδηγός βήμα-βήμα (χωρίς κωδικό)</div><div class="chips">'+Object.keys(DTREE).map(function(k){ return '<button class="chip" data-dtstart="'+k+'">'+esc(DTREE[k].t)+'</button>'; }).join("")+'</div></div>';
+  var tr = DTREE[S.dt.t], id = S.dt.path[S.dt.path.length-1], nd = tr.n[id];
+  if(nd.go){ S.dt = {t:nd.go, path:[DTREE[nd.go].start]}; return dtreeHtml(); }
+  var h = '<div class="dtw"><div class="dthead"><b>'+esc(tr.t)+'</b><span class="small">βήμα '+S.dt.path.length+'</span></div>';
+  if(nd.q) h += '<div class="dtq">'+esc(nd.q)+'</div><div class="dtbtns"><button class="mini dty" data-dta="y">✔ Ναι</button><button class="mini dtn" data-dta="n">✘ Όχι</button></div>';
+  else {
+    var p = nd.p ? partById(nd.p) : null;
+    h += '<div class="dtr">🎯 '+esc(nd.r)+'</div>'+(p?'<button class="plk" data-gopart="'+p.id+'">'+p.icon+' Πώς μετράω: '+esc(p.name)+'</button>':'')+
+      '<div class="dtbtns">'+(nd.pl?'<button class="mini" data-plist="'+esc(nd.pl)+'">🧾 Βάλε στη λίστα: '+esc(nd.pl)+'</button>':'')+'<button class="mini" data-dtnote="'+esc(nd.r.slice(0,140))+'">📒 Καταχώρηση</button></div>';
+  }
+  h += '<div class="dtbtns small"><button class="mini" data-dta="back"'+(S.dt.path.length>1?'':' disabled')+'>← Πίσω</button><button class="mini" data-dta="stop">✕ Τέλος</button></div></div>';
+  return h;
+}
+function dtRefresh(){ var w = document.querySelector(".dtw"); if(w){ var d = document.createElement("div"); d.innerHTML = dtreeHtml(); w.parentNode.replaceChild(d.firstChild, w); } }
+document.addEventListener("click", function(e){
+  var el = e.target.closest("[data-dtstart],[data-dta],[data-dtnote]"); if(!el) return;
+  if(el.hasAttribute("data-dtstart")){ var k = el.getAttribute("data-dtstart"); S.dt = {t:k, path:[DTREE[k].start]}; dtRefresh(); return; }
+  if(el.hasAttribute("data-dtnote")){ S.dtnote = el.getAttribute("data-dtnote"); histOpen("form"); var f = document.getElementById("hf_note"); if(f && !f.value) f.value = "Οδηγός: "+S.dtnote; return; }
+  var a = el.getAttribute("data-dta");
+  if(a==="stop"){ S.dt = null; dtRefresh(); return; }
+  if(a==="back"){ if(S.dt.path.length>1) S.dt.path.pop(); dtRefresh(); return; }
+  var tr = DTREE[S.dt.t], nd = tr.n[S.dt.path[S.dt.path.length-1]], nx = nd[a];
+  if(nx){ var n2 = tr.n[nx]; if(n2 && n2.go){ S.dt = {t:n2.go, path:[DTREE[n2.go].start]}; } else S.dt.path.push(nx); }
+  dtRefresh(); var w = document.querySelector(".dtw"); if(w) w.scrollIntoView({behavior:"smooth", block:"nearest"});
+});
+
+// ===== Λίστα ανταλλακτικών =====
+var PLIST = LS.get("vl_plist", []); // [{id,txt,ctx,ts,done}]
+function plistSave(){ LS.set("vl_plist", PLIST); }
+function plistAdd(txt){
+  var b = brandObj(), ctx = [b?b.n:"", (S.oem && S.oem!=="__all" && PLAT[S.oem])?PLAT[S.oem].name:"", S.model||""].filter(Boolean).join(" · ");
+  PLIST.push({id:"p"+Date.now().toString(36), txt:txt, ctx:ctx, ts:Date.now(), done:false}); plistSave();
+}
+function plistHtml(){
+  var open = PLIST.filter(function(p){ return !p.done; }), done = PLIST.filter(function(p){ return p.done; });
+  var row = function(p){ return '<div class="hcard prow'+(p.done?' pdone':'')+'"><label><input type="checkbox" data-pchk="'+p.id+'"'+(p.done?' checked':'')+'> <b>'+esc(p.txt)+'</b></label>'+(p.ctx?'<div class="hm">'+esc(p.ctx)+'</div>':'')+'<button class="x" data-pdel="'+p.id+'">✕</button></div>'; };
+  return '<div class="row2" style="margin:6px 0"><input id="pnew" placeholder="π.χ. αισθητήριο σωλήνα 20kΩ, πυκνωτής 35µF…"><button class="mini" id="padd">➕</button></div>'+
+    (open.length ? open.map(row).join("") : '<div class="small">Η λίστα είναι άδεια. Πρόσθεσε από εδώ ή από τον οδηγό βήμα-βήμα.</div>')+
+    (open.length ? '<div class="scbtns" style="margin-top:8px"><button class="mini" id="pshare">📤 Στείλε τη λίστα (παραγγελία)</button></div>' : '')+
+    (done.length ? '<details style="margin-top:10px"><summary class="small">Πάρθηκαν ('+done.length+')</summary>'+done.map(row).join("")+'<button class="mini" id="pclear">🗑️ Καθάρισε όσα πάρθηκαν</button></details>' : '');
+}
+function shareText(t, title){
+  if(navigator.share){ navigator.share({title:title||"Βλαβολόγιο", text:t}).catch(function(){ copyText(t); }); return; }
+  copyText(t);
+}
+function copyText(t){
+  var done = function(){ var m = document.getElementById("copied"); if(!m){ m = document.createElement("div"); m.id = "copied"; document.body.appendChild(m); } m.textContent = "✔ Αντιγράφηκε – κάνε επικόλληση σε Viber / email"; m.className = "toast"; setTimeout(function(){ m.className = ""; }, 2500); };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, function(){ fallbackCopy(t); done(); });
+  else { fallbackCopy(t); done(); }
+}
+function fallbackCopy(t){ var ta = document.createElement("textarea"); ta.value = t; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); }catch(x){} ta.remove(); }
+document.addEventListener("click", function(e){
+  var el = e.target.closest("[data-plist],#padd,[data-pdel],#pshare,#pclear,#htab_h,#htab_p"); if(!el) return;
+  if(el.hasAttribute("data-plist")){ plistAdd(el.getAttribute("data-plist")); el.textContent = "✔ Προστέθηκε στη λίστα"; el.disabled = true; return; }
+  if(el.id==="htab_h"){ histOpen("list"); return; }
+  if(el.id==="htab_p"){ histOpen("parts"); return; }
+  if(el.id==="padd"){ var i = document.getElementById("pnew"); if(i && i.value.trim()){ plistAdd(i.value.trim()); histOpen("parts"); } return; }
+  if(el.hasAttribute("data-pdel")){ var d = el.getAttribute("data-pdel"); PLIST = PLIST.filter(function(p){ return p.id!==d; }); plistSave(); histOpen("parts"); return; }
+  if(el.id==="pclear"){ PLIST = PLIST.filter(function(p){ return !p.done; }); plistSave(); histOpen("parts"); return; }
+  if(el.id==="pshare"){ var t = "Ανταλλακτικά:\n"+PLIST.filter(function(p){ return !p.done; }).map(function(p){ return "• "+p.txt+(p.ctx?" ("+p.ctx+")":""); }).join("\n"); shareText(t, "Λίστα ανταλλακτικών"); return; }
+});
+document.addEventListener("change", function(e){ var c = e.target; if(c && c.hasAttribute && c.hasAttribute("data-pchk")){ var id = c.getAttribute("data-pchk"); PLIST.forEach(function(p){ if(p.id===id) p.done = c.checked; }); plistSave(); histOpen("parts"); } });
+
+// ===== Αναφορά για πελάτη =====
+function reportText(h){
+  var L = ["ΑΝΑΦΟΡΑ ΕΠΙΣΚΕΥΗΣ ΚΛΙΜΑΤΙΣΤΙΚΟΥ", "Ημερομηνία: "+new Date(h.ts||Date.now()).toLocaleDateString("el-GR")];
+  if(h.cust) L.push("Πελάτης: "+h.cust);
+  var u = [h.brand, h.model].filter(Boolean).join(" "); if(u) L.push("Μονάδα: "+u);
+  if(h.ser) L.push("Σειριακός: "+h.ser);
+  if(h.code) L.push("Κωδικός βλάβης: "+h.code);
+  if(h.fix) L.push("Εργασία: "+h.fix);
+  if(h.note) L.push("Σημειώσεις: "+h.note);
+  return L.join("\n");
+}
+function reportPrint(h){
+  var w = document.getElementById("printarea"); if(!w){ w = document.createElement("div"); w.id = "printarea"; document.body.appendChild(w); }
+  w.innerHTML = '<h2>Αναφορά επισκευής κλιματιστικού</h2>'+reportText(h).split("\n").slice(1).map(function(l){ var i = l.indexOf(":"); return '<p><b>'+esc(l.slice(0,i+1))+'</b>'+esc(l.slice(i+1))+'</p>'; }).join("")+'<p style="margin-top:40px">Υπογραφή τεχνικού: ____________________</p>';
+  document.documentElement.classList.add("printing"); setTimeout(function(){ try{ window.print(); }catch(x){} setTimeout(function(){ document.documentElement.classList.remove("printing"); }, 500); }, 50);
+}
+function curFormEntry(){ var o = {}; ["cust","brand","oem","model","ser","code","fix","note"].forEach(function(k){ var x = document.getElementById("hf_"+k); o[k] = x ? x.value.trim() : ""; }); o.ts = Date.now(); return o; }
+document.addEventListener("click", function(e){
+  var el = e.target.closest("#hrep,#hprint"); if(!el) return;
+  var o = curFormEntry(), id = el.getAttribute("data-id"); if(id){ HIST.forEach(function(h){ if(h.id===id) o.ts = h.ts; }); }
+  if(el.id==="hrep") shareText(reportText(o), "Αναφορά επισκευής"); else reportPrint(o);
+});
+
+// ===== Επιπλέον φρέον =====
+function chargeForm(){
+  var sel = S.chg || "midea";
+  return '<div class="pcalcw"><div class="lbl">⚖️ Υπολογισμός επιπλέον φρέον</div>'+
+    '<label class="small">Μονάδα / εργοστάσιο<select id="chg_k" class="pv">'+CHARGE.map(function(c){ return '<option value="'+c.k+'"'+(c.k===sel?' selected':'')+'>'+esc(c.n)+'</option>'; }).join("")+'</select></label>'+
+    '<div class="row2"><label class="small">Μήκος σωλήνα υγρού (m, μία κατεύθυνση)<input id="chg_l" class="pv" inputmode="decimal" placeholder="π.χ. 12"></label>'+
+    '<label class="small">Διάμετρος υγρού<select id="chg_d" class="pv"><option value="14">1/4" (6,35)</option><option value="38">3/8" (9,52)</option></select></label></div>'+
+    '<div class="row2"><label class="small">Χωρίς επιπλέον μέχρι (m)<input id="chg_s" class="pv" inputmode="decimal"></label><label class="small">g ανά μέτρο<input id="chg_g" class="pv" inputmode="decimal"></label></div>'+
+    '<div id="chg_out"></div></div>';
+}
+function chargeFill(){ var c = CHARGE.filter(function(x){ return x.k===(S.chg||"midea"); })[0]; if(!c) return; var d = document.getElementById("chg_d"); var s = document.getElementById("chg_s"), g = document.getElementById("chg_g"); if(s) s.value = c.std; if(g) g.value = (d && d.value==="38") ? (c.g38 || "") : c.g; chargeCalc(); }
+function chargeCalc(){
+  var o = document.getElementById("chg_out"); if(!o) return;
+  var c = CHARGE.filter(function(x){ return x.k===(S.chg||"midea"); })[0] || {};
+  var L = parseFloat(String((document.getElementById("chg_l")||{}).value||"").replace(",",".")), st = parseFloat(String(document.getElementById("chg_s").value).replace(",",".")), g = parseFloat(String(document.getElementById("chg_g").value).replace(",","."));
+  var d = document.getElementById("chg_d").value;
+  var h = '<div class="small" style="margin-top:6px">📘 '+esc(c.src||"")+'</div>';
+  if(d==="38" && !c.g38 && c.k!=="own") h += '<div class="pver mid" style="margin-top:6px">Για υγρό 3/8" δεν έχω τιμή από manual γι\' αυτή τη μονάδα – γράψε το g/m από το ταμπελάκι.</div>';
+  if(isNaN(L) || isNaN(st) || isNaN(g)){ o.innerHTML = h; return; }
+  var base = c.base!=null ? c.base : st, add = L > st ? Math.round((L - base) * g) : 0;
+  o.innerHTML = '<div class="pver '+(add?'mid':'good')+'" style="margin-top:8px">'+(add ? '➕ Πρόσθεσε <b>'+add+' g</b> ('+(L-base).toFixed(1).replace(".",",")+' m × '+g+' g/m)' : '✅ Δεν χρειάζεται επιπλέον φρέον (μέχρι '+st+' m)')+'</div>'+h+
+    '<div class="small">Ζύγισε με ζυγαριά, γράψε την προσθήκη στο ταμπελάκι και έλεγξε ότι το συνολικό φορτίο δεν ξεπερνά το όριο για το εμβαδόν του χώρου (R32/R290).</div>';
+}
+document.addEventListener("change", function(e){ var t = e.target; if(!t) return; if(t.id==="chg_k"){ S.chg = t.value; chargeFill(); } else if(t.id==="chg_d"){ chargeFill(); } });
+document.addEventListener("input", function(e){ var t = e.target; if(t && /^chg_[lsg]$/.test(t.id)) chargeCalc(); });
+
+// ===== Λειτουργία πεδίου (μεγάλα γράμματα, υψηλή αντίθεση) =====
+function setField(on){ LS.set("vl_field", !!on); document.documentElement.classList.toggle("field", !!on); var b = document.getElementById("fieldbtn"); if(b){ b.classList.toggle("on", !!on); b.title = on ? "Λειτουργία πεδίου: ΝΑΙ" : "Λειτουργία πεδίου (μεγάλα γράμματα, έντονη αντίθεση)"; } }
+document.addEventListener("click", function(e){ if(e.target.closest("#fieldbtn")) setField(!document.documentElement.classList.contains("field")); });
+setField(LS.get("vl_field", false));
 
 setTheme(LS.get("vl_theme","auto"));
 renderAll();
