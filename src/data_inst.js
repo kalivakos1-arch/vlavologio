@@ -107,14 +107,17 @@ var INST = {
   srcEl: "LG Installation manual"
  },
  "Midea": {
-  cap: function(k){ var m = k.match(/(09|12|18|24|36)/); return m ? +m[1] : null; },
+  cap: function(k){ var m = k.match(/^(?:AEP2|AG16GRAPH|AG1|GAIA)(\d{2})/) || k.match(/(09|12|18|24|36)/); return m ? +m[1] : null; },
   capLbl: "κλάση σε χιλ. Btu",
   rows: [
+   {re:/^(AEP2|AG1|AG16GRAPH|GAIA)[IO]?(09|12)/, c:[9,12], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 25m · υψομετρική 10m", src:"Midea Ελλάδας – επίσημο site, τεχνικά χαρακτηριστικά All Easy Pro / Xtreme Save / Xtreme Graphite / Gaia"},
+   {re:/^(AEP2|AG1|AG16GRAPH)[IO]?18/, c:[18,18], liq:"1/4", gas:"1/2", len:"Μέγ. μήκος 30m · υψομετρική 20m", src:"Midea Ελλάδας – επίσημο site, τεχνικά χαρακτηριστικά All Easy Pro / Xtreme Save / Xtreme Graphite"},
+   {re:/^(AEP2|AG1|AG16GRAPH)[IO]?24/, c:[24,24], liq:"3/8", gas:"5/8", len:"Μέγ. μήκος 50m · υψομετρική 25m", src:"Midea Ελλάδας – επίσημο site, τεχνικά χαρακτηριστικά All Easy Pro / Xtreme Save / Xtreme Graphite"},
    {c:[7,14], len:"Μέγ. μήκος 25m · υψομετρική 10m (inverter R32)", src:"Midea Owner's & Installation manual (CS445UI)"},
    {c:[15,23], len:"Μέγ. μήκος 30m · υψομετρική 20m (inverter R32)", src:"Midea Owner's & Installation manual (CS445UI)"},
    {c:[24,35], len:"Μέγ. μήκος 50m · υψομετρική 25m (inverter R32)", src:"Midea Owner's & Installation manual (CS445UI)"}
   ],
-  pipeNote: "Το installation manual της Midea δεν αντιστοιχίζει σωλήνες σε μοντέλο – γράφει να ρωτήσεις τον αντιπρόσωπο. Οι διατομές υπάρχουν στο service manual / ταμπέλα της εξωτερικής.",
+  noRow: "Αυτή η σειρά Midea δεν είναι στα τεχνικά χαρακτηριστικά του ελληνικού site (All Easy Pro, Xtreme Save, Xtreme Graphite, Gaia: 09/12 → 1/4\" + 3/8\", 18 → 1/4\" + 1/2\", 24 → 3/8\" + 5/8\"). Το installation manual δεν δίνει σωλήνες ανά μοντέλο – δες την ταμπέλα της εξωτερικής.",
   comm: "H07RN-F, διατομή από το μέγιστο ρεύμα της ταμπέλας: >3–6A: 0,75 · >6–10A: 1 · >10–16A: 1,5 · >16–25A: 2,5 · >25–32A: 4 · >32–40A: 6 mm²",
   pwr: "Εξωτερική: H07RN-F (εσωτερική, αν τροφοδοτείται χωριστά: H05VV-F ή H05V2V2-F). Διατομή με τον ίδιο πίνακα ρεύματος.",
   brkNote: "Γενικός διακόπτης και προστασία υπέρτασης 1,5 × το μέγιστο ρεύμα · ΔΔΡ ≤30mA · αποζεύκτης όλων των πόλων με άνοιγμα ≥3mm.",
@@ -170,25 +173,80 @@ var INST = {
   cap: function(k){ var m = k.match(/^1U(\d{2,3})/) || k.match(/^A[SBD](\d{2})/); return m ? +m[1] : null; },
   capLbl: "κλάση (π.χ. 71 = 7,1kW)",
   rows: [
+   {re:/^(AS25THMHRA|1U25YEFFRA|AS35TAMHRA|1U35YEFFRA|AS25PBAHRA|1U25YEGFRA|AS35PBAHRA|1U35YEGFRA)/, c:[25,35], liq:"1/4", gas:"3/8", comm:"Καλώδιο εντολών 4 × 1,5 mm²", src:"Haier Ελλάδας (Inventor) – Τεχνικά χαρακτηριστικά Tide Green Plus / Pearl"},
+   {re:/^(AS50TDMHRA|1U50MEMFRA|AS68TEMHRA|1U68RENFRA|AS50PDAHRA|1U50MEGFRA|AS68PDAHRA|1U68WEGFRA)/, c:[50,68], liq:"1/4", gas:"1/2", comm:"Καλώδιο εντολών 4 × 1,5 mm²", src:"Haier Ελλάδας (Inventor) – Τεχνικά χαρακτηριστικά Tide Green Plus / Pearl"},
    {re:/^1U(71|100|105|125)S2S[SN]/, c:[71,125], liq:"3/8", pwr:"H05RN-F 3G 4,0 mm²", comm:"H05RN-F 4G 2,5 mm²", src:"Haier Installation manual 1U71S2SS5FA / 1U100S2SN5FA (7.2 Piping size for single split)"},
    {re:/^1U(125|140|160|180)S2SP/, c:[125,180], pwr:"H05RN-F 3G 6,0 mm²", comm:"H05RN-F 4G 2,5 mm²", src:"Haier Installation manual 1U125-180S2SP5FA"}
   ],
-  noRow: "Για τα οικιακά κλιματιστικά τοίχου της Haier δεν βρήκα manual με πίνακα σωλήνων που να μπορώ να διαβάσω. Υπάρχουν στοιχεία μόνο για τις επαγγελματικές εξωτερικές 1U71–1U180.",
+  noRow: "Για αυτό το μοντέλο Haier δεν βρήκα πίνακα. Έχω τις σειρές Tide Green Plus και Pearl (Haier Ελλάδας) και τις επαγγελματικές εξωτερικές 1U71–1U180.",
   srcEl: "Haier Installation manual (εξωτερικές 1U…)"
  },
  "Inventor": {
   cap: function(k){ var m = k.match(/(09|12|18|24|36)/); return m ? +m[1] : null; },
   capLbl: "κλάση σε χιλ. Btu",
   rows: [
-   {c:[7,14], len:"Μέγ. μήκος 25m · υψομετρική 10m", src:"Inventor Installation manual OMNIA (O1MVI/O1MVO-09/12/18/24)"},
-   {c:[15,23], len:"Μέγ. μήκος 30m · υψομετρική 20m", src:"Inventor Installation manual OMNIA"},
-   {c:[24,35], len:"Μέγ. μήκος 50m · υψομετρική 25m", src:"Inventor Installation manual OMNIA"}
+   {re:/^EMPV[IO]09/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 4 × 1,5 mm²", pwr:"Παροχικό 3 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Emperor (EMPVI-09WFI/EMPVO-09)"},
+   {re:/^EMPV[IO]12/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 4 × 1,5 mm²", pwr:"Παροχικό 3 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Emperor (EMPVI-12WFI/EMPVO-12)"},
+   {re:/^EMPV[IO]18/, c:[0,99], liq:"1/4", gas:"1/2", brk:"16A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 4 × 1,5 mm²", pwr:"Παροχικό 3 × 2,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Emperor (EMPVI-18WFI/EMPVO-18)"},
+   {re:/^EMPV[IO]24/, c:[0,99], liq:"3/8", gas:"5/8", brk:"16A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 4 × 1,5 mm²", pwr:"Παροχικό 3 × 2,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Emperor (EMPVI-24WFI/EMPVO-24)"},
+   {re:/^INV[IO]09/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", pwr:"Παροχικό 3 × 1,5 mm²", len:"Μέγ. μήκος 25m · υψομετρική 10m · επιπλέον 12g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Intellia (INVI-09WFI/INVO-09)"},
+   {re:/^INV[IO]12/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", pwr:"Παροχικό 3 × 1,5 mm²", len:"Μέγ. μήκος 25m · υψομετρική 10m · επιπλέον 12g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Intellia (INVI-12WFI/INVO-12)"},
+   {re:/^INV[IO]18/, c:[0,99], liq:"1/4", gas:"1/2", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", pwr:"Παροχικό 3 × 1,5 mm²", len:"Μέγ. μήκος 30m · υψομετρική 20m · επιπλέον 12g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Intellia (INVI-18WFI/INVO-18)"},
+   {re:/^INVB[IO]24/, c:[0,99], liq:"1/4", gas:"1/2", brk:"16A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 2,5 mm²", pwr:"Παροχικό 3 × 2,5 mm²", len:"Μέγ. μήκος 50m · υψομετρική 25m · επιπλέον 12g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Intellia (INVBI-24WFI/INVBO-24)"},
+   {re:/^EQ[IO]09/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", len:"Μέγ. μήκος 25m · υψομετρική 10m · επιπλέον 12g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Econiq (EQI-09WFI/EQO-09)"},
+   {re:/^EQ[IO]12/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", len:"Μέγ. μήκος 25m · υψομετρική 10m · επιπλέον 12g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Econiq (EQI-12WFI/EQO-12)"},
+   {re:/^EQ[IO]18/, c:[0,99], liq:"1/4", gas:"1/2", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", len:"Μέγ. μήκος 30m · υψομετρική 20m · επιπλέον 12g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Econiq (EQI-18WFI/EQO-18)"},
+   {re:/^EQ[IO]24/, c:[0,99], liq:"1/4", gas:"1/2", brk:"16A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 2,5 mm²", len:"Μέγ. μήκος 50m · υψομετρική 25m · επιπλέον 12g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Econiq (EQI-24WFI/EQO-24)"},
+   {re:/^NR[IO]09/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", len:"Μέγ. μήκος 25m · υψομετρική 10m · επιπλέον 12g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Nura (NRI-09WFI/NRO-09)"},
+   {re:/^NR[IO]12/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", len:"Μέγ. μήκος 25m · υψομετρική 10m · επιπλέον 12g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Nura (NRI-12WFI/NRO-12)"},
+   {re:/^NR[IO]18/, c:[0,99], liq:"1/4", gas:"1/2", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", len:"Μέγ. μήκος 30m · υψομετρική 20m · επιπλέον 12g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Nura (NRI-18WFI/NRO-18)"},
+   {re:/^NR[IO]24/, c:[0,99], liq:"1/4", gas:"1/2", brk:"16A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 2,5 mm²", len:"Μέγ. μήκος 50m · υψομετρική 25m · επιπλέον 12g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Nura (NRI-24WFI/NRO-24)"},
+   {re:/^FUT[IO]09/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1 mm²", len:"Μέγ. μήκος 15m · υψομετρική 10m · επιπλέον 16g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Futura (FUTI-09WFI/FUTO-09)"},
+   {re:/^FUT[IO]12/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1 mm²", len:"Μέγ. μήκος 15m · υψομετρική 10m · επιπλέον 16g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Futura (FUTI-12WFI/FUTO-12)"},
+   {re:/^FUT[IO]18/, c:[0,99], liq:"1/4", gas:"1/2", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", len:"Μέγ. μήκος 15m · υψομετρική 10m · επιπλέον 24g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Futura (FUTI-18WFI/FUTO-18)"},
+   {re:/^FUT[IO]24/, c:[0,99], liq:"1/4", gas:"5/8", brk:"16A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 2,5 mm²", len:"Μέγ. μήκος 15m · υψομετρική 15m · επιπλέον 24g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Futura (FUTI-24WFI/FUTO-24)"},
+   {re:/^IKU[IO]09/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1 mm²", pwr:"Παροχικό 3 × 1,5 mm²", len:"Μέγ. μήκος 15m · υψομετρική 10m · επιπλέον 16g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Ikura (IKUI-09WFI/IKUO-09)"},
+   {re:/^IKU[IO]12/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1 mm²", pwr:"Παροχικό 3 × 1,5 mm²", len:"Μέγ. μήκος 15m · υψομετρική 10m · επιπλέον 16g/m", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Ikura (IKUI-12WFI/IKUO-12)"},
+   {re:/^LHUV[IO]09/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Leon (LHUV) (LHUVI-09WFI/LHUVO-09)"},
+   {re:/^LHUV[IO]12/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Leon (LHUV) (LHUVI-12WFI/LHUVO-12)"},
+   {re:/^LHUV[IO]18/, c:[0,99], liq:"1/4", gas:"1/2", brk:"16A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Leon (LHUV) (LHUVI-18WFI/LHUVO-18)"},
+   {re:/^LHUV[IO]24/, c:[0,99], liq:"3/8", gas:"5/8", brk:"16A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 2,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Leon (LHUV) (LHUVI-24WFI/LHUVO-24)"},
+   {re:/^N3V[IO]09/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Neo (N3V) (N3VI-09WFI/N3VO-09)"},
+   {re:/^N3V[IO]12/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Neo (N3V) (N3VI-12WFI/N3VO-12)"},
+   {re:/^N3V[IO]18/, c:[0,99], liq:"1/4", gas:"1/2", brk:"16A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Neo (N3V) (N3VI-18WFI/N3VO-18)"},
+   {re:/^N3V[IO]24/, c:[0,99], liq:"3/8", gas:"5/8", brk:"16A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 2,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Neo (N3V) (N3VI-24WFI/N3VO-24)"},
+   {re:/^AR5V[IO]09/, c:[0,99], liq:"1/4", gas:"3/8", comm:"Καλώδιο εντολών 5 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Aria (AR5) (AR5VI-09WFI/AR5VO-09)"},
+   {re:/^AR5V[IO]12/, c:[0,99], liq:"1/4", gas:"3/8", comm:"Καλώδιο εντολών 5 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Aria (AR5) (AR5VI-12WFI/AR5VO-12)"},
+   {re:/^AR5V[IO]18/, c:[0,99], liq:"1/4", gas:"1/2", comm:"Καλώδιο εντολών 5 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Aria (AR5) (AR5VI-18WFI/AR5VO-18)"},
+   {re:/^AR5V[IO]24/, c:[0,99], liq:"3/8", gas:"5/8", comm:"Καλώδιο εντολών 5 × 2,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Aria (AR5) (AR5VI-24WFI/AR5VO-24)"},
+   {re:/^VER[IO]09/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Vero (VERI-09WFI/VERO-09)"},
+   {re:/^VER[IO]12/, c:[0,99], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Vero (VERI-12WFI/VERO-12)"},
+   {re:/^VER[IO]18/, c:[0,99], liq:"1/4", gas:"1/2", brk:"16A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Vero (VERI-18WFI/VERO-18)"},
+   {re:/^VER[IO]24/, c:[0,99], liq:"3/8", gas:"5/8", brk:"16A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 2,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Vero (VERI-24WFI/VERO-24)"},
+   {re:/^DR2V[IO]09/, c:[0,99], liq:"1/4", gas:"3/8", comm:"Καλώδιο εντολών 4 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Dark (DR2VI-09WFI/DR2VO-09)"},
+   {re:/^DR2V[IO]12/, c:[0,99], liq:"1/4", gas:"3/8", comm:"Καλώδιο εντολών 4 × 1,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Dark (DR2VI-12WFI/DR2VO-12)"},
+   {re:/^N2UV[IO]24/, c:[0,99], liq:"3/8", gas:"5/8", brk:"16A (ασφάλεια τήξης)", comm:"Καλώδιο εντολών 5 × 2,5 mm²", src:"Inventor – επίσημο site, Τεχνικές προδιαγραφές σειράς Neo (N2UV) (N2UVI-24WF/N2UVO-24)"},
+   {re:/^C?EV[IO]-?(09|12)/, c:[9,12], liq:"1/4", gas:"3/8", len:"Μέγ. μήκος 15m · υψομετρική 5m · χωρίς επιπλέον έως 5m, μετά 20 g/m", src:"Inventor Service manual EVI/EVO 09-12000btu"},
+   {re:/^K1V[IO]32(09|12)/, c:[9,12], len:"Τυπικό μήκος 5m · μέγ. 25m · υψομετρική 10m · επιπλέον 12 g/m", src:"Inventor Service manual King K1VI32-09/12"},
+   {re:/^O1MV/, c:[0,99], comm:"H07RN-F, διατομή από το μέγιστο ρεύμα της ταμπέλας: >3–6A: 0,75 · >6–10A: 1 · >10–16A: 1,5 · >16–25A: 2,5 · >25–32A: 4 · >32–40A: 6 mm²", pwr:"Εξωτερική: H07RN-F (εσωτερική, αν τροφοδοτείται χωριστά: H05VV-F ή H05V2V2-F)", src:"Inventor Installation manual OMNIA"},
+   {re:/^O1MV/, c:[7,14], len:"Μέγ. μήκος 25m · υψομετρική 10m", src:"Inventor Installation manual OMNIA (O1MVI/O1MVO-09/12/18/24)"},
+   {re:/^O1MV/, c:[15,23], len:"Μέγ. μήκος 30m · υψομετρική 20m", src:"Inventor Installation manual OMNIA"},
+   {re:/^O1MV/, c:[24,35], len:"Μέγ. μήκος 50m · υψομετρική 25m", src:"Inventor Installation manual OMNIA"}
   ],
-  pipeNote: "Το installation manual της Inventor δεν αντιστοιχίζει σωλήνες σε μοντέλο – γράφει να ρωτήσεις τον αντιπρόσωπο. Δες την ταμπέλα της εξωτερικής ή το φύλλο τεχνικών στοιχείων.",
-  comm: "H07RN-F, διατομή από το μέγιστο ρεύμα της ταμπέλας: >3–6A: 0,75 · >6–10A: 1 · >10–16A: 1,5 · >16–25A: 2,5 · >25–32A: 4 · >32–40A: 6 mm²",
-  pwr: "Εξωτερική: H07RN-F (εσωτερική, αν τροφοδοτείται χωριστά: H05VV-F ή H05V2V2-F). Διατομή με τον ίδιο πίνακα ρεύματος.",
-  brkNote: "Γενικός διακόπτης και προστασία υπέρτασης 1,5 × το μέγιστο ρεύμα · αποζεύκτης όλων των πόλων με άνοιγμα ≥3mm · αποκλειστική γραμμή.",
-  srcEl: "Inventor Installation manual OMNIA"
+  noRow: "Αυτό το μοντέλο Inventor δεν είναι στα τεχνικά στοιχεία που βρήκα (επίσημο site: Emperor, Intellia, Econiq, Nura, Futura, Ikura, Leon, Neo N3V/N2UV, Aria AR5, Vero, Dark · manuals: EVI/EVO, King, Omnia). Δες την ταμπέλα της εξωτερικής."
+ },
+ "Nobu": {
+  cap: function(k){ var m = k.match(/(09|12|18|24)/); return m ? +m[1] : null; },
+  capLbl: "κλάση σε χιλ. Btu",
+  rows: [
+   {re:/^NBKU3V[IO](09|12)/, c:[9,12], liq:"1/4", gas:"3/8", brk:"10A (ασφάλεια τήξης)", pwr:"Παροχικό εξωτερικής 3 × 1,5 mm²", comm:"Καλώδιο εντολών 5 × 1,5 mm²", src:"Nobu – επίσημο site, Τεχνικά χαρακτηριστικά NBKU3V"},
+   {re:/^NOB[IO]09/, c:[9,9], liq:"1/4", gas:"3/8", pwr:"Παροχικό 3 × 1,5 mm²", comm:"Καλώδιο εντολών 5 × 1 mm²", len:"Μέγ. μήκος 15m · υψομετρική 10m", src:"Nobu – επίσημο site, Τεχνικά χαρακτηριστικά NOB"},
+   {re:/^NOB[IO]12/, c:[12,12], liq:"1/4", gas:"3/8", pwr:"Παροχικό 3 × 1,5 mm²", comm:"Καλώδιο εντολών 5 × 1,5 mm²", len:"Μέγ. μήκος 15m · υψομετρική 10m", src:"Nobu – επίσημο site, Τεχνικά χαρακτηριστικά NOB"},
+   {re:/^NOB[IO]18/, c:[18,18], liq:"1/4", gas:"1/2", pwr:"Παροχικό 3 × 1,5 mm²", comm:"Καλώδιο εντολών 5 × 1,5 mm²", len:"Μέγ. μήκος 15m · υψομετρική 10m", src:"Nobu – επίσημο site, Τεχνικά χαρακτηριστικά NOB"},
+   {re:/^NOB[IO]24/, c:[24,24], liq:"1/4", gas:"5/8", pwr:"Παροχικό 3 × 2,5 mm²", comm:"Καλώδιο εντολών 5 × 2,5 mm²", len:"Μέγ. μήκος 15m · υψομετρική 15m", src:"Nobu – επίσημο site, Τεχνικά χαρακτηριστικά NOB"}
+  ],
+  noRow: "Αυτό το μοντέλο Nobu δεν είναι στα τεχνικά στοιχεία του επίσημου site (σειρές NBKU3V και NOB).",
+  srcEl: "Nobu – επίσημο site (nobuklima.gr)"
  }
 };
 var INCH_MM = {"1/4":"6,35","3/8":"9,52","1/2":"12,70","5/8":"15,88","3/4":"19,05"};
