@@ -308,6 +308,50 @@ function renderBrands(){
   if(document.activeElement!==$("bq")) $("bq").value = S.bedit ? "" : (S.brand || "");
   $("bsug").innerHTML = "";
 }
+// ===== Οδηγός «Βρες το εργοστάσιο» (χωρίς μοντέλο) =====
+var FW = {
+  app: [["MSmartHome / NetHome Plus","midea"],["Gree+ / EWPE Smart","gree"],["AC Freedom","aux"],["TCL Home","tcl"],["ConnectLife","hisense"],["hOn","haier"],["Smart Life / Tuya","?"],["Δεν έχει / δεν ξέρω",""]],
+  plate: [["Zhuhai – Gree Electric Appliances","gree"],["Foshan / Shunde – GD Midea","midea"],["Ningbo – AUX","aux"],["Zhongshan – TCL","tcl"],["Qingdao – Haier","haier"],["Hisense (Shandong / Qingdao)","hisense"],["Δεν γράφει / δεν ξέρω",""]],
+  rc: [[/^R(G\d{2}|5[17]|05|06|11)/,"midea","Τα τηλεχειριστήρια RG57/RG66/R51/R05 είναι της Midea."],[/^Y[A-Z]{1,3}\d?F/,"gree","Τα τηλεχειριστήρια Y…1F (YAP1F, YAN1F, YB1F, YAC1F…) είναι της Gree."],[/^YKR-/,"aux","Τα τηλεχειριστήρια YKR-… είναι της AUX."],[/^GYKQ/,"tcl","Τα τηλεχειριστήρια GYKQ-… είναι της TCL."]]
+};
+S.fw = {app:"", plate:"", rc:""};
+function fwMap(o, cs){ if(!o || o==="?") return null; if(cs.indexOf(o)>=0) return o; if(o==="gree" && cs.indexOf("inv_gree")>=0) return "inv_gree"; return o; }
+function fwScore(cs){
+  var sc = {}, why = {};
+  function add(o, w, t){ o = fwMap(o, cs); if(!o) return; sc[o]=(sc[o]||0)+w; (why[o]=why[o]||[]).push(t); }
+  FW.app.forEach(function(a){ if(S.fw.app===a[0]) add(a[1],2,"εφαρμογή «"+a[0]+"»"); });
+  FW.plate.forEach(function(a){ if(S.fw.plate===a[0]) add(a[1],2,"ταμπελάκι: "+a[0]); });
+  var r = String(S.fw.rc||"").toUpperCase().replace(/\s/g,"");
+  if(r.length>=3) FW.rc.forEach(function(x){ if(x[0].test(r)) add(x[1],2,x[2]); });
+  return {sc:sc, why:why};
+}
+function fwizHtml(b, cs){
+  if(!S.fwOpen) return '<button class="mini fwbtn" id="fwopen">🔎 Δεν ξέρω το εργοστάσιο – βοήθησέ με</button>';
+  var chips = function(key, list){ return '<div class="chips">'+list.map(function(a){ return '<button class="chip'+(S.fw[key]===a[0]?' on':'')+'" data-fwk="'+key+'" data-fwv="'+esc(a[0])+'">'+esc(a[0])+'</button>'; }).join("")+'</div>'; };
+  var h = '<div class="fwiz"><div class="lbl" style="margin-top:0">🔎 Βρες το εργοστάσιο – απάντησε ό,τι ξέρεις</div>'+
+    '<div class="small"><b>1. Εφαρμογή Wi-Fi</b> που χρησιμοποιεί ο πελάτης (ή γράφει το εγχειρίδιο):</div>'+chips("app",FW.app)+
+    '<div class="small" style="margin-top:8px"><b>2. Τηλεχειριστήριο:</b> γράψε τον κωδικό στην πλάτη ή μέσα στη θήκη μπαταριών</div><input id="fwrc" placeholder="π.χ. RG57A6/BGEF, YAP1F, YKR-…" autocapitalize="characters" spellcheck="false" value="'+esc(S.fw.rc)+'">'+
+    '<div class="small" style="margin-top:8px"><b>3. Ταμπελάκι εξωτερικής:</b> τι γράφει για κατασκευαστή ή πόλη (Manufacturer / Made in / διεύθυνση);</div>'+chips("plate",FW.plate)+
+    '<div id="fwres">'+fwResult(b, cs)+'</div></div>';
+  return h;
+}
+function fwResult(b, cs){
+  var r = fwScore(cs), ks = Object.keys(r.sc).sort(function(x,y){ return r.sc[y]-r.sc[x]; });
+  if(S.fw.app==="Smart Life / Tuya" && !ks.length) return '<div class="small" style="margin-top:8px">Η Smart Life / Tuya είναι γενική εφαρμογή που τη χρησιμοποιούν πολλά εργοστάσια – δεν βοηθά. Δοκίμασε τηλεχειριστήριο ή ταμπελάκι.</div>';
+  if(!ks.length) return '<div class="small" style="margin-top:8px">Απάντησε τουλάχιστον ένα για να σου πω το πιθανό εργοστάσιο.</div>';
+  var top = ks[0], tie = ks.length>1 && r.sc[ks[1]]===r.sc[top];
+  if(tie) return '<div class="pver mid" style="margin-top:8px">⚠️ Τα στοιχεία δείχνουν διαφορετικά εργοστάσια ('+ks.map(function(k){return esc(PLAT[k]?PLAT[k].name:k);}).join(" / ")+'). Έλεγξε ξανά – συχνά το τηλεχειριστήριο έχει αλλαχτεί με γενικό.</div>';
+  var name = PLAT[top] ? PLAT[top].name : top, inC = cs.indexOf(top)>=0, sure = r.sc[top]>=4;
+  return '<div class="pver '+(sure?'good':'mid')+'" style="margin-top:8px">'+(sure?'✅ Σχεδόν σίγουρα':'🟡 Πιθανότατα')+' <b>'+esc(name)+'</b><div class="small" style="font-weight:500">Γιατί: '+esc(r.why[top].join(" · "))+(sure?'':' – με ένα ακόμα στοιχείο που ταιριάζει θα είναι σίγουρο.')+'</div></div>'+
+    (inC ? '<button class="mini" style="margin-top:6px" data-o="'+top+'">Χρησιμοποίησε '+esc(name)+'</button>' : '<div class="small">Το '+esc(name)+' δεν είναι στα συνήθη εργοστάσια της '+esc(b.n)+' σε αυτή την κατηγορία – έλεγξε ξανά.</div>');
+}
+document.addEventListener("click", function(e){
+  var el = e.target.closest("#fwopen,[data-fwk]"); if(!el) return;
+  if(el.id==="fwopen"){ S.fwOpen = true; renderOem(); return; }
+  var k = el.getAttribute("data-fwk"), v = el.getAttribute("data-fwv"); S.fw[k] = S.fw[k]===v ? "" : v;
+  var b = brandObj(); if(b && $("fwiz")){ $("fwiz").innerHTML = fwizHtml(b, candidates(b)); }
+});
+document.addEventListener("input", function(e){ if(e.target.id!=="fwrc") return; S.fw.rc = e.target.value; var b=brandObj(); if(b && $("fwres")) $("fwres").innerHTML = fwResult(b, candidates(b)); });
 function renderOem(){
   var b = brandObj(); var box = $("oembox");
   if(!b || S.bedit){ box.style.display="none"; return; }
@@ -334,6 +378,7 @@ function renderOem(){
     '<label class="lbl">Εργοστάσιο παραγωγής</label>'+
     '<div class="chips">'+(cs.length>1?'<button class="chip'+(S.oem==="__all"?' on':'')+'" data-o="__all">Σύγκριση όλων</button>':'')+
       cs.map(function(p){return '<button class="chip'+(S.oem===p?' on':'')+'" data-o="'+p+'">'+esc(PLAT[p].name)+'</button>';}).join("")+'</div>'+
+    '<div id="fwiz">'+fwizHtml(b, cs)+'</div>'+
     '<details class="tip"><summary>Πώς βρίσκω το εργοστάσιο;</summary><p>'+esc(OEM_TIP)+'</p></details>'+
     (mine.length?'<div class="mymap"><div class="small"><b>Οι αντιστοιχίες μου για '+esc(b.n)+':</b></div>'+mine.map(function(m,i){return '<div class="mm"><span>'+esc(m.prefix)+'… → <b>'+esc(PLAT[m.oem]?PLAT[m.oem].name:m.oem)+'</b></span><button class="x" data-del="'+esc(m.prefix)+'">✕</button></div>';}).join("")+'</div>':'');
   var mi = $("model");
