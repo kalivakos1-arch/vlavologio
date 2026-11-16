@@ -134,7 +134,61 @@ function lgmvLed(code){
 function outBox(t, c){
   if(c[3] || /_outled$|_out$|multiled$|_inled$|_inled_recall$/.test(t.key)) return "";
   var o = typeof OUTN!=="undefined" && OUTN[t.key];
-  if(!o) return '<div class="ro small" style="opacity:.75">📟 Πλακέτα εξωτερικής: δεν έχει επιβεβαιωθεί ένδειξη για αυτόν τον κωδικό στις πηγές μας.</div>';
+  if(!o) return outRender("Δεν έχει επιβεβαιωθεί ένδειξη για αυτόν τον κωδικό στις πηγές μας.");
   var d = o.lgmv ? lgmvLed(c[0][0]) : "";
-  return '<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+(d?'<b>LED εξωτερικής: '+esc(d)+'</b><br>':'')+esc(o.t)+'<div class="small" style="margin-top:3px">Πηγή: '+esc(o.s)+'</div></div>';
+  return outRender((d?'LED εξωτερικής: '+d+' || ':'')+o.t, o.s);
+}
+
+// ===== Οπτική απόδοση ένδειξης πλακέτας εξωτερικής (λυχνίες σαν στο manual) =====
+var LEDCOL={"κίτρινο":"y","κίτρινη":"y","yellow":"y","πράσινο":"g","πράσινη":"g","green":"g","κόκκινο":"r","κόκκινη":"r","red":"r"};
+function ledDot(col, st, n, lab){
+  var t = st==="on"?"αναμμένο":st==="off"?"σβηστό":"αναβοσβήνει"+(n?" ×"+n:"");
+  return '<span class="ld" title="'+esc((lab?lab+": ":"")+t)+'"><i class="lq '+col+' '+st+'"></i>'+(n?'<b class="lx">×'+n+'</b>':'')+(lab?'<small>'+esc(lab)+'</small>':'')+'</span>';
+}
+function ledViz(s){
+  var out=[], m, re;
+  // Α. «Κίτρινο σβηστό · Πράσινο αναβοσβήνει · Κόκκινο αναμμένο» (πρώτη τριάδα)
+  re=/(Κίτρινο|Πράσινο|Κόκκινο)\s+(αναμμένο|σβηστό|αναβοσβήνει)/g; var a=[];
+  while((m=re.exec(s)) && a.length<3){ a.push(ledDot(LEDCOL[m[1].toLowerCase()], m[2]==="αναμμένο"?"on":m[2]==="σβηστό"?"off":"bl", 0, m[1])); }
+  if(a.length===3) return a.join("");
+  // Β. «LED1 πράσινο ×3 · LED2 κόκκινο ×2»
+  re=/LED(\d)\s+(πράσινο|κόκκινο|κίτρινο)\s+×(\d+)/g; a=[];
+  while((m=re.exec(s)) && a.length<2){ a.push(ledDot(LEDCOL[m[2]], "bl", m[3], "LED"+m[1])); }
+  if(a.length) return a.join("");
+  // Γ. Toshiba «D800–D804 = ◎○○○○» / «mode 1 = ●●○○●»
+  re=/(D800–D804|mode 1|mode 2)\s*=\s*([●○◎]{5})/g; var rows=[];
+  while((m=re.exec(s))){ var lab=m[1]==="D800–D804"?"RAV":m[1]; rows.push('<span class="lrow"><em>'+esc(lab)+'</em>'+m[2].split("").map(function(ch,i){ return ledDot(i<5?"y":"g", ch==="●"?"on":ch==="○"?"off":"bl", 0, "D80"+i); }).join("")+'</span>'); }
+  if(rows.length) return rows.join("");
+  // Δ. «Κόκκινο LED × 4», «Κίτρινο × 8», «Κόκκινο LED ×8»
+  m=/(Κόκκινο|Κίτρινο|Πράσινο)(?:\s+LED)?\s*×\s*(\d+)/.exec(s);
+  if(m) return ledDot(LEDCOL[m[1].toLowerCase()], "bl", m[2], m[1]);
+  m=/(Κίτρινο|Κόκκινο|Πράσινο)(?:\s+LED)?\s+(?:συνεχώς\s+)?αναμμένο/.exec(s);
+  if(m) return ledDot(LEDCOL[m[1].toLowerCase()], "on", 0, m[1]);
+  // Ε. LG «κόκκινο ×2 → πράσινο ×1»
+  re=/(κόκκινο\+πράσινο μαζί|κόκκινο|πράσινο)\s+×(\d+)/g; a=[];
+  while((m=re.exec(s))){ if(m[1].indexOf("μαζί")>0) a.push('<span class="lpair">'+ledDot("r","bl",0,"")+ledDot("g","bl",m[2],"μαζί")+'</span>'); else a.push(ledDot(LEDCOL[m[1]],"bl",m[2],m[1])); }
+  if(a.length) return a.join('<span class="larr">→</span>');
+  // ΣΤ. 7-segment
+  m=/7-seg(?:ment)?[^:]*:\s*([^(–—\[]+)/.exec(s);
+  if(m){ var cs=m[1].split(/\s+ή\s+|\s*…\s*/).map(function(x){return x.trim();}).filter(function(x){return /^[A-Z]?[0-9A-Z]{1,3}(?:-\d)?$/.test(x);});
+    if(cs.length) return cs.map(function(x){return '<span class="seg7">'+esc(x)+'</span>';}).join('<span class="larr">ή</span>'); }
+  m=/ίδιο κωδικό «([^»]{1,8})»/.exec(s);
+  if(m) return '<span class="seg7">'+esc(m[1])+'</span>';
+  return "";
+}
+function outRender(txt, src){
+  var raw=String(txt).split(" || "), parts=[], seen={};
+  raw.forEach(function(p){ var i=p.indexOf(" — "), main=i>0?p.slice(0,i):p, tag=i>0?p.slice(i+3):"";
+    if(seen[main]!==undefined){ var q=parts[seen[main]]; q.tag=(q.tag?q.tag+" ":"")+"Ίδια ένδειξη και σε: "+tag; } else { seen[main]=parts.length; parts.push({main:main,tag:tag}); } });
+  var keyShown=false;
+  var body=parts.map(function(o){
+    var main=o.main, tag=o.tag;
+    var segs=main.split(" | "), v="";
+    if(segs.length>1 && segs.every(function(x){return /^[A-Z0-9]{1,5}:\s/.test(x);})){
+      v=segs.map(function(x){ var k=x.slice(0,x.indexOf(":")), g=ledViz(x.slice(k.length+1)); return g?'<span class="lgrp"><span class="lcode">'+esc(k)+'</span>'+g+'</span>':''; }).join("");
+    } else v=ledViz(main);
+    var key=v && !keyShown && /lq [ygr] (?:on|off|bl)/.test(v) && (keyShown=true) ? '<div class="lkey"><span><i class="k1"></i>αναμμένο</span><span><i></i>σβηστό</span><span><i class="k3"></i>αναβοσβήνει</span></div>' : '';
+    return '<div class="op">'+(v?'<div class="leds">'+v+'</div>'+key:'')+'<div class="otx">'+esc(/lrow/.test(v)?main.replace(/\s*=\s*[●○◎]{5}/g,"").replace("(● αναμμένο ○ σβηστό ◎ αναβοσβήνει γρήγορα· ","(αναβόσβημα γρήγορο· "):main)+'</div>'+(tag?'<div class="otag">'+esc(tag)+'</div>':'')+'</div>';
+  }).join("");
+  return '<div class="obx"><div class="oh"><svg class="ic"><use href="#i-board"/></svg> Πλακέτα εξωτερικής</div>'+body+(src?'<div class="otag">Πηγή: '+esc(src)+'</div>':'')+'</div>';
 }

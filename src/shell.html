@@ -106,6 +106,32 @@ input:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--accb
 .plat{font-size:12px;font-weight:700;color:var(--acctx);background:var(--accbg);border-radius:999px;padding:2px 9px;white-space:nowrap}
 .rt{font-weight:750;font-size:17px;margin:4px 0 6px;line-height:1.35}
 .rd{font-size:14.5px;color:var(--text2)}
+.obx{margin-top:10px;border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);background:var(--warnbg);border-radius:12px;padding:9px 10px 8px;color:var(--text)}
+.obx .oh{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;letter-spacing:.2px;color:var(--warntx);margin-bottom:6px}
+.obx .oh .ic{width:17px;height:17px}
+.op+.op{border-top:1px dashed color-mix(in srgb,var(--warn) 30%,transparent);margin-top:8px;padding-top:8px}
+.leds{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 16px;margin:2px 0 6px;padding:8px 10px;background:var(--disp,#0b151c);border-radius:10px;width:fit-content;max-width:100%}
+.lrow{display:flex;align-items:flex-end;gap:8px}.lrow em{font-style:normal;font-size:11px;color:#9fb3c1;align-self:center;min-width:38px}
+.ld{display:inline-flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+.ld small{font-size:10.5px;color:#a9bccb;line-height:1}
+.lq{display:block;width:16px;height:16px;border-radius:50%;border:2px solid currentColor;box-sizing:border-box}
+.lq.y{color:#F5C93A}.lq.g{color:#38D98F}.lq.r{color:#FF4D5E}
+.lq.on{background:currentColor;box-shadow:0 0 8px 1px currentColor}
+.lq.off{opacity:.45;background:transparent}
+.lq.bl{background:currentColor;box-shadow:0 0 0 3px #0b151c,0 0 0 4.5px currentColor;animation:ledbl 1s ease-in-out infinite}
+@keyframes ledbl{0%,100%{opacity:1}50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.lq.bl{animation:none;background:transparent;border-style:dashed}}
+.lx{position:absolute;top:-7px;right:-15px;font-size:10.5px;font-weight:800;color:#fff;background:#33495a;border-radius:6px;padding:0 4px;line-height:15px}
+.lcode{font:800 12px ui-monospace,Menlo,monospace;color:#cfe4fc;align-self:center;margin-right:-4px}
+.lgrp{display:inline-flex;align-items:flex-end;gap:12px}
+.lkey{display:flex;gap:12px;font-size:11px;color:var(--muted);margin:-2px 0 6px 2px}.lkey i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px;border:1.5px solid var(--muted)}.lkey .k1{background:var(--muted)}.lkey .k3{background:var(--muted);box-shadow:0 0 0 2px var(--card),0 0 0 3px var(--muted)}
+.larr{color:#a9bccb;font-size:13px;align-self:center}
+.lpair{display:inline-flex;gap:4px}
+.seg7{font-family:"DSEG7 Classic",ui-monospace,Menlo,monospace;font-size:22px;letter-spacing:2px;color:var(--dispx,#7FE7FF);text-shadow:0 0 8px var(--dispg,rgba(127,231,255,.45));padding:0 2px}
+.otx{font-size:14px;line-height:1.45;color:var(--text2)}
+.otag{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.35}
+details.foot{margin-top:6px}details.foot summary{cursor:pointer;color:var(--muted);font-size:12.5px;font-weight:700;list-style:none;text-align:center;padding:6px}
+details.foot summary::-webkit-details-marker{display:none}
 .ro{font-size:14px;color:var(--warntx);margin-top:8px;padding:7px 9px;background:var(--warnbg);border-radius:10px}
 .rl{font-size:14px;color:var(--oktx);background:var(--okbg);border-radius:10px;padding:6px 9px;margin:2px 0 8px}
 .guide{font-size:14px;line-height:1.45;color:var(--text2);background:var(--accbg);border:1px solid color-mix(in srgb,var(--acc) 30%,transparent);border-radius:14px;padding:10px 12px;margin:8px 0}
@@ -343,7 +369,7 @@ html.field .srcbox button i .ic{width:24px;height:24px}
   <div class="card" id="brandcard">
     <label class="lbl step"><b>1</b> Μάρκα</label>
     <div id="bchosen"></div>
-    <div id="bpick"><div class="bsearch"><span class="mag"><svg class="ic"><use href="#i-search"/></svg></span><input id="bq" placeholder="Μάρκα – π.χ. LG, Daikin, Gree" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><button id="brandSel" aria-label="Όλες οι μάρκες"><svg class="ic"><use href="#i-grid"/></svg></button></div>
+    <div id="bpick"><div class="bsearch"><span class="mag"><svg class="ic"><use href="#i-search"/></svg></span><input id="bq" placeholder="π.χ. LG, Daikin, Gree" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><button id="brandSel" aria-label="Όλες οι μάρκες"><svg class="ic"><use href="#i-grid"/></svg></button></div>
     <div id="bsug"></div><button class="ledreset" id="bcancel" style="display:none">✕ Άκυρο – μένω στην ίδια μάρκα</button></div>
     <div id="brandsWrap"><div id="brands"></div></div>
   </div>
@@ -361,7 +387,7 @@ html.field .srcbox button i .ic{width:24px;height:24px}
   <div id="results"></div>
   <div id="notes"></div>
 
-  <div class="foot">Τα δεδομένα συγκεντρώθηκαν από service/installation manuals των κατασκευαστών (η πηγή φαίνεται σε κάθε πίνακα). Οι κωδικοί διαφέρουν ανά γενιά/σειρά – για επισκευή πλακέτας ή συμπιεστή επιβεβαίωσε στο manual του μοντέλου. Οι «αντιστοιχίες μου» αποθηκεύονται μόνο σε αυτή τη συσκευή.<br>Ψυκτικό (R410A / R32 / R290): το βλαβολόγιο ακολουθεί τη γενιά της πλακέτας, όχι το ψυκτικό – οι νέοι κωδικοί που εμφανίστηκαν αφορούν κυρίως αισθητήρες διαρροής (π.χ. Daikin VRV 5 R32, Midea EL 0C).</div>
+  <details class="foot"><summary>ⓘ Πηγές δεδομένων & σημειώσεις</summary><div class="foot">Τα δεδομένα συγκεντρώθηκαν από service/installation manuals των κατασκευαστών (η πηγή φαίνεται σε κάθε πίνακα). Οι κωδικοί διαφέρουν ανά γενιά/σειρά – για επισκευή πλακέτας ή συμπιεστή επιβεβαίωσε στο manual του μοντέλου. Οι «αντιστοιχίες μου» αποθηκεύονται μόνο σε αυτή τη συσκευή.<br>Ψυκτικό (R410A / R32 / R290): το βλαβολόγιο ακολουθεί τη γενιά της πλακέτας, όχι το ψυκτικό – οι νέοι κωδικοί που εμφανίστηκαν αφορούν κυρίως αισθητήρες διαρροής (π.χ. Daikin VRV 5 R32, Midea EL 0C).</div></details>
 </div>
 <script>/*DATA*/</script>
 <script>/*APP*/</script>

@@ -311,6 +311,8 @@ function renderBrands(){
   $("bpick").style.display = editing ? "" : "none";
   $("bcancel").style.display = (cb && S.bedit) ? "" : "none";
   if(!editing) $("brandsWrap").classList.remove("open");
+  else if(!cb && !renderBrands._init) $("brandsWrap").classList.add("open");
+  renderBrands._init = true;
   $("brandSel").classList.toggle("on", $("brandsWrap").classList.contains("open"));
   var rb = []; recent.forEach(function(x){ if(rb.indexOf(x.brand)<0) rb.push(x.brand); }); rb = rb.slice(0,6).map(function(n){ return BRANDS.filter(function(b){ return b.n===n; })[0]; }).filter(Boolean);
   $("brands").innerHTML = (rb.length?'<div class="grp">⭐ Πρόσφατες</div><div class="bgrid">'+rb.map(btn).join("")+'</div>':'')+'<div class="grp">Δικό τους εργοστάσιο</div><div class="bgrid">'+own.map(btn).join("")+'</div>'+
@@ -472,7 +474,7 @@ function card(r, showPlat){
     '<div class="rt">'+esc(c[1])+'</div>'+(function(){ var vn = typeof verifNote==="function" ? verifNote(t.key, c[0]) : ""; return vn ? '<div class="vn">⚠️ <b>Μη επιβεβαιωμένο για Ελλάδα/Ευρώπη.</b> '+esc(vn)+'</div>' : ''; })()+(/_outled$|_multi_out$|_multiled$/.test(t.key) ? '' : behBox(t.plat, c[0]))+
     (c[4]?'<div class="rl">↔ '+esc(c[4])+'</div>':'')+
     (c[2]?(function(){ var st=stepsOf(c[2]); return st ? '<div class="rd"><b>🔧 Τι ελέγχεις – με τη σειρά:</b><ol class="steps">'+st.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol></div>' : '<div class="rd"><b>🔧 Τι ελέγχεις:</b> '+esc(c[2])+'</div>'; })():'')+
-    (c[3]?'<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+esc(c[3])+'</div>':'')+
+    (c[3]?(typeof outRender==="function"?outRender(c[3]):'<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+esc(c[3])+'</div>'):'')+
     (typeof outBox==="function" ? outBox(t, c) : '')+
     procBox(c, t.plat)+
     partLinks(c[1]+' '+(c[2]||''), c)+
