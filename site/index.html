@@ -4073,7 +4073,7 @@ var OUTN = {
     E48:"Κόκκινο LED αναμμένο σταθερά. Εσωτερική: RUN αναμμένο, TIMER ×7.",
     E35:"Κόκκινο LED ×2. Εσωτερική: RUN αναμμένο, TIMER αναβοσβήνει συνεχώς."
   };
-  var tag=" (Πίνακας MHI Αυστραλίας, σειρές SRK/SRC. Εκτός από το E36, δεν έχει διασταυρωθεί γραμμή-γραμμή σε ευρωπαϊκό manual.)";
+  var tag=" (Κόκκινο LED: από τον πίνακα της MHI Αυστραλίας. Ο κωδικός και οι λυχνίες RUN/TIMER είναι ίδια στα ευρωπαϊκά SRK – technical manual SRK20ZS-W «SRK-T-299» & service manual SRK25ZSP-W – αλλά αυτά δεν έχουν στήλη για το LED εξωτερικής.)";
   if(T.mhi_split) T.mhi_split.codes.forEach(function(c){ if(c[3]) return; for(var i=0;i<c[0].length;i++){ var k=String(c[0][i]).toUpperCase(); if(M[k]){ c[3]=M[k]+(k==="E36"?"":tag); return; } } });
 })();
 
