@@ -80,7 +80,12 @@ var OUTN = {
  toshiba_estia: {t:"Estia: στην πλακέτα εξωτερικής LED800–LED804 (κίτρινα) + D805 (πράσινο). SW803 όλα OFF → σημείωσε τα LED (display mode 1), πάτα SW800 ≥1″ (display mode 2) και βρες τον συνδυασμό στον πίνακα του manual. SW803 bit 1 ON = τελευταία βλάβη.", s:"Toshiba Estia HWS-803H-E installation manual (Troubleshooting – outdoor LED)· Toshiba Estia 3rd gen service manual (HWS-803/1103/1403H-E)· Toshiba UK HWT-401…1101HW-E (R32)"},
  hisense_vrf: {t:"Hi-FLEXi: η πλακέτα της εξωτερικής έχει 7-segment με κουμπιά ελέγχου – δείχνει κατάσταση, κωδικό alarm και ιστορικό (Alarm history display). Οι κωδικοί είναι ίδιοι με του χειριστηρίου.", s:"Hisense Hi-FLEXi S technical/service handbook (Checking by 7-segment display, Checking of alarm code history)· Hisense Hi-Flexi AVWT-212FESZ service manual (EU)"},
  gree_versati: {t:"Versati: το χειριστήριο γράφει το όνομα της βλάβης (π.χ. «Drive-main com.», «Start failure»), ενώ η 2ψήφια ένδειξη «88» της κύριας πλακέτας δείχνει τον κωδικό (π.χ. P6, LC).", s:"Gree Versati Monobloc service manual (4.1.4 Drive-to-main-control communication error P6, 4.1.5 Compressor startup failure LC – «displayed in the mainboard 88 indicating lamp»)"},
- haier_hp: {t:"Haier ATW (AU082/112FYCRA): οι βλάβες της εξωτερικής διαβάζονται στο ενσύρματο χειριστήριο, κατηγορία B: τρέχουσα βλάβη εξωτερικής και ιστορικό 1–3 (B61–B63). Το manual έχει ενότητα «LED displays 08E/10E» για την πλακέτα – δεν τη διαβάσαμε ανά κωδικό.", s:"Haier AU082FYCRA(HW) service manual (Timer/function codes B61–B63, Error code, LED displays 08E/10E)"},
+ haier_hp: {t:"Haier ATW (AU082/112FYCRA): οι βλάβες της εξωτερικής διαβάζονται στο ενσύρματο χειριστήριο, κατηγορία B: τρέχουσα βλάβη εξωτερικής και ιστορικό 1–3 (B61–B63). Η ενότητα «LED displays 08E/10E» του manual είναι διάγραμμα ελέγχου για τον κωδικό 08/10 (ροή νερού) – δεν υπάρχει πίνακας LED πλακέτας εξωτερικής ανά κωδικό στο manual.", s:"Haier AU082FYCRA(HW) service manual (Timer/function codes B61–B63, Error code, LED displays 08E/10E)"},
+ panasonic_aquarea: {t:"Aquarea: ο κωδικός (H../F..) εμφανίζεται στο χειριστήριο/πάνελ – η λυχνία λειτουργίας αναβοσβήνει. Στα ευρωπαϊκά service manuals (WH-UD/SDC/ADC) ΔΕΝ υπάρχει πίνακας ένδειξης κωδικού στην πλακέτα της εξωτερικής – δεν βρέθηκε επίσημη πηγή.", s:"Panasonic Aquarea operating instructions WH-ADC0309H3E5/WH-UD (Troubleshooting – error code on remote controller)· Panasonic Aquarea user guide F/G series· έλεγχος service manuals WH-SDC09H3E8, WH-UD05JE5"},
+ inventor_evi: {t:"Σειρές τύπου Gree U-Match: η κύρια πλακέτα της εξωτερικής δείχνει τον ΙΔΙΟ κωδικό με το ενσύρματο χειριστήριο (π.χ. E4). Οικιακά split τύπου Gree: δεν βρέθηκε επίσημος πίνακας ένδειξης στην εξωτερική.", s:"Gree U-Match 5 service manual (3.4.4 «E4» – «ODU mainboard, IDU wired controller and IDU receiver light board will display E4»), Gree Hungary"},
+ inventor_minichiller: {t:"Δεν βρέθηκε δημόσιο επίσημο service manual της Inventor για τα Mini Chiller με ένδειξη πλακέτας εξωτερικής. Ο κωδικός διαβάζεται στο χειριστήριο της μονάδας.", s:"Αναζήτηση Νοέμβριος 2026 – καμία επίσημη πηγή"},
+ kerosun_split: {t:"Δεν βρέθηκε δημόσιο επίσημο service manual Kerosun με ένδειξη πλακέτας εξωτερικής. Ο κωδικός διαβάζεται στην οθόνη της εσωτερικής.", s:"Αναζήτηση Νοέμβριος 2026 – καμία επίσημη πηγή"},
+ tcl_split: {t:"TCL: για τα multi (FMA) υπάρχει πίνακας αναλαμπών της λυχνίας εξωτερικής (δες «Εξωτερική» → TCL multi). Για τους υπόλοιπους κωδικούς split δεν βρέθηκε επίσημη αντιστοίχιση.", s:"TCL multi FMA service manual· αναζήτηση Νοέμβριος 2026"},
  mhi_split: {t:"Η πλακέτα ελέγχου εξωτερικής έχει κόκκινο και πράσινο LED που αναβοσβήνουν μαζί με τις λυχνίες RUN/TIMER της εσωτερικής – ο πίνακας ανά βλάβη είναι στο MHI Service Support Handbook (RAC fault codes). Για αυτόν τον κωδικό δεν υπάρχει καθαρή γραμμή στον πίνακα (οι υπόλοιποι κωδικοί έχουν δική τους ένδειξη).", s:"MHI Service Support Handbook SRK-ZSP-S – RAC fault codes (Indoor display / Outdoor control PCB red & green LED)"}
 };
 
@@ -120,6 +125,41 @@ var OUTN = {
     T[key].codes.forEach(function(c){ if(c[3]) return; var parts=[], seen={};
       for(var i=0;i<c[0].length;i++){ var k=String(c[0][i]).toUpperCase(); if(M[k]&&!seen[k]){ seen[k]=1; parts.push((c[0].length>1?c[0][i]+": ":"")+M[k]); } }
       if(parts.length) c[3]=parts.join(" | ")+tag; });
+  });
+})();
+
+// ===== Toshiba RAV (Digital Inverter Series 4, EU) & Estia: LED D800–D804 πλακέτας εξωτερικής ανά κωδικό =====
+// RAV: Toshiba service manual SVM-13072 «Digital Inverter Series 4» RAV-SM564–1404ATP-E (EU), 8-2-4 Check code list (Outdoor), σελ. 58. D805 πάντα αναμμένο.
+// Estia: Toshiba Estia quick reference guide (Outdoor fault diagnosis): SW803 όλα OFF → display mode 1, SW800 ≥1″ → display mode 2.
+//   Ο κωδικός της Estia αντιστοιχίστηκε με την ίδια περιγραφή αιτίας του πίνακα RAV (TD→F04 κ.λπ.)· οι δύο γραμμές «Compressor lock» και η «MCU-MCU» δεν αντιστοιχίστηκαν.
+(function(){
+  var sym={o:"●",x:"○",f:"◎"}; // o=αναμμένο, x=σβηστό, f=αναβοσβήνει
+  var P=function(str){ return str.split("").map(function(ch){return sym[ch];}).join(""); };
+  var R={F04:"fxxxx",F06:"xfxxx",F07:"ffxxx",F08:"xxfxx",F12:"fxfxx",F13:"xffxx",F15:"fffxx",F31:"xfxfx",H01:"ffxfx",H02:"xxffx",H03:"fxffx",H04:"xfffx",
+    L10:"xxxxf",P03:"xfxxf",P04:"ffxxf",P05:"xxfxf",P07:"xffxf",P15:"fffxf",P19:"xxxff",P20:"fxxff",P22:"xfxff",P26:"ffxff",P29:"xxfff"};
+  var E1a="ooxxo", E1b="xxoxo", E1c="oooxo", E1d="xooxo";
+  var E={F04:[E1a,"xxfxx"],F06:[E1a,"xffxx"],F07:[E1a,"fffxx"],F08:[E1a,"xxxfx"],F12:[E1a,"xxffx"],F13:[E1a,"fxffx"],F15:[E1a,"ffffx"],F31:[E1a,"fffff"],
+    H03:[E1b,"ffxxx"],H04:[E1b,"xxfxx"],L10:[E1d,"xfxfx"],P03:[E1c,"ffxxx"],P05:[E1c,"fxfxx"],P07:[E1c,"fffxx"],P15:[E1c,"ffffx"],P19:[E1c,"ffxxf"],
+    P20:[E1c,"xxfxf"],P22:[E1c,"xffxf"],P26:[E1c,"xfxff"],P29:[E1c,"fxfff"]};
+  if(!T.toshiba_rav) return;
+  T.toshiba_rav.codes.forEach(function(c){ var k=String(c[0][0]).toUpperCase(), add=[];
+    if(R[k]) add.push("RAV Digital Inverter (SM…4ATP-E): D800–D804 = "+P(R[k])+" (● αναμμένο ○ σβηστό ◎ αναβοσβήνει γρήγορα· D805 αναμμένο)");
+    if(E[k]) add.push("Estia εξωτερική: mode 1 = "+P(E[k][0])+" → SW800 → mode 2 = "+P(E[k][1]));
+    if(add.length) c[3]=(c[3]?c[3]+" || ":"")+add.join(" || ")+" — Πηγές: Toshiba SVM-13072 (EU) & Estia quick reference guide. Άλλες γενιές RAV έχουν άλλο πίνακα.";
+  });
+})();
+
+// ===== MHI KX (KXZE1): τι δείχνει το 7-segment της πλακέτας εξωτερικής ανά κωδικό =====
+// Πηγή: MHI service manual KX-SM-202 (FDC280–1680KXZE1, ευρωπαϊκά), 2.3 Contents of troubleshooting – (a) List of inspection displays, σελ. 68 (διαβάστηκε από εικόνα).
+(function(){
+  var D={E31:"E31",E32:"E32",E36:"E36-1 ή E36-2",E37:"E37-1 … E37-6 (ανάλογα με το αισθητήριο)",E38:"E38",E39:"E39-1 ή E39-2",E40:"E40",E41:"E41-1 ή E41-2",E51:"E51-1 ή E51-2",
+    E42:"E42-1 ή E42-2",E43:"E43-1 ή E43-2",E44:"E44-1 ή E44-2",E45:"E45-1 ή E45-2",E46:"E46",E48:"E48-1 ή E48-2",E49:"E49",E53:"E53-1 ή E53-2",E55:"E55-1 ή E55-2",
+    E54:"E54-1 (PSH) ή E54-2 (PSL)",E56:"E56-1 ή E56-2",E58:"E58-1 ή E58-2",E59:"E59-1 ή E59-2",E61:"E61-1 ή E61-2",E63:"E63"};
+  var NONE={E1:1,E2:1,E3:1,E5:1,E6:1,E7:1,E9:1,E10:1,E11:1,E12:1,E16:1,E18:1,E19:1,E20:1,E21:1,E28:1};
+  if(!T.mhi_kx) return;
+  T.mhi_kx.codes.forEach(function(c){ if(c[3]) return; var k=String(c[0][0]).toUpperCase();
+    if(D[k]) c[3]="7-segment εξωτερικής: "+D[k]+" — MHI KX-SM-202 (KXZE1, EU), List of inspection displays.";
+    else if(NONE[k]) c[3]="7-segment εξωτερικής: καμία ένδειξη (–) – βλάβη/ρύθμιση εσωτερικής ή χειριστηρίου. — MHI KX-SM-202 (KXZE1, EU).";
   });
 })();
 
