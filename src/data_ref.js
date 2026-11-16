@@ -34,3 +34,14 @@ PARTS.push({id:"air", icon:"💨", name:"Αέρας: ΔT & σημείο δρόσ
  ["Πώς μετράς","Θερμόμετρο στην είσοδο αέρα (φίλτρα) και στην έξοδο (περσίδα), μονάδα σε μέγιστο ανεμιστήρα και test run/ελάχιστη θερμοκρασία για 15 λεπτά. Μέτρα στο κέντρο της ροής, όχι στην άκρη."],
  ["Σημείο δρόσου","Αν μια επιφάνεια (σωλήνας, κανάλι, περσίδα) είναι πιο κρύα από το σημείο δρόσου του αέρα γύρω της, θα «ιδρώσει» – τότε θέλει μόνωση, όχι επισκευή."]
 ]});
+
+// ===== Επίσημες σελίδες manuals (μόνο όσες επιβεβαιώθηκαν) =====
+var MANUALS = {
+ "Daikin":[["daikin.eu – αναζήτηση μοντέλου","https://www.daikin.eu","Τα manuals της Daikin γράφουν ότι τα ψηφιακά αρχεία είναι στο daikin.eu (αναζήτηση με το μοντέλο). Τα πλήρη τεχνικά (service) θέλουν λογαριασμό στο Daikin Business Portal."]],
+ "Mitsubishi Electric":[["Document Library (Mitsubishi Electric UK)","https://library.mitsubishielectric.co.uk/",""]],
+ "Panasonic":[["Panasonic PRO Club","https://www.panasonicproclub.com","Δωρεάν εγγραφή επαγγελματία – service, installation & user manuals."]],
+ "Toshiba":[["Toshiba Carrier – manuals ανά μοντέλο (και ελληνικά)","https://www.toshiba-carrier.co.th/manuals/default.aspx","Η διεύθυνση του QR code που τυπώνεται στα manuals της Toshiba."],["Toshiba Air Conditioning UK – Manuals & downloads","https://www.toshiba-aircon.co.uk/en/manuals-and-downloads.html",""]],
+ "Fujitsu":[["Fujitsu General Europe – Downloads","https://www.fujitsu-general.com/eu/support/downloads/index.html","Operation & installation manuals ανά μοντέλο."]],
+ "Samsung":[["Samsung Ελλάδας – εγχειρίδια","https://www.samsung.com/gr/support/user-manuals-and-guide/","Γράψε το μοντέλο της εσωτερικής."]],
+ "Juro-Pro":[["juropro.gr (ΜΑΓΝΗΤΙΚΗ Α.Ε.)","https://www.juropro.gr","Τα manuals της Juro-Pro παραπέμπουν εδώ για την ηλεκτρονική έκδοση."]]
+};

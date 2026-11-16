@@ -117,3 +117,9 @@ document.addEventListener("click", function(e){
   var c = document.querySelector('[data-s="parts"]'); if(c) c.click();
   setTimeout(function(){ var g=document.getElementById("toolsgrp"); if(g) g.scrollIntoView({behavior:"smooth", block:"start"}); }, 80);
 });
+
+// --- σύνδεσμοι manuals μάρκας ---
+function manLinks(b){
+  var L = b && MANUALS[b.n]; if(!L) return "";
+  return '<details class="mmg manl"><summary>📄 Επίσημα manuals '+esc(b.n)+'</summary>'+L.map(function(x){ return '<div class="psec"><a href="'+x[1]+'" target="_blank" rel="noopener">'+esc(x[0])+' ↗</a>'+(x[2]?'<div class="small">'+esc(x[2])+'</div>':'')+'</div>'; }).join("")+'<div class="small">Ανοίγει στον browser – χρειάζεται internet.</div></details>';
+}

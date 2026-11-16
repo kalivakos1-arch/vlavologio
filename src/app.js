@@ -380,7 +380,7 @@ function renderOem(){
     box.style.display = "block";
     box.innerHTML = (b.hint ? '<div class="hint" style="margin:0 0 8px">'+esc(b.hint)+'</div>' : "")+
       '<button class="mini scanbtn" data-scan="ser"><svg class="ic"><use href="#i-scan"/></svg> Σκάναρε το barcode της ετικέτας – ημερομηνία κατασκευής</button>'+
-      (S.fw.ser ? '<div class="serbox"><div class="small"><b>Σειριακός:</b> '+esc(S.fw.ser)+' <button class="x" data-fwclr="ser">✕</button></div>'+serHtml(S.fw.ser, null)+'</div>' : '');
+      (S.fw.ser ? '<div class="serbox"><div class="small"><b>Σειριακός:</b> '+esc(S.fw.ser)+' <button class="x" data-fwclr="ser">✕</button></div>'+serHtml(S.fw.ser, null)+'</div>' : '')+manLinks(b);
     return;
     box.innerHTML = (b.hint ? '<div class="hint">'+esc(b.hint)+'</div>' : "")+
       '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι – προαιρετικό)</label><input id="model" placeholder="π.χ. '+esc(b.n==="LG"?"S12EQ / HU071MR":b.n==="Daikin"?"FTXM35R":b.n==="Gree"?"GWH12ACC-K6DNA1D":"μοντέλο εσωτερικής ή εξωτερικής")+'" autocapitalize="characters" spellcheck="false">'+
@@ -394,7 +394,7 @@ function renderOem(){
   box.style.display="block";
   var mine = myMap.filter(function(m){return m.brand===b.n;});
   box.innerHTML =
-    (b.hint?'<div class="hint">'+esc(b.hint)+'</div>':'<div class="hint">Η '+esc(b.n)+' δεν έχει δικό της εργοστάσιο. Διάλεξε εργοστάσιο ή άφησε «Σύγκριση» για να δεις τι σημαίνει ο κωδικός σε κάθε πιθανό εργοστάσιο.</div>')+
+    manLinks(b)+(b.hint?'<div class="hint">'+esc(b.hint)+'</div>':'<div class="hint">Η '+esc(b.n)+' δεν έχει δικό της εργοστάσιο. Διάλεξε εργοστάσιο ή άφησε «Σύγκριση» για να δεις τι σημαίνει ο κωδικός σε κάθε πιθανό εργοστάσιο.</div>')+
     '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι)</label>'+
     '<div class="row2"><input id="model" placeholder="μοντέλο εξωτερικής ή εσωτερικής – π.χ. V5MFO32-60" autocapitalize="characters" spellcheck="false"><button class="mini" data-scan="model" title="Σάρωση barcode"><svg class="ic"><use href="#i-scan"/></svg></button><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
     '<div id="mapMsg" class="small"></div>'+
