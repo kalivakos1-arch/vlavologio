@@ -86,3 +86,20 @@ var OUTN = {
   var tag=" (Πίνακας MHI Αυστραλίας, σειρές SRK/SRC. Εκτός από το E36, δεν έχει διασταυρωθεί γραμμή-γραμμή σε ευρωπαϊκό manual.)";
   if(T.mhi_split) T.mhi_split.codes.forEach(function(c){ if(c[3]) return; for(var i=0;i<c[0].length;i++){ var k=String(c[0][i]).toUpperCase(); if(M[k]){ c[3]=M[k]+(k==="E36"?"":tag); return; } } });
 })();
+
+// ===== Samsung οικιακά (σειρά AR**HSFNBWK NET/XET, 12/18/24K): 3 LED πλακέτας εξωτερικής (Κίτρινο / Πράσινο / Κόκκινο) =====
+// Πηγή: Samsung service manual AR09HSFNBWKNET (ευρωπαϊκό), 3-2-1 Indoor Display Error (λίστα κωδικών) & «Outdoor LED Display Error and Check Method (12K/18K/24K)».
+// Η αντιστοίχιση έγινε με την ίδια περιγραφή βλάβης στους δύο πίνακες του ίδιου manual. ● αναμμένο · ○ σβηστό · ◐ αναβοσβήνει.
+(function(){
+  var L = function(y,g,r){ var n={1:"αναμμένο",0:"σβηστό",2:"αναβοσβήνει"}; return "Κίτρινο "+n[y]+" · Πράσινο "+n[g]+" · Κόκκινο "+n[r]; };
+  var M = {
+    E101:L(0,1,1)+" (ή μόνο Κόκκινο αναμμένο)", E102:L(0,1,1)+" (ή μόνο Κόκκινο αναμμένο)",
+    E203:L(2,1,1), E221:L(2,0,2), E231:L(2,1,2), E251:L(2,2,0), E416:L(2,0,1), E422:L(1,1,0),
+    E440:L(1,2,0), E441:L(1,2,0), E458:L(1,0,0), E461:L(0,2,0), E462:L(1,2,1), E464:L(0,0,2),
+    E465:L(2,1,0), E466:L(0,1,2), E467:L(1,0,1), E468:L(2,2,1), E469:L(1,2,2), E470:L(0,1,0),
+    E471:L(1,0,2), E474:L(2,2,1), E483:L(0,1,2), E484:L(0,1,2), E485:L(2,2,1), E488:L(1,2,2),
+    E500:L(2,1,0), E554:L(1,1,0)
+  };
+  var tag=" — Samsung σειρά AR**HSFNBWK (ευρωπαϊκά NET/XET, 12/18/24K). Κανονική λειτουργία: Κίτρινο σβηστό · Πράσινο αναβοσβήνει · Κόκκινο αναμμένο. Άλλες σειρές μπορεί να έχουν άλλο συνδυασμό.";
+  if(T.samsung_all) T.samsung_all.codes.forEach(function(c){ if(c[3]) return; for(var i=0;i<c[0].length;i++){ var k=String(c[0][i]).toUpperCase(); if(M[k]){ c[3]=M[k]+tag; return; } } });
+})();
