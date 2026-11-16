@@ -123,3 +123,18 @@ function manLinks(b){
   var L = b && MANUALS[b.n]; if(!L) return "";
   return '<details class="mmg manl"><summary>📄 Επίσημα manuals '+esc(b.n)+'</summary>'+L.map(function(x){ return '<div class="psec"><a href="'+x[1]+'" target="_blank" rel="noopener">'+esc(x[0])+' ↗</a>'+(x[2]?'<div class="small">'+esc(x[2])+'</div>':'')+'</div>'; }).join("")+'<div class="small">Ανοίγει στον browser – χρειάζεται internet.</div></details>';
 }
+
+// --- ένδειξη εξωτερικής όταν δεν υπάρχει αντιστοίχιση ανά κωδικό ---
+function lgmvLed(code){
+  var n = parseInt(code,10); if(isNaN(n) || String(n)!==String(code).trim()) return "";
+  var h=Math.floor(n/100), te=Math.floor((n%100)/10), u=n%10, p=[];
+  if(h) p.push("κόκκινο+πράσινο μαζί ×"+h); if(te) p.push("κόκκινο ×"+te); if(u) p.push("πράσινο ×"+u);
+  return p.join(" → ");
+}
+function outBox(t, c){
+  if(c[3] || /_outled$|_out$|multiled$/.test(t.key)) return "";
+  var o = typeof OUTN!=="undefined" && OUTN[t.key];
+  if(!o) return '<div class="ro small" style="opacity:.75">📟 Πλακέτα εξωτερικής: δεν έχει επιβεβαιωθεί ένδειξη για αυτόν τον κωδικό στις πηγές μας.</div>';
+  var d = o.lgmv ? lgmvLed(c[0][0]) : "";
+  return '<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+(d?'<b>Multi V: '+esc(d)+'</b><br>':'')+esc(o.t)+'<div class="small" style="margin-top:3px">Πηγή: '+esc(o.s)+'</div></div>';
+}

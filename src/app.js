@@ -473,6 +473,7 @@ function card(r, showPlat){
     (c[4]?'<div class="rl">↔ '+esc(c[4])+'</div>':'')+
     (c[2]?(function(){ var st=stepsOf(c[2]); return st ? '<div class="rd"><b>🔧 Τι ελέγχεις – με τη σειρά:</b><ol class="steps">'+st.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol></div>' : '<div class="rd"><b>🔧 Τι ελέγχεις:</b> '+esc(c[2])+'</div>'; })():'')+
     (c[3]?'<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+esc(c[3])+'</div>':'')+
+    (typeof outBox==="function" ? outBox(t, c) : '')+
     procBox(c, t.plat)+
     partLinks(c[1]+' '+(c[2]||''), c)+
     '<div class="rs">'+esc(t.tbl.name)+(typeof VERIF_T!=="undefined" && VERIF_T[t.key] ? '<br>⚠️ '+esc(VERIF_T[t.key]) : '')+'</div>'+
