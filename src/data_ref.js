@@ -154,7 +154,7 @@ var OUTN = {
   if(!T.toshiba_rav) return;
   T.toshiba_rav.codes.forEach(function(c){ var k=String(c[0][0]).toUpperCase(), add=[];
     if(R[k]) add.push("RAV Digital Inverter (SM…4ATP-E): D800–D804 = "+P(R[k])+" (● αναμμένο ○ σβηστό ◎ αναβοσβήνει γρήγορα· D805 αναμμένο)");
-    if(E[k]) add.push("Estia εξωτερική: mode 1 = "+P(E[k][0])+" → SW800 → mode 2 = "+P(E[k][1]));
+    if(E[k]) add.push("Estia εξωτερική: mode 1 = "+P(E[k][0])+" → SW800 → mode 2 = "+P(E[k][1])+" (κωδικός αντιστοιχίστηκε μέσω περιγραφής)");
     if(add.length) c[3]=(c[3]?c[3].replace(/^7-seg:/,"VRF SMMS – 7-seg:")+" || ":"")+add.join(" || ")+" — Πηγές: Toshiba SVM-13072 (EU) & Estia quick reference guide. Άλλες γενιές RAV έχουν άλλο πίνακα.";
   });
 })();
@@ -222,7 +222,7 @@ var OUTN = {
   var L=function(y,g,r){ var n={1:"αναμμένο",0:"σβηστό",2:"αναβοσβήνει"}; return "Κίτρινο "+n[y]+" · Πράσινο "+n[g]+" · Κόκκινο "+n[r]; };
   var M={E101:L(0,0,1)+" ή "+L(0,1,1)+" (ή μετά από 1′: "+L(2,1,1)+")",E102:L(0,0,1)+" ή "+L(0,1,1)+" (ή μετά από 1′: "+L(2,1,1)+")",
     E464:L(0,0,2),E461:L(0,2,0),E474:L(0,2,2),E500:L(0,2,2),E466:L(0,1,2),E483:L(0,1,2),E468:L(2,2,1),E485:L(2,2,1),E465:L(2,1,0),E467:L(1,0,1),E469:L(1,2,2)};
-  var tag=" — Samsung σειρά AR**HSSDBWK (EU). Κανονικά: Κίτρινο σβηστό · Πράσινο αναβοσβήνει · Κόκκινο αναμμένο.";
+  var tag=" (κωδικός αντιστοιχίστηκε μέσω περιγραφής) — Samsung σειρά AR**HSSDBWK (EU). Κανονικά: Κίτρινο σβηστό · Πράσινο αναβοσβήνει · Κόκκινο αναμμένο.";
   if(!T.samsung_all) return;
   T.samsung_all.codes.forEach(function(c){ for(var i=0;i<c[0].length;i++){ var k=String(c[0][i]).toUpperCase(); if(M[k]){ c[3]=(c[3]?c[3]+" || ":"")+M[k]+tag; return; } } });
 })();

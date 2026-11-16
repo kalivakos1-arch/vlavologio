@@ -133,6 +133,21 @@ input:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--accb
 .otag{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.35}
 details.foot{margin-top:6px}details.foot summary{cursor:pointer;color:var(--muted);font-size:12.5px;font-weight:700;list-style:none;text-align:center;padding:6px}
 details.foot summary::-webkit-details-marker{display:none}
+.indc{display:inline-block;font-size:11.5px;font-weight:800;color:var(--warntx);border:1px dashed var(--warn);border-radius:8px;padding:1px 7px;margin-bottom:6px}
+.repb{display:inline-flex;align-items:center;gap:4px;margin-top:10px;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:6px 10px;font-size:13px;font-weight:650}
+.repb:active{background:var(--card2)}
+.repov{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;justify-content:center;background:rgba(5,12,18,.55);padding:12px;padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.repbox{width:100%;max-width:520px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35);color:var(--text)}
+.reph{font-size:17px;font-weight:800;margin-bottom:4px}
+.repk{display:flex;flex-direction:column;gap:2px;margin:10px 0}
+.repk label{display:flex!important;align-items:center;gap:10px;color:var(--text)!important;font-size:15px;font-weight:600;padding:6px 2px}
+.repk input[type=radio]{-webkit-appearance:auto;appearance:auto;width:20px!important;height:20px;flex:none;margin:0;padding:0;accent-color:var(--acc)}
+.repbox textarea{width:100%;box-sizing:border-box;font:inherit;font-size:16px;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px;resize:vertical}
+.repbox input#repmodel{font-size:16px}
+.repbox .scbtns{display:flex;gap:8px;margin-top:10px}.repbox .scbtns button{flex:1;height:46px;font-size:16px}
+.mini.prim{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.ioshint{position:fixed;left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));z-index:50;display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:0 8px 30px rgba(0,0,0,.25);font-size:14px;color:var(--text)}
+.ioshint button{flex:none;background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:10px;width:34px;height:34px}
 .ro{font-size:14px;color:var(--warntx);margin-top:8px;padding:7px 9px;background:var(--warnbg);border-radius:10px}
 .rl{font-size:14px;color:var(--oktx);background:var(--okbg);border-radius:10px;padding:6px 9px;margin:2px 0 8px}
 .guide{font-size:14px;line-height:1.45;color:var(--text2);background:var(--accbg);border:1px solid color-mix(in srgb,var(--acc) 30%,transparent);border-radius:14px;padding:10px 12px;margin:8px 0}
@@ -389,7 +404,7 @@ html.field .srcbox button i .ic{width:24px;height:24px}
   <div id="results"></div>
   <div id="notes"></div>
 
-  <details class="foot"><summary>ⓘ Πηγές δεδομένων & σημειώσεις</summary><div class="foot">Τα δεδομένα συγκεντρώθηκαν από service/installation manuals των κατασκευαστών (η πηγή φαίνεται σε κάθε πίνακα). Οι κωδικοί διαφέρουν ανά γενιά/σειρά – για επισκευή πλακέτας ή συμπιεστή επιβεβαίωσε στο manual του μοντέλου. Οι «αντιστοιχίες μου» αποθηκεύονται μόνο σε αυτή τη συσκευή.<br>Ψυκτικό (R410A / R32 / R290): το βλαβολόγιο ακολουθεί τη γενιά της πλακέτας, όχι το ψυκτικό – οι νέοι κωδικοί που εμφανίστηκαν αφορούν κυρίως αισθητήρες διαρροής (π.χ. Daikin VRV 5 R32, Midea EL 0C).</div></details>
+  <details class="foot"><summary>ⓘ Πηγές δεδομένων & σημειώσεις</summary><div class="foot">Τα δεδομένα συγκεντρώθηκαν από service/installation manuals των κατασκευαστών (η πηγή φαίνεται σε κάθε πίνακα). Οι κωδικοί διαφέρουν ανά γενιά/σειρά – για επισκευή πλακέτας ή συμπιεστή επιβεβαίωσε στο manual του μοντέλου. Οι «αντιστοιχίες μου» αποθηκεύονται μόνο σε αυτή τη συσκευή.<br>Ψυκτικό (R410A / R32 / R290): το βλαβολόγιο ακολουθεί τη γενιά της πλακέτας, όχι το ψυκτικό – οι νέοι κωδικοί που εμφανίστηκαν αφορούν κυρίως αισθητήρες διαρροής (π.χ. Daikin VRV 5 R32, Midea EL 0C).<br><br>Τα ονόματα και σήματα των κατασκευαστών ανήκουν στους κατόχους τους. Η εφαρμογή είναι ανεξάρτητη και δεν συνδέεται με κανέναν κατασκευαστή. Βρήκες λάθος; Πάτα «⚑ Αναφορά λάθους» κάτω από τον κωδικό.</div></details>
 </div>
 <script>// ===== ΒΛΑΒΟΛΟΓΙΑ: ΚΛΙΜΑΤΙΣΤΙΚΑ ΤΟΙΧΟΥ / SPLIT =====
 // Μορφή: [ [κωδικοί], "τίτλος", "αιτίες / έλεγχοι / λύση" ]
@@ -4171,7 +4186,7 @@ var OUTN = {
   if(!T.toshiba_rav) return;
   T.toshiba_rav.codes.forEach(function(c){ var k=String(c[0][0]).toUpperCase(), add=[];
     if(R[k]) add.push("RAV Digital Inverter (SM…4ATP-E): D800–D804 = "+P(R[k])+" (● αναμμένο ○ σβηστό ◎ αναβοσβήνει γρήγορα· D805 αναμμένο)");
-    if(E[k]) add.push("Estia εξωτερική: mode 1 = "+P(E[k][0])+" → SW800 → mode 2 = "+P(E[k][1]));
+    if(E[k]) add.push("Estia εξωτερική: mode 1 = "+P(E[k][0])+" → SW800 → mode 2 = "+P(E[k][1])+" (κωδικός αντιστοιχίστηκε μέσω περιγραφής)");
     if(add.length) c[3]=(c[3]?c[3].replace(/^7-seg:/,"VRF SMMS – 7-seg:")+" || ":"")+add.join(" || ")+" — Πηγές: Toshiba SVM-13072 (EU) & Estia quick reference guide. Άλλες γενιές RAV έχουν άλλο πίνακα.";
   });
 })();
@@ -4239,7 +4254,7 @@ var OUTN = {
   var L=function(y,g,r){ var n={1:"αναμμένο",0:"σβηστό",2:"αναβοσβήνει"}; return "Κίτρινο "+n[y]+" · Πράσινο "+n[g]+" · Κόκκινο "+n[r]; };
   var M={E101:L(0,0,1)+" ή "+L(0,1,1)+" (ή μετά από 1′: "+L(2,1,1)+")",E102:L(0,0,1)+" ή "+L(0,1,1)+" (ή μετά από 1′: "+L(2,1,1)+")",
     E464:L(0,0,2),E461:L(0,2,0),E474:L(0,2,2),E500:L(0,2,2),E466:L(0,1,2),E483:L(0,1,2),E468:L(2,2,1),E485:L(2,2,1),E465:L(2,1,0),E467:L(1,0,1),E469:L(1,2,2)};
-  var tag=" — Samsung σειρά AR**HSSDBWK (EU). Κανονικά: Κίτρινο σβηστό · Πράσινο αναβοσβήνει · Κόκκινο αναμμένο.";
+  var tag=" (κωδικός αντιστοιχίστηκε μέσω περιγραφής) — Samsung σειρά AR**HSSDBWK (EU). Κανονικά: Κίτρινο σβηστό · Πράσινο αναβοσβήνει · Κόκκινο αναμμένο.";
   if(!T.samsung_all) return;
   T.samsung_all.codes.forEach(function(c){ for(var i=0;i<c[0].length;i++){ var k=String(c[0][i]).toUpperCase(); if(M[k]){ c[3]=(c[3]?c[3]+" || ":"")+M[k]+tag; return; } } });
 })();
@@ -4743,6 +4758,7 @@ function card(r, showPlat){
     (typeof outBox==="function" ? outBox(t, c) : '')+
     procBox(c, t.plat)+
     partLinks(c[1]+' '+(c[2]||''), c)+
+    (typeof repButton==="function" ? repButton(t.key, c[0][0]) : '')+
     '<div class="rs">'+esc(t.tbl.name)+(typeof VERIF_T!=="undefined" && VERIF_T[t.key] ? '<br>⚠️ '+esc(VERIF_T[t.key]) : '')+'</div>'+
   '</div>';
 }
@@ -6588,10 +6604,60 @@ function outRender(txt, src){
       v=segs.map(function(x){ var k=x.slice(0,x.indexOf(":")), g=ledViz(x.slice(k.length+1)); return g?'<span class="lgrp"><span class="lcode">'+esc(k)+'</span>'+g+'</span>':''; }).join("");
     } else v=ledViz(main);
     var key=v && !keyShown && /lq [ygr] (?:on|off|bl)/.test(v) && (keyShown=true) ? '<div class="lkey"><span><i class="k1"></i>αναμμένο</span><span><i></i>σβηστό</span><span><i class="k3"></i>αναβοσβήνει</span></div>' : '';
-    return '<div class="op">'+(v?'<div class="leds">'+v+'</div>'+key:'')+'<div class="otx">'+esc(/lrow/.test(v)?main.replace(/\s*=\s*[●○◎]{5}/g,"").replace("(● αναμμένο ○ σβηστό ◎ αναβοσβήνει γρήγορα· ","(αναβόσβημα γρήγορο· "):main)+'</div>'+(tag?'<div class="otag">'+esc(tag)+'</div>':'')+'</div>';
+    var ind=/αντιστοιχίστηκε μέσω περιγραφής/.test(main);
+    if(ind) main=main.replace(/\s*\(κωδικός αντιστοιχίστηκε μέσω περιγραφής\)/,"");
+    return '<div class="op">'+(ind?'<span class="indc" title="Ο κωδικός ταιριάχτηκε με τη λυχνία μέσω της περιγραφής βλάβης στο manual – επιβεβαίωσε στο μοντέλο">≈ έμμεση αντιστοίχιση</span>':'')+(v?'<div class="leds">'+v+'</div>'+key:'')+'<div class="otx">'+esc(/lrow/.test(v)?main.replace(/\s*=\s*[●○◎]{5}/g,"").replace("(● αναμμένο ○ σβηστό ◎ αναβοσβήνει γρήγορα· ","(αναβόσβημα γρήγορο· "):main)+'</div>'+(tag?'<div class="otag">'+esc(tag)+'</div>':'')+'</div>';
   }).join("");
   return '<div class="obx"><div class="oh"><svg class="ic"><use href="#i-board"/></svg> Πλακέτα εξωτερικής</div>'+body+(src?'<div class="otag">Πηγή: '+esc(src)+'</div>':'')+'</div>';
 }
+
+
+// ===== Αναφορά λάθους ανά κωδικό =====
+var REPORT_EMAIL = "";   // αν οριστεί, η αναφορά ανοίγει απευθείας email προς αυτή τη διεύθυνση
+var REPORT_KINDS = ["Λάθος σημασία κωδικού","Λάθος ένδειξη πλακέτας εξωτερικής","Λάθος βήματα ελέγχου","Λείπει κωδικός / σειρά","Άλλο"];
+function repButton(tkey, code){ return '<button class="repb" data-rep="'+esc(tkey)+'|'+esc(code)+'">⚑ Αναφορά λάθους</button>'; }
+function repOpen(tkey, code){
+  var d=document.getElementById("repdlg");
+  if(!d){ d=document.createElement("div"); d.id="repdlg"; d.className="repov"; document.body.appendChild(d); }
+  var tname=(typeof T!=="undefined" && T[tkey]) ? T[tkey].name : tkey, br=(typeof S!=="undefined" && S.brand)||"";
+  d.innerHTML='<div class="repbox" role="dialog" aria-modal="true" aria-labelledby="reph"><div class="reph" id="reph">⚑ Αναφορά λάθους</div>'+
+    '<div class="small">Κωδικός <b>'+esc(code)+'</b> · '+esc(br?br+" · ":"")+esc(tname)+'</div>'+
+    '<div class="repk">'+REPORT_KINDS.map(function(k,i){ return '<label class="chk"><input type="radio" name="repk" value="'+esc(k)+'"'+(i===0?' checked':'')+'> '+esc(k)+'</label>'; }).join("")+'</div>'+
+    '<input id="repmodel" placeholder="Μοντέλο (προαιρετικό)" autocapitalize="characters" spellcheck="false" value="'+esc((typeof S!=="undefined" && S.model)||"")+'">'+
+    '<textarea id="reptxt" rows="4" placeholder="Τι είδες στη μονάδα; π.χ. «η πλακέτα έδειχνε κόκκινο ×5, όχι ×3»"></textarea>'+
+    '<div class="scbtns"><button class="mini prim" id="repsend">📤 Αποστολή</button><button class="mini" id="repcancel">Άκυρο</button></div>'+
+    '<div class="small" style="margin-top:6px">Η αναφορά κρατιέται και σε αυτή τη συσκευή. Δεν στέλνεται τίποτα χωρίς να πατήσεις «Αποστολή».</div></div>';
+  d.style.display="flex"; d.setAttribute("data-k",tkey+"|"+code); setTimeout(function(){ var t=document.getElementById("reptxt"); if(t) t.focus(); },50);
+}
+function repText(r){ return "Βλαβολόγιο – αναφορά λάθους\nΚωδικός: "+r.code+"\nΜάρκα: "+(r.brand||"-")+"\nΠίνακας: "+r.table+"\nΜοντέλο: "+(r.model||"-")+"\nΕίδος: "+r.kind+"\nΣχόλιο: "+(r.txt||"-")+"\nΗμερομηνία: "+r.date; }
+document.addEventListener("click", function(e){
+  var b=e.target.closest("[data-rep],#repsend,#repcancel,#repdlg"); if(!b) return;
+  if(b.hasAttribute("data-rep")){ var a=b.getAttribute("data-rep").split("|"); repOpen(a[0],a.slice(1).join("|")); return; }
+  var d=document.getElementById("repdlg");
+  if(b.id==="repcancel" || (b.id==="repdlg" && e.target===d)){ d.style.display="none"; return; }
+  if(b.id==="repsend"){
+    var k=d.getAttribute("data-k").split("|"), kind=(d.querySelector('input[name=repk]:checked')||{}).value||"";
+    var r={code:k.slice(1).join("|"), table:(T[k[0]]?T[k[0]].name:k[0]), brand:(S&&S.brand)||"", model:document.getElementById("repmodel").value.trim(), kind:kind, txt:document.getElementById("reptxt").value.trim(), date:new Date().toLocaleString("el-GR")};
+    try{ var all=JSON.parse(localStorage.getItem("vl_reports")||"[]"); all.push(r); localStorage.setItem("vl_reports",JSON.stringify(all.slice(-200))); }catch(x){}
+    var t=repText(r);
+    if(REPORT_EMAIL){ location.href="mailto:"+REPORT_EMAIL+"?subject="+encodeURIComponent("Βλαβολόγιο: "+r.code+" ("+(r.brand||r.table)+")")+"&body="+encodeURIComponent(t); }
+    else if(typeof shareText==="function") shareText(t,"Βλαβολόγιο – αναφορά λάθους");
+    d.style.display="none";
+  }
+});
+document.addEventListener("keydown", function(e){ if(e.key==="Escape"){ var d=document.getElementById("repdlg"); if(d) d.style.display="none"; } });
+
+// ===== Οδηγία εγκατάστασης στο iPhone (μία φορά) =====
+(function(){
+  try{
+    var ios=/iphone|ipad|ipod/i.test(navigator.userAgent), sa=window.navigator.standalone===true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+    if(!ios || sa || localStorage.getItem("vl_ioshint")) return;
+    var h=document.createElement("div"); h.className="ioshint";
+    h.innerHTML='<span>📲 Βάλ’ το στην αρχική οθόνη: πάτα <b>Κοινοποίηση</b> ⬆️ και μετά <b>«Προσθήκη στην οθόνη Αφετηρίας»</b>. Δουλεύει και χωρίς ίντερνετ.</span><button aria-label="Κλείσιμο">✕</button>';
+    h.querySelector("button").onclick=function(){ h.remove(); try{localStorage.setItem("vl_ioshint","1");}catch(x){} };
+    document.addEventListener("DOMContentLoaded",function(){ document.body.appendChild(h); }); if(document.readyState!=="loading") document.body.appendChild(h);
+  }catch(x){}
+})();
 
 setTheme(LS.get("vl_theme","auto"));
 renderAll();

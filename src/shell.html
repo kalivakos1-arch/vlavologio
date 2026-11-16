@@ -133,6 +133,21 @@ input:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--accb
 .otag{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.35}
 details.foot{margin-top:6px}details.foot summary{cursor:pointer;color:var(--muted);font-size:12.5px;font-weight:700;list-style:none;text-align:center;padding:6px}
 details.foot summary::-webkit-details-marker{display:none}
+.indc{display:inline-block;font-size:11.5px;font-weight:800;color:var(--warntx);border:1px dashed var(--warn);border-radius:8px;padding:1px 7px;margin-bottom:6px}
+.repb{display:inline-flex;align-items:center;gap:4px;margin-top:10px;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:6px 10px;font-size:13px;font-weight:650}
+.repb:active{background:var(--card2)}
+.repov{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;justify-content:center;background:rgba(5,12,18,.55);padding:12px;padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.repbox{width:100%;max-width:520px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35);color:var(--text)}
+.reph{font-size:17px;font-weight:800;margin-bottom:4px}
+.repk{display:flex;flex-direction:column;gap:2px;margin:10px 0}
+.repk label{display:flex!important;align-items:center;gap:10px;color:var(--text)!important;font-size:15px;font-weight:600;padding:6px 2px}
+.repk input[type=radio]{-webkit-appearance:auto;appearance:auto;width:20px!important;height:20px;flex:none;margin:0;padding:0;accent-color:var(--acc)}
+.repbox textarea{width:100%;box-sizing:border-box;font:inherit;font-size:16px;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px;resize:vertical}
+.repbox input#repmodel{font-size:16px}
+.repbox .scbtns{display:flex;gap:8px;margin-top:10px}.repbox .scbtns button{flex:1;height:46px;font-size:16px}
+.mini.prim{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.ioshint{position:fixed;left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));z-index:50;display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:0 8px 30px rgba(0,0,0,.25);font-size:14px;color:var(--text)}
+.ioshint button{flex:none;background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:10px;width:34px;height:34px}
 .ro{font-size:14px;color:var(--warntx);margin-top:8px;padding:7px 9px;background:var(--warnbg);border-radius:10px}
 .rl{font-size:14px;color:var(--oktx);background:var(--okbg);border-radius:10px;padding:6px 9px;margin:2px 0 8px}
 .guide{font-size:14px;line-height:1.45;color:var(--text2);background:var(--accbg);border:1px solid color-mix(in srgb,var(--acc) 30%,transparent);border-radius:14px;padding:10px 12px;margin:8px 0}
@@ -388,7 +403,7 @@ html.field .srcbox button i .ic{width:24px;height:24px}
   <div id="results"></div>
   <div id="notes"></div>
 
-  <details class="foot"><summary>ⓘ Πηγές δεδομένων & σημειώσεις</summary><div class="foot">Τα δεδομένα συγκεντρώθηκαν από service/installation manuals των κατασκευαστών (η πηγή φαίνεται σε κάθε πίνακα). Οι κωδικοί διαφέρουν ανά γενιά/σειρά – για επισκευή πλακέτας ή συμπιεστή επιβεβαίωσε στο manual του μοντέλου. Οι «αντιστοιχίες μου» αποθηκεύονται μόνο σε αυτή τη συσκευή.<br>Ψυκτικό (R410A / R32 / R290): το βλαβολόγιο ακολουθεί τη γενιά της πλακέτας, όχι το ψυκτικό – οι νέοι κωδικοί που εμφανίστηκαν αφορούν κυρίως αισθητήρες διαρροής (π.χ. Daikin VRV 5 R32, Midea EL 0C).</div></details>
+  <details class="foot"><summary>ⓘ Πηγές δεδομένων & σημειώσεις</summary><div class="foot">Τα δεδομένα συγκεντρώθηκαν από service/installation manuals των κατασκευαστών (η πηγή φαίνεται σε κάθε πίνακα). Οι κωδικοί διαφέρουν ανά γενιά/σειρά – για επισκευή πλακέτας ή συμπιεστή επιβεβαίωσε στο manual του μοντέλου. Οι «αντιστοιχίες μου» αποθηκεύονται μόνο σε αυτή τη συσκευή.<br>Ψυκτικό (R410A / R32 / R290): το βλαβολόγιο ακολουθεί τη γενιά της πλακέτας, όχι το ψυκτικό – οι νέοι κωδικοί που εμφανίστηκαν αφορούν κυρίως αισθητήρες διαρροής (π.χ. Daikin VRV 5 R32, Midea EL 0C).<br><br>Τα ονόματα και σήματα των κατασκευαστών ανήκουν στους κατόχους τους. Η εφαρμογή είναι ανεξάρτητη και δεν συνδέεται με κανέναν κατασκευαστή. Βρήκες λάθος; Πάτα «⚑ Αναφορά λάθους» κάτω από τον κωδικό.</div></details>
 </div>
 <script>/*DATA*/</script>
 <script>/*APP*/</script>

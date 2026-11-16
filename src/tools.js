@@ -188,7 +188,57 @@ function outRender(txt, src){
       v=segs.map(function(x){ var k=x.slice(0,x.indexOf(":")), g=ledViz(x.slice(k.length+1)); return g?'<span class="lgrp"><span class="lcode">'+esc(k)+'</span>'+g+'</span>':''; }).join("");
     } else v=ledViz(main);
     var key=v && !keyShown && /lq [ygr] (?:on|off|bl)/.test(v) && (keyShown=true) ? '<div class="lkey"><span><i class="k1"></i>αναμμένο</span><span><i></i>σβηστό</span><span><i class="k3"></i>αναβοσβήνει</span></div>' : '';
-    return '<div class="op">'+(v?'<div class="leds">'+v+'</div>'+key:'')+'<div class="otx">'+esc(/lrow/.test(v)?main.replace(/\s*=\s*[●○◎]{5}/g,"").replace("(● αναμμένο ○ σβηστό ◎ αναβοσβήνει γρήγορα· ","(αναβόσβημα γρήγορο· "):main)+'</div>'+(tag?'<div class="otag">'+esc(tag)+'</div>':'')+'</div>';
+    var ind=/αντιστοιχίστηκε μέσω περιγραφής/.test(main);
+    if(ind) main=main.replace(/\s*\(κωδικός αντιστοιχίστηκε μέσω περιγραφής\)/,"");
+    return '<div class="op">'+(ind?'<span class="indc" title="Ο κωδικός ταιριάχτηκε με τη λυχνία μέσω της περιγραφής βλάβης στο manual – επιβεβαίωσε στο μοντέλο">≈ έμμεση αντιστοίχιση</span>':'')+(v?'<div class="leds">'+v+'</div>'+key:'')+'<div class="otx">'+esc(/lrow/.test(v)?main.replace(/\s*=\s*[●○◎]{5}/g,"").replace("(● αναμμένο ○ σβηστό ◎ αναβοσβήνει γρήγορα· ","(αναβόσβημα γρήγορο· "):main)+'</div>'+(tag?'<div class="otag">'+esc(tag)+'</div>':'')+'</div>';
   }).join("");
   return '<div class="obx"><div class="oh"><svg class="ic"><use href="#i-board"/></svg> Πλακέτα εξωτερικής</div>'+body+(src?'<div class="otag">Πηγή: '+esc(src)+'</div>':'')+'</div>';
 }
+
+
+// ===== Αναφορά λάθους ανά κωδικό =====
+var REPORT_EMAIL = "";   // αν οριστεί, η αναφορά ανοίγει απευθείας email προς αυτή τη διεύθυνση
+var REPORT_KINDS = ["Λάθος σημασία κωδικού","Λάθος ένδειξη πλακέτας εξωτερικής","Λάθος βήματα ελέγχου","Λείπει κωδικός / σειρά","Άλλο"];
+function repButton(tkey, code){ return '<button class="repb" data-rep="'+esc(tkey)+'|'+esc(code)+'">⚑ Αναφορά λάθους</button>'; }
+function repOpen(tkey, code){
+  var d=document.getElementById("repdlg");
+  if(!d){ d=document.createElement("div"); d.id="repdlg"; d.className="repov"; document.body.appendChild(d); }
+  var tname=(typeof T!=="undefined" && T[tkey]) ? T[tkey].name : tkey, br=(typeof S!=="undefined" && S.brand)||"";
+  d.innerHTML='<div class="repbox" role="dialog" aria-modal="true" aria-labelledby="reph"><div class="reph" id="reph">⚑ Αναφορά λάθους</div>'+
+    '<div class="small">Κωδικός <b>'+esc(code)+'</b> · '+esc(br?br+" · ":"")+esc(tname)+'</div>'+
+    '<div class="repk">'+REPORT_KINDS.map(function(k,i){ return '<label class="chk"><input type="radio" name="repk" value="'+esc(k)+'"'+(i===0?' checked':'')+'> '+esc(k)+'</label>'; }).join("")+'</div>'+
+    '<input id="repmodel" placeholder="Μοντέλο (προαιρετικό)" autocapitalize="characters" spellcheck="false" value="'+esc((typeof S!=="undefined" && S.model)||"")+'">'+
+    '<textarea id="reptxt" rows="4" placeholder="Τι είδες στη μονάδα; π.χ. «η πλακέτα έδειχνε κόκκινο ×5, όχι ×3»"></textarea>'+
+    '<div class="scbtns"><button class="mini prim" id="repsend">📤 Αποστολή</button><button class="mini" id="repcancel">Άκυρο</button></div>'+
+    '<div class="small" style="margin-top:6px">Η αναφορά κρατιέται και σε αυτή τη συσκευή. Δεν στέλνεται τίποτα χωρίς να πατήσεις «Αποστολή».</div></div>';
+  d.style.display="flex"; d.setAttribute("data-k",tkey+"|"+code); setTimeout(function(){ var t=document.getElementById("reptxt"); if(t) t.focus(); },50);
+}
+function repText(r){ return "Βλαβολόγιο – αναφορά λάθους\nΚωδικός: "+r.code+"\nΜάρκα: "+(r.brand||"-")+"\nΠίνακας: "+r.table+"\nΜοντέλο: "+(r.model||"-")+"\nΕίδος: "+r.kind+"\nΣχόλιο: "+(r.txt||"-")+"\nΗμερομηνία: "+r.date; }
+document.addEventListener("click", function(e){
+  var b=e.target.closest("[data-rep],#repsend,#repcancel,#repdlg"); if(!b) return;
+  if(b.hasAttribute("data-rep")){ var a=b.getAttribute("data-rep").split("|"); repOpen(a[0],a.slice(1).join("|")); return; }
+  var d=document.getElementById("repdlg");
+  if(b.id==="repcancel" || (b.id==="repdlg" && e.target===d)){ d.style.display="none"; return; }
+  if(b.id==="repsend"){
+    var k=d.getAttribute("data-k").split("|"), kind=(d.querySelector('input[name=repk]:checked')||{}).value||"";
+    var r={code:k.slice(1).join("|"), table:(T[k[0]]?T[k[0]].name:k[0]), brand:(S&&S.brand)||"", model:document.getElementById("repmodel").value.trim(), kind:kind, txt:document.getElementById("reptxt").value.trim(), date:new Date().toLocaleString("el-GR")};
+    try{ var all=JSON.parse(localStorage.getItem("vl_reports")||"[]"); all.push(r); localStorage.setItem("vl_reports",JSON.stringify(all.slice(-200))); }catch(x){}
+    var t=repText(r);
+    if(REPORT_EMAIL){ location.href="mailto:"+REPORT_EMAIL+"?subject="+encodeURIComponent("Βλαβολόγιο: "+r.code+" ("+(r.brand||r.table)+")")+"&body="+encodeURIComponent(t); }
+    else if(typeof shareText==="function") shareText(t,"Βλαβολόγιο – αναφορά λάθους");
+    d.style.display="none";
+  }
+});
+document.addEventListener("keydown", function(e){ if(e.key==="Escape"){ var d=document.getElementById("repdlg"); if(d) d.style.display="none"; } });
+
+// ===== Οδηγία εγκατάστασης στο iPhone (μία φορά) =====
+(function(){
+  try{
+    var ios=/iphone|ipad|ipod/i.test(navigator.userAgent), sa=window.navigator.standalone===true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+    if(!ios || sa || localStorage.getItem("vl_ioshint")) return;
+    var h=document.createElement("div"); h.className="ioshint";
+    h.innerHTML='<span>📲 Βάλ’ το στην αρχική οθόνη: πάτα <b>Κοινοποίηση</b> ⬆️ και μετά <b>«Προσθήκη στην οθόνη Αφετηρίας»</b>. Δουλεύει και χωρίς ίντερνετ.</span><button aria-label="Κλείσιμο">✕</button>';
+    h.querySelector("button").onclick=function(){ h.remove(); try{localStorage.setItem("vl_ioshint","1");}catch(x){} };
+    document.addEventListener("DOMContentLoaded",function(){ document.body.appendChild(h); }); if(document.readyState!=="loading") document.body.appendChild(h);
+  }catch(x){}
+})();

@@ -480,6 +480,7 @@ function card(r, showPlat){
     (typeof outBox==="function" ? outBox(t, c) : '')+
     procBox(c, t.plat)+
     partLinks(c[1]+' '+(c[2]||''), c)+
+    (typeof repButton==="function" ? repButton(t.key, c[0][0]) : '')+
     '<div class="rs">'+esc(t.tbl.name)+(typeof VERIF_T!=="undefined" && VERIF_T[t.key] ? '<br>⚠️ '+esc(VERIF_T[t.key]) : '')+'</div>'+
   '</div>';
 }
