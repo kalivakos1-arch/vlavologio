@@ -145,6 +145,7 @@ details.foot summary::-webkit-details-marker{display:none}
 .repbox textarea{width:100%;box-sizing:border-box;font:inherit;font-size:16px;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px;resize:vertical}
 .repbox input#repmodel{font-size:16px}
 .repbox .scbtns{display:flex;gap:8px;margin-top:10px}.repbox .scbtns button{flex:1;height:46px;font-size:16px}
+.admbox{max-height:85vh;overflow:auto}.admrow{border:1px solid var(--line);border-radius:12px;padding:9px 10px;margin-bottom:8px;background:var(--card2)}.admh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px}
 .mini.prim{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
 .ioshint{position:fixed;left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));z-index:50;display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:0 8px 30px rgba(0,0,0,.25);font-size:14px;color:var(--text)}
 .ioshint button{flex:none;background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:10px;width:34px;height:34px}
@@ -6613,7 +6614,22 @@ function outRender(txt, src){
 
 
 // ===== Αναφορά λάθους ανά κωδικό =====
-var REPORT_EMAIL = "";   // αν οριστεί, η αναφορά ανοίγει απευθείας email προς αυτή τη διεύθυνση
+var REPORT_EMAIL = "";
+// Αναφορές: Φόρμα Google (λογαριασμός ιδιοκτήτη) – ο τεχνικός δεν βλέπει φόρμα, η εφαρμογή στέλνει από πίσω.
+var REPORT_FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfjQYpQVa9ock0Bk5wre-6BCIWYmi7pM852Fye2xsqmZDb6_A/formResponse";
+var REPORT_ENTRY = "entry.607089889";
+var REPORT_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvto8ahCNg94hnc62aKYkYU6TaFi4neq481ZUnxLQQQUnUr5F13mFs-Z3IHGhjnXWHGfU4U5tySnna/pub?output=csv";
+function repToast(msg){ var m=document.getElementById("copied"); if(!m){ m=document.createElement("div"); m.id="copied"; document.body.appendChild(m); } m.textContent=msg; m.className="toast"; clearTimeout(repToast._t); repToast._t=setTimeout(function(){ m.className=""; },2600); }
+function repQueue(){ try{ return JSON.parse(localStorage.getItem("vl_repq")||"[]"); }catch(x){ return []; } }
+function repPost(text){
+  var body=new URLSearchParams(); body.append(REPORT_ENTRY, text);
+  return fetch(REPORT_FORM,{method:"POST",mode:"no-cors",body:body});
+}
+function repFlush(){
+  var q=repQueue(); if(!q.length || !navigator.onLine) return;
+  var t=q[0]; repPost(t).then(function(){ var r=repQueue(); r.shift(); try{ localStorage.setItem("vl_repq",JSON.stringify(r)); }catch(x){} if(r.length) setTimeout(repFlush,800); }).catch(function(){});
+}
+window.addEventListener("online", repFlush); setTimeout(repFlush, 3000);
 var REPORT_KINDS = ["Λάθος σημασία κωδικού","Λάθος ένδειξη πλακέτας εξωτερικής","Λάθος βήματα ελέγχου","Λείπει κωδικός / σειρά","Άλλο"];
 function repButton(tkey, code){ return '<button class="repb" data-rep="'+esc(tkey)+'|'+esc(code)+'">⚑ Αναφορά λάθους</button>'; }
 function repOpen(tkey, code){
@@ -6626,7 +6642,7 @@ function repOpen(tkey, code){
     '<input id="repmodel" placeholder="Μοντέλο (προαιρετικό)" autocapitalize="characters" spellcheck="false" value="'+esc((typeof S!=="undefined" && S.model)||"")+'">'+
     '<textarea id="reptxt" rows="4" placeholder="Τι είδες στη μονάδα; π.χ. «η πλακέτα έδειχνε κόκκινο ×5, όχι ×3»"></textarea>'+
     '<div class="scbtns"><button class="mini prim" id="repsend">📤 Αποστολή</button><button class="mini" id="repcancel">Άκυρο</button></div>'+
-    '<div class="small" style="margin-top:6px">Η αναφορά κρατιέται και σε αυτή τη συσκευή. Δεν στέλνεται τίποτα χωρίς να πατήσεις «Αποστολή».</div></div>';
+    '<div class="small" style="margin-top:6px">Η αναφορά στέλνεται ανώνυμα για έλεγχο και διόρθωση. Δεν στέλνεται τίποτα χωρίς να πατήσεις «Αποστολή».</div></div>';
   d.style.display="flex"; d.setAttribute("data-k",tkey+"|"+code); setTimeout(function(){ var t=document.getElementById("reptxt"); if(t) t.focus(); },50);
 }
 function repText(r){ return "Βλαβολόγιο – αναφορά λάθους\nΚωδικός: "+r.code+"\nΜάρκα: "+(r.brand||"-")+"\nΠίνακας: "+r.table+"\nΜοντέλο: "+(r.model||"-")+"\nΕίδος: "+r.kind+"\nΣχόλιο: "+(r.txt||"-")+"\nΗμερομηνία: "+r.date; }
@@ -6640,9 +6656,12 @@ document.addEventListener("click", function(e){
     var r={code:k.slice(1).join("|"), table:(T[k[0]]?T[k[0]].name:k[0]), brand:(S&&S.brand)||"", model:document.getElementById("repmodel").value.trim(), kind:kind, txt:document.getElementById("reptxt").value.trim(), date:new Date().toLocaleString("el-GR")};
     try{ var all=JSON.parse(localStorage.getItem("vl_reports")||"[]"); all.push(r); localStorage.setItem("vl_reports",JSON.stringify(all.slice(-200))); }catch(x){}
     var t=repText(r);
-    if(REPORT_EMAIL){ location.href="mailto:"+REPORT_EMAIL+"?subject="+encodeURIComponent("Βλαβολόγιο: "+r.code+" ("+(r.brand||r.table)+")")+"&body="+encodeURIComponent(t); }
-    else if(typeof shareText==="function") shareText(t,"Βλαβολόγιο – αναφορά λάθους");
     d.style.display="none";
+    if(REPORT_FORM){
+      var q=repQueue(); q.push(t); try{ localStorage.setItem("vl_repq",JSON.stringify(q)); }catch(x){}
+      if(navigator.onLine){ repToast("✔ Η αναφορά στάλθηκε – ευχαριστούμε!"); repFlush(); }
+      else repToast("📴 Χωρίς ίντερνετ – θα σταλεί αυτόματα μόλις συνδεθείς");
+    } else if(typeof shareText==="function") shareText(t,"Βλαβολόγιο – αναφορά λάθους");
   }
 });
 document.addEventListener("keydown", function(e){ if(e.key==="Escape"){ var d=document.getElementById("repdlg"); if(d) d.style.display="none"; } });
@@ -6658,6 +6677,35 @@ document.addEventListener("keydown", function(e){ if(e.key==="Escape"){ var d=do
     document.addEventListener("DOMContentLoaded",function(){ document.body.appendChild(h); }); if(document.readyState!=="loading") document.body.appendChild(h);
   }catch(x){}
 })();
+
+
+// ===== Οθόνη «Αναφορές» (ιδιοκτήτης): 5 πατήματα στο λογότυπο =====
+function csvParse(t){ var rows=[],row=[],f="",q=false; for(var i=0;i<t.length;i++){ var c=t[i];
+  if(q){ if(c==='"'){ if(t[i+1]==='"'){ f+='"'; i++; } else q=false; } else f+=c; }
+  else if(c==='"') q=true; else if(c===','){ row.push(f); f=""; } else if(c==='\n'){ row.push(f); rows.push(row); row=[]; f=""; } else if(c!=='\r') f+=c; }
+  if(f!==""||row.length){ row.push(f); rows.push(row); } return rows; }
+function admOpen(){
+  var pin=localStorage.getItem("vl_admpin");
+  if(!pin){ var a=prompt("Όρισε κωδικό (PIN) για την οθόνη Αναφορές σε αυτή τη συσκευή:"); if(!a) return; localStorage.setItem("vl_admpin",a); }
+  else { var b=prompt("PIN:"); if(b!==pin) return; }
+  var d=document.getElementById("admdlg"); if(!d){ d=document.createElement("div"); d.id="admdlg"; d.className="repov"; document.body.appendChild(d); }
+  d.innerHTML='<div class="repbox admbox"><div class="reph">⚑ Αναφορές τεχνικών</div><div id="admlist" class="small">Φόρτωση…</div><div class="scbtns"><button class="mini" id="admclose">Κλείσιμο</button></div></div>';
+  d.style.display="flex";
+  fetch(REPORT_CSV+"&t="+Date.now(),{cache:"no-store"}).then(function(r){ return r.text(); }).then(function(t){
+    var rows=csvParse(t).slice(1).filter(function(r){ return r[1]; }).reverse();
+    var el=document.getElementById("admlist");
+    if(!rows.length){ el.innerHTML="Δεν υπάρχουν αναφορές ακόμα."; return; }
+    el.innerHTML='<div style="margin-bottom:8px"><b>'+rows.length+'</b> αναφορές (νεότερες πρώτα)</div>'+rows.map(function(r){
+      var lines=r[1].split("\n"), f={}; lines.forEach(function(l){ var i=l.indexOf(": "); if(i>0) f[l.slice(0,i)]=l.slice(i+2); });
+      return '<div class="admrow"><div class="admh"><span class="code">'+esc(f["Κωδικός"]||"?")+'</span> <b>'+esc(f["Μάρκα"]||"")+'</b> <span class="small">'+esc(r[0])+'</span></div>'+
+        '<div class="small">'+esc(f["Είδος"]||"")+(f["Μοντέλο"]&&f["Μοντέλο"]!=="-"?' · μοντέλο '+esc(f["Μοντέλο"]):'')+'</div>'+
+        '<div class="otx">'+esc(f["Σχόλιο"]||r[1])+'</div><div class="otag">'+esc(f["Πίνακας"]||"")+'</div></div>';
+    }).join("");
+  }).catch(function(){ var el=document.getElementById("admlist"); if(el) el.innerHTML="Δεν φορτώθηκαν οι αναφορές – χρειάζεται ίντερνετ."; });
+}
+(function(){ var n=0, tm=null; document.addEventListener("click", function(e){
+  if(e.target.closest("#admclose")){ document.getElementById("admdlg").style.display="none"; return; }
+  if(!e.target.closest(".logo")) return; n++; clearTimeout(tm); tm=setTimeout(function(){ n=0; },1500); if(n>=5){ n=0; admOpen(); } }); })();
 
 setTheme(LS.get("vl_theme","auto"));
 renderAll();
