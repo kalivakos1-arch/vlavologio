@@ -132,7 +132,7 @@ function lgmvLed(code){
   return p.join(" → ");
 }
 function outBox(t, c){
-  if(c[3] || /_outled$|_out$|multiled$/.test(t.key)) return "";
+  if(c[3] || /_outled$|_out$|multiled$|_inled$|_inled_recall$/.test(t.key)) return "";
   var o = typeof OUTN!=="undefined" && OUTN[t.key];
   if(!o) return '<div class="ro small" style="opacity:.75">📟 Πλακέτα εξωτερικής: δεν έχει επιβεβαιωθεί ένδειξη για αυτόν τον κωδικό στις πηγές μας.</div>';
   var d = o.lgmv ? lgmvLed(c[0][0]) : "";

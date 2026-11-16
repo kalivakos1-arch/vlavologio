@@ -86,6 +86,16 @@ var OUTN = {
  inventor_minichiller: {t:"Δεν βρέθηκε δημόσιο επίσημο service manual της Inventor για τα Mini Chiller με ένδειξη πλακέτας εξωτερικής. Ο κωδικός διαβάζεται στο χειριστήριο της μονάδας.", s:"Αναζήτηση Νοέμβριος 2026 – καμία επίσημη πηγή"},
  kerosun_split: {t:"Δεν βρέθηκε δημόσιο επίσημο service manual Kerosun με ένδειξη πλακέτας εξωτερικής. Ο κωδικός διαβάζεται στην οθόνη της εσωτερικής.", s:"Αναζήτηση Νοέμβριος 2026 – καμία επίσημη πηγή"},
  tcl_split: {t:"TCL: για τα multi (FMA) υπάρχει πίνακας αναλαμπών της λυχνίας εξωτερικής (δες «Εξωτερική» → TCL multi). Για τους υπόλοιπους κωδικούς split δεν βρέθηκε επίσημη αντιστοίχιση.", s:"TCL multi FMA service manual· αναζήτηση Νοέμβριος 2026"},
+ aux_split: {t:"AUX: η πλακέτα εξωτερικής έχει 3 LED (D1–D3). Για τους κωδικούς που ΔΕΝ έχουν δική τους γραμμή στον πίνακα, τα LED δείχνουν D1 σβηστό · D2 αναβοσβήνει · D3 σβηστό = «άλλη βλάβη – δες με εργαλείο σέρβις». Κανονικά: όλα σβηστά (αναμονή) ή όλα αναβοσβήνουν (συμπιεστής δουλεύει).", s:"AUX service manual ASW-H09B5B4/FAR3DI-C3 (EU), 8-2 Display error code of outdoor unit's indicator lights (γραμμές 1, 2, 17)· AUX Troubleshooting Guide (auxusa)"},
+ hisense_split: {t:"Hisense split: όταν ο συμπιεστής σταματήσει από βλάβη, τα LED της πλακέτας εξωτερικής δείχνουν αυτόματα την ακολουθία της βλάβης· οι αριθμητικοί κωδικοί διαβάζονται και με SLEEP ×4 σε 10″ στο τηλεχειριστήριο (7-segment εσωτερικής). Ο πίνακας LED ανά αριθμό διαφέρει ανά σειρά.", s:"Hisense Trouble Shooting – Error Code Table (1. Indication on the outdoor unit / 2. Indication by the indoor unit) – parteypieza.cl (διανομέας Hisense)· Hisense service manual AS-…UR4S"},
+ haier_split: {t:"Haier: η πλακέτα εξωτερικής έχει LED1 που αναβοσβήνει N φορές – δες τον πίνακα «Haier multi/split – LED1 πλακέτας εξωτερικής». Οι κωδικοί που δεν είναι σε αυτόν τον πίνακα (κυρίως εσωτερικής) δεν έχουν επιβεβαιωμένη ένδειξη στην εξωτερική.", s:"Haier service manual multi 2U18MS2VHB (outdoor LED1 flash table)"},
+ fujitsu_all: {t:"Fujitsu: μονόσπλιτ – ο κωδικός φαίνεται με τις λυχνίες OPERATION/TIMER της εσωτερικής (π.χ. 11 = OPERATION ×1, TIMER ×1). Multi (AOYG…LAT): LED1–LED4 πλακέτας εξωτερικής – δες πίνακα «Fujitsu multi». Νεότερες εξωτερικές με LED «ERROR»: όταν αναβοσβήνει, πάτα ENTER μία φορά και διάβασε τα LED από τον πίνακα του manual. VRF (AJ…): 7-segment εξωτερικής δείχνει E.xx.x.", s:"Fujitsu service manual (1-2 Outdoor unit display – ERROR LED + ENTER)· Fujitsu installation manual multi AOYG30LAT4 (Outdoor unit LEDs)· Fujitsu VRF service manual (Outdoor unit: E. 86. 1)"},
+ hisense_hitherma: {t:"Hi-Therma: ο κωδικός διαβάζεται στο χειριστήριο της μονάδας. Δεν βρέθηκε επίσημο manual με πίνακα ένδειξης στην πλακέτα της εξωτερικής.", s:"Αναζήτηση Νοέμβριος 2026 – καμία επίσημη πηγή"},
+ hr_lg: {t:"Multi V Heat Recovery: ο κωδικός φαίνεται στο 7-segment της master εξωτερικής (π.χ. 200 = σφάλμα αυτόματης αναγνώρισης σωληνώσεων).", s:"LG Multi V 5 Operation & maintenance manual (media.us.lg.com) – «If there is an auto pipe detection error, 200 will be displayed»"},
+ hr_samsung: {t:"DVM Heat Recovery: ο κωδικός φαίνεται στο 7-segment της πλακέτας εξωτερικής (Outdoor unit 7-segment error display).", s:"Samsung troubleshooting manual – Outdoor Unit 7-segment Error Display"},
+ hr_midea: {t:"Midea VRF Heat Recovery: ο κωδικός εμφανίζεται στην κύρια πλακέτα της εξωτερικής και στο χειριστήριο.", s:"Midea España – VRF E8 Full DC R32 (midea.es)"},
+ midea_split: {t:"Ο κωδικός αυτός δεν περιλαμβάνεται στον πίνακα «Error Display (For Some Outdoor Units)» του ευρωπαϊκού manual. Σε εξωτερικές με οθόνη, πάτα SW1 (point check) – η θέση 00 δείχνει συχνότητα/κατάσταση ή κωδικό βλάβης. Κόκκινο LED πλακέτας: αργό αναβόσβημα = αναμονή, σταθερό = ρεύμα, γρήγορο (2,5 Hz) = βλάβη.", s:"Midea service manual SM_LC(GA)_R32_3D INV_EU_NB_2207 – 2.2 Error Display (For Some Outdoor Units), 4. Outdoor unit point check function"},
+ gree_split: {t:"Ο κωδικός αυτός δεν περιλαμβάνεται στον πίνακα λυχνιών εξωτερικής (Κίτρινο/Κόκκινο/Πράσινο) του ευρωπαϊκού manual. Κανονικά: Πράσινο αναμμένο = επικοινωνία OK.", s:"Gree service manual GWH09QB-K6DNA1C/I (EU), 9.1 Error Code List"},
  mhi_split: {t:"Η πλακέτα ελέγχου εξωτερικής έχει κόκκινο και πράσινο LED που αναβοσβήνουν μαζί με τις λυχνίες RUN/TIMER της εσωτερικής – ο πίνακας ανά βλάβη είναι στο MHI Service Support Handbook (RAC fault codes). Για αυτόν τον κωδικό δεν υπάρχει καθαρή γραμμή στον πίνακα (οι υπόλοιποι κωδικοί έχουν δική τους ένδειξη).", s:"MHI Service Support Handbook SRK-ZSP-S – RAC fault codes (Indoor display / Outdoor control PCB red & green LED)"}
 };
 
@@ -163,6 +173,31 @@ var OUTN = {
   });
 })();
 
+// ===== Gree οικιακά split: 3 λυχνίες πλακέτας εξωτερικής (Κίτρινο/Κόκκινο/Πράσινο) – συμπλήρωση =====
+// Πηγή: Gree service manual GWH09QB-K6DNA1C/I (ευρωπαϊκό), 9.1 Error Code List «Display Method of Outdoor Unit (Only for the mode with this function)», σελ. 66–71 (διαβάστηκε από εικόνα).
+// Αναλαμπή: OFF 3s και αναβοσβήνει N φορές (ON 0,5s / OFF 0,5s). Κανονικά: Πράσινο αναμμένο συνεχώς (επικοινωνία OK)· απόψυξη: Κίτρινο ×2.
+(function(){
+  var M={LP:"Κίτρινο LED × 16",F6:"Κόκκινο LED × 3",F8:"Κόκκινο LED × 1",F9:"Κόκκινο LED × 2",FH:"Κόκκινο LED × 4",L9:"Κίτρινο LED × 9"};
+  var NONE={E1:1,EU:1,C5:1,F1:1,F2:1,P5:1,PU:1,P7:1,U1:1,U3:1,U5:1,U7:1,U8:1,H6:1,H7:1,LC:1};
+  var tag=" — Gree GWH09QB-K6DNA1C/I (EU), μόνο σε εξωτερικές με λυχνίες (όχι 18K). Μορφή: σβηστό 3″ και N αναλαμπές.";
+  if(!T.gree_split) return;
+  T.gree_split.codes.forEach(function(c){ if(c[3]) return; var k=String(c[0][0]).toUpperCase();
+    if(M[k]) c[3]=M[k]+tag; else if(NONE[k]) c[3]="Καμία ειδική ένδειξη στις λυχνίες εξωτερικής για αυτόν τον κωδικό (κενό στον πίνακα)"+tag; });
+})();
+
+// ===== Midea οικιακά/ελαφριά εμπορικά: οθόνη πλακέτας εξωτερικής (σε μοντέλα με οθόνη) =====
+// Πηγή: Midea service manual SM_LC(GA)_R32_3D INV_EU_NB_2207 (ευρωπαϊκό), 2.2 Error Display (For Some Outdoor Units).
+// Στους νέους κωδικούς Midea: H = κωδικός εσωτερικής, C = κωδικός εξωτερικής (Midea «Introduction of New Error Codes»).
+(function(){
+  var OUT={EC51:1,EL01:1,PC40:1,PC08:1,PC10:1,PC11:1,PC12:1,PC00:1,PC0F:1,EC71:1,EC72:1,EC07:1,PC43:1,PC44:1,PC45:1,PC46:1,PC49:1,PC30:1,PC31:1,PC0A:1,PC06:1,PH90:1,PH91:1,PC02:1,EC52:1,EC53:1,EC54:1,EC55:1,EC50:1,PC0L:1};
+  if(!T.midea_split) return;
+  T.midea_split.codes.forEach(function(c){ if(c[3]) return; var hit=null, indoor=false;
+    c[0].forEach(function(x){ var k=String(x).toUpperCase().replace(/\s/g,""); if(OUT[k]) hit=hit||x; if(/^EH|^FH/.test(k)) indoor=true; });
+    if(hit) c[3]="Οθόνη πλακέτας εξωτερικής (μόνο μοντέλα με οθόνη): δείχνει τον ίδιο κωδικό «"+String(hit).replace(/^(..)(..)$/,"$1 $2")+"». — Midea SM_LC R32 (EU), 2.2 Error Display (For Some Outdoor Units).";
+    else if(indoor) c[3]="Κωδικός εσωτερικής (H): δεν περιλαμβάνεται στον πίνακα της οθόνης εξωτερικής – διάβασέ τον στην εσωτερική. — Midea SM_LC R32 (EU) 2.2 & «Introduction of New Error Codes» (H = εσωτερική, C = εξωτερική).";
+  });
+})();
+
 // ===== Samsung οικιακά (σειρά AR**HSFNBWK NET/XET, 12/18/24K): 3 LED πλακέτας εξωτερικής (Κίτρινο / Πράσινο / Κόκκινο) =====
 // Πηγή: Samsung service manual AR09HSFNBWKNET (ευρωπαϊκό), 3-2-1 Indoor Display Error (λίστα κωδικών) & «Outdoor LED Display Error and Check Method (12K/18K/24K)».
 // Η αντιστοίχιση έγινε με την ίδια περιγραφή βλάβης στους δύο πίνακες του ίδιου manual. ● αναμμένο · ○ σβηστό · ◐ αναβοσβήνει.
@@ -178,4 +213,16 @@ var OUTN = {
   };
   var tag=" — Samsung σειρά AR**HSFNBWK (ευρωπαϊκά NET/XET, 12/18/24K). Κανονική λειτουργία: Κίτρινο σβηστό · Πράσινο αναβοσβήνει · Κόκκινο αναμμένο. Άλλες σειρές μπορεί να έχουν άλλο συνδυασμό.";
   if(T.samsung_all) T.samsung_all.codes.forEach(function(c){ if(c[3]) return; for(var i=0;i<c[0].length;i++){ var k=String(c[0][i]).toUpperCase(); if(M[k]){ c[3]=M[k]+tag; return; } } });
+})();
+
+// ===== Samsung σειρά AR**HSSDBWK (ευρωπαϊκά NEU/XEU): 3 LED πλακέτας εξωτερικής – δεύτερη σειρά =====
+// Πηγή: Samsung service manual AR12HSSDBWKNEU, 3-2-1 Indoor Display Error (κωδικός ↔ περιγραφή) & «Outdoor LED Display Error and Check Method» (περιγραφή ↔ LED), σελ. 11–12.
+// Αντιστοίχιση μόνο όπου η περιγραφή είναι ίδια στους δύο πίνακες. ● αναμμένο ○ σβηστό ◎ αναβοσβήνει.
+(function(){
+  var L=function(y,g,r){ var n={1:"αναμμένο",0:"σβηστό",2:"αναβοσβήνει"}; return "Κίτρινο "+n[y]+" · Πράσινο "+n[g]+" · Κόκκινο "+n[r]; };
+  var M={E101:L(0,0,1)+" ή "+L(0,1,1)+" (ή μετά από 1′: "+L(2,1,1)+")",E102:L(0,0,1)+" ή "+L(0,1,1)+" (ή μετά από 1′: "+L(2,1,1)+")",
+    E464:L(0,0,2),E461:L(0,2,0),E474:L(0,2,2),E500:L(0,2,2),E466:L(0,1,2),E483:L(0,1,2),E468:L(2,2,1),E485:L(2,2,1),E465:L(2,1,0),E467:L(1,0,1),E469:L(1,2,2)};
+  var tag=" — Samsung σειρά AR**HSSDBWK (EU). Κανονικά: Κίτρινο σβηστό · Πράσινο αναβοσβήνει · Κόκκινο αναμμένο.";
+  if(!T.samsung_all) return;
+  T.samsung_all.codes.forEach(function(c){ for(var i=0;i<c[0].length;i++){ var k=String(c[0][i]).toUpperCase(); if(M[k]){ c[3]=(c[3]?c[3]+" || ":"")+M[k]+tag; return; } } });
 })();
