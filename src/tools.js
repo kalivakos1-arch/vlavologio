@@ -136,5 +136,5 @@ function outBox(t, c){
   var o = typeof OUTN!=="undefined" && OUTN[t.key];
   if(!o) return '<div class="ro small" style="opacity:.75">📟 Πλακέτα εξωτερικής: δεν έχει επιβεβαιωθεί ένδειξη για αυτόν τον κωδικό στις πηγές μας.</div>';
   var d = o.lgmv ? lgmvLed(c[0][0]) : "";
-  return '<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+(d?'<b>Multi V: '+esc(d)+'</b><br>':'')+esc(o.t)+'<div class="small" style="margin-top:3px">Πηγή: '+esc(o.s)+'</div></div>';
+  return '<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+(d?'<b>LED εξωτερικής: '+esc(d)+'</b><br>':'')+esc(o.t)+'<div class="small" style="margin-top:3px">Πηγή: '+esc(o.s)+'</div></div>';
 }
