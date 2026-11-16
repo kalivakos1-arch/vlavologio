@@ -153,6 +153,9 @@ details.note p{font-size:13.5px;color:var(--text2)}
 .pbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:10px}
 .pinfo{margin:6px 0}
 .pchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.pttab{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}.pttab th,.pttab td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line)}.pttab th{font-size:12px;color:var(--muted)}
+label.chk{display:flex!important;gap:10px;align-items:center;margin:8px 0}.pcalcw label.chk input[type=checkbox]{width:22px!important;height:22px;min-width:22px;flex:none;margin:0;padding:0;accent-color:var(--acc);-webkit-appearance:checkbox!important;appearance:auto!important;border-radius:4px!important;background:none!important;border:0!important}
+#toolsgrp{scroll-margin-top:12px}
 .pc{background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:8px 11px;font-size:13.5px;font-weight:600}
 .pc.on{border-color:var(--acc);background:var(--accbg)}
 .pwarn{background:var(--badbg);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);color:var(--badtx);border-radius:12px;padding:8px 11px;font-size:13px;margin-bottom:10px}
@@ -237,6 +240,7 @@ html.field body{--muted:var(--text2)}
 html.field .mini,html.field .chip,html.field button{min-height:46px;font-size:1.02em}
 html.field .card,html.field .hcard,html.field .dtw{border-width:2px}
 @media (max-width:440px){.hgrow p{display:none}.hbtn{width:36px;margin-right:4px}}
+@media (max-width:420px){header{gap:4px!important}header .logo{margin-right:4px}header h1{font-size:15.5px;line-height:1.15}header .hbtn,header #theme{width:34px!important;height:38px;margin-right:0!important}}
 .ftw{border:2px solid #8b5cf6;border-radius:14px;padding:10px 12px;margin:8px 0;background:var(--card)}.ftstep{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line2)}
 .fwiz{border-width:2px;border-color:var(--text2)}
 html.field .small{font-size:.95em}
@@ -333,7 +337,7 @@ html.field .srcbox button i .ic{width:24px;height:24px}
 <div class="wrap">
   <header>
     <div class="logo"><svg viewBox="0 0 48 48" width="40" height="40"><use href="#i-gauge"/></svg></div>
-    <div class="hgrow"><h1>Βλαβολόγιο Κλιματισμού</h1><p>Κωδικοί, λυχνίες & μετρήσεις από τα service manuals</p></div><button id="qscan" class="hbtn" aria-label="Σάρωση barcode" title="Σάρωση ετικέτας"><svg class="ic"><use href="#i-scan"/></svg></button><button id="histbtn" class="hbtn" aria-label="Ιστορικό" title="Ιστορικό επισκέψεων"><svg class="ic"><use href="#i-log"/></svg></button><button id="fieldbtn" class="hbtn" aria-label="Λειτουργία πεδίου"><svg class="ic"><use href="#i-type"/></svg></button><button id="theme" aria-label="Θέμα"><svg class="ic"><use href="#i-theme"/></svg></button>
+    <div class="hgrow"><h1>Βλαβολόγιο Κλιματισμού</h1><p>Κωδικοί, λυχνίες & μετρήσεις από τα service manuals</p></div><button id="qscan" class="hbtn" aria-label="Σάρωση barcode" title="Σάρωση ετικέτας"><svg class="ic"><use href="#i-scan"/></svg></button><button id="toolsbtn" class="hbtn" aria-label="Εργαλεία" title="Εργαλεία: P/T, φρέον, F-gas, αέρας"><svg class="ic"><use href="#i-gauge"/></svg></button><button id="histbtn" class="hbtn" aria-label="Ιστορικό" title="Ιστορικό επισκέψεων"><svg class="ic"><use href="#i-log"/></svg></button><button id="fieldbtn" class="hbtn" aria-label="Λειτουργία πεδίου"><svg class="ic"><use href="#i-type"/></svg></button><button id="theme" aria-label="Θέμα"><svg class="ic"><use href="#i-theme"/></svg></button>
   </header>
 
   <div class="card" id="brandcard">

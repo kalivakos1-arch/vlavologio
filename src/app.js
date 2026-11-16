@@ -1032,18 +1032,18 @@ function stepsOf(t){
 }
 
 // ===== Πιέσεις, υπερθέρμανση, υπόψυξη =====
-function satT(ref, pg){ // pg: bar gauge → °C
-  var t=PT[ref], pa=pg+1.013, i;
+function satT(ref, pg, kind){ // pg: bar gauge → °C· kind "b" = σημείο φυσαλίδας (μείγματα)
+  var t=(kind==="b" && typeof PTB!=="undefined" && PTB[ref])?PTB[ref]:PT[ref], pa=pg+1.013, i;
   if(pa<=t[0][1]) i=0; else if(pa>=t[t.length-1][1]) i=t.length-2; else for(i=0;i<t.length-1;i++) if(pa>=t[i][1]&&pa<=t[i+1][1]) break;
   var a=t[i], b=t[i+1], f=(Math.log(pa)-Math.log(a[1]))/(Math.log(b[1])-Math.log(a[1]));
   return a[0]+f*(b[0]-a[0]);
 }
-function satP(ref, T){ var t=PT[ref], i; for(i=0;i<t.length-2;i++) if(T<=t[i+1][0]) break; var a=t[i], b=t[i+1], f=(T-a[0])/(b[0]-a[0]); return Math.exp(Math.log(a[1])+f*(Math.log(b[1])-Math.log(a[1])))-1.013; }
+function satP(ref, T, kind){ var t=(kind==="b" && typeof PTB!=="undefined" && PTB[ref])?PTB[ref]:PT[ref], i; for(i=0;i<t.length-2;i++) if(T<=t[i+1][0]) break; var a=t[i], b=t[i+1], f=(T-a[0])/(b[0]-a[0]); return Math.exp(Math.log(a[1])+f*(Math.log(b[1])-Math.log(a[1])))-1.013; }
 function presForm(){
   function s(id,lab,opts,def){ return '<label class="small">'+esc(lab)+'<select id="'+id+'" class="pv">'+opts.map(function(o){return '<option value="'+o[0]+'"'+(o[0]===def?' selected':'')+'>'+esc(o[1])+'</option>';}).join("")+'</select></label>'; }
   function i(id,lab,ph){ return '<label>'+esc(lab)+'<input id="'+id+'" class="pv" inputmode="decimal" placeholder="'+esc(ph||"")+'"></label>'; }
   return '<div class="pcalcw"><div class="lbl">📏 Πιέσεις – γράψε ό,τι έχεις μετρήσει</div>'+
-   '<div class="row4">'+s("pref","Τι φρέον έχει; (ταμπελάκι)",[["R32","R32"],["R410A","R410A"],["R22","R22"],["R290","R290 (προπάνιο)"]],S.pref||"R32")+
+   '<div class="row4">'+s("pref","Τι φρέον έχει; (ταμπελάκι)",[["R32","R32"],["R410A","R410A"],["R454B","R454B"],["R407C","R407C"],["R134a","R134a"],["R22","R22"],["R290","R290 (προπάνιο)"]],S.pref||"R32")+
    s("punit","Το μανόμετρο σε",[["bar","bar"],["psi","psi"]],S.punit||"bar")+
    s("ptype","Μηχάνημα",[["inv","Split/Multi inverter (εκτονωτική)"],["cap","On/Off (τριχοειδές)"],["vrf","VRF"]],"inv")+
    s("pmode","Λειτουργία",[["cool","Ψύξη"],["heat","Θέρμανση"]],"cool")+'</div>'+
@@ -1060,7 +1060,7 @@ function presCalc(){
   var tin=num("ptin"), tout=num("ptout"), lp=g("plp"), hp=g("php"), tsuc=num("ptsuc"), tliq=num("ptliq");
   var o=[], f1=function(x){return (Math.round(x*10)/10).toFixed(1);}, pu=function(bar){ return u==="psi"? (bar*14.5038).toFixed(0)+' psi' : bar.toFixed(1)+' bar'; };
   if(md==="heat" && ty!=="vrf") o.push('<div class="small info">ℹ️ Σε θέρμανση, στα split η βαλβίδα service (σωλήνας αερίου) δείχνει την ΥΨΗΛΗ πίεση. Γράψ\' την στο «Υψηλή πίεση».</div>');
-  var te=isNaN(lp)?NaN:satT(ref,lp), tc=isNaN(hp)?NaN:satT(ref,hp);
+  var te=isNaN(lp)?NaN:satT(ref,lp), tc=isNaN(hp)?NaN:satT(ref,hp,"b");
   var eLo,eHi,cLo,cHi;
   if(md==="cool"){ eLo=tin-24; eHi=tin-12; cLo=tout+8; cHi=tout+20; if(eLo<-2) eLo=-2; if(eHi<4) eHi=4; }
   else { cLo=tin+12; cHi=tin+30; eLo=tout-14; eHi=tout-3; }
@@ -1068,7 +1068,7 @@ function presCalc(){
   if(!isNaN(tin)&&!isNaN(tout)){
     exp = '<div class="pext">📘 Αναμενόμενα (μετά από 15′ λειτουργίας στο μέγιστο) – <i>τυπικές τιμές πρακτικής, όχι από manual· αν το manual του μοντέλου δίνει πίνακα πιέσεων, ισχύει εκείνος</i>:<br>'+
       (md==="cool"||ty==="vrf" ? '• Χαμηλή: <b>'+pu(satP(ref,eLo))+' – '+pu(satP(ref,eHi))+'</b> (εξάτμιση '+f1(eLo)+'…'+f1(eHi)+'°C)<br>':'')+
-      '• Υψηλή: <b>'+pu(satP(ref,cLo))+' – '+pu(satP(ref,cHi))+'</b> (συμπύκνωση '+f1(cLo)+'…'+f1(cHi)+'°C)'+(md==="heat"&&ty!=="vrf"?'':'')+'</div>';
+      '• Υψηλή: <b>'+pu(satP(ref,cLo,"b"))+' – '+pu(satP(ref,cHi,"b"))+'</b> (συμπύκνωση '+f1(cLo)+'…'+f1(cHi)+'°C)'+(md==="heat"&&ty!=="vrf"?'':'')+'</div>';
   }
   o.push(exp);
   var sh=NaN, sc=NaN, shLo=ty==="cap"?4:2, shHi=ty==="cap"?12:8, scLo=3, scHi=ty==="vrf"?15:10;
@@ -1162,7 +1162,10 @@ function renderParts(){
     '<input id="pmodel" placeholder="π.χ. GWH12AGB-K6DNA1A" autocapitalize="characters" spellcheck="false" value="'+esc(S.model||"")+'">'+
     '<div class="small pinfo" id="pplat"></div><div id="pmodelinfo"></div><div id="pmine"></div></div>';
   h += mmGuide(!S.part);
-  h += '<div class="lbl">Ποιο εξάρτημα θες να ελέγξεις;</div><div class="pchips">'+PARTS.map(function(p){ return '<button class="pc'+(S.part===p.id?' on':'')+'" data-pc="'+p.id+'">'+p.icon+' '+esc(p.name)+'</button>'; }).join("")+'</div>';
+  var pcb = function(p){ return '<button class="pc'+(S.part===p.id?' on':'')+'" data-pc="'+p.id+'">'+p.icon+' '+esc(p.name)+'</button>'; };
+  var isTool = function(p){ return typeof TOOL_IDS!=="undefined" && TOOL_IDS.indexOf(p.id)>=0; };
+  h += '<div class="lbl">Ποιο εξάρτημα θες να ελέγξεις;</div><div class="pchips">'+PARTS.filter(function(p){ return !isTool(p); }).map(pcb).join("")+'</div>';
+  h += '<div class="lbl" id="toolsgrp">🧰 Εργαλεία & υπολογισμοί</div><div class="pchips">'+PARTS.filter(isTool).sort(function(a,b){ return TOOL_IDS.indexOf(a.id)-TOOL_IDS.indexOf(b.id); }).map(pcb).join("")+'</div>';
   var P = partById(S.part);
   if(!P){ h += '<div class="empty">Διάλεξε εξάρτημα. Θα δεις χρώματα καλωδίων, βήματα με το πολύμετρο και τιμές από τα manuals.</div>'; }
   else {
@@ -1175,6 +1178,9 @@ function renderParts(){
     if(P.id==="conv") h += convForm();
     if(P.id==="cap") h += capForm();
     if(P.id==="inst") h += instForm();
+    if(P.id==="pt") h += ptForm();
+    if(P.id==="fgas") h += fgasForm();
+    if(P.id==="air") h += airForm();
     if(P.id==="sensor"){
       var sl = sensList();
       h += '<div class="pcalcw"><div class="lbl">🧮 Υπολογιστής αισθητηρίου</div>'+
@@ -1188,7 +1194,7 @@ function renderParts(){
     var ex = pl.map(function(p){ return PEXTRA[p] && PEXTRA[p][P.id] ? '<div class="pext">📘 <b>'+esc(PLAT[p].name)+':</b> '+esc(PEXTRA[p][P.id])+'</div>' : ''; }).join("");
     h += ex;
     h += P.body.map(function(s){ return '<div class="psec"><div class="pst">'+esc(s[0])+'</div><div class="psb">'+esc(s[1])+'</div></div>'; }).join("");
-    h += '<div class="pnote small">Οι τιμές (Ω, V) είναι από τα service manuals της μάρκας όπου υπάρχει πηγή, αλλιώς τυπικές. Η ακριβής τιμή περιέλιξης συμπιεστή/μοτέρ αλλάζει ανά μοντέλο και γράφεται στο wiring diagram ή στο service manual του – η πιο αξιόπιστη σύγκριση είναι οι 3 φάσεις μεταξύ τους.</div>';
+    if(typeof TOOL_IDS==='undefined' || TOOL_IDS.indexOf(P.id)<0) h += '<div class="pnote small">Οι τιμές (Ω, V) είναι από τα service manuals της μάρκας όπου υπάρχει πηγή, αλλιώς τυπικές. Η ακριβής τιμή περιέλιξης συμπιεστή/μοτέρ αλλάζει ανά μοντέλο και γράφεται στο wiring diagram ή στο service manual του – η πιο αξιόπιστη σύγκριση είναι οι 3 φάσεις μεταξύ τους.</div>';
     h += '<div class="psave"><div class="lbl">📒 Κράτα τη μέτρησή σου για αυτό το μοντέλο</div><div class="row2"><input id="pval" placeholder="π.χ. U-V-W 1,4Ω · γείωση OL"><button id="psave" class="mini">Αποθήκευση</button></div><div id="psmsg" class="small"></div></div>';
   }
   out.innerHTML = h;
@@ -1198,6 +1204,9 @@ function renderParts(){
   if(P && MEAS[P.id]) measUpdate();
   if(P && P.id==="pres") presCalc();
   if(P && P.id==="charge") chargeFill();
+  if(P && P.id==="pt") ptCalc();
+  if(P && P.id==="fgas") fgasCalc();
+  if(P && P.id==="air") airCalc();
   if(P && P.id==="inst") instCalc();
 }
 var fmT=null;
