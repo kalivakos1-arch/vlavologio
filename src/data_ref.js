@@ -155,7 +155,7 @@ var OUTN = {
   T.toshiba_rav.codes.forEach(function(c){ var k=String(c[0][0]).toUpperCase(), add=[];
     if(R[k]) add.push("RAV Digital Inverter (SM…4ATP-E): D800–D804 = "+P(R[k])+" (● αναμμένο ○ σβηστό ◎ αναβοσβήνει γρήγορα· D805 αναμμένο)");
     if(E[k]) add.push("Estia εξωτερική: mode 1 = "+P(E[k][0])+" → SW800 → mode 2 = "+P(E[k][1]));
-    if(add.length) c[3]=(c[3]?c[3]+" || ":"")+add.join(" || ")+" — Πηγές: Toshiba SVM-13072 (EU) & Estia quick reference guide. Άλλες γενιές RAV έχουν άλλο πίνακα.";
+    if(add.length) c[3]=(c[3]?c[3].replace(/^7-seg:/,"VRF SMMS – 7-seg:")+" || ":"")+add.join(" || ")+" — Πηγές: Toshiba SVM-13072 (EU) & Estia quick reference guide. Άλλες γενιές RAV έχουν άλλο πίνακα.";
   });
 })();
 
