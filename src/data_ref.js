@@ -49,6 +49,8 @@ var MANUALS = {
  "Hitachi":[["ABB – επίσημος αντιπρόσωπος Hitachi στην Ελλάδα","https://new.abb.com/low-voltage/el/greek-pages/air-conditioning-systems/hitachi",""]],
  "Gree":[["gree.gr – επίσημη σελίδα Ελλάδας","https://www.gree.gr",""],["gree.com (ηλεκτρονική έκδοση manuals)","https://www.gree.com","Τα ελληνικά manuals της Gree παραπέμπουν εδώ ή στο global@cn.gree.com."]],
  "TCL":[["TCL Ελλάδας (Όμιλος Τουρνικιώτη)","https://www.tclgreece.gr",""]],
+ "LG":[["lg.com (επίλεξε Ελλάδα → Υποστήριξη)","https://www.lg.com","Τα ευρωπαϊκά manuals της LG (με ελληνικά) γράφουν ότι το πρωτότυπο κατεβαίνει από το www.lg.com."]],
+ "Midea":[["Midea Ελλάδας","https://www.midea.com/gr","Η επίσημη ελληνική σελίδα· εκεί φιλοξενούνται και τα ελληνικά manuals (π.χ. All Easy Pro, Gaia)."]],
  "Hisense":[["Hisense Ισπανίας – λήψη manuals","https://www.hisense.es/descargas-manuales/","Ευρωπαϊκά μοντέλα (Hi Comfort, Max Comfort, Air Master κ.ά.). Ελληνική σελίδα manuals δεν βρέθηκε."]]
 };
 
@@ -60,5 +62,27 @@ var OUTN = {
  panasonic_split: {t:"Μονόσπλιτ: ο κωδικός φαίνεται μόνο με το TIMER LED της εσωτερικής και με το CHECK του τηλεχειριστηρίου – το service manual δεν δίνει ένδειξη εξωτερικής. Στα multi (CU-2S/3S/4S…) η εξωτερική έχει LED1–LED6 με συνδυασμό ανά κωδικό· LED1 αναμμένο = εξωτερική κανονικά· σβηστό ή αναβοσβήνει → έλεγξε τροφοδοσία και αυτοδιάγνωση.", s:"Panasonic service manual CS-TE9HKE (15.2 Breakdown self diagnosis)· Panasonic multi CU-2S18NBU service manual (Diagnosis display / LED1–LED6)"},
  toshiba_ras: {t:"Οικιακά RAS: η βλάβη φαίνεται στις λυχνίες OPERATION/TIMER της εσωτερικής και με το CHECK του τηλεχειριστηρίου. Σε παλαιότερα inverter (π.χ. RAS-M…EAVE) η εξωτερική έχει 5 κόκκινα LED (D11–D15) στην υποπλακέτα κάτω από τον inverter για αυτοδιάγνωση.", s:"Toshiba service manuals SVM-10017 (RAS-107SAV-E3), RAS-M14EAVE (11-7 Trouble diagnosis by outdoor LED)"},
  toshiba_rav: {t:"RAV (Digital/Super Digital Inverter): στην πλακέτα εξωτερικής LED800–LED804. Σημείωσε τι δείχνουν (display mode 1), πάτα SW800 ≥1″ (display mode 2) και βρες τον συνδυασμό στον πίνακα του installation manual εξωτερικής. Με SW803 bit1 ON βλέπεις την προηγούμενη βλάβη.", s:"Toshiba RAV-SP1104AT-E outdoor installation manual (Check of the abnormal status)· RAV-SP1604AT8-E service manual"},
- mhi_split: {t:"Η πλακέτα ελέγχου εξωτερικής έχει κόκκινο και πράσινο LED που αναβοσβήνουν μαζί με τις λυχνίες RUN/TIMER της εσωτερικής – ο πίνακας ανά βλάβη είναι στο MHI Service Support Handbook (RAC fault codes). Η αντιστοίχιση ανά κωδικό δεν έχει περαστεί ακόμα.", s:"MHI Service Support Handbook SRK-ZSP-S – RAC fault codes (Indoor display / Outdoor control PCB red & green LED)"}
+ mhi_split: {t:"Η πλακέτα ελέγχου εξωτερικής έχει κόκκινο και πράσινο LED που αναβοσβήνουν μαζί με τις λυχνίες RUN/TIMER της εσωτερικής – ο πίνακας ανά βλάβη είναι στο MHI Service Support Handbook (RAC fault codes). Για αυτόν τον κωδικό δεν υπάρχει καθαρή γραμμή στον πίνακα (οι υπόλοιποι κωδικοί έχουν δική τους ένδειξη).", s:"MHI Service Support Handbook SRK-ZSP-S – RAC fault codes (Indoor display / Outdoor control PCB red & green LED)"}
 };
+
+// ===== MHI οικιακά (SRK/SRC): κόκκινο LED πλακέτας εξωτερικής ανά κωδικό =====
+// Πηγή: MHI Air Conditioners Australia – Service Support Handbook, «RAC self-diagnosis information (R410A & R32 series)».
+// Τα ευρωπαϊκά SRK/SRC έχουν την ίδια στήλη «Outdoor (LED)» (MHI technical manual SRK50HE-S)· διασταυρώθηκε η γραμμή E36 (RUN αναμμένο, TIMER ×5, εξωτερική ×5).
+(function(){
+  var M = {
+    E16:"Καμία ένδειξη στην εξωτερική (βλάβη εσωτερικής). Εσωτερική: RUN ×6, TIMER αναμμένο.",
+    E38:"Κόκκινο LED ×8. Εσωτερική: RUN αναβοσβήνει συνεχώς, TIMER ×1.",
+    E37:"Κόκκινο LED ×8. Εσωτερική: RUN αναβοσβήνει συνεχώς, TIMER ×2.",
+    E39:"Κόκκινο LED ×8. Εσωτερική: RUN αναβοσβήνει συνεχώς, TIMER ×4.",
+    E42:"Κόκκινο LED ×1. Εσωτερική: RUN αναμμένο, TIMER ×1.",
+    E59:"Κόκκινο LED ×2. Εσωτερική: RUN αναμμένο, TIMER ×2.",
+    E58:"Κόκκινο LED ×3. Εσωτερική: RUN αναμμένο, TIMER ×3.",
+    E51:"Κόκκινο LED ×1. Εσωτερική: RUN αναμμένο, TIMER ×4.",
+    E36:"Κόκκινο LED ×5. Εσωτερική: RUN αναμμένο, TIMER ×5. ✓ Ίδιο και στο ευρωπαϊκό technical manual (SRK50HE-S).",
+    E3:"Κόκκινο LED ×6. Εσωτερική: RUN αναμμένο, TIMER ×6.",
+    E48:"Κόκκινο LED αναμμένο σταθερά. Εσωτερική: RUN αναμμένο, TIMER ×7.",
+    E35:"Κόκκινο LED ×2. Εσωτερική: RUN αναμμένο, TIMER αναβοσβήνει συνεχώς."
+  };
+  var tag=" (Πίνακας MHI Αυστραλίας, σειρές SRK/SRC. Εκτός από το E36, δεν έχει διασταυρωθεί γραμμή-γραμμή σε ευρωπαϊκό manual.)";
+  if(T.mhi_split) T.mhi_split.codes.forEach(function(c){ if(c[3]) return; for(var i=0;i<c[0].length;i++){ var k=String(c[0][i]).toUpperCase(); if(M[k]){ c[3]=M[k]+(k==="E36"?"":tag); return; } } });
+})();
