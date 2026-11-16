@@ -62,6 +62,7 @@ input:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--accb
 .bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(102px,1fr));gap:8px}
 .br{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:14px;padding:10px 4px 9px;font-size:12.5px;font-weight:650;line-height:1.2;text-align:center}
 .br.reb{border-style:dashed}
+.br.oem{border-style:dotted;border-color:var(--line2)}
 .br.on{border-color:var(--acc);background:var(--accbg)}
 /* κατηγορίες */
 .cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-bottom:10px}
@@ -4314,16 +4315,16 @@ var BRANDS = [
   {n:"Hisense", own:"hisense"},
   {n:"Haier", own:"haier"},
   {n:"TCL", own:"tcl"},
-  {n:"Kerosun", own:"kerosun", hint:"Βλαβολόγιο από το επίσημο εγχειρίδιο Kerosun Clima (KCT22). Οι κωδικοί μοιάζουν με της TCL, αλλά το EH/EF είναι ανάποδα."},
-  {n:"Aufit", own:"aux", hint:"Η Aufit είναι μάρκα της AUX (ίδια μοντέλα ASW-H…, J-Smart, Freedom) – χρησιμοποιεί βλαβολόγιο AUX."},
-  {n:"Argo", own:"gree", hint:"Οι σημερινές σειρές Argo (Ecolight, X3 multi/VRF) έχουν κωδικούς Gree (π.χ. E5, E6, U8, H3, H6, C5, F0, F1, F2 στο εγχειρίδιο Ecolight) – χρησιμοποιεί βλαβολόγιο Gree. Πολύ παλιές σειρές (π.χ. AWIAS με λυχνίες OPERATION/TIMER/STANDBY) έχουν δικό τους πίνακα."},
+  {n:"Kerosun", oem:"η Kerosun είναι ελληνική μάρκα (Γ.Ε. Δημητρίου, διανομέας Toyotomi) – δεν έχει δικό της εργοστάσιο· έχει όμως δικό της επίσημο βλαβολόγιο (KCT22)", own:"kerosun", hint:"Βλαβολόγιο από το επίσημο εγχειρίδιο Kerosun Clima (KCT22). Οι κωδικοί μοιάζουν με της TCL, αλλά το EH/EF είναι ανάποδα."},
+  {n:"Aufit", oem:"μάρκα του ομίλου AUX – φτιάχνεται στα εργοστάσια AUX", own:"aux", hint:"Η Aufit είναι μάρκα της AUX (ίδια μοντέλα ASW-H…, J-Smart, Freedom) – χρησιμοποιεί βλαβολόγιο AUX."},
+  {n:"Argo", oem:"ιταλική μάρκα χωρίς εργοστάσιο κλιματιστικών – τα split της είναι Gree (π.χ. στο EPREL μοντέλο GWH12AUCXB-K6DNA1A με προμηθευτή Argo)", own:"gree", hint:"Οι σημερινές σειρές Argo (Ecolight, X3 multi/VRF) έχουν κωδικούς Gree (π.χ. E5, E6, U8, H3, H6, C5, F0, F1, F2 στο εγχειρίδιο Ecolight) – χρησιμοποιεί βλαβολόγιο Gree. Πολύ παλιές σειρές (π.χ. AWIAS με λυχνίες OPERATION/TIMER/STANDBY) έχουν δικό τους πίνακα."},
   {n:"Nobu", cands:{split:["aux","midea","inv_gree"], hp:["midea","inv_mc"], vrf:["midea"], vrfhr:["midea"]}, hint:"Η Nobu είναι μάρκα της Inventor (κατασκευαστής στα manuals: INVENTOR A.G. S.A.). Όπως η Inventor, έχει σειρές από διαφορετικά εργοστάσια: π.χ. η Kiku έχει τηλεχειριστήριο Midea (RG57). Δες το ταμπελάκι ή το τηλεχειριστήριο."},
-  {n:"Wellio", own:"tcl", hint:"Τα Wellio inverter τοίχου είναι μοντέλα TCL (TAC-09/12/18/24CHSD) – χρησιμοποιεί βλαβολόγιο TCL."},
-  {n:"CHiQ", cands:GENERIC, hint:"Η CHiQ είναι μάρκα της Changhong· δεν βρέθηκε δημόσιο service manual με βλαβολόγιο. Σύγκρινε με το manual του μοντέλου."},
+  {n:"Wellio", oem:"ελληνική μάρκα – τα inverter τοίχου είναι μοντέλα TCL", own:"tcl", hint:"Τα Wellio inverter τοίχου είναι μοντέλα TCL (TAC-09/12/18/24CHSD) – χρησιμοποιεί βλαβολόγιο TCL."},
+  {n:"CHiQ", fac:"Changhong (Κίνα) – έχει δικά της εργοστάσια κλιματιστικών, αλλά δεν υπάρχει δημόσιο βλαβολόγιο", cands:GENERIC, hint:"Η CHiQ είναι μάρκα της Changhong· δεν βρέθηκε δημόσιο service manual με βλαβολόγιο. Σύγκρινε με το manual του μοντέλου."},
   {n:"Sang", cands:GENERIC},
-  {n:"Cooper&Hunter", own:"gree", hint:"Κατασκευάζεται από Gree – χρησιμοποιεί βλαβολόγιο Gree."},
-  {n:"Bosch", cands:{split:["midea"], vrf:["midea"], vrfhr:["midea"]}, hint:"Τα Bosch Climate (split) και τα Bosch VRF (AF5300) είναι Midea OEM. Οι αντλίες Bosch Compress έχουν δικό τους βλαβολόγιο (δεν περιλαμβάνεται)."},
-  {n:"Carrier", cands:{split:["midea","toshiba"], vrf:["toshiba","midea"], vrfhr:["toshiba","midea"], hp:["midea"]}, hint:"Carrier: τα οικιακά είναι συνήθως Midea, τα επαγγελματικά/VRF Toshiba-Carrier. Δες ταμπελάκι."},
+  {n:"Cooper&Hunter", oem:"αμερικανική μάρκα – κατασκευάζεται από τη Gree (Zhuhai)", own:"gree", hint:"Κατασκευάζεται από Gree – χρησιμοποιεί βλαβολόγιο Gree."},
+  {n:"Bosch", fac:"Bosch – από τον Ιούλιο 2025 ιδιοκτήτης των εργοστασίων Hitachi (JCH)· τα Bosch Climate split είναι όμως Midea OEM", cands:{split:["midea"], vrf:["midea"], vrfhr:["midea"]}, hint:"Τα Bosch Climate (split) και τα Bosch VRF (AF5300) είναι Midea OEM. Οι αντλίες Bosch Compress έχουν δικό τους βλαβολόγιο (δεν περιλαμβάνεται)."},
+  {n:"Carrier", fac:"Carrier – έχει δικά της εργοστάσια (και την Toshiba Carrier για VRF/επαγγελματικά)· τα οικιακά split στην Ευρώπη είναι συνήθως Midea OEM", cands:{split:["midea","toshiba"], vrf:["toshiba","midea"], vrfhr:["toshiba","midea"], hp:["midea"]}, hint:"Carrier: τα οικιακά είναι συνήθως Midea, τα επαγγελματικά/VRF Toshiba-Carrier. Δες ταμπελάκι."},
   {n:"Inventor", cands:{split:["aux","midea","inv_gree"], hp:["midea","inv_mc"], vrf:["midea"], vrfhr:["midea"]}, hint:"Η Inventor δεν έχει δικό της εργοστάσιο. Τα επίσημα manuals της δείχνουν σειρές AUX, Midea και σειρές με βλαβολόγιο τύπου Gree (π.χ. EVI/EVO, Cosmo B2VI από Gree Zhuhai, U-Match). Οι αντλίες Matrix έχουν το βλαβολόγιο της Midea M-Thermal. Δες «Manufacturer/Made by» στο ταμπελάκι εξωτερικής ή αποθήκευσε το πρόθεμα μοντέλου όταν το επιβεβαιώσεις."},
   {n:"Toyotomi", cands:{split:["gree","midea","aux","tcl","hisense","haier"], hp:["midea","gree"], vrf:["midea","gree"], vrfhr:["midea","gree"]}, hint:"Στα εγχειρίδια Toyotomi (Erai, Umi, TRN/TRG) οι κωδικοί είναι τύπου Gree (U8, H6, H3, C5, F0…). Άλλες σειρές μπορεί να διαφέρουν – δες ταμπελάκι."},
   {n:"Sendo", cands:GENERIC, hint:"Η Sendo έχει σειρές από διαφορετικά εργοστάσια· δεν βρέθηκε επίσημο service manual. Δες «Manufacturer» στο ταμπελάκι."},
@@ -4345,9 +4346,9 @@ var BRANDS = [
   {n:"United", cands:GENERIC},
   {n:"Intercool", cands:GENERIC},
   {n:"Omnys", cands:{split:["tcl","midea","gree","aux","hisense","haier"]}, hint:"Στο επίσημο εγχειρίδιο Omnys (WNX-…M22) οι κωδικοί E1 = αισθητήριο χώρου, E2 = αισθητήριο σωλήνα, E6 = μοτέρ εσωτερικής – ίδιοι με TCL. Για τους υπόλοιπους σύγκρινε με το manual."},
-  {n:"Xiaomi", cands:GENERIC},
-  {n:"Beko", cands:GENERIC},
-  {n:"Sharp", cands:GENERIC},
+  {n:"Xiaomi", fac:"Xiaomi – δικό της εργοστάσιο κλιματιστικών στη Wuhan από τον Οκτώβριο 2025· παλαιότερα μοντέλα από OEM", cands:GENERIC},
+  {n:"Beko", fac:"Arçelik/Beko – κλιματιστικά από το εργοστάσιο Arçelik-LG Klima (Τουρκία, κοινοπραξία με LG)", cands:GENERIC},
+  {n:"Sharp", fac:"Sharp – παράγει κλιματιστικά στο Sharp Appliances (Thailand)· δεν υπάρχει δημόσιο ευρωπαϊκό βλαβολόγιο", cands:GENERIC},
   {n:"Olimpia Splendid", cands:GENERIC},
   {n:"Crown", cands:GENERIC},
   {n:"Eskimo", cands:GENERIC},
@@ -4474,7 +4475,7 @@ function bInit(n){
 function bCol(n){ var h=0; for(var i=0;i<n.length;i++) h=(h*31+n.charCodeAt(i))>>>0; return BPAL[h%BPAL.length]; }
 function badge(n, cls){ if(n==="Άλλη μάρκα…") return '<span class="bdg'+(cls?' '+cls:'')+'" style="background:#64748b">?</span>';
   var c=bCol(n); return '<span class="bdg'+(cls?' '+cls:'')+'" style="background:linear-gradient(140deg,'+c+','+c+'cc)">'+esc(bInit(n))+'</span>'; }
-function bSub(b){ return b.own ? "Δικό της εργοστάσιο – βλαβολόγιο "+PLAT[b.own].name : (b.n==="Άλλη μάρκα…" ? "Άγνωστη μάρκα – διάλεξε εργοστάσιο" : "Χωρίς δικό της εργοστάσιο – θα σε ρωτήσω μοντέλο"); }
+function bSub(b){ return b.oem ? "Χωρίς δικό της εργοστάσιο – βλαβολόγιο "+PLAT[b.own].name : b.own ? "Δικό της εργοστάσιο – βλαβολόγιο "+PLAT[b.own].name : b.fac ? "Δικό της εργοστάσιο – χωρίς δημόσιο βλαβολόγιο" : (b.n==="Άλλη μάρκα…" ? "Άγνωστη μάρκα – διάλεξε εργοστάσιο" : "Χωρίς δικό της εργοστάσιο – θα σε ρωτήσω μοντέλο"); }
 function brandObj(){ for(var i=0;i<BRANDS.length;i++) if(BRANDS[i].n===S.brand) return BRANDS[i]; return null; }
 function persist(){ LS.set("vl_state",{cat:S.cat,brand:S.brand,oem:S.oem,src:S.src,part:S.part}); }
 
@@ -4566,8 +4567,8 @@ function renderCats(){
 }
 function renderBrands(){
   var list = BRANDS.slice();
-  var own = list.filter(function(b){return b.own;}), reb = list.filter(function(b){return !b.own;});
-  function btn(b){ return '<button class="br'+(b.n===S.brand?' on':'')+(b.own?'':' reb')+'" data-b="'+esc(b.n)+'">'+badge(b.n,"sm")+esc(b.n)+'</button>'; }
+  var own = list.filter(function(b){return b.own && !b.oem;}), oem = list.filter(function(b){return b.oem;}), fac = list.filter(function(b){return b.fac;}), reb = list.filter(function(b){return !b.own && !b.fac;});
+  function btn(b){ return '<button class="br'+(b.n===S.brand?' on':'')+(b.own&&!b.oem?'':b.oem||b.fac?' oem':' reb')+'" data-b="'+esc(b.n)+'">'+badge(b.n,"sm")+esc(b.n)+'</button>'; }
   var cb = brandObj(), editing = !cb || S.bedit;
   $("bchosen").innerHTML = (cb && !editing) ? '<div class="bchosen">'+badge(cb.n,"lg")+'<div class="bt"><b>'+esc(cb.n)+'</b><small>'+esc(bSub(cb))+'</small></div><button class="chg ico" id="chgBrand" aria-label="Αλλαγή μάρκας" title="Αλλαγή μάρκας"><svg class="ic"><use href="#i-swap"/></svg></button></div>' : "";
   $("bpick").style.display = editing ? "" : "none";
@@ -4577,8 +4578,10 @@ function renderBrands(){
   renderBrands._init = true;
   $("brandSel").classList.toggle("on", $("brandsWrap").classList.contains("open"));
   var rb = []; recent.forEach(function(x){ if(rb.indexOf(x.brand)<0) rb.push(x.brand); }); rb = rb.slice(0,6).map(function(n){ return BRANDS.filter(function(b){ return b.n===n; })[0]; }).filter(Boolean);
-  $("brands").innerHTML = (rb.length?'<div class="grp">⭐ Πρόσφατες</div><div class="bgrid">'+rb.map(btn).join("")+'</div>':'')+'<div class="grp">Δικό τους εργοστάσιο</div><div class="bgrid">'+own.map(btn).join("")+'</div>'+
-    (reb.length?'<div class="grp">Χωρίς δικό τους εργοστάσιο (θα χρειαστεί μοντέλο/ταμπελάκι)</div><div class="bgrid">'+reb.map(btn).join("")+'</div>':'');
+  $("brands").innerHTML = (rb.length?'<div class="grp">⭐ Πρόσφατες</div><div class="bgrid">'+rb.map(btn).join("")+'</div>':'')+'<div class="grp">🏭 Κατασκευαστές με δικά τους εργοστάσια</div><div class="bgrid">'+own.map(btn).join("")+'</div>'+
+    '<div class="grp">🔗 Χωρίς δικό τους εργοστάσιο – γνωστός κατασκευαστής</div><div class="bgrid">'+oem.map(btn).join("")+'</div>'+
+    '<div class="grp">🏭 Δικό τους εργοστάσιο – χωρίς δημόσιο βλαβολόγιο</div><div class="bgrid">'+fac.map(btn).join("")+'</div>'+
+    (reb.length?'<div class="grp">❓ Χωρίς δικό τους εργοστάσιο – αλλάζει ανά σειρά (θα χρειαστεί μοντέλο/ταμπελάκι)</div><div class="bgrid">'+reb.map(btn).join("")+'</div>':'');
   if(document.activeElement!==$("bq")) $("bq").value = S.bedit ? "" : (S.brand || "");
   $("bsug").innerHTML = "";
 }
@@ -4642,11 +4645,11 @@ function renderOem(){
   if(!b || S.bedit){ box.style.display="none"; return; }
   if(b.own){
     box.style.display = "block";
-    box.innerHTML = (b.hint ? '<div class="hint" style="margin:0 0 8px">'+esc(b.hint)+'</div>' : "")+
+    box.innerHTML = (b.oem||b.fac ? '<div class="hint" style="margin:0 0 8px">🏭 '+esc((b.oem||b.fac).replace(/^./,function(c){return c.toUpperCase();}))+'.</div>' : "")+(b.hint ? '<div class="hint" style="margin:0 0 8px">'+esc(b.hint)+'</div>' : "")+
       '<button class="mini scanbtn" data-scan="ser"><svg class="ic"><use href="#i-scan"/></svg> Σκάναρε το barcode της ετικέτας – ημερομηνία κατασκευής</button>'+
       (S.fw.ser ? '<div class="serbox"><div class="small"><b>Σειριακός:</b> '+esc(S.fw.ser)+' <button class="x" data-fwclr="ser">✕</button></div>'+serHtml(S.fw.ser, null)+'</div>' : '')+manLinks(b);
     return;
-    box.innerHTML = (b.hint ? '<div class="hint">'+esc(b.hint)+'</div>' : "")+
+    box.innerHTML = (b.oem||b.fac ? '<div class="hint">🏭 '+esc((b.oem||b.fac).replace(/^./,function(c){return c.toUpperCase();}))+'.</div>' : "")+(b.hint ? '<div class="hint">'+esc(b.hint)+'</div>' : "")+
       '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι – προαιρετικό)</label><input id="model" placeholder="π.χ. '+esc(b.n==="LG"?"S12EQ / HU071MR":b.n==="Daikin"?"FTXM35R":b.n==="Gree"?"GWH12ACC-K6DNA1D":"μοντέλο εσωτερικής ή εξωτερικής")+'" autocapitalize="characters" spellcheck="false">'+
       '<div class="small" id="mapMsg">Με το μοντέλο βλέπεις και στοιχεία εξαρτημάτων (Ω, χρώματα) στον «Έλεγχο εξαρτημάτων».</div>';
     var mi0=$("model"); mi0.value=S.model||""; mi0.addEventListener("input",function(){ S.model=mi0.value; });
@@ -4658,7 +4661,7 @@ function renderOem(){
   box.style.display="block";
   var mine = myMap.filter(function(m){return m.brand===b.n;});
   box.innerHTML =
-    manLinks(b)+(b.hint?'<div class="hint">'+esc(b.hint)+'</div>':'<div class="hint">Η '+esc(b.n)+' δεν έχει δικό της εργοστάσιο. Διάλεξε εργοστάσιο ή άφησε «Σύγκριση» για να δεις τι σημαίνει ο κωδικός σε κάθε πιθανό εργοστάσιο.</div>')+
+    manLinks(b)+(b.fac?'<div class="hint">🏭 '+esc(b.fac)+'.</div>':'')+(b.hint?'<div class="hint">'+esc(b.hint)+'</div>':'<div class="hint">Η '+esc(b.n)+' δεν έχει δικό της εργοστάσιο. Διάλεξε εργοστάσιο ή άφησε «Σύγκριση» για να δεις τι σημαίνει ο κωδικός σε κάθε πιθανό εργοστάσιο.</div>')+
     '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι)</label>'+
     '<div class="row2"><input id="model" placeholder="μοντέλο εξωτερικής ή εσωτερικής – π.χ. V5MFO32-60" autocapitalize="characters" spellcheck="false"><button class="mini" data-scan="model" title="Σάρωση barcode"><svg class="ic"><use href="#i-scan"/></svg></button><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
     '<div id="mapMsg" class="small"></div>'+
