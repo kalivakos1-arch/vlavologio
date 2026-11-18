@@ -47,12 +47,18 @@ function list_(pin) {
       if (r[1]) rows.push([r[0] instanceof Date ? Utilities.formatDate(r[0], tz, 'dd/MM/yyyy HH:mm:ss') : String(r[0]), String(r[1])]);
     });
   }
-  try { add(SpreadsheetApp.openById(OLD_SHEET_ID).getSheets()[0].getDataRange().getValues()); } catch (x) {}
   add(sh_().getDataRange().getValues());
   return out_({ ok: true, rows: rows });
 }
 
 function doGet() { return out_({ ok: true, app: 'vlavologio' }); }
+
+// Μεταφορά των παλιών αναφορών (Google Form) στο ιδιωτικό φύλλο – τρέχει μία φορά.
+function migrate() {
+  var old = SpreadsheetApp.openById(OLD_SHEET_ID).getSheets()[0].getDataRange().getDisplayValues().slice(1).filter(function (r) { return r[1]; });
+  var s = sh_(), have = s.getDataRange().getDisplayValues().map(function (r) { return r[1]; });
+  old.forEach(function (r) { if (have.indexOf(r[1]) < 0) s.appendRow([r[0], r[1]]); });
+}
 
 // Τρέξε μία φορά από τον editor για να δημιουργηθεί το φύλλο και να δοθεί η άδεια.
 function setup() { sh_(); SpreadsheetApp.getActive().rename('Βλαβολόγιο – Αναφορές (ιδιωτικό)'); }
