@@ -26,12 +26,15 @@ function serClean(t){ return gr2lat(String(t||"")).toUpperCase().replace(/[\s\-\
 function serInfo(t, cs){
   var raw = String(t||""), v = serClean(raw), out = [];
   function ok(o){ return !cs || cs.indexOf(o)>=0 || (o==="gree" && cs.indexOf("inv_gree")>=0); }
+  var ep = raw.match(/eprel\.ec\.europa\.eu\/(?:qr|screen\/product\/[a-z0-9]+)\/(\d{4,})/i);
+  if(ep) out.push({o:"", w:0, eprel:ep[1], url:"https://eprel.ec.europa.eu/qr/"+ep[1], k:"QR ενεργειακής σήμανσης ΕΕ (EPREL αρ. "+ep[1]+")", src:"Ο QR της ετικέτας ενέργειας οδηγεί στη βάση EPREL της ΕΕ, όπου φαίνονται μάρκα, προμηθευτής και ακριβές μοντέλο εσωτερικής/εξωτερικής. Πάτα «Άνοιγμα στο EPREL» (χρειάζεται ίντερνετ)."});
   if(/^https?:\/\//i.test(raw)){ QRDOM.forEach(function(q){ if(q[0].test(raw)) out.push({o:q[1], w:2, k:"QR με σελίδα της "+(PLAT[q[1]]?PLAT[q[1]].name:q[1]), src:"Ο QR οδηγεί στον ιστότοπο του κατασκευαστή."}); }); return out; }
   if(v.length < 5) return out;
   FW.pcb.forEach(function(x){ if(x[0].test(v)) out.push({o:x[1], w:x[2], k:"Κωδικός πλακέτας", src:x[3], pcb:1}); });
   SER.forEach(function(r){ var m = v.match(r.re); if(!m) return; var e = {o:r.o, w:r.w, k:r.k, src:r.src}; if(r.d) e.d = r.d(m); if(!ok(r.o)) e.w = Math.min(e.w,1), e.off = 1; out.push(e); });
   var b = brandObj();
   if(b && !b.own){ var dm = detectOem(b, v); if(dm) out.push({o:dm.o, w:2, k:"Μοντέλο "+b.n, src:dm.w, model:1}); }
+  else if(!b || b.n==="Άλλη μάρκα…"){ var gm = detectOem({n:""}, raw); if(gm) out.push({o:gm.o, w:2, k:"Μοντέλο "+(PLAT[gm.o]?PLAT[gm.o].name:gm.o), src:gm.w, model:1}); }
   serLearn.forEach(function(l){ if(b && l.b===b.n && v.indexOf(l.p)===0) out.push({o:l.o, w:3, k:"Δική σου αντιστοίχιση ("+l.p+"…)", src:"Το αποθήκευσες εσύ από προηγούμενη μονάδα."}); });
   return out;
 }
@@ -49,7 +52,7 @@ function serHtml(t, cs){
   return r.map(function(e){
     var nm = PLAT[e.o] ? PLAT[e.o].name : e.o;
     return '<div class="serl"><b>'+esc(e.k)+'</b>'+(e.w?' → <span class="det">'+esc(nm)+'</span>':'')+(e.off?' <span class="small">(δεν είναι στα συνήθη εργοστάσια αυτής της μάρκας)</span>':'')+
-      (e.d?'<div>'+esc(dateTxt(e.d))+'</div>':'')+'<div class="small">'+esc(e.src)+'</div></div>';
+      (e.d?'<div>'+esc(dateTxt(e.d))+'</div>':'')+'<div class="small">'+esc(e.src)+'</div>'+(e.url?'<a class="mini" href="'+esc(e.url)+'" target="_blank" rel="noopener">🔗 Άνοιγμα στο EPREL</a>':'')+'</div>';
   }).join("");
 }
 
@@ -148,7 +151,10 @@ function scanFound(text, fmt){
 // Δεν αναγνωρίστηκε τίποτα → ανοίγει αυτόματα αναφορά με αίτημα φωτογραφίας της ταμπέλας
 function scanNoMatch(text){
   if(/^\d{8}$|^\d{12,14}$/.test(serClean(text))) return; // EAN/UPC κουτιού – όχι σειριακός
-  var hit = serInfo(text, null).some(function(e){ return e.w>0; });
+  var bb = brandObj(); if(bb && bb.own) return; // γνωστή μάρκα με δικό της εργοστάσιο: το βλαβολόγιο είναι ήδη σωστό
+  var inf = serInfo(text, null);
+  if(inf.some(function(e){ return e.eprel; })) return; // ο QR της ετικέτας ΕΕ δείχνει μάρκα/μοντέλο στο EPREL
+  var hit = inf.some(function(e){ return e.w>0; });
   if(hit || typeof repOpen!=="function") return;
   setTimeout(function(){ repOpen("", "", {ser:serClean(text), photo:1}); }, 350);
 }

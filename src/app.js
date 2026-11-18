@@ -53,7 +53,7 @@ var BRANDS = [
   {n:"Haier", own:"haier"},
   {n:"TCL", own:"tcl"},
   {n:"Kerosun", oem:"η Kerosun είναι ελληνική μάρκα (Γ.Ε. Δημητρίου, διανομέας Toyotomi) – δεν έχει δικό της εργοστάσιο· έχει όμως δικό της επίσημο βλαβολόγιο (KCT22)", own:"kerosun", hint:"Βλαβολόγιο από το επίσημο εγχειρίδιο Kerosun Clima (KCT22). Οι κωδικοί μοιάζουν με της TCL, αλλά το EH/EF είναι ανάποδα."},
-  {n:"Candy", oem:"μάρκα του ομίλου Haier (Candy Hoover) – τα κλιματιστικά Candy (Pura CY-…RAIN/RAOUT, Aria CY-…QBIN) κατασκευάζονται από τη Haier στο Qingdao (ταμπελάκι μονάδας: «Qingdao Haier Air Conditioner General Co., Ltd.»· δελτίο προϊόντος ΕΕ/EPREL: προμηθευτής Haier)", own:"haier", hint:"Η Candy είναι μάρκα της Haier – χρησιμοποιεί το βλαβολόγιο Haier. Οι κωδικοί της σειράς Pura δεν έχουν διασταυρωθεί ακόμα με ξεχωριστό service manual Candy· αν δεις διαφορά, στείλε αναφορά."},
+  {n:"Candy", oem:"μάρκα του ομίλου Haier (Candy Hoover) – τα κλιματιστικά Candy (Pura CY-…RAIN/RAOUT, Aria CY-…QBIN) κατασκευάζονται από τη Haier στο Qingdao (ταμπελάκι μονάδας: «Qingdao Haier Air Conditioner General Co., Ltd.»· δελτίο προϊόντος ΕΕ/EPREL: προμηθευτής Haier)", own:"haier", hint:"Η Candy είναι μάρκα της Haier – χρησιμοποιεί το βλαβολόγιο Haier. Διασταύρωση με το εγχειρίδιο χρήσης Candy (CY-09/12/18QBIN, CY-09/12/18/24RAIN, -M): E1 αισθητήριο χώρου, E2 αισθητήριο στοιχείου, E4 EEPROM εσωτερικής, E7 επικοινωνία εσωτ.–εξωτ. – ίδια με Haier. ΠΡΟΣΟΧΗ: F25 κατά τον αυτοκαθαρισμό (CL) με εξωτερική θερμοκρασία κάτω από 0°C είναι κανονική προστασία κατά το εγχειρίδιο Candy – κλείσε το ρεύμα και ξανάνοιξε μετά από 10 δευτ. (δεν είναι βλάβη αισθητηρίου). Το εγχειρίδιο χρήσης δεν έχει κωδικούς εξωτερικής· για αυτούς ισχύει το service manual Haier."},
   {n:"Aufit", oem:"μάρκα του ομίλου AUX – φτιάχνεται στα εργοστάσια AUX", own:"aux", hint:"Η Aufit είναι μάρκα της AUX (ίδια μοντέλα ASW-H…, J-Smart, Freedom) – χρησιμοποιεί βλαβολόγιο AUX."},
   {n:"Argo", oem:"ιταλική μάρκα χωρίς εργοστάσιο κλιματιστικών – τα split της είναι Gree (π.χ. στο EPREL μοντέλο GWH12AUCXB-K6DNA1A με προμηθευτή Argo)", own:"gree", hint:"Οι σημερινές σειρές Argo (Ecolight, X3 multi/VRF) έχουν κωδικούς Gree (π.χ. E5, E6, U8, H3, H6, C5, F0, F1, F2 στο εγχειρίδιο Ecolight) – χρησιμοποιεί βλαβολόγιο Gree. Πολύ παλιές σειρές (π.χ. AWIAS με λυχνίες OPERATION/TIMER/STANDBY) έχουν δικό τους πίνακα."},
   {n:"Nobu", cands:{split:["aux","midea","inv_gree"], hp:["midea","inv_mc"], vrf:["midea"], vrfhr:["midea"]}, hint:"Η Nobu είναι μάρκα της Inventor (κατασκευαστής στα manuals: INVENTOR A.G. S.A.). Όπως η Inventor, έχει σειρές από διαφορετικά εργοστάσια: π.χ. η Kiku έχει τηλεχειριστήριο Midea (RG57). Δες το ταμπελάκι ή το τηλεχειριστήριο."},
@@ -173,6 +173,16 @@ var OEMRX = [
   {b:["Inventor","Nobu"], re:/^L\dV[IO]/, o:"inv_gree", w:"Σειρά Inventor L4VI/L4VO: το service manual έχει τη δομή και τους κωδικούς Gree."},
   {b:["Toyotomi"], re:/^(CT|TR)[NG][-\/]?\d/, o:"gree", w:"Toyotomi CTN/CTG (Erai) και TRN/TRG: τα εγχειρίδια δείχνουν κωδικούς Gree (U8, H6, H3, E1, E5, C5, F0–F2)."},
   {b:["Bosch"], re:/^RAC\d|^CL\d{4}|^CLIMATE/, o:"midea", w:"Bosch Climate (RAC…) είναι Midea."},
+  // Μάρκες με δικό τους εργοστάσιο – ονοματολογία μοντέλων Ευρώπης (κατάλογοι κατασκευαστών, Eurovent, EPREL)
+  {b:null, re:/^(FTX[A-Z]{0,2}|ATX[A-Z]?|FVX[A-Z]|FDX[A-Z]|FBA|FCAG|FCAHG|FFA|FHA|FNA|FCAH|CTXM|CTXA|RXM|RXP|RXF|RXJ|RXA|RXC|RXTM|RXZ|RXTA|ARX[A-Z]?|RZAG|RZASG|RZQG|RZQSG|[2-5]MX[A-Z]|[2-5]AMX|EHB[HX]|EHV[HXZ]|EHS[HX]|ERGA|ERLA|EBLA|EDLA|EBSX|ETBH|ETBX|ETVH|ETVX|ETSH|EPRA|EABH|EAVH|RYYQ|RXYQ|REYQ|RXYSQ|RXYSCQ|RWEYQ|FXSQ|FXZQ|FXFQ|FXAQ|FXMQ|FXDQ|FXHQ|FXUQ|FXLQ|FXNQ|FXKQ|FXCQ)\d/, o:"daikin", w:"Η ονομασία FTX…/ATX…/RXM…/ERGA/EHBH/RXYQ/FXSQ… είναι της Daikin (κατάλογοι Daikin Europe)."},
+  {b:null, re:/^(MSZ|MUZ|MSY|MUY|MFZ|MLZ|SEZ|SUZ|SLZ|SUHZ|PEAD|PEA|PKA|PLA|PCA|PSA|PUHZ|PUZ|PUMY|MXZ|PUD|EHST|EHPT|ERST|EHSD|ERSD|EHSC|ERSC|EHPX|ERPX|EHSE|PURY|PUHY|PQHY|PQRY|PEFY|PLFY|PKFY|PCFY|PMFY|PFFY|CMB)-?[A-Z0-9]/, o:"me", w:"Η ονομασία MSZ/MUZ, SEZ/SUZ, PEAD/PUHZ, MXZ, EHST/PUD, PURY/PUHY/PEFY είναι της Mitsubishi Electric."},
+  {b:null, re:/^(SRK|SRC|SRF|SRR|SCM|FDC|FDT|FDTC|FDU|FDUM|FDE|FDK|FDF|FDFL|FDFW|FDCA|FDCS|FDTW|FDTQ|FDQ|FDUH|FDUT|FDKN|FDFU)-?\d/, o:"mhi", w:"Η ονομασία SRK/SRC, SCM, FDC/FDT/FDU/FDE είναι της Mitsubishi Heavy Industries."},
+  {b:null, re:/^(AS[YEHT][AGH]|AO[YEH][AGH]|AU[XY][AG]|AR[XY]G|AB[YX]G|AG[YX]G|AJ[YH]|WS[YH][AGK]|WO[YH][AGK]|WG[YH][AGK]|AS[YE]A|AO[YE]A)\d/, o:"fujitsu", w:"Η ονομασία ASYG/AOYG, ASEH/AOEH, ARXG, AUXG, AJY, WSYG/WOYG είναι της Fujitsu (General)."},
+  {b:null, re:/^(CS|CU)-[A-Z]{0,4}\d|^KIT-[A-Z]{0,4}\d|^WH-(SDC|SXC|UD|MDC|ADC|SQC|UQ|MXC|WDG|WXG|UDZ|UX|SD|SX)|^S-\d{2,3}[A-Z]|^U-\d{1,3}[A-Z]/, o:"panasonic", w:"Η ονομασία CS-/CU-, KIT-, WH-SDC/WH-UD (Aquarea), S-…/U-… (PACi/ECOi) είναι της Panasonic."},
+  {b:null, re:/^[A-Z]{1,3}\d{2}[A-Z]{1,3}\.?(NSJ|NSK|NS1|NSH|NSA|NB1|NBJ|NBK|SSJ|SSK|UA3|UA2|UL2|UL1|ULD|UE1|UE2|U18|U24|U30|U12|U4)$|^(ARNU|ARUN|ARUM|ARUB|ARWN|ARWB|ZRUN|ZUUN|HN\d{4}|HU\d{3}|HM\d{3}|MU[2-5]R|UU\d{2}W)/, o:"lg", w:"Η ονομασία LG έχει μορφή «S12ET.NSJ / PC12SQ.UA3 / DC09RK.UL2» (N…=εσωτερική, U…=εξωτερική) ή ARNU/ARUN (Multi V), HM/HN/HU (Therma V)."},
+  {b:null, re:/^AR\d{2}[A-Z]{2,}|^AJ\d{3}[A-Z]|^AE\d{3}[A-Z]|^AM\d{3}[A-Z]{2}|^AC\d{3}[A-Z]{2}|^AN\d{3}|^NS\d{3}|^NJ\d{3}|^F-AR\d|^MIM-|^MWR-/, o:"samsung", w:"Η ονομασία AR09…/AJ…(FJM)/AE…(EHS)/AM…(DVM)/AC…(BAC) είναι της Samsung."},
+  {b:null, re:/^(RAK|RAC|RAM|RAI|RAD|RAF)-[A-Z]{0,3}\d|^(RCI|RCIM|RCD|RPI|RPIM|RPIL|RPK|RPC|RPF|RPFI|RWM|RWD|RWH|RHUE|RASC)-\d|^RAS-\d{1,2}(\.\d)?[A-Z]{1,3}(V|N|F|G|E|S)/, o:"hitachi", w:"Η ονομασία RAK/RAC (οικιακά), RCI/RPI/RPK/RPC, RAS-…HVRC/HNCE/FSXN (Utopia/Set Free), RWM/RWD (Yutaki) είναι της Hitachi."},
+  {b:null, re:/^(HWS|HWT|MMY|MCY|MMK|MMU|MMD|MML|MMC|MMF|MMV|RBC)-/, o:"toshiba", w:"Η ονομασία HWS-/HWT- (Estia), MMY-/MCY- (VRF), MMK/MMU/MMD (εσωτερικές VRF) είναι της Toshiba."},
   {b:null, re:/^KCT\d/, o:"kerosun", w:"Μοντέλο KCT = Kerosun Clima."},
   {b:null, re:/^RA[SV]-/, o:"toshiba", w:"Μοντέλα RAS-/RAV- είναι Toshiba (και Toshiba-Carrier)."},
   {b:null, re:/HRF?N\d|HFN\d|HRDN\d|^M[2-5]?O[A-Z]{1,2}-?\d{2}|^MS[A-Z]{1,4}-?\d{2}H|^MOX\d|^MOB\d|^MOU-|^MCD-|^MUE-|^MOE-|^42Q|^38Q|^M\d?O[DE]-/, o:"midea", w:"Η ονομασία (π.χ. …HRFN8, MOX/MOB/MOU, MSAG/MSMB, 42QHC/38QHC) είναι του εργοστασίου Midea."},
@@ -181,7 +191,7 @@ var OEMRX = [
   {b:null, re:/^TAC-?\d|^TCA-|^FMA-|^TPG|^TACO|CHSD\//, o:"tcl", w:"Η ονομασία TAC-…CHSD / FMA- είναι του εργοστασίου TCL."},
   {b:null, re:/^AS-?\d{2}U[RW]|^AU[DCFV]-\d|^[2-5]?AMW-?\d|^AUW-|^AW-?\d{2}U/, o:"hisense", w:"Η ονομασία AS-…UR4S / AUD- / AUC- / AMW είναι του εργοστασίου Hisense."},
   {b:null, re:/^CY-?\d{2}[A-Z]{2}(IN|OUT)|^CY-?\d{1}T\d{2}[A-Z]?OUT/, o:"haier", w:"Μοντέλα Candy CY-…IN / CY-…OUT (Pura, Aria) κατασκευάζονται από τη Haier (ταμπελάκι: Qingdao Haier Air Conditioner)."},
-  {b:null, re:/^[1-5]U\d{2}[A-Z]|^AS\d{2}[A-Z]{2}\d|^AD\d{2}[A-Z]|^AB\d{2}[A-Z]|^HSU-/, o:"haier", w:"Η ονομασία 1U/2U…, AS25…, AD/AB… είναι του εργοστασίου Haier."}
+  {b:null, re:/^[1-5]U\d{2}[A-Z]|^AS\d{2}[A-Z]{2}\d|^AS\d{2}[A-Z]{2}[A-Z0-9]{0,4}(HRA|ERA)|^AD\d{2}[A-Z]|^AB\d{2}[A-Z]|^HSU-/, o:"haier", w:"Η ονομασία 1U/2U…, AS25…, AD/AB… είναι του εργοστασίου Haier."}
 ];
 function detectOem(b, model){
   var v = gr2lat(String(model||"")).toUpperCase().replace(/\s/g,""); if(v.length<3) return null;
@@ -470,6 +480,10 @@ function behBox(plat, codes){
   var bo = brandObj(), lab = bo && !bo.own && PLAT[plat] ? ' <span class="small">(εργοστάσιο '+esc(PLAT[plat].name)+')</span>' : '';
   return '<div class="beh"><div><b>🩺 Τι κάνει το μηχάνημα'+lab+':</b> '+esc(b.s)+'</div><div class="small">📘 Πότε βγαίνει (manual): '+esc(b.d)+'</div></div>';
 }
+// Σημειώσεις ανά μάρκα για συγκεκριμένο κωδικό (από το εγχειρίδιο της μάρκας)
+var BNOTE = {
+  "Candy": {haier:{"F25":"Κατά το εγχειρίδιο χρήσης Candy, αν το F25 εμφανιστεί στον αυτοκαθαρισμό (CL) με εξωτερική θερμοκρασία κάτω από 0°C είναι κανονική προστασία: κλείσε το ρεύμα και ξανάνοιξε μετά από 10 δευτερόλεπτα."}}
+};
 function card(r, showPlat){
   var c = r.c, t = r.t, kd = kindOf(c[1]);
   return '<div class="res"'+(kd?' style="--kc:'+kd[1]+'"':'')+'>'+
@@ -477,6 +491,7 @@ function card(r, showPlat){
     (showPlat?'<span class="plat">'+esc(PLAT[t.plat].name)+'</span>':(kd?'<span class="kind">'+esc(kd[0])+'</span>':''))+'</div>'+
     '<div class="rt">'+esc(c[1])+'</div>'+(function(){ var vn = typeof verifNote==="function" ? verifNote(t.key, c[0]) : ""; return vn ? '<div class="vn">⚠️ <b>Μη επιβεβαιωμένο για Ελλάδα/Ευρώπη.</b> '+esc(vn)+'</div>' : ''; })()+(/_outled$|_multi_out$|_multiled$/.test(t.key) ? '' : behBox(t.plat, c[0]))+
     (c[4]?'<div class="rl">↔ '+esc(c[4])+'</div>':'')+
+    (function(){ var bo2=brandObj(), bn=bo2&&BNOTE[bo2.n]; var x=bn&&bn[t.plat]&&bn[t.plat][c[0][0]]; return x ? '<div class="vn">🏷️ <b>'+esc(bo2.n)+':</b> '+esc(x)+'</div>' : ''; })()+
     (c[2]?(function(){ var st=stepsOf(c[2]); return st ? '<div class="rd"><b>🔧 Τι ελέγχεις – με τη σειρά:</b><ol class="steps">'+st.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol></div>' : '<div class="rd"><b>🔧 Τι ελέγχεις:</b> '+esc(c[2])+'</div>'; })():'')+
     (c[3]?(typeof outRender==="function"?outRender(c[3]):'<div class="ro">📟 <b>Πλακέτα εξωτερικής:</b> '+esc(c[3])+'</div>'):'')+
     (typeof outBox==="function" ? outBox(t, c) : '')+
