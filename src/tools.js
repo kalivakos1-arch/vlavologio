@@ -356,4 +356,8 @@ function admOpen(){
 document.addEventListener("click", function(e){ if(e.target && e.target.id==="admreset"){ localStorage.removeItem("vl_admpin"); var d=document.getElementById("admdlg"); if(d) d.style.display="none"; admOpen(); } });
 (function(){ var n=0, tm=null; document.addEventListener("click", function(e){
   if(e.target.closest("#admclose")){ document.getElementById("admdlg").style.display="none"; return; }
-  if(!e.target.closest(".logo")) return; n++; clearTimeout(tm); tm=setTimeout(function(){ n=0; },1500); if(n>=5){ n=0; admOpen(); } }); })();
+  if(!e.target.closest(".logo")) return; tap(); });
+  function tap(){ n++; clearTimeout(tm); tm=setTimeout(function(){ n=0; },1500); if(n>=5){ n=0; admOpen(); } }
+  // iPhone: τα γρήγορα πατήματα στο λογότυπο κάνουν ζουμ – το touchend με preventDefault το σταματά (και δεν βγαίνει click)
+  document.addEventListener("touchend", function(e){ if(e.target.closest && e.target.closest(".logo")){ e.preventDefault(); tap(); } }, {passive:false});
+})();
