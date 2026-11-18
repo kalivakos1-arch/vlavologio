@@ -53,6 +53,7 @@ function serHtml(t, cs){
 // ===== Scanner UI =====
 var SCAN = {st:null, timer:0, det:null, target:"ser", busy:false, hits:{}};
 function scanOpen(target){
+  ovPush();
   SCAN.target = target||"ser"; SCAN.hits = {};
   var ov = document.getElementById("scanov");
   if(!ov){ ov = document.createElement("div"); ov.id = "scanov"; document.body.appendChild(ov); }
@@ -76,7 +77,7 @@ function scanOpen(target){
 }
 function scanMsg(t){ var m = document.getElementById("scmsg"); if(m) m.textContent = t; }
 function scanStop(){ clearTimeout(SCAN.timer); if(SCAN.st){ SCAN.st.getTracks().forEach(function(t){ t.stop(); }); SCAN.st = null; } }
-function scanClose(){ scanStop(); var ov = document.getElementById("scanov"); if(ov){ ov.style.display = "none"; ov.innerHTML = ""; } document.body.style.overflow = ""; }
+function scanClose(){ scanStop(); var ov = document.getElementById("scanov"); if(ov){ ov.style.display = "none"; ov.innerHTML = ""; } document.body.style.overflow = ""; ovPop(); }
 var scanCv = null, scanN = 0;
 function scanLoop(){
   var v = document.getElementById("scvid"); if(!v || !SCAN.st) return;
@@ -123,7 +124,7 @@ function scanFound(text, fmt){
   var vb = document.querySelector("#scanov .scbox"); if(vb) vb.style.display = "none";
   var pb = document.querySelector("#scanov .scbtns"); if(pb) pb.style.display = "none";
   scanMsg("✅ Διαβάστηκε ("+String(fmt||"").replace("_","-").toUpperCase()+")");
-  if(SCAN.target==="hist"){ var hf = document.getElementById("hf_ser"); scanStop(); var ov0 = document.getElementById("scanov"); if(ov0){ ov0.style.display="none"; ov0.innerHTML=""; } if(hf) hf.value = serClean(text); return; }
+  if(SCAN.target==="hist"){ var hf = document.getElementById("hf_ser"); scanStop(); var ov0 = document.getElementById("scanov"); if(ov0){ ov0.style.display="none"; ov0.innerHTML=""; } ovPop(); if(hf) hf.value = serClean(text); return; }
   var quick = SCAN.target==="quick", qh = "";
   if(quick){
     var all = serInfo(text, null), seenB = {};
@@ -180,6 +181,7 @@ function histSeenHtml(ser, model){
 }
 function histDate(ts){ var d = new Date(ts); return d.toLocaleDateString("el-GR")+" "+d.toLocaleTimeString("el-GR",{hour:"2-digit",minute:"2-digit"}); }
 function histOpen(mode, id){
+  if(!document.getElementById("histov") || document.getElementById("histov").style.display!=="flex") ovPush();
   var ov = document.getElementById("histov");
   if(!ov){ ov = document.createElement("div"); ov.id = "histov"; document.body.appendChild(ov); }
   ov.style.display = "flex"; document.body.style.overflow = "hidden";
@@ -213,7 +215,7 @@ function histList(){
   el.innerHTML = r.length ? r.map(function(h){ return '<div class="hcard" data-hid="'+esc(h.id)+'"><div><b>'+esc(h.cust||"—")+'</b>'+(h.code?' · κωδ. <b>'+esc(h.code)+'</b>':'')+'</div><div class="hm">'+esc(histDate(h.ts))+' · '+esc([h.brand,h.oem,h.model].filter(Boolean).join(" · "))+(h.ser?' · S/N '+esc(h.ser):'')+'</div>'+(h.fix?'<div class="small">🔧 '+esc(h.fix)+'</div>':'')+'</div>'; }).join("")
     : '<div class="small">'+(HIST.length?'Δεν βρέθηκε.':'Δεν υπάρχουν καταχωρήσεις ακόμα. Μετά από μια επισκευή πάτα «Νέα καταχώρηση».')+'</div>';
 }
-function histClose(){ var ov = document.getElementById("histov"); if(ov){ ov.style.display="none"; ov.innerHTML=""; } document.body.style.overflow = ""; }
+function histClose(){ var ov = document.getElementById("histov"); if(ov){ ov.style.display="none"; ov.innerHTML=""; } document.body.style.overflow = ""; ovPop(); }
 document.addEventListener("click", function(e){
   var el = e.target.closest("#histbtn,#histclose,#histnew,#histsave,#histlist,#histdel,#histexp,[data-hid],#qscan,[data-qb]"); if(!el) return;
   if(el.id==="qscan"){ scanOpen("quick"); return; }
@@ -312,6 +314,18 @@ document.addEventListener("click", function(e){
   if(el.id==="pshare"){ var t = "Ανταλλακτικά:\n"+PLIST.filter(function(p){ return !p.done; }).map(function(p){ return "• "+p.txt+(p.ctx?" ("+p.ctx+")":""); }).join("\n"); shareText(t, "Λίστα ανταλλακτικών"); return; }
 });
 document.addEventListener("change", function(e){ var c = e.target; if(c && c.hasAttribute && c.hasAttribute("data-pchk")){ var id = c.getAttribute("data-pchk"); PLIST.forEach(function(p){ if(p.id===id) p.done = c.checked; }); plistSave(); histOpen("parts"); } });
+
+// ===== Κλείσιμο παραθύρων με «πίσω» / Escape (και στην εγκατεστημένη εφαρμογή iPhone) =====
+var OVN = 0;
+function ovPush(){ try{ history.pushState({vlov:1}, ""); OVN++; }catch(x){} }
+function ovPop(){ if(OVN>0){ OVN--; try{ if(history.state && history.state.vlov) history.back(); }catch(x){} } }
+window.addEventListener("popstate", function(){
+  var sc = document.getElementById("scanov"), hi = document.getElementById("histov");
+  if(sc && sc.style.display && sc.style.display!=="none"){ OVN=Math.max(0,OVN-1); scanStop(); sc.style.display="none"; sc.innerHTML=""; document.body.style.overflow=""; return; }
+  if(hi && hi.style.display==="flex"){ OVN=Math.max(0,OVN-1); hi.style.display="none"; hi.innerHTML=""; document.body.style.overflow=""; }
+});
+document.addEventListener("keydown", function(e){ if(e.key!=="Escape") return; var sc=document.getElementById("scanov"), hi=document.getElementById("histov");
+  if(sc && sc.style.display && sc.style.display!=="none") scanClose(); else if(hi && hi.style.display==="flex") histClose(); });
 
 // ===== Αναφορά για πελάτη =====
 function reportText(h){

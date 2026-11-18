@@ -214,29 +214,38 @@ function repFlush(){
 }
 window.addEventListener("online", repFlush); setTimeout(repFlush, 3000);
 var REPORT_KINDS = ["Λάθος σημασία κωδικού","Λάθος ένδειξη πλακέτας εξωτερικής","Λάθος βήματα ελέγχου","Λείπει κωδικός / σειρά","Άλλο"];
+var REPORT_KINDS_GEN = ["Πρόβλημα στην εφαρμογή (κολλάει, δεν κλείνει κ.λπ.)","Λείπει μάρκα / μοντέλο / κωδικός","Λάθος σε πληροφορία","Πρόταση βελτίωσης","Άλλο"];
 function repButton(tkey, code){ return '<button class="repb" data-rep="'+esc(tkey)+'|'+esc(code)+'">⚑ Αναφορά λάθους</button>'; }
+function repCtx(){
+  var c=null; try{ CATS.forEach(function(x){ if(x.id===S.cat) c=x.label; }); }catch(x){}
+  var q=""; try{ q=(document.getElementById("q")||{}).value||""; }catch(x){}
+  return {brand:(S&&S.brand)||"", cat:(S&&S.brand&&c)||"", model:(S&&S.model)||"", oem:(S&&S.oem&&S.oem!=="__all")?S.oem:"", q:q.trim()};
+}
 function repOpen(tkey, code){
   var d=document.getElementById("repdlg");
   if(!d){ d=document.createElement("div"); d.id="repdlg"; d.className="repov"; document.body.appendChild(d); }
-  var tname=(typeof T!=="undefined" && T[tkey]) ? T[tkey].name : tkey, br=(typeof S!=="undefined" && S.brand)||"";
-  d.innerHTML='<div class="repbox" role="dialog" aria-modal="true" aria-labelledby="reph"><div class="reph" id="reph">⚑ Αναφορά λάθους</div>'+
-    '<div class="small">Κωδικός <b>'+esc(code)+'</b> · '+esc(br?br+" · ":"")+esc(tname)+'</div>'+
-    '<div class="repk">'+REPORT_KINDS.map(function(k,i){ return '<label class="chk"><input type="radio" name="repk" value="'+esc(k)+'"'+(i===0?' checked':'')+'> '+esc(k)+'</label>'; }).join("")+'</div>'+
-    '<input id="repmodel" placeholder="Μοντέλο (προαιρετικό)" autocapitalize="characters" spellcheck="false" value="'+esc((typeof S!=="undefined" && S.model)||"")+'">'+
-    '<textarea id="reptxt" rows="4" placeholder="Τι είδες στη μονάδα; π.χ. «η πλακέτα έδειχνε κόκκινο ×5, όχι ×3»"></textarea>'+
+  var gen=!tkey, cx=repCtx(), tname=(!gen && typeof T!=="undefined" && T[tkey]) ? T[tkey].name : "", kinds=gen?REPORT_KINDS_GEN:REPORT_KINDS;
+  var ctxl=[cx.brand?"<b>"+esc(cx.brand)+"</b>":"", cx.cat?esc(cx.cat):"", tname?esc(tname):""].filter(Boolean).join(" · ");
+  d.innerHTML='<div class="repbox" role="dialog" aria-modal="true" aria-labelledby="reph"><div class="reph" id="reph">⚑ '+(gen?'Αναφορά προβλήματος':'Αναφορά λάθους')+'<button class="repx" id="repcancel2" aria-label="Κλείσιμο">✕</button></div>'+
+    (ctxl?'<div class="small">'+(code?'Κωδικός <b>'+esc(code)+'</b> · ':'')+ctxl+'</div>':'<div class="small">Δεν έχει επιλεγεί μάρκα – γράψ’ την στο σχόλιο αν αφορά συγκεκριμένη μονάδα.</div>')+
+    '<div class="repk">'+kinds.map(function(k,i){ return '<label class="chk"><input type="radio" name="repk" value="'+esc(k)+'"'+(i===0?' checked':'')+'> '+esc(k)+'</label>'; }).join("")+'</div>'+
+    '<div class="row2"><input id="repmodel" placeholder="Μοντέλο" autocapitalize="characters" spellcheck="false" value="'+esc(cx.model)+'">'+
+    (gen?'<input id="repcode" placeholder="Κωδικός (αν υπάρχει)" autocapitalize="characters" spellcheck="false" value="'+esc(cx.q)+'">':'')+'</div>'+
+    '<textarea id="reptxt" rows="4" placeholder="'+(gen?'Τι έγινε; π.χ. «δεν μπορώ να κλείσω την κάμερα»':'Τι είδες στη μονάδα; π.χ. «η πλακέτα έδειχνε κόκκινο ×5, όχι ×3»')+'"></textarea>'+
     '<div class="scbtns"><button class="mini prim" id="repsend">📤 Αποστολή</button><button class="mini" id="repcancel">Άκυρο</button></div>'+
     '<div class="small" style="margin-top:6px">Η αναφορά στέλνεται ανώνυμα για έλεγχο και διόρθωση. Δεν στέλνεται τίποτα χωρίς να πατήσεις «Αποστολή».</div></div>';
-  d.style.display="flex"; d.setAttribute("data-k",tkey+"|"+code); setTimeout(function(){ var t=document.getElementById("reptxt"); if(t) t.focus(); },50);
+  d.style.display="flex"; d.setAttribute("data-k",(tkey||"")+"|"+(code||"")); setTimeout(function(){ var t=document.getElementById("reptxt"); if(t) t.focus(); },50);
 }
-function repText(r){ return "Βλαβολόγιο – αναφορά λάθους\nΚωδικός: "+r.code+"\nΜάρκα: "+(r.brand||"-")+"\nΠίνακας: "+r.table+"\nΜοντέλο: "+(r.model||"-")+"\nΕίδος: "+r.kind+"\nΣχόλιο: "+(r.txt||"-")+"\nΗμερομηνία: "+r.date; }
+function repText(r){ return "Βλαβολόγιο – αναφορά "+(r.gen?"προβλήματος":"λάθους")+"\nΚωδικός: "+(r.code||"-")+"\nΜάρκα: "+(r.brand||"-")+"\nΚατηγορία: "+(r.cat||"-")+"\nΠίνακας: "+(r.table||"-")+"\nΜοντέλο: "+(r.model||"-")+"\nΕίδος: "+r.kind+"\nΣχόλιο: "+(r.txt||"-")+"\nΗμερομηνία: "+r.date; }
 document.addEventListener("click", function(e){
-  var b=e.target.closest("[data-rep],#repsend,#repcancel,#repdlg"); if(!b) return;
+  var b=e.target.closest("[data-rep],#repgen,#repsend,#repcancel,#repcancel2,#repdlg"); if(!b) return;
+  if(b.id==="repgen"){ repOpen("",""); return; }
   if(b.hasAttribute("data-rep")){ var a=b.getAttribute("data-rep").split("|"); repOpen(a[0],a.slice(1).join("|")); return; }
   var d=document.getElementById("repdlg");
-  if(b.id==="repcancel" || (b.id==="repdlg" && e.target===d)){ d.style.display="none"; return; }
+  if(b.id==="repcancel" || b.id==="repcancel2" || (b.id==="repdlg" && e.target===d)){ d.style.display="none"; return; }
   if(b.id==="repsend"){
     var k=d.getAttribute("data-k").split("|"), kind=(d.querySelector('input[name=repk]:checked')||{}).value||"";
-    var r={code:k.slice(1).join("|"), table:(T[k[0]]?T[k[0]].name:k[0]), brand:(S&&S.brand)||"", model:document.getElementById("repmodel").value.trim(), kind:kind, txt:document.getElementById("reptxt").value.trim(), date:new Date().toLocaleString("el-GR")};
+    var cx=repCtx(), rc=document.getElementById("repcode"); var r={gen:!k[0], cat:cx.cat, code:rc?rc.value.trim():k.slice(1).join("|"), table:(k[0]&&T[k[0]]?T[k[0]].name:(k[0]||"")), brand:cx.brand, model:document.getElementById("repmodel").value.trim(), kind:kind, txt:document.getElementById("reptxt").value.trim(), date:new Date().toLocaleString("el-GR")};
     try{ var all=JSON.parse(localStorage.getItem("vl_reports")||"[]"); all.push(r); localStorage.setItem("vl_reports",JSON.stringify(all.slice(-200))); }catch(x){}
     var t=repText(r);
     d.style.display="none";

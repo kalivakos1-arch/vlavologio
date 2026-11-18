@@ -137,8 +137,10 @@ details.foot summary::-webkit-details-marker{display:none}
 .repb{display:inline-flex;align-items:center;gap:4px;margin-top:10px;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:6px 10px;font-size:13px;font-weight:650}
 .repb:active{background:var(--card2)}
 .repov{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;justify-content:center;background:rgba(5,12,18,.55);padding:12px;padding-bottom:max(12px,env(safe-area-inset-bottom))}
-.repbox{width:100%;max-width:520px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35);color:var(--text)}
-.reph{font-size:17px;font-weight:800;margin-bottom:4px}
+.repbox{max-height:calc(100vh - 24px - env(safe-area-inset-top));overflow:auto;width:100%;max-width:520px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35);color:var(--text)}
+.reph{font-size:17px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;gap:8px}.repx{flex:none;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--text);font-size:17px}
+.repgen{display:block;margin:-2px 0 10px auto;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:7px 13px;font-size:13.5px;font-weight:700}.repgen:active{background:var(--card2)}
+.repbox .row2{display:flex;gap:8px}.repbox .row2 input{flex:1;min-width:0}
 .repk{display:flex;flex-direction:column;gap:2px;margin:10px 0}
 .repk label{display:flex!important;align-items:center;gap:10px;color:var(--text)!important;font-size:15px;font-weight:600;padding:6px 2px}
 .repk input[type=radio]{-webkit-appearance:auto;appearance:auto;width:20px!important;height:20px;flex:none;margin:0;padding:0;accent-color:var(--acc)}
@@ -245,8 +247,9 @@ label.chk{display:flex!important;gap:10px;align-items:center;margin:8px 0}.pcalc
 #catwrap .cats{margin-bottom:0}#catwrap .cat{box-shadow:none;background:var(--card2)}
 .allh{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin:22px 2px 6px}
 details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
-#scanov{position:fixed;inset:0;z-index:9999;background:var(--bg);display:none;flex-direction:column;gap:8px;padding:12px;overflow:auto}
-.schead{display:flex;justify-content:space-between;align-items:center;font-size:17px}
+#scanov{position:fixed;inset:0;z-index:9999;background:var(--bg);display:none;flex-direction:column;gap:8px;padding:calc(10px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));overflow:auto;-webkit-overflow-scrolling:touch}
+.schead{display:flex;justify-content:space-between;align-items:center;font-size:17px;position:sticky;top:calc(-10px - env(safe-area-inset-top));z-index:3;background:var(--bg);padding:6px 0;margin-top:-6px}
+.schead #scclose,.schead #histclose,.schead .mini:last-child{min-width:46px;min-height:44px;font-size:18px}
 .scbox{position:relative;width:100%;max-width:640px;margin:0 auto;border-radius:14px;overflow:hidden;background:#000;aspect-ratio:4/3}
 .scbox video{width:100%;height:100%;object-fit:cover;display:block}
 .scguide{position:absolute;left:6%;right:6%;top:32%;bottom:32%;border:3px solid #34d399;border-radius:10px;box-shadow:0 0 0 999px rgba(0,0,0,.35)}
@@ -259,7 +262,7 @@ details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
 .serbox{margin:8px 0}
 .scanbtn{width:100%;box-sizing:border-box;white-space:normal;padding:10px 12px;margin:4px 0 8px;line-height:1.3}
 .hbtn{width:38px;height:40px;font-weight:800;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:18px;margin-right:6px}
-#histov{position:fixed;inset:0;z-index:9998;background:var(--bg);display:none;flex-direction:column;gap:8px;padding:12px;overflow:auto}
+#histov{position:fixed;inset:0;z-index:9998;background:var(--bg);display:none;flex-direction:column;gap:8px;padding:calc(10px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));overflow:auto;-webkit-overflow-scrolling:touch}
 .hcard{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:6px 0}
 .hcard .hm{font-size:12.5px;color:var(--muted)}
 .hform label{display:block;font-size:13px;color:var(--muted);margin-top:8px}
@@ -384,6 +387,7 @@ html.field .srcbox button i .ic{width:24px;height:24px}
     <div class="hgrow"><h1>Βλαβολόγιο Κλιματισμού</h1><p>Κωδικοί, λυχνίες & μετρήσεις από τα service manuals</p></div><button id="qscan" class="hbtn" aria-label="Σάρωση barcode" title="Σάρωση ετικέτας"><svg class="ic"><use href="#i-scan"/></svg></button><button id="toolsbtn" class="hbtn" aria-label="Εργαλεία" title="Εργαλεία: P/T, φρέον, F-gas, αέρας"><svg class="ic"><use href="#i-gauge"/></svg></button><button id="histbtn" class="hbtn" aria-label="Ιστορικό" title="Ιστορικό επισκέψεων"><svg class="ic"><use href="#i-log"/></svg></button><button id="fieldbtn" class="hbtn" aria-label="Λειτουργία πεδίου"><svg class="ic"><use href="#i-type"/></svg></button><button id="theme" aria-label="Θέμα"><svg class="ic"><use href="#i-theme"/></svg></button>
   </header>
 
+  <button class="repgen" id="repgen">⚑ Αναφορά προβλήματος</button>
   <div class="card" id="brandcard">
     <label class="lbl step"><b>1</b> Μάρκα</label>
     <div id="bchosen"></div>
@@ -5827,6 +5831,7 @@ function serHtml(t, cs){
 // ===== Scanner UI =====
 var SCAN = {st:null, timer:0, det:null, target:"ser", busy:false, hits:{}};
 function scanOpen(target){
+  ovPush();
   SCAN.target = target||"ser"; SCAN.hits = {};
   var ov = document.getElementById("scanov");
   if(!ov){ ov = document.createElement("div"); ov.id = "scanov"; document.body.appendChild(ov); }
@@ -5850,7 +5855,7 @@ function scanOpen(target){
 }
 function scanMsg(t){ var m = document.getElementById("scmsg"); if(m) m.textContent = t; }
 function scanStop(){ clearTimeout(SCAN.timer); if(SCAN.st){ SCAN.st.getTracks().forEach(function(t){ t.stop(); }); SCAN.st = null; } }
-function scanClose(){ scanStop(); var ov = document.getElementById("scanov"); if(ov){ ov.style.display = "none"; ov.innerHTML = ""; } document.body.style.overflow = ""; }
+function scanClose(){ scanStop(); var ov = document.getElementById("scanov"); if(ov){ ov.style.display = "none"; ov.innerHTML = ""; } document.body.style.overflow = ""; ovPop(); }
 var scanCv = null, scanN = 0;
 function scanLoop(){
   var v = document.getElementById("scvid"); if(!v || !SCAN.st) return;
@@ -5897,7 +5902,7 @@ function scanFound(text, fmt){
   var vb = document.querySelector("#scanov .scbox"); if(vb) vb.style.display = "none";
   var pb = document.querySelector("#scanov .scbtns"); if(pb) pb.style.display = "none";
   scanMsg("✅ Διαβάστηκε ("+String(fmt||"").replace("_","-").toUpperCase()+")");
-  if(SCAN.target==="hist"){ var hf = document.getElementById("hf_ser"); scanStop(); var ov0 = document.getElementById("scanov"); if(ov0){ ov0.style.display="none"; ov0.innerHTML=""; } if(hf) hf.value = serClean(text); return; }
+  if(SCAN.target==="hist"){ var hf = document.getElementById("hf_ser"); scanStop(); var ov0 = document.getElementById("scanov"); if(ov0){ ov0.style.display="none"; ov0.innerHTML=""; } ovPop(); if(hf) hf.value = serClean(text); return; }
   var quick = SCAN.target==="quick", qh = "";
   if(quick){
     var all = serInfo(text, null), seenB = {};
@@ -5954,6 +5959,7 @@ function histSeenHtml(ser, model){
 }
 function histDate(ts){ var d = new Date(ts); return d.toLocaleDateString("el-GR")+" "+d.toLocaleTimeString("el-GR",{hour:"2-digit",minute:"2-digit"}); }
 function histOpen(mode, id){
+  if(!document.getElementById("histov") || document.getElementById("histov").style.display!=="flex") ovPush();
   var ov = document.getElementById("histov");
   if(!ov){ ov = document.createElement("div"); ov.id = "histov"; document.body.appendChild(ov); }
   ov.style.display = "flex"; document.body.style.overflow = "hidden";
@@ -5987,7 +5993,7 @@ function histList(){
   el.innerHTML = r.length ? r.map(function(h){ return '<div class="hcard" data-hid="'+esc(h.id)+'"><div><b>'+esc(h.cust||"—")+'</b>'+(h.code?' · κωδ. <b>'+esc(h.code)+'</b>':'')+'</div><div class="hm">'+esc(histDate(h.ts))+' · '+esc([h.brand,h.oem,h.model].filter(Boolean).join(" · "))+(h.ser?' · S/N '+esc(h.ser):'')+'</div>'+(h.fix?'<div class="small">🔧 '+esc(h.fix)+'</div>':'')+'</div>'; }).join("")
     : '<div class="small">'+(HIST.length?'Δεν βρέθηκε.':'Δεν υπάρχουν καταχωρήσεις ακόμα. Μετά από μια επισκευή πάτα «Νέα καταχώρηση».')+'</div>';
 }
-function histClose(){ var ov = document.getElementById("histov"); if(ov){ ov.style.display="none"; ov.innerHTML=""; } document.body.style.overflow = ""; }
+function histClose(){ var ov = document.getElementById("histov"); if(ov){ ov.style.display="none"; ov.innerHTML=""; } document.body.style.overflow = ""; ovPop(); }
 document.addEventListener("click", function(e){
   var el = e.target.closest("#histbtn,#histclose,#histnew,#histsave,#histlist,#histdel,#histexp,[data-hid],#qscan,[data-qb]"); if(!el) return;
   if(el.id==="qscan"){ scanOpen("quick"); return; }
@@ -6086,6 +6092,18 @@ document.addEventListener("click", function(e){
   if(el.id==="pshare"){ var t = "Ανταλλακτικά:\n"+PLIST.filter(function(p){ return !p.done; }).map(function(p){ return "• "+p.txt+(p.ctx?" ("+p.ctx+")":""); }).join("\n"); shareText(t, "Λίστα ανταλλακτικών"); return; }
 });
 document.addEventListener("change", function(e){ var c = e.target; if(c && c.hasAttribute && c.hasAttribute("data-pchk")){ var id = c.getAttribute("data-pchk"); PLIST.forEach(function(p){ if(p.id===id) p.done = c.checked; }); plistSave(); histOpen("parts"); } });
+
+// ===== Κλείσιμο παραθύρων με «πίσω» / Escape (και στην εγκατεστημένη εφαρμογή iPhone) =====
+var OVN = 0;
+function ovPush(){ try{ history.pushState({vlov:1}, ""); OVN++; }catch(x){} }
+function ovPop(){ if(OVN>0){ OVN--; try{ if(history.state && history.state.vlov) history.back(); }catch(x){} } }
+window.addEventListener("popstate", function(){
+  var sc = document.getElementById("scanov"), hi = document.getElementById("histov");
+  if(sc && sc.style.display && sc.style.display!=="none"){ OVN=Math.max(0,OVN-1); scanStop(); sc.style.display="none"; sc.innerHTML=""; document.body.style.overflow=""; return; }
+  if(hi && hi.style.display==="flex"){ OVN=Math.max(0,OVN-1); hi.style.display="none"; hi.innerHTML=""; document.body.style.overflow=""; }
+});
+document.addEventListener("keydown", function(e){ if(e.key!=="Escape") return; var sc=document.getElementById("scanov"), hi=document.getElementById("histov");
+  if(sc && sc.style.display && sc.style.display!=="none") scanClose(); else if(hi && hi.style.display==="flex") histClose(); });
 
 // ===== Αναφορά για πελάτη =====
 function reportText(h){
@@ -6631,29 +6649,38 @@ function repFlush(){
 }
 window.addEventListener("online", repFlush); setTimeout(repFlush, 3000);
 var REPORT_KINDS = ["Λάθος σημασία κωδικού","Λάθος ένδειξη πλακέτας εξωτερικής","Λάθος βήματα ελέγχου","Λείπει κωδικός / σειρά","Άλλο"];
+var REPORT_KINDS_GEN = ["Πρόβλημα στην εφαρμογή (κολλάει, δεν κλείνει κ.λπ.)","Λείπει μάρκα / μοντέλο / κωδικός","Λάθος σε πληροφορία","Πρόταση βελτίωσης","Άλλο"];
 function repButton(tkey, code){ return '<button class="repb" data-rep="'+esc(tkey)+'|'+esc(code)+'">⚑ Αναφορά λάθους</button>'; }
+function repCtx(){
+  var c=null; try{ CATS.forEach(function(x){ if(x.id===S.cat) c=x.label; }); }catch(x){}
+  var q=""; try{ q=(document.getElementById("q")||{}).value||""; }catch(x){}
+  return {brand:(S&&S.brand)||"", cat:(S&&S.brand&&c)||"", model:(S&&S.model)||"", oem:(S&&S.oem&&S.oem!=="__all")?S.oem:"", q:q.trim()};
+}
 function repOpen(tkey, code){
   var d=document.getElementById("repdlg");
   if(!d){ d=document.createElement("div"); d.id="repdlg"; d.className="repov"; document.body.appendChild(d); }
-  var tname=(typeof T!=="undefined" && T[tkey]) ? T[tkey].name : tkey, br=(typeof S!=="undefined" && S.brand)||"";
-  d.innerHTML='<div class="repbox" role="dialog" aria-modal="true" aria-labelledby="reph"><div class="reph" id="reph">⚑ Αναφορά λάθους</div>'+
-    '<div class="small">Κωδικός <b>'+esc(code)+'</b> · '+esc(br?br+" · ":"")+esc(tname)+'</div>'+
-    '<div class="repk">'+REPORT_KINDS.map(function(k,i){ return '<label class="chk"><input type="radio" name="repk" value="'+esc(k)+'"'+(i===0?' checked':'')+'> '+esc(k)+'</label>'; }).join("")+'</div>'+
-    '<input id="repmodel" placeholder="Μοντέλο (προαιρετικό)" autocapitalize="characters" spellcheck="false" value="'+esc((typeof S!=="undefined" && S.model)||"")+'">'+
-    '<textarea id="reptxt" rows="4" placeholder="Τι είδες στη μονάδα; π.χ. «η πλακέτα έδειχνε κόκκινο ×5, όχι ×3»"></textarea>'+
+  var gen=!tkey, cx=repCtx(), tname=(!gen && typeof T!=="undefined" && T[tkey]) ? T[tkey].name : "", kinds=gen?REPORT_KINDS_GEN:REPORT_KINDS;
+  var ctxl=[cx.brand?"<b>"+esc(cx.brand)+"</b>":"", cx.cat?esc(cx.cat):"", tname?esc(tname):""].filter(Boolean).join(" · ");
+  d.innerHTML='<div class="repbox" role="dialog" aria-modal="true" aria-labelledby="reph"><div class="reph" id="reph">⚑ '+(gen?'Αναφορά προβλήματος':'Αναφορά λάθους')+'<button class="repx" id="repcancel2" aria-label="Κλείσιμο">✕</button></div>'+
+    (ctxl?'<div class="small">'+(code?'Κωδικός <b>'+esc(code)+'</b> · ':'')+ctxl+'</div>':'<div class="small">Δεν έχει επιλεγεί μάρκα – γράψ’ την στο σχόλιο αν αφορά συγκεκριμένη μονάδα.</div>')+
+    '<div class="repk">'+kinds.map(function(k,i){ return '<label class="chk"><input type="radio" name="repk" value="'+esc(k)+'"'+(i===0?' checked':'')+'> '+esc(k)+'</label>'; }).join("")+'</div>'+
+    '<div class="row2"><input id="repmodel" placeholder="Μοντέλο" autocapitalize="characters" spellcheck="false" value="'+esc(cx.model)+'">'+
+    (gen?'<input id="repcode" placeholder="Κωδικός (αν υπάρχει)" autocapitalize="characters" spellcheck="false" value="'+esc(cx.q)+'">':'')+'</div>'+
+    '<textarea id="reptxt" rows="4" placeholder="'+(gen?'Τι έγινε; π.χ. «δεν μπορώ να κλείσω την κάμερα»':'Τι είδες στη μονάδα; π.χ. «η πλακέτα έδειχνε κόκκινο ×5, όχι ×3»')+'"></textarea>'+
     '<div class="scbtns"><button class="mini prim" id="repsend">📤 Αποστολή</button><button class="mini" id="repcancel">Άκυρο</button></div>'+
     '<div class="small" style="margin-top:6px">Η αναφορά στέλνεται ανώνυμα για έλεγχο και διόρθωση. Δεν στέλνεται τίποτα χωρίς να πατήσεις «Αποστολή».</div></div>';
-  d.style.display="flex"; d.setAttribute("data-k",tkey+"|"+code); setTimeout(function(){ var t=document.getElementById("reptxt"); if(t) t.focus(); },50);
+  d.style.display="flex"; d.setAttribute("data-k",(tkey||"")+"|"+(code||"")); setTimeout(function(){ var t=document.getElementById("reptxt"); if(t) t.focus(); },50);
 }
-function repText(r){ return "Βλαβολόγιο – αναφορά λάθους\nΚωδικός: "+r.code+"\nΜάρκα: "+(r.brand||"-")+"\nΠίνακας: "+r.table+"\nΜοντέλο: "+(r.model||"-")+"\nΕίδος: "+r.kind+"\nΣχόλιο: "+(r.txt||"-")+"\nΗμερομηνία: "+r.date; }
+function repText(r){ return "Βλαβολόγιο – αναφορά "+(r.gen?"προβλήματος":"λάθους")+"\nΚωδικός: "+(r.code||"-")+"\nΜάρκα: "+(r.brand||"-")+"\nΚατηγορία: "+(r.cat||"-")+"\nΠίνακας: "+(r.table||"-")+"\nΜοντέλο: "+(r.model||"-")+"\nΕίδος: "+r.kind+"\nΣχόλιο: "+(r.txt||"-")+"\nΗμερομηνία: "+r.date; }
 document.addEventListener("click", function(e){
-  var b=e.target.closest("[data-rep],#repsend,#repcancel,#repdlg"); if(!b) return;
+  var b=e.target.closest("[data-rep],#repgen,#repsend,#repcancel,#repcancel2,#repdlg"); if(!b) return;
+  if(b.id==="repgen"){ repOpen("",""); return; }
   if(b.hasAttribute("data-rep")){ var a=b.getAttribute("data-rep").split("|"); repOpen(a[0],a.slice(1).join("|")); return; }
   var d=document.getElementById("repdlg");
-  if(b.id==="repcancel" || (b.id==="repdlg" && e.target===d)){ d.style.display="none"; return; }
+  if(b.id==="repcancel" || b.id==="repcancel2" || (b.id==="repdlg" && e.target===d)){ d.style.display="none"; return; }
   if(b.id==="repsend"){
     var k=d.getAttribute("data-k").split("|"), kind=(d.querySelector('input[name=repk]:checked')||{}).value||"";
-    var r={code:k.slice(1).join("|"), table:(T[k[0]]?T[k[0]].name:k[0]), brand:(S&&S.brand)||"", model:document.getElementById("repmodel").value.trim(), kind:kind, txt:document.getElementById("reptxt").value.trim(), date:new Date().toLocaleString("el-GR")};
+    var cx=repCtx(), rc=document.getElementById("repcode"); var r={gen:!k[0], cat:cx.cat, code:rc?rc.value.trim():k.slice(1).join("|"), table:(k[0]&&T[k[0]]?T[k[0]].name:(k[0]||"")), brand:cx.brand, model:document.getElementById("repmodel").value.trim(), kind:kind, txt:document.getElementById("reptxt").value.trim(), date:new Date().toLocaleString("el-GR")};
     try{ var all=JSON.parse(localStorage.getItem("vl_reports")||"[]"); all.push(r); localStorage.setItem("vl_reports",JSON.stringify(all.slice(-200))); }catch(x){}
     var t=repText(r);
     d.style.display="none";
