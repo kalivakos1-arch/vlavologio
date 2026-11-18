@@ -67,7 +67,7 @@ var BRANDS = [
   {n:"Toyotomi", cands:{split:["gree","midea","aux","tcl","hisense","haier"], hp:["midea","gree"], vrf:["midea","gree"], vrfhr:["midea","gree"]}, hint:"Στα εγχειρίδια Toyotomi (Erai, Umi, TRN/TRG) οι κωδικοί είναι τύπου Gree (U8, H6, H3, C5, F0…). Άλλες σειρές μπορεί να διαφέρουν – δες ταμπελάκι."},
   {n:"Sendo", cands:GENERIC, hint:"Η Sendo έχει σειρές από διαφορετικά εργοστάσια· δεν βρέθηκε επίσημο service manual. Δες «Manufacturer» στο ταμπελάκι."},
   {n:"Nexi (by Sendo)", cands:GENERIC},
-  {n:"Juro-Pro", cands:{split:["midea","gree","aux","tcl","hisense","haier"], hp:["midea"], vrf:["midea"], vrfhr:["midea"]}, hint:"Τα Juro-Pro έχουν λειτουργία «Follow Me», χαρακτηριστική της Midea – πιθανότατα Midea OEM. Επιβεβαίωσε στο ταμπελάκι."},
+  {n:"Juro-Pro", cands:{split:["midea","gree","aux","tcl","hisense","haier"], hp:["midea"], vrf:["midea"], vrfhr:["midea"]}, hint:"Τα Juro-Pro έχουν λειτουργία «Follow Me», χαρακτηριστική της Midea – πιθανότατα Midea OEM. Το εγχειρίδιο Eco II του εισαγωγέα (ΜΑΓΝΗΤΙΚΗ Α.Ε.) δεν γράφει εργοστάσιο ούτε πίνακα κωδικών (ελέγχθηκε 18/11/2026). Επιβεβαίωσε στο ταμπελάκι («Manufacturer») ή στείλε φωτογραφία ταμπέλας από την αναφορά."},
   {n:"Morris", cands:GENERIC},
   {n:"Tesla", cands:GENERIC},
   {n:"Pitsos", cands:{split:["midea","gree","aux"]}},

@@ -303,9 +303,9 @@ var OUTGUIDE = {
   fujitsu: "Fujitsu: αν αναβοσβήνει γρήγορα το LED «ERROR» στην εξωτερική, πάτα μία φορά ENTER – τα LED δείχνουν τον κωδικό (ίδιος με E:xx). Παλαιότερα: κωδικός από αναλαμπές OPERATION (δεκάδες) / TIMER (μονάδες) εσωτερικής.",
   mhi: "MHI: στην πλακέτα εξωτερικής πράσινο LED (αναβοσβήνει = CPU OK) και κόκκινο LED: σβηστό = η βλάβη δεν είναι στην εξωτερική, αναβοσβήνει = βλάβη εξωτερικής. Ο κωδικός από RUN (δεκάδες) / TIMER (μονάδες) εσωτερικής ή από το ενσύρματο (E..). KX VRF: 7-segment.",
   samsung: "Samsung: LED στην κεντρική/inverter πλακέτα εξωτερικής δείχνουν συνδυασμό για τον ίδιο κωδικό E… που φαίνεται στην εσωτερική· διάβασε τον κωδικό από την εσωτερική/χειριστήριο. DVM VRF: 7-segment με τον ίδιο κωδικό.",
-  panasonic: "Panasonic: ο κωδικός (H/F) διαβάζεται από το τηλεχειριστήριο με CHECK – δεν βρέθηκε ξεχωριστός πίνακας LED εξωτερικής για τα οικιακά.",
+  panasonic: "Panasonic οικιακά: η Panasonic ΔΕΝ έχει πίνακα λυχνιών εξωτερικής – στα ευρωπαϊκά service manual η διάγνωση γίνεται μόνο με το TIMER LED της εσωτερικής που αναβοσβήνει και το κουμπί CHECK του τηλεχειριστηρίου (κρατάς 5″, μετά ▲/▼ μέχρι να ακουστεί μπιπ = κωδικός H/F). Ελέγχθηκαν CS-TZ…TKEW, CS-Z…TKEW, CS-Z…UD3EAW.",
   hitachi: "Hitachi: VRF/Utopia – 7-segment στην πλακέτα εξωτερικής με τον ίδιο κωδικό αλάρμ + αριθμό μονάδας.",
-  tcl: "TCL: ο κωδικός από την εσωτερική – δεν βρέθηκε δημόσιος πίνακας LED εξωτερικής.",
+  tcl: "TCL: μία λυχνία στην πλακέτα τροφοδοσίας εξωτερικής – αναβοσβήνει 1″/1″ σε αναμονή, σταθερή όταν δουλεύει ο συμπιεστής· σε βλάβη 0,5″/0,5″ n φορές και παύση 3″ (πίνακας 1–17 στο «Εξωτερική»). Πηγή: TCL service manual TAC-…CHSD/XPI, /YA11I.",
   inv_mc: "Inventor Mini Chiller: ο κωδικός φαίνεται στο χειριστήριο της μονάδας."
 };
 
@@ -364,8 +364,8 @@ T.midea_multi_out = {
 };
 
 T.tcl_multi_outled = {
-  name: "TCL multi (FMA) – λυχνία πλακέτας εξωτερικής (αναλαμπές)",
-  src: "TCL Multi Inverter service manual (FMA-18I2HD/DVO … FMA-42I5HD/DVO) – Outdoor failure display",
+  name: "TCL split & multi – λυχνία πλακέτας εξωτερικής (αναλαμπές)",
+  src: "TCL Multi Inverter service manual (FMA-18I2HD/DVO … FMA-42I5HD/DVO) – Outdoor failure display· ίδιος πίνακας 1–17 αναλαμπών και στο TCL split service manual TAC-09/12CHSD/XPI & /YA11I (Outdoor failure display, σελ. 9–10)",
   note: "Η λυχνία της πλακέτας τροφοδοσίας εξωτερικής: αναβοσβήνει 1″/1″ σε αναμονή, σταθερή όταν δουλεύει ο συμπιεστής. Σε βλάβη: 0,5″ αναμμένη / 0,5″ σβηστή n φορές και παύση. Μέτρα το n.",
   link: "tcl_split",
   codes: [
@@ -460,7 +460,7 @@ var OUTP = {
   inv_gree:{split:["gree_outled"], multi:["gree_outled","gree_split"]},
   aux:     {split:["aux_outled"]},
   hisense: {split:["hisense_outled"], multi:["hisense_outled","hisense_split"]},
-  tcl:     {multi:["tcl_multi_outled"]},
+  tcl:     {split:["tcl_multi_outled"], multi:["tcl_multi_outled"]},
   fujitsu: {multi:["fujitsu_multi_outled"]},
   lg:      {split:["lg_all"], multi:["lg_all"]},
   samsung: {multi:["samsung_all"]},

@@ -471,7 +471,7 @@ T.midea_split = {
 
 T.aux_split = {
   name: "AUX – Split (και OEM AUX)",
-  src: "AUX inverter troubleshooting guide για service (πίνακας E/F/P/L κωδικών)",
+  src: "AUX inverter troubleshooting guide για service (πίνακας E/F/P/L κωδικών)· διασταύρωση με AUX Technical & Service Manual «DC Inverter Free Match R32 50Hz» (ευρωπαϊκή σειρά, 2023 – και στην έκδοση του Έλληνα αντιπροσώπου), Part 13 Fault code list, στήλη WM (επίτοιχα)",
   note: "Τιμές αισθητηρίων κατά το AUX service guide (@25°C): χώρου ~15 kΩ, στοιχεία εσωτ./εξωτ. ~20 kΩ, εξωτ. αέρα ~15 kΩ, κατάθλιψη ~50 kΩ (σε λειτουργία 3–30 kΩ). ΠΡΟΣΟΧΗ: αν μπει αισθητήριο 20k στη θέση του 50k κατάθλιψης δίνει ψευδή υπερθέρμανση. Τροφοδοσία εξωτ.: 220 VAC στις κλέμες, ~310 VDC μετά τη γέφυρα, 15 V & 5 V (ή 3,3 V) στην πλακέτα. Οι μονάδες σταθερών στροφών χρησιμοποιούν μόνο E1–E4. Σε AUX ντουλάπα το E4 μπορεί να είναι η συρόμενη πόρτα.",
   codes: [
     [["E0"],"Προστασία υπερέντασης εσωτερικής","Η πλακέτα βλέπει ρεύμα πάνω από το όριο. Βεβαιώσου ότι το καλώδιο περνά από τον μετασχηματιστή έντασης (CT). Σύγκρινε αμπέρ με πινακίδα, μέτρα τάση. CT χαλασμένο → πλακέτα εσωτ."],
@@ -506,8 +506,21 @@ T.aux_split = {
     [["L4"],"Σφάλμα IPM module","Controller, τροφοδοσία, συμπιεστής."],
     [["L5","L6"],"Υπερένταση PFC (hardware / software)","Controller, κεντρική πλακέτα."],
     [["L7","LC"],"Μη φυσιολογική ανίχνευση ρεύματος (AD) / ρεύματος PFC","Controller εξωτερικής."],
-    [["L9"],"Αισθητήριο θερμοκρασίας IPM","Controller εξωτερικής."],
-    [["LA"],"Αποτυχία εκκίνησης συμπιεστή","Controller, τροφοδοσία, συμπιεστής, καλώδια."]
+    [["L9"],"Υπερθέρμανση module οδηγού συμπιεστή (IPM)","Ψύκτρα/πάστα, ανεμιστήρας εξωτερικής, βρώμικο στοιχείο, controller εξωτερικής. (Free Match R32 EU· το αισθητήριο IPM είναι HE/HF)"],
+    [["LA"],"Αποτυχία εκκίνησης συμπιεστή","Controller, τροφοδοσία, συμπιεστής, καλώδια."],
+    [["L8"],"Προστασία IPM (υποκωδικός της ομάδας F1)","Controller εξωτερικής, τροφοδοσία, συμπιεστής. (Free Match R32 EU)"],
+    [["E8","H2"],"Επικοινωνία ενσύρματου χειριστηρίου – πλακέτας εσωτερικής","Καλώδιο χειριστηρίου, φίσα, πλακέτα εσωτερικής, χειριστήριο. (Free Match R32 EU)"],
+    [["H1"],"Αποχέτευση εσωτερικής (φλοτέρ/αντλία)","Αντλία συμπυκνωμάτων, φλοτέρ, φραγμένη αποχέτευση. (Free Match R32 EU)"],
+    [["H3"],"Αισθητήριο σωλήνα υγρού εσωτερικής (multi)","Αισθητήριο/φίσα, πλακέτα. (Free Match R32 EU)"],
+    [["H4"],"Αισθητήριο σωλήνα αερίου εσωτερικής (multi)","Αισθητήριο/φίσα, πλακέτα. (Free Match R32 EU)"],
+    [["H5"],"Προστασία χαμηλής θερμοκρασίας κατάθλιψης","Υπερπλήρωση ψυκτικού / υγρό στην αναρρόφηση, EEV, αισθητήριο κατάθλιψης. (Free Match R32 EU)"],
+    [["H6"],"Προστασία πρεσοστάτη χαμηλής πίεσης","Έλλειψη ψυκτικού, βάνες, φραγή, πρεσοστάτης/φίσα. (Free Match R32 EU)"],
+    [["H7"],"Προστασία χαμηλής πίεσης","Έλλειψη ψυκτικού, φραγή, EEV. (Free Match R32 EU)"],
+    [["H8"],"Βλάβη τετράοδης βάνας","Πηνίο τετράοδης, βάνα κολλημένη, αισθητήρια στοιχείων, πλακέτα. (Free Match R32 EU)"],
+    [["HE","HF"],"Αισθητήριο θερμοκρασίας module IPM / PFC","Controller εξωτερικής. (Free Match R32 EU)"],
+    [["LD"],"Ανίχνευση ρεύματος ανεμιστήρα DC εξωτερικής (AD)","Μοτέρ ανεμιστήρα, controller εξωτερικής. (Free Match R32 EU)"],
+    [["LE","LF"],"Ανεμιστήρας DC εξωτερικής – απώλεια συγχρονισμού / υπερένταση","Φτερωτή (σφήνωμα), μοτέρ, καλώδια, controller. (Free Match R32 EU)"],
+    [["LH"],"IPM οδηγού ανεμιστήρα DC εξωτερικής","Μοτέρ ανεμιστήρα, controller εξωτερικής. (Free Match R32 EU)"],
   ]
 };
 
@@ -2912,9 +2925,9 @@ var OUTGUIDE = {
   fujitsu: "Fujitsu: αν αναβοσβήνει γρήγορα το LED «ERROR» στην εξωτερική, πάτα μία φορά ENTER – τα LED δείχνουν τον κωδικό (ίδιος με E:xx). Παλαιότερα: κωδικός από αναλαμπές OPERATION (δεκάδες) / TIMER (μονάδες) εσωτερικής.",
   mhi: "MHI: στην πλακέτα εξωτερικής πράσινο LED (αναβοσβήνει = CPU OK) και κόκκινο LED: σβηστό = η βλάβη δεν είναι στην εξωτερική, αναβοσβήνει = βλάβη εξωτερικής. Ο κωδικός από RUN (δεκάδες) / TIMER (μονάδες) εσωτερικής ή από το ενσύρματο (E..). KX VRF: 7-segment.",
   samsung: "Samsung: LED στην κεντρική/inverter πλακέτα εξωτερικής δείχνουν συνδυασμό για τον ίδιο κωδικό E… που φαίνεται στην εσωτερική· διάβασε τον κωδικό από την εσωτερική/χειριστήριο. DVM VRF: 7-segment με τον ίδιο κωδικό.",
-  panasonic: "Panasonic: ο κωδικός (H/F) διαβάζεται από το τηλεχειριστήριο με CHECK – δεν βρέθηκε ξεχωριστός πίνακας LED εξωτερικής για τα οικιακά.",
+  panasonic: "Panasonic οικιακά: η Panasonic ΔΕΝ έχει πίνακα λυχνιών εξωτερικής – στα ευρωπαϊκά service manual η διάγνωση γίνεται μόνο με το TIMER LED της εσωτερικής που αναβοσβήνει και το κουμπί CHECK του τηλεχειριστηρίου (κρατάς 5″, μετά ▲/▼ μέχρι να ακουστεί μπιπ = κωδικός H/F). Ελέγχθηκαν CS-TZ…TKEW, CS-Z…TKEW, CS-Z…UD3EAW.",
   hitachi: "Hitachi: VRF/Utopia – 7-segment στην πλακέτα εξωτερικής με τον ίδιο κωδικό αλάρμ + αριθμό μονάδας.",
-  tcl: "TCL: ο κωδικός από την εσωτερική – δεν βρέθηκε δημόσιος πίνακας LED εξωτερικής.",
+  tcl: "TCL: μία λυχνία στην πλακέτα τροφοδοσίας εξωτερικής – αναβοσβήνει 1″/1″ σε αναμονή, σταθερή όταν δουλεύει ο συμπιεστής· σε βλάβη 0,5″/0,5″ n φορές και παύση 3″ (πίνακας 1–17 στο «Εξωτερική»). Πηγή: TCL service manual TAC-…CHSD/XPI, /YA11I.",
   inv_mc: "Inventor Mini Chiller: ο κωδικός φαίνεται στο χειριστήριο της μονάδας."
 };
 
@@ -2973,8 +2986,8 @@ T.midea_multi_out = {
 };
 
 T.tcl_multi_outled = {
-  name: "TCL multi (FMA) – λυχνία πλακέτας εξωτερικής (αναλαμπές)",
-  src: "TCL Multi Inverter service manual (FMA-18I2HD/DVO … FMA-42I5HD/DVO) – Outdoor failure display",
+  name: "TCL split & multi – λυχνία πλακέτας εξωτερικής (αναλαμπές)",
+  src: "TCL Multi Inverter service manual (FMA-18I2HD/DVO … FMA-42I5HD/DVO) – Outdoor failure display· ίδιος πίνακας 1–17 αναλαμπών και στο TCL split service manual TAC-09/12CHSD/XPI & /YA11I (Outdoor failure display, σελ. 9–10)",
   note: "Η λυχνία της πλακέτας τροφοδοσίας εξωτερικής: αναβοσβήνει 1″/1″ σε αναμονή, σταθερή όταν δουλεύει ο συμπιεστής. Σε βλάβη: 0,5″ αναμμένη / 0,5″ σβηστή n φορές και παύση. Μέτρα το n.",
   link: "tcl_split",
   codes: [
@@ -3069,7 +3082,7 @@ var OUTP = {
   inv_gree:{split:["gree_outled"], multi:["gree_outled","gree_split"]},
   aux:     {split:["aux_outled"]},
   hisense: {split:["hisense_outled"], multi:["hisense_outled","hisense_split"]},
-  tcl:     {multi:["tcl_multi_outled"]},
+  tcl:     {split:["tcl_multi_outled"], multi:["tcl_multi_outled"]},
   fujitsu: {multi:["fujitsu_multi_outled"]},
   lg:      {split:["lg_all"], multi:["lg_all"]},
   samsung: {multi:["samsung_all"]},
@@ -4119,10 +4132,10 @@ var OUTN = {
  gree_versati: {t:"Versati: το χειριστήριο γράφει το όνομα της βλάβης (π.χ. «Drive-main com.», «Start failure»), ενώ η 2ψήφια ένδειξη «88» της κύριας πλακέτας δείχνει τον κωδικό (π.χ. P6, LC).", s:"Gree Versati Monobloc service manual (4.1.4 Drive-to-main-control communication error P6, 4.1.5 Compressor startup failure LC – «displayed in the mainboard 88 indicating lamp»)"},
  haier_hp: {t:"Haier ATW (AU082/112FYCRA): οι βλάβες της εξωτερικής διαβάζονται στο ενσύρματο χειριστήριο, κατηγορία B: τρέχουσα βλάβη εξωτερικής και ιστορικό 1–3 (B61–B63). Η ενότητα «LED displays 08E/10E» του manual είναι διάγραμμα ελέγχου για τον κωδικό 08/10 (ροή νερού) – δεν υπάρχει πίνακας LED πλακέτας εξωτερικής ανά κωδικό στο manual.", s:"Haier AU082FYCRA(HW) service manual (Timer/function codes B61–B63, Error code, LED displays 08E/10E)"},
  panasonic_aquarea: {t:"Aquarea: ο κωδικός (H../F..) εμφανίζεται στο χειριστήριο/πάνελ – η λυχνία λειτουργίας αναβοσβήνει. Στα ευρωπαϊκά service manuals (WH-UD/SDC/ADC) ΔΕΝ υπάρχει πίνακας ένδειξης κωδικού στην πλακέτα της εξωτερικής – δεν βρέθηκε επίσημη πηγή.", s:"Panasonic Aquarea operating instructions WH-ADC0309H3E5/WH-UD (Troubleshooting – error code on remote controller)· Panasonic Aquarea user guide F/G series· έλεγχος service manuals WH-SDC09H3E8, WH-UD05JE5"},
- inventor_evi: {t:"Σειρές τύπου Gree U-Match: η κύρια πλακέτα της εξωτερικής δείχνει τον ΙΔΙΟ κωδικό με το ενσύρματο χειριστήριο (π.χ. E4). Οικιακά split τύπου Gree: δεν βρέθηκε επίσημος πίνακας ένδειξης στην εξωτερική.", s:"Gree U-Match 5 service manual (3.4.4 «E4» – «ODU mainboard, IDU wired controller and IDU receiver light board will display E4»), Gree Hungary"},
+ inventor_evi: {t:"Σειρές τύπου Gree U-Match: η κύρια πλακέτα της εξωτερικής δείχνει τον ΙΔΙΟ κωδικό με το ενσύρματο χειριστήριο (π.χ. E4). Οικιακά split τύπου Gree: στα ευρωπαϊκά service manual οικιακών (π.χ. Comfort X GWH09ACC-K6DNA1A, 9.1 Error Code List) ο πίνακας έχει μόνο ένδειξη εσωτερικής – πίνακας λυχνιών εξωτερικής υπάρχει στις σειρές Vireo/Multi (δες «Εξωτερική» → Gree).", s:"Gree U-Match 5 service manual (3.4.4 «E4»), Gree Comfort X EU service manual (ελέγχθηκε 18/11/2026), Gree Hungary"},
  inventor_minichiller: {t:"Δεν βρέθηκε δημόσιο επίσημο service manual της Inventor για τα Mini Chiller με ένδειξη πλακέτας εξωτερικής. Ο κωδικός διαβάζεται στο χειριστήριο της μονάδας.", s:"Αναζήτηση Νοέμβριος 2026 – καμία επίσημη πηγή"},
  kerosun_split: {t:"Δεν βρέθηκε δημόσιο επίσημο service manual Kerosun με ένδειξη πλακέτας εξωτερικής. Ο κωδικός διαβάζεται στην οθόνη της εσωτερικής.", s:"Αναζήτηση Νοέμβριος 2026 – καμία επίσημη πηγή"},
- tcl_split: {t:"TCL: για τα multi (FMA) υπάρχει πίνακας αναλαμπών της λυχνίας εξωτερικής (δες «Εξωτερική» → TCL multi). Για τους υπόλοιπους κωδικούς split δεν βρέθηκε επίσημη αντιστοίχιση.", s:"TCL multi FMA service manual· αναζήτηση Νοέμβριος 2026"},
+ tcl_split: {t:"TCL split & multi: μία λυχνία στην πλακέτα τροφοδοσίας εξωτερικής – σε βλάβη αναβοσβήνει n φορές (0,5″/0,5″) με παύση 3″. Μέτρα τις αναλαμπές και δες «Εξωτερική» → TCL (1 = IPM, 2 = τάση, 3 = υπερένταση, 7 = επικοινωνία, 16 = ανεμιστήρας DC, 17 = απόψυξη κ.λπ.).", s:"TCL service manual TAC-09/12CHSD/XPI & /YA11I (Outdoor failure display) και TCL multi FMA"},
  aux_split: {t:"AUX: η πλακέτα εξωτερικής έχει 3 LED (D1–D3). Για τους κωδικούς που ΔΕΝ έχουν δική τους γραμμή στον πίνακα, τα LED δείχνουν D1 σβηστό · D2 αναβοσβήνει · D3 σβηστό = «άλλη βλάβη – δες με εργαλείο σέρβις». Κανονικά: όλα σβηστά (αναμονή) ή όλα αναβοσβήνουν (συμπιεστής δουλεύει).", s:"AUX service manual ASW-H09B5B4/FAR3DI-C3 (EU), 8-2 Display error code of outdoor unit's indicator lights (γραμμές 1, 2, 17)· AUX Troubleshooting Guide (auxusa)"},
  hisense_split: {t:"Hisense split: όταν ο συμπιεστής σταματήσει από βλάβη, τα LED της πλακέτας εξωτερικής δείχνουν αυτόματα την ακολουθία της βλάβης· οι αριθμητικοί κωδικοί διαβάζονται και με SLEEP ×4 σε 10″ στο τηλεχειριστήριο (7-segment εσωτερικής). Ο πίνακας LED ανά αριθμό διαφέρει ανά σειρά.", s:"Hisense Trouble Shooting – Error Code Table (1. Indication on the outdoor unit / 2. Indication by the indoor unit) – parteypieza.cl (διανομέας Hisense)· Hisense service manual AS-…UR4S"},
  haier_split: {t:"Haier: η πλακέτα εξωτερικής έχει LED1 που αναβοσβήνει N φορές – δες τον πίνακα «Haier multi/split – LED1 πλακέτας εξωτερικής». Οι κωδικοί που δεν είναι σε αυτόν τον πίνακα (κυρίως εσωτερικής) δεν έχουν επιβεβαιωμένη ένδειξη στην εξωτερική.", s:"Haier service manual multi 2U18MS2VHB (outdoor LED1 flash table)"},
@@ -4267,18 +4280,20 @@ var OUTN = {
 
 // Ετικέτες προέλευσης: κωδικοί που ΔΕΝ έχουν επιβεβαιωθεί ακόμα σε manual ευρωπαϊκού/ελληνικού μοντέλου.
 // Μένουν στην εφαρμογή με ετικέτα μέχρι να βρεθεί ευρωπαϊκή/ελληνική πηγή.
-var VN_ASIA_PAN = "Πηγή: επίσημη σελίδα Panasonic για Ασία. Δεν υπάρχει στον πίνακα του ευρωπαϊκού service manual (π.χ. CS-NZ25YKE) – μπορεί να μη βγαίνει σε μοντέλα Ελλάδας.";
+var VN_ASIA_PAN = "Πηγή: επίσημη σελίδα Panasonic για Ασία. Δεν υπάρχει στους πίνακες κωδικών 3 ευρωπαϊκών service manual (CS-NZ25YKE, CS-BZ/UZ…ZKE 2022, CS-Z…UD3EAW αεραγωγού) – αφορά λειτουργίες που δεν έχουν τα μοντέλα Ευρώπης (πισίνα, αερισμός, ακροφύσια κ.λπ.).";
+var VN_H26 = "Στα ευρωπαϊκά service manual εμφανίζεται μόνο στον πίνακα «προσωρινής λειτουργίας» (CS-BZ…ZKE 2022), όχι στον πίνακα κωδικών – η περιγραφή είναι από την επίσημη σελίδα Panasonic για Ασία.";
 var VN_US = "Πηγή: manual μοντέλου για ΗΠΑ. Δεν έχει επιβεβαιωθεί ακόμα σε ευρωπαϊκό/ελληνικό μοντέλο.";
+var VN_LEAK = "Πηγή: manual μοντέλου για ΗΠΑ. Ελέγχθηκε και το ευρωπαϊκό Midea service manual επιδαπέδιου R32 (MFM-48/55, 2024): δεν έχει αυτούς τους κωδικούς – βγαίνουν μόνο σε μονάδες με αισθητήρα διαρροής R32 (μεγάλη γόμωση), που στην Ευρώπη μπαίνουν σταδιακά.";
 var VERIF = {
-  panasonic_split: { H17:VN_ASIA_PAN, H26:VN_ASIA_PAN, H31:VN_ASIA_PAN, H35:VN_ASIA_PAN, H50:VN_ASIA_PAN, H51:VN_ASIA_PAN, H52:VN_ASIA_PAN, H71:VN_ASIA_PAN, H72:VN_ASIA_PAN, H79:VN_ASIA_PAN },
+  panasonic_split: { H17:VN_ASIA_PAN, H26:VN_H26, H31:VN_ASIA_PAN, H50:VN_ASIA_PAN, H51:VN_ASIA_PAN, H52:VN_ASIA_PAN, H71:VN_ASIA_PAN, H72:VN_ASIA_PAN, H79:VN_ASIA_PAN },
   fujitsu_all: { A8:VN_US, "45":VN_US },
-  midea_split: { EHC1:VN_US, EHC2:VN_US, EHC3:VN_US, ECC1:VN_US, FHCC:VN_US },
+  midea_split: { EHC1:VN_LEAK, EHC2:VN_LEAK, EHC3:VN_LEAK, ECC1:VN_LEAK, FHCC:VN_LEAK },
   gree_split: { EA:"Πηγή: service manuals Gree για ΗΠΑ (κονσόλα, slim duct, A-coil). Δεν έχει επιβεβαιωθεί ακόμα σε ευρωπαϊκό/ελληνικό μοντέλο.", FE:"Πηγή: service manuals Gree για ΗΠΑ (κονσόλα, slim duct, A-coil). Δεν έχει επιβεβαιωθεί ακόμα σε ευρωπαϊκό/ελληνικό μοντέλο." }
 };
 function verifNote(tkey, codes){ var m = VERIF[tkey]; if(!m) return ""; for(var i=0;i<codes.length;i++){ var k=String(codes[i]).toUpperCase(); if(m[k]) return m[k]; } return ""; }
 // Σημείωση σε επίπεδο πίνακα (όταν η πηγή είναι γενική, όχι ειδικά για Ευρώπη)
 var VERIF_T = {
-  aux_split: "Πηγή: οδηγός βλαβών της AUX Imp. & Exp. (για όλες τις αγορές εξαγωγής). Το ευρωπαϊκό service manual του Έλληνα αντιπροσώπου δεν ήταν διαθέσιμο για διασταύρωση."
+  // aux_split: διασταυρώθηκε 18/11/2026 με το ευρωπαϊκό AUX Free Match R32 service manual (ίδιοι κωδικοί WM) – η σημείωση αφαιρέθηκε
 };
 
 </script>
@@ -4351,7 +4366,7 @@ var BRANDS = [
   {n:"Toyotomi", cands:{split:["gree","midea","aux","tcl","hisense","haier"], hp:["midea","gree"], vrf:["midea","gree"], vrfhr:["midea","gree"]}, hint:"Στα εγχειρίδια Toyotomi (Erai, Umi, TRN/TRG) οι κωδικοί είναι τύπου Gree (U8, H6, H3, C5, F0…). Άλλες σειρές μπορεί να διαφέρουν – δες ταμπελάκι."},
   {n:"Sendo", cands:GENERIC, hint:"Η Sendo έχει σειρές από διαφορετικά εργοστάσια· δεν βρέθηκε επίσημο service manual. Δες «Manufacturer» στο ταμπελάκι."},
   {n:"Nexi (by Sendo)", cands:GENERIC},
-  {n:"Juro-Pro", cands:{split:["midea","gree","aux","tcl","hisense","haier"], hp:["midea"], vrf:["midea"], vrfhr:["midea"]}, hint:"Τα Juro-Pro έχουν λειτουργία «Follow Me», χαρακτηριστική της Midea – πιθανότατα Midea OEM. Επιβεβαίωσε στο ταμπελάκι."},
+  {n:"Juro-Pro", cands:{split:["midea","gree","aux","tcl","hisense","haier"], hp:["midea"], vrf:["midea"], vrfhr:["midea"]}, hint:"Τα Juro-Pro έχουν λειτουργία «Follow Me», χαρακτηριστική της Midea – πιθανότατα Midea OEM. Το εγχειρίδιο Eco II του εισαγωγέα (ΜΑΓΝΗΤΙΚΗ Α.Ε.) δεν γράφει εργοστάσιο ούτε πίνακα κωδικών (ελέγχθηκε 18/11/2026). Επιβεβαίωσε στο ταμπελάκι («Manufacturer») ή στείλε φωτογραφία ταμπέλας από την αναφορά."},
   {n:"Morris", cands:GENERIC},
   {n:"Tesla", cands:GENERIC},
   {n:"Pitsos", cands:{split:["midea","gree","aux"]}},
@@ -5806,7 +5821,7 @@ var SER = [
   {o:"me", re:/^(\d)([A-HJ-M])U\d{5}/, w:2, k:"Σειριακός Mitsubishi Electric", d:function(m){ return {y:yFromDigit(+m[1]), mo:"ABCDEFGHJKLM".indexOf(m[2])+1, dec:1, x:"εξωτερική μονάδα"}; },
    src:"Εγχειρίδιο Mitsubishi Electric (μεγάλες εξωτερικές): μήνας A=1 … M=12 (χωρίς I)."},
   {o:"midea", re:/^[0-9A-Z]{11}(\d{2})([1-9ABC])[0-9A-Z]{8}$/, w:1, k:"Σειριακός 22 χαρακτήρων τύπου Midea", d:function(m){ return {y:2000+(+m[1]), mo:moX(m[2])}; },
-   src:"Midea: ο σειριακός (λευκό αυτοκόλλητο με barcode) έχει 22 χαρακτήρες· έτος στις θέσεις 12–13, μήνας στη 14η (building-center.org). Μετρά λίγο για εργοστάσιο – επιβεβαίωσε."},
+   src:"Midea (επίσημο FAQ midea.com): ο σειριακός είναι στο λευκό αυτοκόλλητο με barcode και έχει 22 χαρακτήρες. Οι θέσεις έτους (12–13) και μήνα (14η) ΔΕΝ τις δημοσιεύει η Midea – είναι από building-center.org· σύγκρινε με την ημερομηνία κατασκευής στο ταμπελάκι."},
   {o:"samsung", re:/^[0-9A-Z]{7}([A-Z])([1-9ABC])[0-9A-Z]{5}[A-Z]$/, w:1, k:"Σειριακός 15 χαρακτήρων τύπου Samsung", d:function(m){ return {mo:moX(m[2]), yl:m[1]}; },
    src:"Samsung: ο σειριακός έχει 15 χαρακτήρες και τελειώνει σε γράμμα· 8ος χαρακτήρας = έτος (γράμμα), 9ος = μήνας. Δεν υπάρχει επίσημος πίνακας γραμμάτων – δες την ημερομηνία στο ταμπελάκι."},
   {o:"hisense", re:/^1KA[0-9A-Z]{20}$/, w:2, k:"Σειριακός εσωτερικής Hisense (1KA…, 23 χαρ.)", src:"Hisense – How to identify the model and the serial number: οι επίτοιχες εσωτερικές έχουν σειριακό 23 χαρακτήρων που ξεκινά με 1KA."},
