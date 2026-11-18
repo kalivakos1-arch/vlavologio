@@ -4641,6 +4641,30 @@ function search(q){
   return {res:res, mode: res.length?"prefix":"none"};
 }
 
+// ===== 7-segment: χαρακτήρες που μπερδεύονται στην οθόνη =====
+var SEG7 = {"0":["O","D"],"O":["0","D"],"D":["0","O"],"5":["S"],"S":["5"],"8":["B"],"B":["8","6"],"6":["B"],"2":["Z"],"Z":["2"],"U":["V"],"V":["U"],"1":["I"],"I":["1"]};
+function lookalikes(q){
+  var raw = gr2lat(String(q)).toUpperCase().replace(/[\s\-\.\/_:]/g,"");
+  if(!raw || raw.length>6) return [];
+  var tabs = activeTables(), have = {}, out = [];
+  tabs.forEach(function(t){ t.tbl.codes.forEach(function(c){ c[0].forEach(function(k){ have[norm(k)] = k; }); }); });
+  var vars = {}; vars[raw]=1;
+  [0,1].forEach(function(){ Object.keys(vars).forEach(function(v){ for(var i=0;i<v.length;i++){ (SEG7[v[i]]||[]).forEach(function(a){ vars[v.slice(0,i)+a+v.slice(i+1)]=1; }); } }); });
+  Object.keys(vars).forEach(function(v){ if(v===raw) return; var n=norm(v); if(have[n] && out.indexOf(have[n])<0) out.push(have[n]); });
+  return out.slice(0,6);
+}
+function otherPlats(q){
+  if(isTextQuery(q)) return [];
+  var n = norm(q), cur = activeTables.plats || [], out = [];
+  var cat = S.cat==="multi" ? "split" : S.cat;
+  Object.keys(PLAT).forEach(function(p){
+    if(cur.indexOf(p)>=0) return;
+    var keys = PLAT[p][cat] || [], hit = null;
+    keys.forEach(function(k){ var tb=T[k]; if(hit||!tb||!tb.codes) return; tb.codes.forEach(function(c){ if(!hit && c[0].some(function(x){ return norm(x)===n; })) hit=c[1]; }); });
+    if(hit) out.push(PLAT[p].name+': '+hit);
+  });
+  return out.slice(0,6);
+}
 // ===== render =====
 function renderCats(){
   var b = brandObj(); var av = CATS.filter(function(c){ return !b || candidatesFor(b,c.id).length; });
@@ -4833,7 +4857,7 @@ function card(r, showPlat){
   return '<div class="res"'+(kd?' style="--kc:'+kd[1]+'"':'')+'>'+
     '<div class="rh"><span class="codes">'+(t.tbl.lamps ? ledSym(c[0][0], t.tbl.lamps) : t.tbl.pat ? '<span class="code pat">'+esc(patSym(c[0][0], t.tbl.pat.labels))+'</span>' : c[0].map(function(k){return '<span class="code">'+esc(k)+'</span>';}).join(""))+'</span>'+
     (showPlat?'<span class="plat">'+esc(PLAT[t.plat].name)+'</span>':(kd?'<span class="kind">'+esc(kd[0])+'</span>':''))+'</div>'+
-    '<div class="rt">'+esc(c[1])+'</div>'+(function(){ var vn = typeof verifNote==="function" ? verifNote(t.key, c[0]) : ""; return vn ? '<div class="vn">⚠️ <b>Μη επιβεβαιωμένο για Ελλάδα/Ευρώπη.</b> '+esc(vn)+'</div>' : ''; })()+(/_outled$|_multi_out$|_multiled$/.test(t.key) ? '' : behBox(t.plat, c[0]))+
+    '<div class="rt">'+esc(c[1])+'</div>'+(/όχι βλάβη|δεν είναι βλάβη|κανονική λειτουργία|^κανονικ|κανονικό στο κρύο/i.test(c[1]+' '+(c[2]||'').slice(0,40)) ? '<div class="pver good">✅ Συνήθως <b>δεν είναι βλάβη εξαρτήματος</b> (κανονική λειτουργία, ειδοποίηση ή προσωρινή προστασία) – διάβασε την περιγραφή πριν αλλάξεις κάτι.</div>' : '')+(function(){ var vn = typeof verifNote==="function" ? verifNote(t.key, c[0]) : ""; return vn ? '<div class="vn">⚠️ <b>Μη επιβεβαιωμένο για Ελλάδα/Ευρώπη.</b> '+esc(vn)+'</div>' : ''; })()+(/_outled$|_multi_out$|_multiled$/.test(t.key) ? '' : behBox(t.plat, c[0]))+
     (c[4]?'<div class="rl">↔ '+esc(c[4])+'</div>':'')+
     (function(){ var bo2=brandObj(), bn=bo2&&BNOTE[bo2.n]; var x=bn&&bn[t.plat]&&bn[t.plat][c[0][0]]; return x ? '<div class="vn">🏷️ <b>'+esc(bo2.n)+':</b> '+esc(x)+'</div>' : ''; })()+
     (c[2]?(function(){ var st=stepsOf(c[2]); return st ? '<div class="rd"><b>🔧 Τι ελέγχεις – με τη σειρά:</b><ol class="steps">'+st.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ol></div>' : '<div class="rd"><b>🔧 Τι ελέγχεις:</b> '+esc(c[2])+'</div>'; })():'')+
@@ -4946,6 +4970,8 @@ function renderResults(){
     if(S.src==="in" && S.cat==="multi" && typeof multiOutNote==="function") html += multiOutNote(q);
     if(r.mode==="none"){
       html += '<div class="empty">Ο κωδικός «'+esc(q)+'» δεν βρέθηκε για '+esc(b.n)+(multi?' (σε κανένα πιθανό εργοστάσιο)':'')+'.<br><span class="small">Έλεγξε κατηγορία μονάδας, γράμματα/αριθμούς (0 ↔ O, 1 ↔ I), ή αν η οθόνη δείχνει θερμοκρασία και όχι κωδικό.</span></div>';
+      var op = otherPlats(q); if(op.length) html += '<div class="pver">🌍 Ο κωδικός υπάρχει σε άλλα εργοστάσια (μήπως το μηχάνημα είναι φτιαγμένο από άλλο εργοστάσιο; δες το ταμπελάκι):<ul>'+op.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul></div>';
+      var la = lookalikes(q); if(la.length) html += '<div class="pver">🔎 Στην οθόνη 7 τμημάτων κάποια γράμματα μοιάζουν με αριθμούς (5↔S, 0↔O↔D, 8↔B↔6, 2↔Z, U↔V, 1↔I). Μήπως είναι: '+la.map(function(k){ return '<button class="mini" data-q="'+esc(k)+'">'+esc(k)+'</button>'; }).join(' ')+'</div>';
     } else {
       if(r.mode==="detail") html += '<div class="small info">Εμφανίζεται ο βασικός κωδικός '+esc(r.base)+' (ο υπόλοιπος αριθμός είναι λεπτομέρεια/μονάδα).</div>';
       if(r.mode==="prefix") html += '<div class="small info">Κωδικοί που ξεκινούν με «'+esc(q.toUpperCase())+'»:</div>';
