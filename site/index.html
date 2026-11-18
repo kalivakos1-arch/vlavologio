@@ -6687,7 +6687,7 @@ var REPORT_EMAIL = "";
 // Αναφορές: Φόρμα Google (λογαριασμός ιδιοκτήτη) – ο τεχνικός δεν βλέπει φόρμα, η εφαρμογή στέλνει από πίσω.
 var REPORT_FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfjQYpQVa9ock0Bk5wre-6BCIWYmi7pM852Fye2xsqmZDb6_A/formResponse";
 var REPORT_ENTRY = "entry.607089889";
-var REPORT_APP = ""; // ιδιωτική αποθήκευση (Google Apps Script web app) – όταν οριστεί, αντικαθιστά φόρμα & CSV
+var REPORT_APP = "https://script.google.com/macros/s/AKfycbzSPYg-QRzDj_ZOtHDnOB9EVfwf_pBsSCLhQARjga98rbWjolVTC3aZOsQrZ4_hMwX4Ag/exec"; // ιδιωτική αποθήκευση (Google Apps Script web app) – όταν οριστεί, αντικαθιστά φόρμα & CSV
 var REPORT_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvto8ahCNg94hnc62aKYkYU6TaFi4neq481ZUnxLQQQUnUr5F13mFs-Z3IHGhjnXWHGfU4U5tySnna/pub?output=csv";
 function repToast(msg){ var m=document.getElementById("copied"); if(!m){ m=document.createElement("div"); m.id="copied"; document.body.appendChild(m); } m.textContent=msg; m.className="toast"; clearTimeout(repToast._t); repToast._t=setTimeout(function(){ m.className=""; },2600); }
 function repQueue(){ try{ return JSON.parse(localStorage.getItem("vl_repq")||"[]"); }catch(x){ return []; } }
@@ -6816,7 +6816,7 @@ function admPhoto(PH, v){
 }
 function admOpen(){
   var pin=localStorage.getItem("vl_admpin");
-  if(!pin){ var a=prompt("Όρισε κωδικό (PIN) για την οθόνη Αναφορές σε αυτή τη συσκευή:"); if(!a) return; localStorage.setItem("vl_admpin",a); }
+  if(!pin){ var a=prompt("Όρισε κωδικό (PIN, τουλάχιστον 4 χαρακτήρες) για την οθόνη Αναφορές:"); if(!a) return; if(a.length<4){ alert("Το PIN θέλει τουλάχιστον 4 χαρακτήρες."); return; } localStorage.setItem("vl_admpin",a); }
   else { var b=prompt("PIN:"); if(b!==pin) return; }
   var d=document.getElementById("admdlg"); if(!d){ d=document.createElement("div"); d.id="admdlg"; d.className="repov"; document.body.appendChild(d); }
   d.innerHTML='<div class="repbox admbox"><div class="reph">⚑ Αναφορές τεχνικών</div><div id="admlist" class="small">Φόρτωση…</div><div class="scbtns"><button class="mini" id="admclose">Κλείσιμο</button></div></div>';
@@ -6837,8 +6837,9 @@ function admOpen(){
         (f["Σειριακός"]?'<div class="small">Σειριακός: <span class="code">'+esc(f["Σειριακός"])+'</span></div>':'')+
         '<div class="otx">'+esc(f["Σχόλιο"]||r[1])+'</div>'+admPhoto(PH, f["Φωτογραφία"])+'<div class="otag">'+esc(f["Πίνακας"]||"")+'</div></div>';
     }).join("");
-  }).catch(function(er){ var el=document.getElementById("admlist"); if(el) el.innerHTML=(er&&er.message==="pin")?"Λάθος PIN για τις αναφορές.":(er&&er.message==="rate")?"Πολλές προσπάθειες – δοκίμασε σε 10 λεπτά.":"Δεν φορτώθηκαν οι αναφορές – χρειάζεται ίντερνετ."; });
+  }).catch(function(er){ var el=document.getElementById("admlist"); if(el) el.innerHTML=(er&&er.message==="pin")?'Το PIN αυτής της συσκευής δεν ταιριάζει με το PIN των αναφορών. <button class="mini" id="admreset">Άλλαξε PIN σε αυτή τη συσκευή</button>':(er&&er.message==="rate")?"Πολλές προσπάθειες – δοκίμασε σε 10 λεπτά.":"Δεν φορτώθηκαν οι αναφορές – χρειάζεται ίντερνετ."; });
 }
+document.addEventListener("click", function(e){ if(e.target && e.target.id==="admreset"){ localStorage.removeItem("vl_admpin"); var d=document.getElementById("admdlg"); if(d) d.style.display="none"; admOpen(); } });
 (function(){ var n=0, tm=null; document.addEventListener("click", function(e){
   if(e.target.closest("#admclose")){ document.getElementById("admdlg").style.display="none"; return; }
   if(!e.target.closest(".logo")) return; n++; clearTimeout(tm); tm=setTimeout(function(){ n=0; },1500); if(n>=5){ n=0; admOpen(); } }); })();
