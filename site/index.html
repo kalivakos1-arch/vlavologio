@@ -6815,14 +6815,15 @@ function admPhoto(PH, v){
   return '<img class="admimg" src="data:image/jpeg;base64,'+b.replace(/[^A-Za-z0-9+\/=]/g,"")+'" alt="Φωτογραφία ταμπέλας">';
 }
 function admOpen(){
-  var pin=localStorage.getItem("vl_admpin");
-  if(!pin){ var a=prompt("Όρισε κωδικό (PIN, τουλάχιστον 4 χαρακτήρες) για την οθόνη Αναφορές:"); if(!a) return; if(a.length<4){ alert("Το PIN θέλει τουλάχιστον 4 χαρακτήρες."); return; } localStorage.setItem("vl_admpin",a); }
-  else { var b=prompt("PIN:"); if(b!==pin) return; }
+  var saved=localStorage.getItem("vl_admpin")||"";
+  var b=prompt("PIN αναφορών:", ""); if(b===null) return; b=String(b).trim();
+  if(b.length<4){ alert("Το PIN θέλει τουλάχιστον 4 ψηφία."); return; }
+  if(!REPORT_APP && saved && b!==saved){ alert("Λάθος PIN."); return; }
   var d=document.getElementById("admdlg"); if(!d){ d=document.createElement("div"); d.id="admdlg"; d.className="repov"; document.body.appendChild(d); }
   d.innerHTML='<div class="repbox admbox"><div class="reph">⚑ Αναφορές τεχνικών</div><div id="admlist" class="small">Φόρτωση…</div><div class="scbtns"><button class="mini" id="admclose">Κλείσιμο</button></div></div>';
   d.style.display="flex";
-  var pinNow=localStorage.getItem("vl_admpin")||"";
-  (REPORT_APP ? fetch(REPORT_APP,{method:"POST",body:"VLADMIN|"+pinNow}).then(function(r){ return r.json(); }).then(function(j){ if(!j.ok) throw new Error(j.err||"x"); return j.rows; })
+  var pinNow=b;
+  (REPORT_APP ? fetch(REPORT_APP,{method:"POST",body:"VLADMIN|"+pinNow}).then(function(r){ return r.json(); }).then(function(j){ if(!j.ok) throw new Error(j.err||"x"); try{ localStorage.setItem("vl_admpin",b); }catch(e){} return j.rows; })
               : fetch(REPORT_CSV+"&t="+Date.now(),{cache:"no-store"}).then(function(r){ return r.text(); }).then(function(t){ return csvParse(t).slice(1); })
   ).then(function(all){
     var PH={};
@@ -6837,7 +6838,7 @@ function admOpen(){
         (f["Σειριακός"]?'<div class="small">Σειριακός: <span class="code">'+esc(f["Σειριακός"])+'</span></div>':'')+
         '<div class="otx">'+esc(f["Σχόλιο"]||r[1])+'</div>'+admPhoto(PH, f["Φωτογραφία"])+'<div class="otag">'+esc(f["Πίνακας"]||"")+'</div></div>';
     }).join("");
-  }).catch(function(er){ var el=document.getElementById("admlist"); if(el) el.innerHTML=(er&&er.message==="pin")?'Το PIN αυτής της συσκευής δεν ταιριάζει με το PIN των αναφορών. <button class="mini" id="admreset">Άλλαξε PIN σε αυτή τη συσκευή</button>':(er&&er.message==="rate")?"Πολλές προσπάθειες – δοκίμασε σε 10 λεπτά.":"Δεν φορτώθηκαν οι αναφορές – χρειάζεται ίντερνετ."; });
+  }).catch(function(er){ var el=document.getElementById("admlist"); if(el) el.innerHTML=(er&&er.message==="pin")?'Λάθος PIN. <button class="mini" id="admreset">Δοκίμασε ξανά</button>':(er&&er.message==="rate")?"Πολλές προσπάθειες – δοκίμασε σε 10 λεπτά.":"Δεν φορτώθηκαν οι αναφορές – χρειάζεται ίντερνετ."; });
 }
 document.addEventListener("click", function(e){ if(e.target && e.target.id==="admreset"){ localStorage.removeItem("vl_admpin"); var d=document.getElementById("admdlg"); if(d) d.style.display="none"; admOpen(); } });
 (function(){ var n=0, tm=null; document.addEventListener("click", function(e){
