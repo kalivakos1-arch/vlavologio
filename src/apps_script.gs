@@ -51,7 +51,21 @@ function list_(pin) {
   return out_({ ok: true, rows: rows });
 }
 
-function doGet() { return out_({ ok: true, app: 'vlavologio' }); }
+// Για τον καθημερινό έλεγχο: λίστα σε απλό κείμενο (χωρίς τα κομμάτια των φωτογραφιών).
+function doGet(e) {
+  var p = (e && e.parameter) || {};
+  if (p.a !== 'list') return out_({ ok: true, app: 'vlavologio' });
+  var j = JSON.parse(list_(p.pin).getContent());
+  if (!j.ok) return ContentService.createTextOutput('ERROR ' + (j.err || ''));
+  var ph = {}, txt = [];
+  j.rows.forEach(function (r) { if (r[1].indexOf('VLPHOTO|') === 0) { var a = r[1].split('|'); ph[a[1]] = (ph[a[1]] || 0) + 1; } });
+  j.rows.forEach(function (r) {
+    if (r[1].indexOf('VLPHOTO|') === 0) return;
+    var m = r[1].match(/Φωτογραφία: (\S+) \((\d+)/);
+    txt.push('=== ' + r[0] + ' ===\n' + r[1] + (m ? '\n[φωτογραφία: ' + (ph[m[1]] || 0) + '/' + m[2] + ' μέρη έφτασαν – προβολή στην οθόνη «Αναφορές» της εφαρμογής]' : ''));
+  });
+  return ContentService.createTextOutput(txt.join('\n\n') || 'ΚΑΜΙΑ ΑΝΑΦΟΡΑ');
+}
 
 // Μεταφορά των παλιών αναφορών (Google Form) στο ιδιωτικό φύλλο – τρέχει μία φορά.
 function migrate() {
