@@ -201,10 +201,12 @@ var REPORT_EMAIL = "";
 // Αναφορές: Φόρμα Google (λογαριασμός ιδιοκτήτη) – ο τεχνικός δεν βλέπει φόρμα, η εφαρμογή στέλνει από πίσω.
 var REPORT_FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfjQYpQVa9ock0Bk5wre-6BCIWYmi7pM852Fye2xsqmZDb6_A/formResponse";
 var REPORT_ENTRY = "entry.607089889";
+var REPORT_APP = ""; // ιδιωτική αποθήκευση (Google Apps Script web app) – όταν οριστεί, αντικαθιστά φόρμα & CSV
 var REPORT_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvto8ahCNg94hnc62aKYkYU6TaFi4neq481ZUnxLQQQUnUr5F13mFs-Z3IHGhjnXWHGfU4U5tySnna/pub?output=csv";
 function repToast(msg){ var m=document.getElementById("copied"); if(!m){ m=document.createElement("div"); m.id="copied"; document.body.appendChild(m); } m.textContent=msg; m.className="toast"; clearTimeout(repToast._t); repToast._t=setTimeout(function(){ m.className=""; },2600); }
 function repQueue(){ try{ return JSON.parse(localStorage.getItem("vl_repq")||"[]"); }catch(x){ return []; } }
 function repPost(text){
+  if(REPORT_APP) return fetch(REPORT_APP,{method:"POST",mode:"no-cors",body:text});
   var body=new URLSearchParams(); body.append(REPORT_ENTRY, text);
   return fetch(REPORT_FORM,{method:"POST",mode:"no-cors",body:body});
 }
@@ -238,7 +240,7 @@ function repOpen(tkey, code, opt){
     (opt.photo?'':PHB)+
     '<textarea id="reptxt" rows="4" placeholder="'+(gen?'Τι έγινε; π.χ. «δεν μπορώ να κλείσω την κάμερα»':'Τι είδες στη μονάδα; π.χ. «η πλακέτα έδειχνε κόκκινο ×5, όχι ×3»')+'"></textarea>'+
     '<div class="scbtns"><button class="mini prim" id="repsend">📤 Αποστολή</button><button class="mini" id="repcancel">Άκυρο</button></div>'+
-    '<div class="small" style="margin-top:6px">Η αναφορά στέλνεται ανώνυμα για έλεγχο και διόρθωση. Δεν στέλνεται τίποτα χωρίς να πατήσεις «Αποστολή».</div></div>';
+    '<div class="small" style="margin-top:6px">Η αναφορά στέλνεται ανώνυμα για έλεγχο και διόρθωση. <b>Μη γράφεις στοιχεία πελάτη</b> (όνομα, τηλέφωνο, διεύθυνση) και φωτογράφιζε μόνο την ταμπέλα της μονάδας. Δεν στέλνεται τίποτα χωρίς να πατήσεις «Αποστολή».</div></div>';
   d._photo=""; d.style.display="flex"; d.setAttribute("data-k",(tkey||"")+"|"+(code||"")); if(!opt.photo) setTimeout(function(){ var t=document.getElementById("reptxt"); if(t) t.focus(); },50);
 }
 // Φωτογραφία: σμίκρυνση, γκρι JPEG, base64 – στέλνεται σε κομμάτια των 30.000 χαρακτήρων στην ίδια φόρμα
@@ -333,8 +335,11 @@ function admOpen(){
   var d=document.getElementById("admdlg"); if(!d){ d=document.createElement("div"); d.id="admdlg"; d.className="repov"; document.body.appendChild(d); }
   d.innerHTML='<div class="repbox admbox"><div class="reph">⚑ Αναφορές τεχνικών</div><div id="admlist" class="small">Φόρτωση…</div><div class="scbtns"><button class="mini" id="admclose">Κλείσιμο</button></div></div>';
   d.style.display="flex";
-  fetch(REPORT_CSV+"&t="+Date.now(),{cache:"no-store"}).then(function(r){ return r.text(); }).then(function(t){
-    var all=csvParse(t).slice(1), PH={};
+  var pinNow=localStorage.getItem("vl_admpin")||"";
+  (REPORT_APP ? fetch(REPORT_APP,{method:"POST",body:"VLADMIN|"+pinNow}).then(function(r){ return r.json(); }).then(function(j){ if(!j.ok) throw new Error(j.err||"x"); return j.rows; })
+              : fetch(REPORT_CSV+"&t="+Date.now(),{cache:"no-store"}).then(function(r){ return r.text(); }).then(function(t){ return csvParse(t).slice(1); })
+  ).then(function(all){
+    var PH={};
     all.forEach(function(r){ if(r[1] && r[1].indexOf("VLPHOTO|")===0){ var a=r[1].split("|"); var o=PH[a[1]]||(PH[a[1]]={n:+a[3],p:{}}); o.p[a[2]]=a.slice(4).join("|"); } });
     var rows=all.filter(function(r){ return r[1] && r[1].indexOf("VLPHOTO|")!==0 && r[1].indexOf("Κωδικός: TEST\n")<0; }).reverse();
     var el=document.getElementById("admlist");
@@ -346,7 +351,7 @@ function admOpen(){
         (f["Σειριακός"]?'<div class="small">Σειριακός: <span class="code">'+esc(f["Σειριακός"])+'</span></div>':'')+
         '<div class="otx">'+esc(f["Σχόλιο"]||r[1])+'</div>'+admPhoto(PH, f["Φωτογραφία"])+'<div class="otag">'+esc(f["Πίνακας"]||"")+'</div></div>';
     }).join("");
-  }).catch(function(){ var el=document.getElementById("admlist"); if(el) el.innerHTML="Δεν φορτώθηκαν οι αναφορές – χρειάζεται ίντερνετ."; });
+  }).catch(function(er){ var el=document.getElementById("admlist"); if(el) el.innerHTML=(er&&er.message==="pin")?"Λάθος PIN για τις αναφορές.":(er&&er.message==="rate")?"Πολλές προσπάθειες – δοκίμασε σε 10 λεπτά.":"Δεν φορτώθηκαν οι αναφορές – χρειάζεται ίντερνετ."; });
 }
 (function(){ var n=0, tm=null; document.addEventListener("click", function(e){
   if(e.target.closest("#admclose")){ document.getElementById("admdlg").style.display="none"; return; }
