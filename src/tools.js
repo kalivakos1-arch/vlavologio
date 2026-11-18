@@ -244,8 +244,13 @@ document.addEventListener("click", function(e){
   var d=document.getElementById("repdlg");
   if(b.id==="repcancel" || b.id==="repcancel2" || (b.id==="repdlg" && e.target===d)){ d.style.display="none"; return; }
   if(b.id==="repsend"){
+    var last=0; try{ last=+localStorage.getItem("vl_replast")||0; }catch(x){}
+    if(Date.now()-last<30000){ repToast("⏳ Περίμενε λίγα δευτερόλεπτα πριν στείλεις νέα αναφορά"); return; }
+    var tx0=(document.getElementById("reptxt")||{}).value||"";
+    if(tx0.trim().length<3 && !(document.getElementById("repmodel")||{}).value){ repToast("✍️ Γράψε λίγα λόγια για το πρόβλημα"); var tf=document.getElementById("reptxt"); if(tf) tf.focus(); return; }
+    try{ localStorage.setItem("vl_replast", String(Date.now())); }catch(x){}
     var k=d.getAttribute("data-k").split("|"), kind=(d.querySelector('input[name=repk]:checked')||{}).value||"";
-    var cx=repCtx(), rc=document.getElementById("repcode"); var r={gen:!k[0], cat:cx.cat, code:rc?rc.value.trim():k.slice(1).join("|"), table:(k[0]&&T[k[0]]?T[k[0]].name:(k[0]||"")), brand:cx.brand, model:document.getElementById("repmodel").value.trim(), kind:kind, txt:document.getElementById("reptxt").value.trim(), date:new Date().toLocaleString("el-GR")};
+    var cx=repCtx(), rc=document.getElementById("repcode"); var r={gen:!k[0], cat:cx.cat, code:rc?rc.value.trim():k.slice(1).join("|"), table:(k[0]&&T[k[0]]?T[k[0]].name:(k[0]||"")), brand:cx.brand, model:document.getElementById("repmodel").value.trim(), kind:kind, txt:document.getElementById("reptxt").value.trim().slice(0,1500), date:new Date().toLocaleString("el-GR")};
     try{ var all=JSON.parse(localStorage.getItem("vl_reports")||"[]"); all.push(r); localStorage.setItem("vl_reports",JSON.stringify(all.slice(-200))); }catch(x){}
     var t=repText(r);
     d.style.display="none";
@@ -284,7 +289,7 @@ function admOpen(){
   d.innerHTML='<div class="repbox admbox"><div class="reph">⚑ Αναφορές τεχνικών</div><div id="admlist" class="small">Φόρτωση…</div><div class="scbtns"><button class="mini" id="admclose">Κλείσιμο</button></div></div>';
   d.style.display="flex";
   fetch(REPORT_CSV+"&t="+Date.now(),{cache:"no-store"}).then(function(r){ return r.text(); }).then(function(t){
-    var rows=csvParse(t).slice(1).filter(function(r){ return r[1]; }).reverse();
+    var rows=csvParse(t).slice(1).filter(function(r){ return r[1] && r[1].indexOf("Κωδικός: TEST\n")<0; }).reverse();
     var el=document.getElementById("admlist");
     if(!rows.length){ el.innerHTML="Δεν υπάρχουν αναφορές ακόμα."; return; }
     el.innerHTML='<div style="margin-bottom:8px"><b>'+rows.length+'</b> αναφορές (νεότερες πρώτα)</div>'+rows.map(function(r){
