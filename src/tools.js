@@ -221,24 +221,59 @@ function repCtx(){
   var q=""; try{ q=(document.getElementById("q")||{}).value||""; }catch(x){}
   return {brand:(S&&S.brand)||"", cat:(S&&S.brand&&c)||"", model:(S&&S.model)||"", oem:(S&&S.oem&&S.oem!=="__all")?S.oem:"", q:q.trim()};
 }
-function repOpen(tkey, code){
+function repOpen(tkey, code, opt){
+  opt=opt||{};
   var d=document.getElementById("repdlg");
   if(!d){ d=document.createElement("div"); d.id="repdlg"; d.className="repov"; document.body.appendChild(d); }
   var gen=!tkey, cx=repCtx(), tname=(!gen && typeof T!=="undefined" && T[tkey]) ? T[tkey].name : "", kinds=gen?REPORT_KINDS_GEN:REPORT_KINDS;
+  var PHB='<label class="repph'+(opt.photo?' big':'')+'"><input type="file" id="repfile" accept="image/*" hidden><span id="repphl">📷 '+(opt.photo?'Φωτογραφία ταμπέλας':'Επισύναψη φωτογραφίας (προαιρετικά)')+'</span></label><div id="repprev"></div>';
   var ctxl=[cx.brand?"<b>"+esc(cx.brand)+"</b>":"", cx.cat?esc(cx.cat):"", tname?esc(tname):""].filter(Boolean).join(" · ");
   d.innerHTML='<div class="repbox" role="dialog" aria-modal="true" aria-labelledby="reph"><div class="reph" id="reph">⚑ '+(gen?'Αναφορά προβλήματος':'Αναφορά λάθους')+'<button class="repx" id="repcancel2" aria-label="Κλείσιμο">✕</button></div>'+
-    (ctxl?'<div class="small">'+(code?'Κωδικός <b>'+esc(code)+'</b> · ':'')+ctxl+'</div>':'<div class="small">Δεν έχει επιλεγεί μάρκα – γράψ’ την στο σχόλιο αν αφορά συγκεκριμένη μονάδα.</div>')+
-    '<div class="repk">'+kinds.map(function(k,i){ return '<label class="chk"><input type="radio" name="repk" value="'+esc(k)+'"'+(i===0?' checked':'')+'> '+esc(k)+'</label>'; }).join("")+'</div>'+
+    (opt.photo&&!ctxl?'':ctxl?'<div class="small">'+(code?'Κωδικός <b>'+esc(code)+'</b> · ':'')+ctxl+'</div>':'<div class="small">Δεν έχει επιλεγεί μάρκα – γράψ’ την στο σχόλιο αν αφορά συγκεκριμένη μονάδα.</div>')+
+    (opt.photo?'<div class="repask">🔎 Ο σειριακός <b class="code">'+esc(opt.ser||"")+'</b> δεν αναγνωρίστηκε.<br>📷 Βγάλε μια φωτογραφία <b>ολόκληρο το ταμπελάκι</b> της μονάδας (να φαίνονται μάρκα, μοντέλο, σειριακός και κατασκευαστής) και πάτα «Αποστολή» – θα ελεγχθεί και θα προστεθεί.</div>'+PHB:'')+
+    '<div class="repk">'+kinds.map(function(k,i){ var on=opt.ser ? /Λείπει μάρκα/.test(k) : i===0; return '<label class="chk"><input type="radio" name="repk" value="'+esc(k)+'"'+(on?' checked':'')+'> '+esc(k)+'</label>'; }).join("")+'</div>'+
     '<div class="row2"><input id="repmodel" placeholder="Μοντέλο" autocapitalize="characters" spellcheck="false" value="'+esc(cx.model)+'">'+
-    (gen?'<input id="repcode" placeholder="Κωδικός (αν υπάρχει)" autocapitalize="characters" spellcheck="false" value="'+esc(cx.q)+'">':'')+'</div>'+
+    (gen?'<input id="repcode" placeholder="Κωδικός (αν υπάρχει)" autocapitalize="characters" spellcheck="false" value="'+esc(opt.ser?"":cx.q)+'">':'')+'</div>'+
+    '<input id="repser" placeholder="Σειριακός (αν υπάρχει)" autocapitalize="characters" spellcheck="false" value="'+esc(opt.ser||"")+'" style="margin-top:8px">'+
+    (opt.photo?'':PHB)+
     '<textarea id="reptxt" rows="4" placeholder="'+(gen?'Τι έγινε; π.χ. «δεν μπορώ να κλείσω την κάμερα»':'Τι είδες στη μονάδα; π.χ. «η πλακέτα έδειχνε κόκκινο ×5, όχι ×3»')+'"></textarea>'+
     '<div class="scbtns"><button class="mini prim" id="repsend">📤 Αποστολή</button><button class="mini" id="repcancel">Άκυρο</button></div>'+
     '<div class="small" style="margin-top:6px">Η αναφορά στέλνεται ανώνυμα για έλεγχο και διόρθωση. Δεν στέλνεται τίποτα χωρίς να πατήσεις «Αποστολή».</div></div>';
-  d.style.display="flex"; d.setAttribute("data-k",(tkey||"")+"|"+(code||"")); setTimeout(function(){ var t=document.getElementById("reptxt"); if(t) t.focus(); },50);
+  d._photo=""; d.style.display="flex"; d.setAttribute("data-k",(tkey||"")+"|"+(code||"")); if(!opt.photo) setTimeout(function(){ var t=document.getElementById("reptxt"); if(t) t.focus(); },50);
 }
-function repText(r){ return "Βλαβολόγιο – αναφορά "+(r.gen?"προβλήματος":"λάθους")+"\nΚωδικός: "+(r.code||"-")+"\nΜάρκα: "+(r.brand||"-")+"\nΚατηγορία: "+(r.cat||"-")+"\nΠίνακας: "+(r.table||"-")+"\nΜοντέλο: "+(r.model||"-")+"\nΕίδος: "+r.kind+"\nΣχόλιο: "+(r.txt||"-")+"\nΗμερομηνία: "+r.date; }
+// Φωτογραφία: σμίκρυνση, γκρι JPEG, base64 – στέλνεται σε κομμάτια των 30.000 χαρακτήρων στην ίδια φόρμα
+var REP_CHUNK = 30000; // η φόρμα απορρίπτει (413) πάνω από ~50KB ανά αποστολή
+function repImg(file, cb){
+  var url=URL.createObjectURL(file), img=new Image();
+  img.onload=function(){
+    var mx=1800, q=0.6, out="";
+    for(var k=0;k<6;k++){
+      var sc=Math.min(1, mx/Math.max(img.width,img.height)), W=Math.round(img.width*sc), H=Math.round(img.height*sc);
+      var c=document.createElement("canvas"); c.width=W; c.height=H; var cx=c.getContext("2d"); cx.drawImage(img,0,0,W,H);
+      try{ var id=cx.getImageData(0,0,W,H), p=id.data; for(var i=0;i<p.length;i+=4){ var g=(p[i]*0.3+p[i+1]*0.59+p[i+2]*0.11)|0; p[i]=p[i+1]=p[i+2]=g; } cx.putImageData(id,0,0); }catch(x){}
+      out=c.toDataURL("image/jpeg", q).split(",")[1]||"";
+      if(out.length<=REP_CHUNK*6) break; mx=Math.round(mx*0.82); q=Math.max(0.45,q-0.04);
+    }
+    URL.revokeObjectURL(url); cb(out);
+  };
+  img.onerror=function(){ URL.revokeObjectURL(url); cb(""); };
+  img.src=url;
+}
+document.addEventListener("change", function(e){
+  if(!e.target || e.target.id!=="repfile" || !e.target.files || !e.target.files[0]) return;
+  var d=document.getElementById("repdlg"), l=document.getElementById("repphl"), pv=document.getElementById("repprev");
+  if(l) l.textContent="⏳ Επεξεργασία φωτογραφίας…";
+  repImg(e.target.files[0], function(b64){
+    d._photo=b64;
+    if(!b64){ if(l) l.textContent="⚠️ Δεν άνοιξε η φωτογραφία – δοκίμασε ξανά"; return; }
+    if(l) l.textContent="✔ Φωτογραφία έτοιμη – πάτα για αλλαγή";
+    if(pv) pv.innerHTML='<img src="data:image/jpeg;base64,'+b64+'" alt="Φωτογραφία ταμπέλας">';
+  });
+});
+function repText(r){ return "Βλαβολόγιο – αναφορά "+(r.gen?"προβλήματος":"λάθους")+"\nΚωδικός: "+(r.code||"-")+"\nΜάρκα: "+(r.brand||"-")+"\nΚατηγορία: "+(r.cat||"-")+"\nΠίνακας: "+(r.table||"-")+"\nΜοντέλο: "+(r.model||"-")+(r.ser?"\nΣειριακός: "+r.ser:"")+(r.photo?"\nΦωτογραφία: "+r.photo:"")+"\nΕίδος: "+r.kind+"\nΣχόλιο: "+(r.txt||"-")+"\nΗμερομηνία: "+r.date; }
 document.addEventListener("click", function(e){
-  var b=e.target.closest("[data-rep],#repgen,#repsend,#repcancel,#repcancel2,#repdlg"); if(!b) return;
+  var b=e.target.closest("[data-rep],[data-repser],#repgen,#repsend,#repcancel,#repcancel2,#repdlg"); if(!b) return;
+  if(b.hasAttribute("data-repser")){ repOpen("","",{ser:b.getAttribute("data-repser"), photo:1}); return; }
   if(b.id==="repgen"){ repOpen("",""); return; }
   if(b.hasAttribute("data-rep")){ var a=b.getAttribute("data-rep").split("|"); repOpen(a[0],a.slice(1).join("|")); return; }
   var d=document.getElementById("repdlg");
@@ -247,16 +282,20 @@ document.addEventListener("click", function(e){
     var last=0; try{ last=+localStorage.getItem("vl_replast")||0; }catch(x){}
     if(Date.now()-last<30000){ repToast("⏳ Περίμενε λίγα δευτερόλεπτα πριν στείλεις νέα αναφορά"); return; }
     var tx0=(document.getElementById("reptxt")||{}).value||"";
-    if(tx0.trim().length<3 && !(document.getElementById("repmodel")||{}).value){ repToast("✍️ Γράψε λίγα λόγια για το πρόβλημα"); var tf=document.getElementById("reptxt"); if(tf) tf.focus(); return; }
+    if(tx0.trim().length<3 && !(document.getElementById("repmodel")||{}).value && !d._photo){ repToast("✍️ Γράψε λίγα λόγια για το πρόβλημα"); var tf=document.getElementById("reptxt"); if(tf) tf.focus(); return; }
     try{ localStorage.setItem("vl_replast", String(Date.now())); }catch(x){}
     var k=d.getAttribute("data-k").split("|"), kind=(d.querySelector('input[name=repk]:checked')||{}).value||"";
-    var cx=repCtx(), rc=document.getElementById("repcode"); var r={gen:!k[0], cat:cx.cat, code:rc?rc.value.trim():k.slice(1).join("|"), table:(k[0]&&T[k[0]]?T[k[0]].name:(k[0]||"")), brand:cx.brand, model:document.getElementById("repmodel").value.trim(), kind:kind, txt:document.getElementById("reptxt").value.trim().slice(0,1500), date:new Date().toLocaleString("el-GR")};
+    var cx=repCtx(), rc=document.getElementById("repcode"); var r={gen:!k[0], cat:cx.cat, code:rc?rc.value.trim():k.slice(1).join("|"), table:(k[0]&&T[k[0]]?T[k[0]].name:(k[0]||"")), brand:cx.brand, model:document.getElementById("repmodel").value.trim(), ser:((document.getElementById("repser")||{}).value||"").trim().toUpperCase(), kind:kind, txt:document.getElementById("reptxt").value.trim().slice(0,1500), date:new Date().toLocaleString("el-GR")};
     try{ var all=JSON.parse(localStorage.getItem("vl_reports")||"[]"); all.push(r); localStorage.setItem("vl_reports",JSON.stringify(all.slice(-200))); }catch(x){}
+    var ph=d._photo||"", parts=[];
+    if(ph){ var pid=Date.now().toString(36)+Math.random().toString(36).slice(2,6), n=Math.ceil(ph.length/REP_CHUNK);
+      for(var pi=0;pi<n;pi++) parts.push("VLPHOTO|"+pid+"|"+(pi+1)+"|"+n+"|"+ph.slice(pi*REP_CHUNK,(pi+1)*REP_CHUNK));
+      r.photo=pid+" ("+n+" μέρη)"; }
     var t=repText(r);
     d.style.display="none";
     if(REPORT_FORM){
-      var q=repQueue(); q.push(t); try{ localStorage.setItem("vl_repq",JSON.stringify(q)); }catch(x){}
-      if(navigator.onLine){ repToast("✔ Η αναφορά στάλθηκε – ευχαριστούμε!"); repFlush(); }
+      var q=repQueue(); q.push(t); parts.forEach(function(x){ q.push(x); }); try{ localStorage.setItem("vl_repq",JSON.stringify(q)); }catch(x){ try{ q=q.slice(0,q.length-parts.length); localStorage.setItem("vl_repq",JSON.stringify(q)); }catch(y){} }
+      if(navigator.onLine){ repToast(parts.length?"✔ Η αναφορά και η φωτογραφία στέλνονται – ευχαριστούμε!":"✔ Η αναφορά στάλθηκε – ευχαριστούμε!"); repFlush(); }
       else repToast("📴 Χωρίς ίντερνετ – θα σταλεί αυτόματα μόλις συνδεθείς");
     } else if(typeof shareText==="function") shareText(t,"Βλαβολόγιο – αναφορά λάθους");
   }
@@ -281,6 +320,12 @@ function csvParse(t){ var rows=[],row=[],f="",q=false; for(var i=0;i<t.length;i+
   if(q){ if(c==='"'){ if(t[i+1]==='"'){ f+='"'; i++; } else q=false; } else f+=c; }
   else if(c==='"') q=true; else if(c===','){ row.push(f); f=""; } else if(c==='\n'){ row.push(f); rows.push(row); row=[]; f=""; } else if(c!=='\r') f+=c; }
   if(f!==""||row.length){ row.push(f); rows.push(row); } return rows; }
+function admPhoto(PH, v){
+  if(!v) return ""; var pid=String(v).split(" ")[0], o=PH[pid];
+  if(!o) return '<div class="small">📷 Η φωτογραφία δεν έχει φτάσει ακόμα</div>';
+  var b=""; for(var i=1;i<=o.n;i++){ if(o.p[i]==null) return '<div class="small">📷 Φωτογραφία: '+Object.keys(o.p).length+'/'+o.n+' μέρη έφτασαν</div>'; b+=o.p[i]; }
+  return '<img class="admimg" src="data:image/jpeg;base64,'+b.replace(/[^A-Za-z0-9+\/=]/g,"")+'" alt="Φωτογραφία ταμπέλας">';
+}
 function admOpen(){
   var pin=localStorage.getItem("vl_admpin");
   if(!pin){ var a=prompt("Όρισε κωδικό (PIN) για την οθόνη Αναφορές σε αυτή τη συσκευή:"); if(!a) return; localStorage.setItem("vl_admpin",a); }
@@ -289,14 +334,17 @@ function admOpen(){
   d.innerHTML='<div class="repbox admbox"><div class="reph">⚑ Αναφορές τεχνικών</div><div id="admlist" class="small">Φόρτωση…</div><div class="scbtns"><button class="mini" id="admclose">Κλείσιμο</button></div></div>';
   d.style.display="flex";
   fetch(REPORT_CSV+"&t="+Date.now(),{cache:"no-store"}).then(function(r){ return r.text(); }).then(function(t){
-    var rows=csvParse(t).slice(1).filter(function(r){ return r[1] && r[1].indexOf("Κωδικός: TEST\n")<0; }).reverse();
+    var all=csvParse(t).slice(1), PH={};
+    all.forEach(function(r){ if(r[1] && r[1].indexOf("VLPHOTO|")===0){ var a=r[1].split("|"); var o=PH[a[1]]||(PH[a[1]]={n:+a[3],p:{}}); o.p[a[2]]=a.slice(4).join("|"); } });
+    var rows=all.filter(function(r){ return r[1] && r[1].indexOf("VLPHOTO|")!==0 && r[1].indexOf("Κωδικός: TEST\n")<0; }).reverse();
     var el=document.getElementById("admlist");
     if(!rows.length){ el.innerHTML="Δεν υπάρχουν αναφορές ακόμα."; return; }
     el.innerHTML='<div style="margin-bottom:8px"><b>'+rows.length+'</b> αναφορές (νεότερες πρώτα)</div>'+rows.map(function(r){
       var lines=r[1].split("\n"), f={}; lines.forEach(function(l){ var i=l.indexOf(": "); if(i>0) f[l.slice(0,i)]=l.slice(i+2); });
       return '<div class="admrow"><div class="admh"><span class="code">'+esc(f["Κωδικός"]||"?")+'</span> <b>'+esc(f["Μάρκα"]||"")+'</b> <span class="small">'+esc(r[0])+'</span></div>'+
         '<div class="small">'+esc(f["Είδος"]||"")+(f["Μοντέλο"]&&f["Μοντέλο"]!=="-"?' · μοντέλο '+esc(f["Μοντέλο"]):'')+'</div>'+
-        '<div class="otx">'+esc(f["Σχόλιο"]||r[1])+'</div><div class="otag">'+esc(f["Πίνακας"]||"")+'</div></div>';
+        (f["Σειριακός"]?'<div class="small">Σειριακός: <span class="code">'+esc(f["Σειριακός"])+'</span></div>':'')+
+        '<div class="otx">'+esc(f["Σχόλιο"]||r[1])+'</div>'+admPhoto(PH, f["Φωτογραφία"])+'<div class="otag">'+esc(f["Πίνακας"]||"")+'</div></div>';
     }).join("");
   }).catch(function(){ var el=document.getElementById("admlist"); if(el) el.innerHTML="Δεν φορτώθηκαν οι αναφορές – χρειάζεται ίντερνετ."; });
 }

@@ -16,6 +16,8 @@ var SER = [
   {o:"hisense", re:/^1KA[0-9A-Z]{20}$/, w:2, k:"Σειριακός εσωτερικής Hisense (1KA…, 23 χαρ.)", src:"Hisense – How to identify the model and the serial number: οι επίτοιχες εσωτερικές έχουν σειριακό 23 χαρακτήρων που ξεκινά με 1KA."},
   {o:"hisense", re:/^Q[0-9A-Z]{11}$/, w:1, k:"Σειριακός Hisense (Q…, 12 χαρ.)", src:"Hisense – How to identify the model and the serial number: ο σειριακός έχει 12 χαρακτήρες και ξεκινά με Q (κυρίως VRF/επαγγελματικά)."},
   {o:"gree", re:/^C[A-Z]\d{3}[A-Z]\d{5}$/, w:2, k:"Κωδικός προϊόντος Gree (Product Code)", src:"Εγχειρίδια σέρβις Gree: «Product Code» της μορφής CU050W01701 / CB…"},
+  {o:"haier", re:/^[0-9A-Z]{11}[0-9A-Z]{2}([A-HJ-NP-Z])([1-9ABC])([1-9A-HJ-NP-X])\d{4}$/, w:2, k:"Σειριακός Haier (20 χαρακτήρες) – και Candy", d:function(m){ var Y="ABCDEFGHJKLMNPQR".indexOf(m[1]), D="123456789ABCDEFGHJKLMNPQRSTUVWX".indexOf(m[3])+1; return Y<0 ? {mo:moX(m[2]), yl:m[1], day:D} : {y:2010+Y, mo:moX(m[2]), day:D}; },
+   src:"Haier – How to check the serial number: 20 χαρακτήρες· οι 11 πρώτοι = κωδικός προϊόντος, 2 = γραμμή παραγωγής, 3 = ημερομηνία (έτος A=2010 … N=2022, P=2023, Q=2024, R=2025 – χωρίς I/O· μήνας 1–9, A/B/C = 10/11/12· ημέρα 1–9, A=10 … X=31), 4 = αύξων αριθμός."},
   {o:"fujitsu", re:/^[A-Z]{1,3}\d{6}$/, w:0, k:"Μορφή σειριακού Fujitsu (γράμματα + 6 ψηφία)", src:"Fujitsu: αύξουσα αρίθμηση, η ημερομηνία δεν κωδικοποιείται στον σειριακό (building-center.org) – βρίσκεται από την Fujitsu με τον σειριακό."}
 ];
 var QRDOM = [[/gree/i,"gree"],[/midea/i,"midea"],[/hisense/i,"hisense"],[/haier/i,"haier"],[/daikin/i,"daikin"],[/tcl\./i,"tcl"],[/aux(group|air)?\./i,"aux"],[/samsung/i,"samsung"],[/lg\.com/i,"lg"],[/mitsubishielectric|mitsubishi-electric/i,"me"],[/toshiba/i,"toshiba"],[/panasonic/i,"panasonic"],[/fujitsu/i,"fujitsu"]];
@@ -35,14 +37,15 @@ function serInfo(t, cs){
 }
 function dateTxt(d){
   if(!d) return "";
-  var s = d.mo ? GRM[d.mo]+" " : "";
+  if(d.day && d.mo && d.y) return "📅 Κατασκευή: "+d.day+"/"+("0"+d.mo).slice(-2)+"/"+d.y+(d.x?" · "+d.x:"");
+  var s = (d.day ? d.day+"/" : "") + (d.mo ? GRM[d.mo]+" " : "");
   if(d.y) s += d.y + (d.dec ? " (ή "+(d.y-10)+")" : "");
-  else if(d.yl) s += "έτος: γράμμα «"+d.yl+"»";
+  else if(d.yl) s += "έτος: γράμμα «"+d.yl+"»"+(d.day?" (μετά το 2025 – εκτός επίσημου πίνακα)":"");
   return "📅 Κατασκευή: "+s+(d.x?" · "+d.x:"");
 }
 function serHtml(t, cs){
   var r = serInfo(t, cs);
-  if(!r.length) return '<div class="small">Δεν αναγνώρισα τη μορφή. Αν ξέρεις το εργοστάσιο, πάτα το παρακάτω για να το θυμάμαι την επόμενη φορά.</div>';
+  if(!r.length) return '<div class="small">Δεν αναγνώρισα τη μορφή. Αν ξέρεις το εργοστάσιο, πάτα το παρακάτω για να το θυμάμαι την επόμενη φορά.</div><button class="repb" data-repser="'+esc(serClean(t))+'">📷 Στείλε φωτογραφία της ταμπέλας για να προστεθεί</button>';
   return r.map(function(e){
     var nm = PLAT[e.o] ? PLAT[e.o].name : e.o;
     return '<div class="serl"><b>'+esc(e.k)+'</b>'+(e.w?' → <span class="det">'+esc(nm)+'</span>':'')+(e.off?' <span class="small">(δεν είναι στα συνήθη εργοστάσια αυτής της μάρκας)</span>':'')+
@@ -133,12 +136,21 @@ function scanFound(text, fmt){
     qh = '<div class="lbl">Συνέχεια με μάρκα:</div><div class="chips">'+bl.map(function(n){ return '<button class="chip on" data-qb="'+esc(n)+'">'+esc(n)+'</button>'; }).join("")+
       '<button class="chip" id="qother">Άλλη μάρκα (Inventor, Nobu…)</button></div>';
     box.innerHTML = '<div class="sccode">'+esc(text)+'</div>'+histSeenHtml(text,"")+serHtml(text, null)+qh+'<div class="scbtns" style="margin-top:12px"><button class="mini" id="scagain">🔁 Σάρωση ξανά</button></div>';
+    scanNoMatch(text);
     return;
   }
   box.innerHTML = '<div class="sccode">'+esc(text)+'</div>'+histSeenHtml(text,"")+serHtml(text, cs)+
     '<div class="lbl">Πάτα τι είναι, για να το περάσω στη σωστή θέση:</div><div class="chips">'+order.map(function(k,i){ return '<button class="chip'+(i===0?' on':'')+'" data-scuse="'+k+'">'+esc(SCT[k])+'</button>'; }).join("")+'</div>'+
     (cs && cs.length>1 ? '<div class="lbl">Ξέρεις το εργοστάσιο αυτής της μονάδας; Αποθήκευσέ το για την επόμενη φορά:</div><div class="chips">'+cs.map(function(p){ return '<button class="chip" data-sclearn="'+p+'">'+esc(PLAT[p].name)+'</button>'; }).join("")+'</div>' : '')+
     '<div class="scbtns" style="margin-top:12px"><button class="mini" id="scagain">🔁 Σάρωση ξανά</button></div>';
+  scanNoMatch(text);
+}
+// Δεν αναγνωρίστηκε τίποτα → ανοίγει αυτόματα αναφορά με αίτημα φωτογραφίας της ταμπέλας
+function scanNoMatch(text){
+  if(/^\d{8}$|^\d{12,14}$/.test(serClean(text))) return; // EAN/UPC κουτιού – όχι σειριακός
+  var hit = serInfo(text, null).some(function(e){ return e.w>0; });
+  if(hit || typeof repOpen!=="function") return;
+  setTimeout(function(){ repOpen("", "", {ser:serClean(text), photo:1}); }, 350);
 }
 function scanUse(k){
   var t = SCAN.last||"", v = serClean(t);
