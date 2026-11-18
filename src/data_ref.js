@@ -141,7 +141,8 @@ var OUTN = {
 // ===== Toshiba RAV (Digital Inverter Series 4, EU) & Estia: LED D800–D804 πλακέτας εξωτερικής ανά κωδικό =====
 // RAV: Toshiba service manual SVM-13072 «Digital Inverter Series 4» RAV-SM564–1404ATP-E (EU), 8-2-4 Check code list (Outdoor), σελ. 58. D805 πάντα αναμμένο.
 // Estia: Toshiba Estia quick reference guide (Outdoor fault diagnosis): SW803 όλα OFF → display mode 1, SW800 ≥1″ → display mode 2.
-//   Ο κωδικός της Estia αντιστοιχίστηκε με την ίδια περιγραφή αιτίας του πίνακα RAV (TD→F04 κ.λπ.)· οι δύο γραμμές «Compressor lock» και η «MCU-MCU» δεν αντιστοιχίστηκαν.
+//   Επαλήθευση 18/11/2026 με τον άμεσο πίνακα κωδικός ↔ LED του Toshiba Estia service manual HWS-802H-E, 9-4-2 «Outdoor Unit Failure Detection»
+//   (στο manual: ● = σβηστό, ○ = αναμμένο, ◎ = αναβοσβήνει). Όλοι οι F, P, L10, H04 ταιριάζουν· προστέθηκαν H01/H02 και L29 (MCU-MCU)· το H03 δεν υπάρχει στο manual Estia → αφαιρέθηκε.
 (function(){
   var sym={o:"●",x:"○",f:"◎"}; // o=αναμμένο, x=σβηστό, f=αναβοσβήνει
   var P=function(str){ return str.split("").map(function(ch){return sym[ch];}).join(""); };
@@ -149,13 +150,13 @@ var OUTN = {
     L10:"xxxxf",P03:"xfxxf",P04:"ffxxf",P05:"xxfxf",P07:"xffxf",P15:"fffxf",P19:"xxxff",P20:"fxxff",P22:"xfxff",P26:"ffxff",P29:"xxfff"};
   var E1a="ooxxo", E1b="xxoxo", E1c="oooxo", E1d="xooxo";
   var E={F04:[E1a,"xxfxx"],F06:[E1a,"xffxx"],F07:[E1a,"fffxx"],F08:[E1a,"xxxfx"],F12:[E1a,"xxffx"],F13:[E1a,"fxffx"],F15:[E1a,"ffffx"],F31:[E1a,"fffff"],
-    H03:[E1b,"ffxxx"],H04:[E1b,"xxfxx"],L10:[E1d,"xfxfx"],P03:[E1c,"ffxxx"],P05:[E1c,"fxfxx"],P07:[E1c,"fffxx"],P15:[E1c,"ffffx"],P19:[E1c,"ffxxf"],
+    H01:[E1b,"fxxxx"],H02:[E1b,"xfxxx"],H04:[E1b,"xxfxx"],L29:[E1d,"fxfff","επικοινωνία MCU–MCU· το L29 της Estia καλύπτει κι άλλες βλάβες – δες F13/F31/L10/P07/P15/P19"],L10:[E1d,"xfxfx"],P03:[E1c,"ffxxx"],P05:[E1c,"fxfxx"],P07:[E1c,"fffxx"],P15:[E1c,"ffffx"],P19:[E1c,"ffxxf"],
     P20:[E1c,"xxfxf"],P22:[E1c,"xffxf"],P26:[E1c,"xfxff"],P29:[E1c,"fxfff"]};
   if(!T.toshiba_rav) return;
   T.toshiba_rav.codes.forEach(function(c){ var k=String(c[0][0]).toUpperCase(), add=[];
     if(R[k]) add.push("RAV Digital Inverter (SM…4ATP-E): D800–D804 = "+P(R[k])+" (● αναμμένο ○ σβηστό ◎ αναβοσβήνει γρήγορα· D805 αναμμένο)");
-    if(E[k]) add.push("Estia εξωτερική: mode 1 = "+P(E[k][0])+" → SW800 → mode 2 = "+P(E[k][1])+" (κωδικός αντιστοιχίστηκε μέσω περιγραφής)");
-    if(add.length) c[3]=(c[3]?c[3].replace(/^7-seg:/,"VRF SMMS – 7-seg:")+" || ":"")+add.join(" || ")+" — Πηγές: Toshiba SVM-13072 (EU) & Estia quick reference guide. Άλλες γενιές RAV έχουν άλλο πίνακα.";
+    if(E[k]) add.push("Estia εξωτερική"+(E[k][2]?" ("+E[k][2]+")":"")+": mode 1 = "+P(E[k][0])+" → SW800 → mode 2 = "+P(E[k][1])+" (Toshiba Estia service manual HWS-802H-E, άμεσος πίνακας)");
+    if(add.length) c[3]=(c[3]?c[3].replace(/^7-seg:/,"VRF SMMS – 7-seg:")+" || ":"")+add.join(" || ")+" — Πηγές: Toshiba SVM-13072 (EU) & Estia HWS-802H-E service manual / quick reference guide. Άλλες γενιές RAV έχουν άλλο πίνακα.";
   });
 })();
 
@@ -222,7 +223,7 @@ var OUTN = {
   var L=function(y,g,r){ var n={1:"αναμμένο",0:"σβηστό",2:"αναβοσβήνει"}; return "Κίτρινο "+n[y]+" · Πράσινο "+n[g]+" · Κόκκινο "+n[r]; };
   var M={E101:L(0,0,1)+" ή "+L(0,1,1)+" (ή μετά από 1′: "+L(2,1,1)+")",E102:L(0,0,1)+" ή "+L(0,1,1)+" (ή μετά από 1′: "+L(2,1,1)+")",
     E464:L(0,0,2),E461:L(0,2,0),E474:L(0,2,2),E500:L(0,2,2),E466:L(0,1,2),E483:L(0,1,2),E468:L(2,2,1),E485:L(2,2,1),E465:L(2,1,0),E467:L(1,0,1),E469:L(1,2,2)};
-  var tag=" (κωδικός αντιστοιχίστηκε μέσω περιγραφής) — Samsung σειρά AR**HSSDBWK (EU). Κανονικά: Κίτρινο σβηστό · Πράσινο αναβοσβήνει · Κόκκινο αναμμένο.";
+  var tag=" (κωδικός αντιστοιχίστηκε μέσω περιγραφής: το service manual δίνει τα LED ανά περιγραφή βλάβης, όχι ανά κωδικό – ταιριάξαμε μόνο ίδιες περιγραφές του ίδιου manual) — Samsung σειρά AR**HSSDBWK (EU). Κανονικά: Κίτρινο σβηστό · Πράσινο αναβοσβήνει · Κόκκινο αναμμένο.";
   if(!T.samsung_all) return;
   T.samsung_all.codes.forEach(function(c){ for(var i=0;i<c[0].length;i++){ var k=String(c[0][i]).toUpperCase(); if(M[k]){ c[3]=(c[3]?c[3]+" || ":"")+M[k]+tag; return; } } });
 })();

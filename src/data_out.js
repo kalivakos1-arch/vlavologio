@@ -173,7 +173,7 @@ T.me_outled = {
 
 T.gree_outled = {
   name: "Gree (και Gree-τύπου: Inventor EVI, Toyotomi, Cooper&Hunter) – κίτρινο/κόκκινο LED εξωτερικής",
-  src: "Gree Vireo / Multi installation & service manuals – Diagnostic codes (Outdoor unit indicators Yellow / Red)· Gree service manual 9.2",
+  src: "Gree Vireo / Multi installation & service manuals – Diagnostic codes (Outdoor unit indicators Yellow / Red)· Gree service manual 9.2· E6 = κίτρινο συνεχώς αναμμένο επιβεβαιωμένο και στο Gree Multi21 owner's manual (Diagnostic codes) και σε μονάδα κατασκευής Gree (Carrier 619FB: «Always»)",
   note: "Στην κεντρική πλακέτα εξωτερικής (AP1) υπάρχουν κίτρινο, κόκκινο και πράσινο LED. Αναλαμπές 0,5″/0,5″ και παύση ~1″ (σε παλαιότερα 2″) πριν την επανάληψη. Γράψε τον αριθμό αναλαμπών – η κάρτα δείχνει τι σημαίνει στο κίτρινο και τι στο κόκκινο. Πράσινο = επικοινωνία (αναβοσβήνει κανονικά). Σε παλιά σειρά (π.χ. GWH09AB): LED1 κόκκινο = τροφοδοσία, LED2 πράσινο = επικοινωνία, LED3 κόκκινο, LED4 κίτρινο (1 αναλαμπή = εκκίνηση συμπιεστή). E1 και C5 δεν έχουν ένδειξη στην εξωτερική.",
   led: "Κεντρική πλακέτα εξωτερικής (AP1): ΚΙΤΡΙΝΟ και ΚΟΚΚΙΝΟ LED (στα παλιά: LED4 κίτρινο, LED3 κόκκινο). Πρώτα δες ποιο χρώμα αναβοσβήνει, μετά μέτρα.",
   link: "gree_split",
