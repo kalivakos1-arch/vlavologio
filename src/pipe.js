@@ -37,7 +37,20 @@ function pSzJ(a){ return a.map(pD).join(" / "); }
 function pSzS(a){ return a.map(function(v){ var x = pD(v); return /^[0-9.]+$/.test(x) ? "Ø"+x : x; }).join("/"); }
 function pLet(i, up){ var a = "abcdefghijklmnopqrstuvwxyz", r = a[i%26] + (i>=26 ? Math.floor(i/26) : ""); return up ? r.toUpperCase() : r; }
 // --- τύποι εσωτερικών ---
-var PTY = [["wall","Τοίχου"],["cas4","Κασέτα 4 δρόμων"],["cas1","Κασέτα 1–2 δρόμων"],["duct","Καναλάτο"],["ceil","Οροφής / δαπέδου"],["cons","Κονσόλα δαπέδου"]];
+var PTY = [["wall","Τοίχου"],["cas4","Κασέτα 4 δρόμων"],["duct","Καναλάτο"],["ceil","Οροφής / δαπέδου"],["cons","Κονσόλα δαπέδου"]];
+var PST = [["low","χαμηλής στατικής"],["mid","μέσης στατικής"],["high","υψηλής στατικής"]];
+function pStName(k){ for(var i=0;i<PST.length;i++) if(PST[i][0]===k) return PST[i][1]; return "μέσης στατικής"; }
+function pUnitName(u){ var t = u.ty==="cas1" ? "cas4" : (u.ty||"wall"); return pTyName(t) + (t==="duct" ? " "+pStName(u.st) : ""); }
+// εύρος αποδόσεων ανά τύπο εσωτερικής – μόνο από επίσημους καταλόγους (σε μονάδες του μοντέλου: κλάση Daikin / P Mitsubishi)
+var PCAPS = {
+ "Daikin": {src:"Daikin VRV indoor unit overview (κατάλογος VRV 5 ECPEN25-213)", wall:[15,20,25,32,40,50,63], cas4:[15,20,25,32,40,50,63,80,100,125], duct_low:[15,20,25,32,40,50,63], duct_mid:[15,20,25,32,40,50,63,80,100,125,140], duct_high:[50,63,80,100,125,200,250], ceil:[32,50,63,71,100], cons:[20,25,32,40,50,63]},
+ "Mitsubishi Electric": {src:"Mitsubishi Electric City Multi indoor units (PKFY, PLFY, PEFY VMS1/VMA/VMHS, PCFY, PFFY)", wall:[15,100], cas4:[15,140], duct_low:[15,63], duct_mid:[20,140], duct_high:[40,250], ceil:[40,125], cons:[20,63]}
+};
+function pTyKey(u){ var t = (u && u.ty==="cas1") ? "cas4" : ((u && u.ty) || "wall"); return t==="duct" ? "duct_"+((u && u.st) || "mid") : t; }
+function pModelsFor(D, u){ var all = pModels(D), C = PCAPS[D.brand]; if(!C || !u) return all; var r = C[pTyKey(u)]; if(!r) return all;
+  var f = all.filter(function(m){ return r.length>2 ? r.some(function(x){ return Math.abs(+m-x)<0.01; }) : (+m >= r[0]-0.01 && +m <= r[1]+0.01); }); return f.length ? f : all; }
+function pFitModel(D, u){ var ms = pModelsFor(D, u).map(String); if(ms.indexOf(String(u.m))>=0) return; var v = pNum(u.m), b = ms[0]; ms.forEach(function(x){ if(Math.abs(+x-v) < Math.abs(+b-v)) b = x; }); u.m = b; }
+var PSIZES = [6.35,9.52,12.7,15.88,19.05,22.22,25.4,28.58,31.75,34.92,38.1,41.28,44.45,53.98];
 function pTyName(k){ k = k || "wall"; for(var i=0;i<PTY.length;i++) if(PTY[i][0]===k) return PTY[i][1]; return "Εσωτερική"; }
 function pIco(k, x, y, w){ // σχέδιο εικονιδίου σε κουτί w×(w*0.6)
   var h = w*0.6, s = '', st = 'fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"';
@@ -89,13 +102,14 @@ function pFix(D){
   else if(D.outs.map(String).indexOf(String(PS.out))<0 || chg) PS.out = String(D.outs[Math.min(1,D.outs.length-1)]);
   var lv = pLeaves();
   if(chg){ var dm = pDm(D); lv.forEach(function(u,i){ u.m = String(dm[i%3]); }); }
+  lv.forEach(function(u){ pFitModel(D, u); });
   var ms = pModels(D).map(String); lv.forEach(function(u){ if(ms.indexOf(String(u.m))<0){ var v=pNum(u.m), b=ms[0]; ms.forEach(function(x){ if(Math.abs(+x-v) < Math.abs(+b-v)) b=x; }); u.m = b; } });
   var st = pStar(D); if(!!PS.tree.star !== st){ var L = lv.map(function(u){ return {m:u.m, L:u.L, s:"5"}; }); var fl = PS.tree.star ? (PS.A||"20") : ((pKids(0)[0]||{}).L||"20"); if(st) PS.A = fl; pBuild(L, fl, st); PS.sel = null; }
   PS.outSys = PS.sys;
 }
 function pAddUnit(selId, ty){
   var D = PIPE[PS.sys], m = String(pDm(D)[1]), ms = pModels(D).map(String); if(ms.indexOf(m)<0) m = ms[Math.floor(ms.length/3)];
-  var u = pAddUnit0(selId, m); u.ty = ty || "wall"; return u; }
+  var u = pAddUnit0(selId, m); u.ty = ty || "wall"; pFitModel(D, u); return u; }
 function pAddUnit0(selId, m){
   if(PS.tree.star) return pNew("i",0,"5",m);
   var s = pN(selId==null?0:selId) || pN(0);
@@ -103,6 +117,7 @@ function pAddUnit0(selId, m){
   if(s.t==="h") return pNew("i",s.id,"5",m);
   if(s.t==="j"){ var kj = pKids(s.id); if(kj.length<2) return pNew("i",s.id,"5",m);
     var c2 = kj[1], J2 = pNew("j", s.id, "3", null, pPos(c2.id)); c2.p = J2.id; return pNew("i",J2.id,"5",m); }
+  if(s.t==="i" && pN(s.p) && pN(s.p).t==="h") return pNew("i", s.p, "5", m);
   // εσωτερική: βάλε διακλάδωση πριν από αυτήν
   var J = pNew("j", s.p, s.L, null, pPos(s.id)); s.p = J.id; s.L = "3"; return pNew("i", J.id, "5", m);
 }
@@ -175,11 +190,15 @@ function pAct(){
   if(s.t==="o") title = "Εξωτερική"; else if(s.t==="A") title = "Σωλήνα εξωτερική → "+(D.kind==="bc"?"BC":"BS"); else if(s.t==="j") title = "Διακλάδωση Y "+pJlab(s.id); else if(s.t==="h") title = "Κολεκτέρ "+pJlab(s.id); else title = "Εσωτερική "+no+" – "+pTyName(s.ty);
   h += '<div class="lbl">'+esc(title)+' <button class="mini" id="pp_unsel" style="float:right">✕</button></div>';
   if(s.t==="i"){ h += '<div class="small">Τύπος</div><div class="pptyg">'+PTY.map(function(t){ return '<button class="ppty'+((s.ty||"wall")===t[0]?' on':'')+'" data-ppty="'+t[0]+'">'+pIcoBtn(t[0])+esc(t[1])+'</button>'; }).join("")+'</div>';
-    h += '<div class="small" style="margin-top:8px">Απόδοση</div><div class="pptyg ppcapg">'+pModels(D).map(function(m){ var c = pCapLab(D,m); return '<button class="ppty'+(String(m)===String(s.m)?' on':'')+'" data-ppm="'+m+'"><b>'+esc(c[0])+'</b><small>'+esc(c[1])+'</small></button>'; }).join("")+'</div>'; }
+    if((s.ty||"wall")==="duct") h += '<div class="small" style="margin-top:8px">Στατική πίεση καναλάτου</div><div class="pchips">'+PST.map(function(x){ return '<button class="pc'+((s.st||"mid")===x[0]?' on':'')+'" data-ppst="'+x[0]+'">'+esc(x[1])+'</button>'; }).join("")+'</div>';
+    var CC = PCAPS[D.brand]; h += '<div class="small" style="margin-top:8px">Απόδοση – '+(CC?'μόνο όσες υπάρχουν για '+esc(pUnitName(s).toLowerCase())+' ('+esc(CC.src)+')':'όλες (δεν έχω ακόμα επιβεβαιωμένο εύρος ανά τύπο για '+esc(D.brand)+')')+'</div><div class="pptyg ppcapg">'+pModelsFor(D, s).map(function(m){ var c = pCapLab(D,m); return '<button class="ppty'+(String(m)===String(s.m)?' on':'')+'" data-ppm="'+m+'"><b>'+esc(c[0])+'</b><small>'+esc(c[1])+'</small></button>'; }).join("")+'</div>'; }
   var Lv = s.t==="A" ? PS.A : s.t!=="o" ? s.L : null;
   if(Lv!=null){ var lt = s.t==="A" ? "Μήκος (m)" : (s.t==="j"||s.t==="h") ? "Μήκος σωλήνα ως εδώ (m)" : star ? "Μήκος "+(D.kind==="bc"?"BC":"BS")+" → εσωτερική (m)" : "Μήκος σωλήνα ως την εσωτερική (m)";
     h += '<div class="small" style="margin-top:8px">'+lt+'</div><div class="pchips">'+[2,3,5,8,10,15,20,30,40].map(function(v){ return '<button class="pc'+(pNum(Lv)===v?' on':'')+'" data-ppl="'+v+'">'+v+'</button>'; }).join("")+'</div>'+
          '<input id="pp_len" inputmode="decimal" value="'+esc(Lv)+'" style="margin-top:4px">'; }
+  if(s.t!=="o" && s.t!=="A" && !PS.tree.star){
+    var szc = function(k, lab, from, to){ var cur = k==="L" ? s.oL : s.oG; return '<div class="small" style="margin-top:6px">'+lab+'</div><div class="pchips"><button class="pc'+(!cur?' on':'')+'" data-ppd'+k.toLowerCase()+'="">Αυτόματο</button>'+PSIZES.filter(function(v){ return v>=from && v<=to; }).map(function(v){ return '<button class="pc'+(cur && Math.abs(parseFloat(cur)-v)<0.2?' on':'')+'" data-ppd'+k.toLowerCase()+'="'+v+'">'+esc(pD(v))+'</button>'; }).join("")+'</div>'; };
+    h += '<div class="small" style="margin-top:8px"><b>Διατομή σωλήνα ως εδώ</b> – «Αυτόματο» = από τον πίνακα του manual</div>' + szc("L","Υγρό",6.35,28.58) + szc("G", D.kind==="hr"?"Αναρρόφηση":"Αέριο", 9.52,53.98); }
   if(s.t==="j") h += '<button class="mini" data-ppconv="h" style="margin-top:8px">'+'Κάν’ το κολεκτέρ</button> ';
   if(s.t==="h") h += '<button class="mini" data-ppconv="j" style="margin-top:8px">Κάν’ το διακλάδωση Y</button> ';
   if(s.t==="i") h += '<button class="mini ppdel" data-ppdn="'+s.id+'" style="margin-top:8px">🗑️ Αφαίρεση εσωτερικής</button>';
@@ -195,12 +214,13 @@ function pJlab(id){ return PJL[id] || "Δ"; }
 function pSvgTree(D, info){
   var slot = 0, maxD = 0, pos = {};
   (function lay(id, d){ var ks = pKids(id); maxD = Math.max(maxD, d); if(!ks.length){ pos[id] = {x:slot++, d:d}; return; } ks.forEach(function(k){ lay(k.id, d+1); }); pos[id] = {x:(pos[ks[0].id].x + pos[ks[ks.length-1].id].x)/2, d:d}; })(0, 0);
-  var CW = 104, RH = 104, W = Math.max(340, slot*CW+30), H = (maxD+1)*RH+54, X = function(id){ return 15+pos[id].x*CW+CW/2; }, Y = function(id){ return 30+pos[id].d*RH; };
+  var CW = 116, RH = 128, W = Math.max(340, slot*CW+30), H = (maxD+1)*RH+54, X = function(id){ return 15+pos[id].x*CW+CW/2; }, Y = function(id){ return 30+pos[id].d*RH; };
   var s = '<svg class="ppsvg" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" xmlns="http://www.w3.org/2000/svg" font-size="11" font-family="system-ui,sans-serif">';
-  PS.tree.n.forEach(function(n){ if(n.id===0) return; var px = X(n.p), py = Y(n.p)+(n.p===0?16:0), cx = X(n.id), cy = Y(n.id), my = cy-30, I = info[n.id]||{};
+  PS.tree.n.forEach(function(n){ if(n.id===0) return; var px = X(n.p), py = Y(n.p)+(n.p===0?16:0), cx = X(n.id), cy = Y(n.id), my = cy-50, I = info[n.id]||{};
     var d = 'M'+px+' '+py+' V'+my+' H'+cx+' V'+cy, sel = PS.sel===n.id;
     s += '<path d="'+d+'" class="'+(n.t!=="i"||n.p===0?'ppln':'ppln2')+(sel?' ppsel':'')+'" fill="none"/>';
-    s += '<text x="'+(cx+5)+'" y="'+(cy-17)+'" class="ppsz"><tspan class="pplet">'+esc(I.let||"")+'</tspan> '+esc(pSzS(I.sz||[]))+'</text><text x="'+(cx+5)+'" y="'+(cy-5)+'" class="pplen">'+pFmt(pNum(n.L))+' m</text>';
+    var zz = (I.sz||[]).map(function(v){ var x = pD(v); return /^[0-9.]+$/.test(x) ? "Ø"+x : x; });
+    s += '<text x="'+(cx+5)+'" y="'+(cy-38)+'" class="ppsz"><tspan class="pplet">'+esc(I.let||"")+'</tspan>'+(I.man?' ✎':'')+' '+esc(zz[0]||"")+'</text><text x="'+(cx+5)+'" y="'+(cy-26)+'" class="ppsz">'+esc(zz.slice(1).join("/"))+'</text><text x="'+(cx+5)+'" y="'+(cy-14)+'" class="pplen">'+pFmt(pNum(n.L))+' m</text>';
     s += '<path d="'+d+'" class="pphit" data-pn="'+n.id+'"/>';
   });
   PS.tree.n.forEach(function(n){ var x = X(n.id), y = Y(n.id), I = info[n.id]||{}, sel = PS.sel===n.id ? ' ppsel' : '';
@@ -247,8 +267,10 @@ function pipeCalc(){
     var from = function(p){ return p===0 ? 'Εξωτερική' : PJL[p]; }, bL = 0;
     preorder.forEach(function(c){ var p = c.p, Lc = pNum(c.L); total += Lc; var I = info[c.id] = {};
       I.let = p===0 ? "A" : c.t!=="i" ? pLet(++bL, true) : pLet(lv.indexOf(c), false);
+      var ovr = function(){ if(!c.oL && !c.oG) return; I.auto = I.sz.slice(); I.sz = I.sz.slice(); if(c.oL) I.sz[0] = c.oL; if(c.oG) I.sz[1] = c.oG; I.man = true;
+        [0,1].forEach(function(k){ if(parseFloat(I.sz[k]) < parseFloat(I.auto[k]) - 0.2) msg.push('⚠️ Τμήμα '+I.let+': '+(k?'αέριο':'υγρό')+' '+pD(I.sz[k])+' μικρότερο από του manual ('+pD(I.auto[k])+').'); }); };
       if(c.t==="j" || c.t==="h"){ var dn = down[c.id], nk = pKids(c.id).length;
-        I.sz = p===0 ? main : pCap(pPick(D.branch, dn).slice(1), main);
+        I.sz = p===0 ? main : pCap(pPick(D.branch, dn).slice(1), main); ovr();
         if(c.t==="j"){ I.kit = c.id===firstJ ? (D.firstSame ? pPick(D.joint, dn)[1] : pPick(D.first, out)[1]) : pPick(D.joint, dn)[1];
           if(nk!==2) msg.push('⚠️ Η διακλάδωση '+PJL[c.id]+' έχει '+nk+' '+(nk===1?'έξοδο':'εξόδους')+' – μια Y διακλάδωση έχει 2.'); }
         else { var hk = PHDR[PS.sys] ? PHDR[PS.sys](dn, nk) : null; I.kit = hk || "κολεκτέρ: μοντέλο από το manual";
@@ -257,13 +279,14 @@ function pipeCalc(){
           if(nk<2) msg.push('⚠️ Το κολεκτέρ '+PJL[c.id]+' έχει '+nk+' έξοδο – πρόσθεσε εσωτερικές.');
           var sub = []; (function w(id){ pKids(id).forEach(function(k){ if(k.t!=="i") sub.push(k); w(k.id); }); })(c.id);
           if(sub.length) msg.push('⛔ Μετά από κολεκτέρ ('+PJL[c.id]+') δεν μπαίνει άλλη διακλάδωση ή κολεκτέρ – συνδέεις μόνο εσωτερικές.'); }
-        rows.push([I.let+' · '+from(p)+' → '+PJL[c.id], pFmt(dn), pSzJ(I.sz), I.kit, Lc]); pBom(I.sz, Lc, D, hr?3:2); pKit(I.kit); runs.push([I.sz[0], Lc]);
+        rows.push([I.let+(I.man?' ✎':'')+' · '+from(p)+' → '+PJL[c.id], pFmt(dn), pSzJ(I.sz), I.kit, Lc]); pBom(I.sz, Lc, D, hr?3:2); pKit(I.kit); runs.push([I.sz[0], Lc]);
         if(c.t==="j" && PCHG[PS.sys] && PCHG[PS.sys].jEq) runs.push([I.sz[0], PCHG[PS.sys].jEq]);
       } else { var no = lv.indexOf(c)+1, ix = pIdx(D,c.m); I.no = no;
         I.sz = p===0 ? main : hr ? pPick(D.branch, ix).slice(1) : pInd(D,c,ix);
+        if(!isNaN(parseFloat(I.sz[0]))) ovr();
         if(hr){ I.bs = pPick(D.bs1, ix)[1]; I.sz2 = pInd(D,c,ix); bsL.push(I.bs); }
         pBom(I.sz, Lc, D, hr?3:2); if(hr) pKit(I.bs);
-        rows.push([I.let+' · '+from(p)+' → μονάδα '+no+' ('+pTyName(c.ty)+')'+(hr?' (3 σωλήνες ως το '+I.bs+', μετά 2)':''), pFmt(ix), pSzJ(I.sz)+(hr?' → '+pSzJ(I.sz2):''), hr?I.bs:'—', Lc]); runs.push([I.sz[0], Lc]);
+        rows.push([I.let+(I.man?' ✎':'')+' · '+from(p)+' → μονάδα '+no+' ('+pUnitName(c)+')'+(hr?' (3 σωλήνες ως το '+I.bs+', μετά 2)':''), pFmt(ix), pSzJ(I.sz)+(hr?' → '+pSzJ(I.sz2):''), hr?I.bs:'—', Lc]); runs.push([I.sz[0], Lc]);
       } });
     var far = 0, afterMax = 0, minAfter = 1e9, bmax = 0;
     lv.forEach(function(u){ far = Math.max(far, dist[u.id]); if(firstJ!=null){ var a = dist[u.id]-dist[firstJ]; afterMax = Math.max(afterMax, a); minAfter = Math.min(minAfter, a); } if(u.p!==0) bmax = Math.max(bmax, pNum(u.L)); });
@@ -361,13 +384,15 @@ function pUpd(t){ var k = t.id.replace("pp_",""), v = t.value;
   PS[k] = v; if(k==="out" || k==="bsm"){ pSave(); pRerender(); return; } pSave(); pipeCalc(); }
 function pRerender(){ if(pRerender.busy) return; var w = document.getElementById("pp_out_box"); if(!w) return; var c = w.closest(".pcalcw"); if(!c || !c.parentNode) return; pRerender.busy = true; try{ var d=document.createElement("div"); d.innerHTML=pipeForm(); c.parentNode.replaceChild(d.firstChild, c); }catch(er){} pRerender.busy = false; pSave(); pipeCalc(); pAct(); }
 document.addEventListener("click", function(e){
-  var t = e.target.closest && e.target.closest("[data-ppb],[data-pps],[data-ppu],[data-ppin],[data-ppchg],[data-pn],[data-ppl],[data-ppm],[data-ppadd],[data-ppty],[data-ppconv],[data-ppsug],[data-ppnew],[data-ppprint],[data-ppundo],[data-ppdn],#pp_delu,#pp_delb,#pp_unsel"); if(!t || !document.getElementById("pp_out_box")) return;
+  var t = e.target.closest && e.target.closest("[data-ppb],[data-pps],[data-ppu],[data-ppin],[data-ppchg],[data-pn],[data-ppl],[data-ppm],[data-ppadd],[data-ppty],[data-ppconv],[data-ppsug],[data-ppnew],[data-ppprint],[data-ppst],[data-ppdl],[data-ppdg],[data-ppundo],[data-ppdn],#pp_delu,#pp_delb,#pp_unsel"); if(!t || !document.getElementById("pp_out_box")) return;
   if(t.hasAttribute("data-ppchg")){ PS.bpick = true; pRerender(); return; }
   if(t.hasAttribute("data-ppb")){ var b = t.getAttribute("data-ppb"); PS.bpick = false; if(PIPE[PS.sys].brand!==b){ var k = Object.keys(PIPE).filter(function(x){ return PIPE[x].brand===b; })[0]; PS.sys = k; PS.sel = null; } pRerender(); return; }
   if(t.hasAttribute("data-pps")){ PS.sys = t.getAttribute("data-pps"); PS.sel = null; pRerender(); return; }
   if(t.hasAttribute("data-ppu")){ PS.unit = t.getAttribute("data-ppu"); pRerender(); return; }
   if(t.hasAttribute("data-pn")){ if(Date.now()-pdSup < 600) return; var v = t.getAttribute("data-pn"); PS.delc = null; PS.sel = v==="A" ? "A" : +v; pipeCalc(); pAct(); return; }
   if(t.id==="pp_unsel"){ PS.sel = null; pipeCalc(); pAct(); return; }
+  if(t.hasAttribute("data-ppst")){ var s5 = pN(PS.sel); if(s5){ s5.st = t.getAttribute("data-ppst"); pFitModel(PIPE[PS.sys], s5); } pSave(); pipeCalc(); pAct(); return; }
+  if(t.hasAttribute("data-ppdl") || t.hasAttribute("data-ppdg")){ var s6 = pN(PS.sel); if(s6){ var kL = t.hasAttribute("data-ppdl"), v6 = t.getAttribute(kL?"data-ppdl":"data-ppdg"); if(kL) s6.oL = v6||null; else s6.oG = v6||null; if(!s6.oL) delete s6.oL; if(!s6.oG) delete s6.oG; } pSave(); pipeCalc(); pAct(); return; }
   if(t.hasAttribute("data-ppprint")){ PS.sel = null; pipeCalc(); pAct(); document.body.classList.add("ppprint"); setTimeout(function(){ try{ window.print(); }catch(er){} setTimeout(function(){ document.body.classList.remove("ppprint"); }, 800); }, 60); return; }
   if(t.hasAttribute("data-ppundo")){ if(pUndo()){ pSave(); pipeCalc(); pAct(); } else repToast("Δεν υπάρχει κάτι για αναίρεση"); return; }
   if(t.hasAttribute("data-ppdn")){ var di = +t.getAttribute("data-ppdn"), dn = pN(di); if(!dn) return;
@@ -378,8 +403,8 @@ document.addEventListener("click", function(e){
   if(t.hasAttribute("data-ppin")){ PS.inch = t.getAttribute("data-ppin"); pRerender(); return; }
   if(t.hasAttribute("data-ppadd")){ var a = t.getAttribute("data-ppadd"), sel = PS.sel==="A" ? null : PS.sel;
     if(sel==null && !PS.tree.star && a.indexOf("i:")===0){ var lv0 = pLeaves(); sel = lv0.length ? lv0[lv0.length-1].id : 0; }
-    pSnap(); var nn = a.indexOf("i:")===0 ? pAddUnit(sel, a.slice(2)) : pAddBranch(sel, a); PS.sel = nn.id; pSave(); pipeCalc(); pAct(); return; }
-  if(t.hasAttribute("data-ppty")){ var s3 = pN(PS.sel); if(s3) s3.ty = t.getAttribute("data-ppty"); pSave(); pipeCalc(); pAct(); return; }
+    pSnap(); var keepH = sel!=null && pN(sel) && pN(sel).t==="h"; var nn = a.indexOf("i:")===0 ? pAddUnit(sel, a.slice(2)) : pAddBranch(sel, a); PS.sel = (keepH && nn.t==="i") ? sel : nn.id; pSave(); pipeCalc(); pAct(); if(keepH && nn.t==="i") repToast("Μπήκε στο κολεκτέρ – πάτα ξανά για επόμενη εσωτερική"); return; }
+  if(t.hasAttribute("data-ppty")){ var s3 = pN(PS.sel); if(s3){ s3.ty = t.getAttribute("data-ppty"); pFitModel(PIPE[PS.sys], s3); } pSave(); pipeCalc(); pAct(); return; }
   if(t.hasAttribute("data-ppconv")){ pSnap(); var s4 = pN(PS.sel); if(s4) s4.t = t.getAttribute("data-ppconv"); pSave(); pipeCalc(); pAct(); return; }
   if(t.hasAttribute("data-ppsug")){ PS.out = t.getAttribute("data-ppsug"); pRerender(); return; }
   if(t.id==="pp_delb"){ pDelBranch(PS.sel); PS.sel = null; pSave(); pipeCalc(); pAct(); return; }
