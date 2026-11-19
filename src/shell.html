@@ -225,6 +225,8 @@ label.chk{display:flex!important;gap:10px;align-items:center;margin:8px 0}.pcalc
 #pptrash .pptl{background:rgba(17,24,39,.85);color:#fff;font-size:12px;padding:4px 10px;border-radius:999px}
 #pptrash.over .pptx2{transform:scale(1.3);background:#991b1b}
 #ppghost{position:fixed;z-index:20002;transform:translateX(-50%);background:var(--card);color:var(--text);border:2px solid #f59e0b;border-radius:10px;padding:6px 10px;font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.3);pointer-events:none;white-space:nowrap}
+.pplet{fill:#fff;font-weight:800;paint-order:stroke;stroke:var(--acc);stroke-width:5px;stroke-linejoin:round}
+@media print{body.ppprint *{visibility:hidden!important}body.ppprint .pcalcw,body.ppprint .pcalcw *{visibility:visible!important}body.ppprint .pcalcw{position:absolute;left:0;top:0;width:100%;border:0}body.ppprint .pcalcw button,body.ppprint .pcalcw input,body.ppprint .pcalcw select,body.ppprint #pp_act,body.ppprint .pcalcw .bgrid,body.ppprint .pcalcw .pchips{display:none!important}body.ppprint .ppscroll{overflow:visible}body.ppprint .ppsvg{max-width:100%;height:auto}}
 .ppdel{color:#b91c1c;border-color:#fca5a5}.ppico{color:var(--acc)}.ppsug{margin:6px 0;padding:8px 10px;border-radius:10px;background:var(--accbg);font-size:13px}
 .ppact{border:1px solid var(--acc);border-radius:12px;padding:8px 10px;margin-top:8px;background:var(--card)}.ppact .pchips{margin-top:4px}
 .pptab{border-collapse:collapse;font-size:12px;width:100%}.pptab th,.pptab td{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}
