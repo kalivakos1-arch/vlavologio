@@ -47,7 +47,11 @@ var PCAPS = {
  "Mitsubishi Electric": {src:"Mitsubishi Electric City Multi indoor units (PKFY, PLFY, PEFY VMS1/VMA/VMHS, PCFY, PFFY)", wall:[15,100], cas4:[15,140], duct_low:[15,63], duct_mid:[20,140], duct_high:[40,250], ceil:[40,125], cons:[20,63]}
 };
 function pTyKey(u){ var t = (u && u.ty==="cas1") ? "cas4" : ((u && u.ty) || "wall"); return t==="duct" ? "duct_"+((u && u.st) || "mid") : t; }
-function pModelsFor(D, u){ var all = pModels(D), C = PCAPS[D.brand]; if(!C || !u) return all; var r = C[pTyKey(u)]; if(!r) return all;
+function pUrows(D, u){ var P = typeof PUNIT!=="undefined" && PUNIT[D.brand]; return (P && u && P[pTyKey(u)]) || null; }
+function pUinfo(D, u){ var R = pUrows(D,u); if(!R) return null; for(var i=0;i<R.length;i++) if(Math.abs(R[i][0]-pNum(u.m))<0.01) return R[i]; return null; }
+function pUtxt(r){ return r[1]+' · '+r[2]+'×'+r[3]+'×'+r[4]+' mm (Π×Υ×Β) · '+String(r[5]).replace(".",",")+' kg'+(r[6]?' · αέρας ως '+Math.round(r[6])+' m³/h':'')+(r[7]!=null?' · στατική ως '+r[7]+' Pa':'')+(r[8]?' · '+r[8]:''); }
+function pModelsFor(D, u){ var R = pUrows(D,u); if(R) return R.map(function(r){ return r[0]; });
+  var all = pModels(D), C = PCAPS[D.brand]; if(!C || !u) return all; var r = C[pTyKey(u)]; if(!r) return all;
   var f = all.filter(function(m){ return r.length>2 ? r.some(function(x){ return Math.abs(+m-x)<0.01; }) : (+m >= r[0]-0.01 && +m <= r[1]+0.01); }); return f.length ? f : all; }
 function pFitModel(D, u){ var ms = pModelsFor(D, u).map(String); if(ms.indexOf(String(u.m))>=0) return; var v = pNum(u.m), b = ms[0]; ms.forEach(function(x){ if(Math.abs(+x-v) < Math.abs(+b-v)) b = x; }); u.m = b; }
 var PSIZES = [6.35,9.52,12.7,15.88,19.05,22.22,25.4,28.58,31.75,34.92,38.1,41.28,44.45,53.98];
@@ -191,7 +195,8 @@ function pAct(){
   h += '<div class="lbl">'+esc(title)+' <button class="mini" id="pp_unsel" style="float:right">✕</button></div>';
   if(s.t==="i"){ h += '<div class="small">Τύπος</div><div class="pptyg">'+PTY.map(function(t){ return '<button class="ppty'+((s.ty||"wall")===t[0]?' on':'')+'" data-ppty="'+t[0]+'">'+pIcoBtn(t[0])+esc(t[1])+'</button>'; }).join("")+'</div>';
     if((s.ty||"wall")==="duct") h += '<div class="small" style="margin-top:8px">Στατική πίεση καναλάτου</div><div class="pchips">'+PST.map(function(x){ return '<button class="pc'+((s.st||"mid")===x[0]?' on':'')+'" data-ppst="'+x[0]+'">'+esc(x[1])+'</button>'; }).join("")+'</div>';
-    var CC = PCAPS[D.brand]; h += '<div class="small" style="margin-top:8px">Απόδοση – '+(CC?'μόνο όσες υπάρχουν για '+esc(pUnitName(s).toLowerCase())+' ('+esc(CC.src)+')':'όλες (δεν έχω ακόμα επιβεβαιωμένο εύρος ανά τύπο για '+esc(D.brand)+')')+'</div><div class="pptyg ppcapg">'+pModelsFor(D, s).map(function(m){ var c = pCapLab(D,m); return '<button class="ppty'+(String(m)===String(s.m)?' on':'')+'" data-ppm="'+m+'"><b>'+esc(c[0])+'</b><small>'+esc(c[1])+'</small></button>'; }).join("")+'</div>'; }
+    var UI = pUinfo(D, s); if(UI) h += '<div class="pver good" style="margin-top:8px">📐 '+esc(pUtxt(UI))+'</div>'; else if(pUrows(D,s)) {} 
+    var CC = PCAPS[D.brand], PU0 = typeof PUNIT!=="undefined" && PUNIT[D.brand]; if(PU0 && pUrows(D,s)) CC = {src:PU0.src}; h += '<div class="small" style="margin-top:8px">Απόδοση – '+(CC?'μόνο όσες υπάρχουν για '+esc(pUnitName(s).toLowerCase())+' ('+esc(CC.src)+')':'όλες (δεν έχω ακόμα επιβεβαιωμένο εύρος ανά τύπο για '+esc(D.brand)+')')+'</div><div class="pptyg ppcapg">'+pModelsFor(D, s).map(function(m){ var c = pCapLab(D,m); return '<button class="ppty'+(String(m)===String(s.m)?' on':'')+'" data-ppm="'+m+'"><b>'+esc(c[0])+'</b><small>'+esc(c[1])+'</small></button>'; }).join("")+'</div>'; }
   var Lv = s.t==="A" ? PS.A : s.t!=="o" ? s.L : null;
   if(Lv!=null){ var lt = s.t==="A" ? "Μήκος (m)" : (s.t==="j"||s.t==="h") ? "Μήκος σωλήνα ως εδώ (m)" : star ? "Μήκος "+(D.kind==="bc"?"BC":"BS")+" → εσωτερική (m)" : "Μήκος σωλήνα ως την εσωτερική (m)";
     h += '<div class="small" style="margin-top:8px">'+lt+'</div><div class="pchips">'+[2,3,5,8,10,15,20,30,40].map(function(v){ return '<button class="pc'+(pNum(Lv)===v?' on':'')+'" data-ppl="'+v+'">'+v+'</button>'; }).join("")+'</div>'+
@@ -354,12 +359,21 @@ function pipeCalc(){
   if(!L && D.limNote) msg.push('ℹ️ '+D.limNote); else if(D.limNote) html += '<div class="small">ℹ️ '+esc(D.limNote)+'</div>';
   html += msg.map(function(m){ return '<div class="pver'+(m[0]==='⛔'?' bad':'')+'">'+esc(m)+'</div>'; }).join("");
   html += ok.length ? '<div class="pver good">✅ '+ok.map(esc).join('<br>✅ ')+'</div>' : '';
+  html += pUnitsHtml(D, lv, out);
   html += pBomHtml();
   html += pCharge(D, runs, {out:out, tot:tot, n:n, far:farC, idx:idxL, bs:bsL});
   html += '<div style="margin-top:10px"><button class="mini" data-ppprint="1">🖨️ Εκτύπωση / PDF για τον πελάτη</button></div>';
   html += '<div class="small">Οι διατομές σε mm (εξωτερική διάμετρος). Τα μήκη είναι πραγματικά: για ισοδύναμο μήκος πρόσθεσε καμπύλες και κιτ διακλάδωσης όπως λέει το manual.</div>';
   box.innerHTML = html;
 }
+function pUnitsHtml(D, lv, out){ var P = typeof PUNIT!=="undefined" && PUNIT[D.brand], h = '<div class="lbl" style="margin-top:10px">📐 Μηχανήματα</div><div class="ppscroll"><table class="pptab"><tr><th>#</th><th>Τύπος / απόδοση</th><th>Μοντέλο · διαστάσεις Π×Υ×Β · βάρος · αέρας · στατική</th></tr>';
+  lv.forEach(function(u,i){ var r = pUinfo(D,u); h += '<tr><td>'+(i+1)+'</td><td>'+esc(pUnitName(u))+'<br><b>'+esc(pML(D,u.m))+'</b></td><td>'+(r ? esc(pUtxt(r)) : '<span class="small">'+(P?'δεν υπάρχει αυτή η απόδοση στον τύπο':'δεν έχω ακόμα επίσημα στοιχεία για '+esc(D.brand))+'</span>')+'</td></tr>'; });
+  h += '</table></div>'; if(P) h += '<div class="small">Πηγή: '+esc(P.src)+(P.ind?' · '+esc(P.ind):'')+'</div>';
+  var O = typeof POUT!=="undefined" && POUT[PS.sys], o = O && O.rows[out];
+  h += '<div class="lbl" style="margin-top:10px">🔌 Παροχή ρεύματος εξωτερικής</div>';
+  if(o) h += '<div class="pver good">'+esc(D.outLab(out))+': <b>'+esc(o[0])+'</b> · MCA '+String(o[1]).replace(".",",")+' A · ασφάλεια '+o[2]+' A</div><div class="small">'+esc(O.note)+' Πηγή: '+esc(O.src)+'</div>';
+  else h += '<div class="small">Δεν έχω ακόμα επίσημα ηλεκτρικά στοιχεία για αυτή την εξωτερική.</div>';
+  return h; }
 var BOM = {}, KIT = {};
 function pBom(sz, L, D, n, names){ if(!L) return; var nm = names || (n===3 ? ['Υγρό','Αναρρόφηση','Υψ./χαμ. πίεση'] : ['Υγρό','Αέριο']);
   for(var i=0;i<Math.min(n, sz.length);i++){ var v = sz[i]; if(isNaN(parseFloat(v))) continue; var k = nm[i]+'|'+v; BOM[k] = (BOM[k]||0) + L; } }

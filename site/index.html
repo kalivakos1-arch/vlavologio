@@ -4564,6 +4564,27 @@ PARTS.push({id:"pipe", icon:"🧭", name:"Σωληνόγραμμα VRF / VRF HR"
  ["Τι ΔΕΝ κάνει","Δεν υπολογίζει ισοδύναμο μήκος από καμπύλες, collector (header), πολλαπλές εξωτερικές ή sub BC. Δεν υπολογίζει συμπληρωματικό φορτίο ψυκτικού. Πριν την εγκατάσταση, επιβεβαίωσε πάντα με το manual του συγκεκριμένου μοντέλου."]
 ]});
 
+// ===== Τεχνικά στοιχεία εσωτερικών / εξωτερικών – ΜΟΝΟ από επίσημα έγγραφα =====
+// Γραμμή εσωτερικής: [απόδοση (όπως το μοντέλο της σειράς), "Μοντέλο", Π, Υ, Β (mm), kg, αέρας m³/h (μέγ.), μέγ. στατική Pa (ή null), "σημείωση"]
+var PUNIT = {
+ "Daikin": {src:"daikin.eu – Specifications Table (FXAQ-A, FXFQ-B, FXZQ-A, FXDQ-A3, FXSQ-A, FXMQ-P7, FXHQ-A, FXNQ-A)",
+  wall:[[15,"FXAQ15A",795,290,266,12,504,null],[20,"FXAQ20A",795,290,266,12,546,null],[25,"FXAQ25A",795,290,266,12,564,null],[32,"FXAQ32A",795,290,266,12,588,null],[40,"FXAQ40A",1050,290,269,15,732,null],[50,"FXAQ50A",1050,290,269,15,864,null],[63,"FXAQ63A",1050,290,269,15,1098,null]],
+  cas4:[[15,"FXZQ15A (600×600)",575,260,575,15.5,510,null,"πάνελ 620×620"],[20,"FXFQ20B",840,204,840,18,768,null,"πάνελ 950×950 · ή FXZQ20A 575×260×575 (πάνελ 620×620)"],[25,"FXFQ25B",840,204,840,18,768,null,"πάνελ 950×950 · ή FXZQ25A 600×600"],[32,"FXFQ32B",840,204,840,18,768,null,"πάνελ 950×950 · ή FXZQ32A 600×600"],[40,"FXFQ40B",840,204,840,19,888,null,"πάνελ 950×950 · ή FXZQ40A 600×600"],[50,"FXFQ50B",840,204,840,21,906,null,"πάνελ 950×950 · ή FXZQ50A 600×600"],[63,"FXFQ63B",840,204,840,21,996,null,"πάνελ 950×950"],[80,"FXFQ80B",840,246,840,24,1398,null,"πάνελ 950×950"],[100,"FXFQ100B",840,246,840,24,1668,null,"πάνελ 950×950"],[125,"FXFQ125B",840,288,840,26,1896,null,"πάνελ 950×950"]],
+  duct_low:[[15,"FXDQ15A3",750,200,620,22,450,30],[20,"FXDQ20A3",750,200,620,22,480,30],[25,"FXDQ25A3",750,200,620,22,480,30],[32,"FXDQ32A3",750,200,620,22,480,30],[40,"FXDQ40A3",950,200,620,26,630,44],[50,"FXDQ50A3",950,200,620,26,750,44],[63,"FXDQ63A3",1150,200,620,29,990,44]],
+  duct_mid:[[15,"FXSQ15A",550,245,800,23.5,522,150],[20,"FXSQ20A",550,245,800,23.5,540,150],[25,"FXSQ25A",550,245,800,23.5,540,150],[32,"FXSQ32A",550,245,800,24,570,150],[40,"FXSQ40A",700,245,800,28.5,900,150],[50,"FXSQ50A",700,245,800,29,912,150],[63,"FXSQ63A",1000,245,800,35.5,1260,150],[80,"FXSQ80A",1000,245,800,36.5,1380,150],[100,"FXSQ100A",1400,245,800,46,1920,150],[125,"FXSQ125A",1400,245,800,47,2160,150],[140,"FXSQ140A",1550,245,800,51,2340,150]],
+  duct_high:[[20,"FXMQ20P7",550,300,700,23,540,100],[32,"FXMQ32P7",550,300,700,23,570,100],[40,"FXMQ40P7",700,300,700,26,960,160],[50,"FXMQ50P7",1000,300,700,35,1080,200],[63,"FXMQ63P7",1000,300,700,35,1170,200],[80,"FXMQ80P7",1000,300,700,35,1500,200],[100,"FXMQ100P7",1400,300,700,46,1920,200],[125,"FXMQ125P7",1400,300,700,46,2340,200]],
+  ceil:[[32,"FXHQ32A",960,235,690,27,840,null],[63,"FXHQ63A",1270,235,690,35,1200,null],[100,"FXHQ100A",1590,235,690,42,1770,null]],
+  cons:[[20,"FXNQ20A (κρυφή δαπέδου)",790,620,200,23.5,480,41,"ύψος 620 ή 720 mm"],[25,"FXNQ25A (κρυφή δαπέδου)",790,620,200,23.5,480,41],[32,"FXNQ32A (κρυφή δαπέδου)",790,620,200,23.5,480,42],[40,"FXNQ40A (κρυφή δαπέδου)",990,620,200,27.5,630,52],[50,"FXNQ50A (κρυφή δαπέδου)",990,620,200,27.5,750,59],[63,"FXNQ63A (κρυφή δαπέδου)",1190,620,200,32,990,55]],
+  ind:"Όλες: 1~ 220–240 V, ασφάλεια (MFA) 16 A."}
+};
+// Παροχή ρεύματος εξωτερικής ανά σειρά/μοντέλο: [ρεύμα, "MCA", "ασφάλεια"]
+var POUT = {
+ daikin_hp: {src:"Daikin installation manual 4P546220-1F, ενότητα ηλεκτρικών", note:"Γενικός διακόπτης, ασφάλεια slow-blow σε κάθε φάση, ρελέ διαρροής υψηλής ταχύτητας 300 mA. Διατομή καλωδίου κατά τον κανονισμό με βάση το MCA.",
+  rows:{8:["3N~ 380–415 V 50 Hz",16.1,20],10:["3N~ 380–415 V 50 Hz",22.0,25],12:["3N~ 380–415 V 50 Hz",24.0,32],14:["3N~ 380–415 V 50 Hz",27.0,32],16:["3N~ 380–415 V 50 Hz",31.0,40],18:["3N~ 380–415 V 50 Hz",35.0,40],20:["3N~ 380–415 V 50 Hz",39.0,50]}},
+ daikin_hr: {src:"Daikin installation manual 4P546222-1D, ενότητα 15.2", note:"Γενικός διακόπτης, ασφάλεια slow-blow σε κάθε φάση, ρελέ διαρροής υψηλής ταχύτητας 300 mA.",
+  rows:{8:["3N~ 380–415 V 50 Hz",16.1,20],10:["3N~ 380–415 V 50 Hz",22.0,25],12:["3N~ 380–415 V 50 Hz",24.0,32],14:["3N~ 380–415 V 50 Hz",27.0,32],16:["3N~ 380–415 V 50 Hz",31.0,40],18:["3N~ 380–415 V 50 Hz",35.0,40],20:["3N~ 380–415 V 50 Hz",39.0,50]}}
+};
+
 // Ετικέτες προέλευσης: κωδικοί που ΔΕΝ έχουν επιβεβαιωθεί ακόμα σε manual ευρωπαϊκού/ελληνικού μοντέλου.
 // Μένουν στην εφαρμογή με ετικέτα μέχρι να βρεθεί ευρωπαϊκή/ελληνική πηγή.
 var VN_ASIA_PAN = "Πηγή: επίσημη σελίδα Panasonic για Ασία. Δεν υπάρχει στους πίνακες κωδικών 3 ευρωπαϊκών service manual (CS-NZ25YKE, CS-BZ/UZ…ZKE 2022, CS-Z…UD3EAW αεραγωγού) – αφορά λειτουργίες που δεν έχουν τα μοντέλα Ευρώπης (πισίνα, αερισμός, ακροφύσια κ.λπ.).";
@@ -7212,7 +7233,11 @@ var PCAPS = {
  "Mitsubishi Electric": {src:"Mitsubishi Electric City Multi indoor units (PKFY, PLFY, PEFY VMS1/VMA/VMHS, PCFY, PFFY)", wall:[15,100], cas4:[15,140], duct_low:[15,63], duct_mid:[20,140], duct_high:[40,250], ceil:[40,125], cons:[20,63]}
 };
 function pTyKey(u){ var t = (u && u.ty==="cas1") ? "cas4" : ((u && u.ty) || "wall"); return t==="duct" ? "duct_"+((u && u.st) || "mid") : t; }
-function pModelsFor(D, u){ var all = pModels(D), C = PCAPS[D.brand]; if(!C || !u) return all; var r = C[pTyKey(u)]; if(!r) return all;
+function pUrows(D, u){ var P = typeof PUNIT!=="undefined" && PUNIT[D.brand]; return (P && u && P[pTyKey(u)]) || null; }
+function pUinfo(D, u){ var R = pUrows(D,u); if(!R) return null; for(var i=0;i<R.length;i++) if(Math.abs(R[i][0]-pNum(u.m))<0.01) return R[i]; return null; }
+function pUtxt(r){ return r[1]+' · '+r[2]+'×'+r[3]+'×'+r[4]+' mm (Π×Υ×Β) · '+String(r[5]).replace(".",",")+' kg'+(r[6]?' · αέρας ως '+Math.round(r[6])+' m³/h':'')+(r[7]!=null?' · στατική ως '+r[7]+' Pa':'')+(r[8]?' · '+r[8]:''); }
+function pModelsFor(D, u){ var R = pUrows(D,u); if(R) return R.map(function(r){ return r[0]; });
+  var all = pModels(D), C = PCAPS[D.brand]; if(!C || !u) return all; var r = C[pTyKey(u)]; if(!r) return all;
   var f = all.filter(function(m){ return r.length>2 ? r.some(function(x){ return Math.abs(+m-x)<0.01; }) : (+m >= r[0]-0.01 && +m <= r[1]+0.01); }); return f.length ? f : all; }
 function pFitModel(D, u){ var ms = pModelsFor(D, u).map(String); if(ms.indexOf(String(u.m))>=0) return; var v = pNum(u.m), b = ms[0]; ms.forEach(function(x){ if(Math.abs(+x-v) < Math.abs(+b-v)) b = x; }); u.m = b; }
 var PSIZES = [6.35,9.52,12.7,15.88,19.05,22.22,25.4,28.58,31.75,34.92,38.1,41.28,44.45,53.98];
@@ -7356,7 +7381,8 @@ function pAct(){
   h += '<div class="lbl">'+esc(title)+' <button class="mini" id="pp_unsel" style="float:right">✕</button></div>';
   if(s.t==="i"){ h += '<div class="small">Τύπος</div><div class="pptyg">'+PTY.map(function(t){ return '<button class="ppty'+((s.ty||"wall")===t[0]?' on':'')+'" data-ppty="'+t[0]+'">'+pIcoBtn(t[0])+esc(t[1])+'</button>'; }).join("")+'</div>';
     if((s.ty||"wall")==="duct") h += '<div class="small" style="margin-top:8px">Στατική πίεση καναλάτου</div><div class="pchips">'+PST.map(function(x){ return '<button class="pc'+((s.st||"mid")===x[0]?' on':'')+'" data-ppst="'+x[0]+'">'+esc(x[1])+'</button>'; }).join("")+'</div>';
-    var CC = PCAPS[D.brand]; h += '<div class="small" style="margin-top:8px">Απόδοση – '+(CC?'μόνο όσες υπάρχουν για '+esc(pUnitName(s).toLowerCase())+' ('+esc(CC.src)+')':'όλες (δεν έχω ακόμα επιβεβαιωμένο εύρος ανά τύπο για '+esc(D.brand)+')')+'</div><div class="pptyg ppcapg">'+pModelsFor(D, s).map(function(m){ var c = pCapLab(D,m); return '<button class="ppty'+(String(m)===String(s.m)?' on':'')+'" data-ppm="'+m+'"><b>'+esc(c[0])+'</b><small>'+esc(c[1])+'</small></button>'; }).join("")+'</div>'; }
+    var UI = pUinfo(D, s); if(UI) h += '<div class="pver good" style="margin-top:8px">📐 '+esc(pUtxt(UI))+'</div>'; else if(pUrows(D,s)) {} 
+    var CC = PCAPS[D.brand], PU0 = typeof PUNIT!=="undefined" && PUNIT[D.brand]; if(PU0 && pUrows(D,s)) CC = {src:PU0.src}; h += '<div class="small" style="margin-top:8px">Απόδοση – '+(CC?'μόνο όσες υπάρχουν για '+esc(pUnitName(s).toLowerCase())+' ('+esc(CC.src)+')':'όλες (δεν έχω ακόμα επιβεβαιωμένο εύρος ανά τύπο για '+esc(D.brand)+')')+'</div><div class="pptyg ppcapg">'+pModelsFor(D, s).map(function(m){ var c = pCapLab(D,m); return '<button class="ppty'+(String(m)===String(s.m)?' on':'')+'" data-ppm="'+m+'"><b>'+esc(c[0])+'</b><small>'+esc(c[1])+'</small></button>'; }).join("")+'</div>'; }
   var Lv = s.t==="A" ? PS.A : s.t!=="o" ? s.L : null;
   if(Lv!=null){ var lt = s.t==="A" ? "Μήκος (m)" : (s.t==="j"||s.t==="h") ? "Μήκος σωλήνα ως εδώ (m)" : star ? "Μήκος "+(D.kind==="bc"?"BC":"BS")+" → εσωτερική (m)" : "Μήκος σωλήνα ως την εσωτερική (m)";
     h += '<div class="small" style="margin-top:8px">'+lt+'</div><div class="pchips">'+[2,3,5,8,10,15,20,30,40].map(function(v){ return '<button class="pc'+(pNum(Lv)===v?' on':'')+'" data-ppl="'+v+'">'+v+'</button>'; }).join("")+'</div>'+
@@ -7519,12 +7545,21 @@ function pipeCalc(){
   if(!L && D.limNote) msg.push('ℹ️ '+D.limNote); else if(D.limNote) html += '<div class="small">ℹ️ '+esc(D.limNote)+'</div>';
   html += msg.map(function(m){ return '<div class="pver'+(m[0]==='⛔'?' bad':'')+'">'+esc(m)+'</div>'; }).join("");
   html += ok.length ? '<div class="pver good">✅ '+ok.map(esc).join('<br>✅ ')+'</div>' : '';
+  html += pUnitsHtml(D, lv, out);
   html += pBomHtml();
   html += pCharge(D, runs, {out:out, tot:tot, n:n, far:farC, idx:idxL, bs:bsL});
   html += '<div style="margin-top:10px"><button class="mini" data-ppprint="1">🖨️ Εκτύπωση / PDF για τον πελάτη</button></div>';
   html += '<div class="small">Οι διατομές σε mm (εξωτερική διάμετρος). Τα μήκη είναι πραγματικά: για ισοδύναμο μήκος πρόσθεσε καμπύλες και κιτ διακλάδωσης όπως λέει το manual.</div>';
   box.innerHTML = html;
 }
+function pUnitsHtml(D, lv, out){ var P = typeof PUNIT!=="undefined" && PUNIT[D.brand], h = '<div class="lbl" style="margin-top:10px">📐 Μηχανήματα</div><div class="ppscroll"><table class="pptab"><tr><th>#</th><th>Τύπος / απόδοση</th><th>Μοντέλο · διαστάσεις Π×Υ×Β · βάρος · αέρας · στατική</th></tr>';
+  lv.forEach(function(u,i){ var r = pUinfo(D,u); h += '<tr><td>'+(i+1)+'</td><td>'+esc(pUnitName(u))+'<br><b>'+esc(pML(D,u.m))+'</b></td><td>'+(r ? esc(pUtxt(r)) : '<span class="small">'+(P?'δεν υπάρχει αυτή η απόδοση στον τύπο':'δεν έχω ακόμα επίσημα στοιχεία για '+esc(D.brand))+'</span>')+'</td></tr>'; });
+  h += '</table></div>'; if(P) h += '<div class="small">Πηγή: '+esc(P.src)+(P.ind?' · '+esc(P.ind):'')+'</div>';
+  var O = typeof POUT!=="undefined" && POUT[PS.sys], o = O && O.rows[out];
+  h += '<div class="lbl" style="margin-top:10px">🔌 Παροχή ρεύματος εξωτερικής</div>';
+  if(o) h += '<div class="pver good">'+esc(D.outLab(out))+': <b>'+esc(o[0])+'</b> · MCA '+String(o[1]).replace(".",",")+' A · ασφάλεια '+o[2]+' A</div><div class="small">'+esc(O.note)+' Πηγή: '+esc(O.src)+'</div>';
+  else h += '<div class="small">Δεν έχω ακόμα επίσημα ηλεκτρικά στοιχεία για αυτή την εξωτερική.</div>';
+  return h; }
 var BOM = {}, KIT = {};
 function pBom(sz, L, D, n, names){ if(!L) return; var nm = names || (n===3 ? ['Υγρό','Αναρρόφηση','Υψ./χαμ. πίεση'] : ['Υγρό','Αέριο']);
   for(var i=0;i<Math.min(n, sz.length);i++){ var v = sz[i]; if(isNaN(parseFloat(v))) continue; var k = nm[i]+'|'+v; BOM[k] = (BOM[k]||0) + L; } }
