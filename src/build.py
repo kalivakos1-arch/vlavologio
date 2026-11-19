@@ -7,5 +7,5 @@ open('/home/claude/vlavologio_offline.html','w').write(h)
 h2=h.replace('</head>','<link rel="manifest" href="manifest.json">\n</head>',1).replace('</body>','<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>\n</body>',1)
 open('/home/claude/pwa/index.html','w').write(h2)
 import re
-s=open('/home/claude/pwa/sw.js').read(); s=re.sub(r'vl-v\d+','vl-v67',s); open('/home/claude/pwa/sw.js','w').write(s)
+s=open('/home/claude/pwa/sw.js').read(); s=re.sub(r'vl-v\d+','vl-v68',s); open('/home/claude/pwa/sw.js','w').write(s)
 print(len(h))
