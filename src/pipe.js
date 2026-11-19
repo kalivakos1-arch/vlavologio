@@ -49,7 +49,7 @@ var PCAPS = {
 function pTyKey(u){ var t = (u && u.ty==="cas1") ? "cas4" : ((u && u.ty) || "wall"); return t==="duct" ? "duct_"+((u && u.st) || "mid") : t; }
 function pUrows(D, u){ var P = typeof PUNIT!=="undefined" && PUNIT[D.brand]; return (P && u && P[pTyKey(u)]) || null; }
 function pUinfo(D, u){ var R = pUrows(D,u); if(!R) return null; for(var i=0;i<R.length;i++) if(Math.abs(R[i][0]-pNum(u.m))<0.01) return R[i]; return null; }
-function pUtxt(r){ return r[1]+' · '+r[2]+'×'+r[3]+'×'+r[4]+' mm (Π×Υ×Β) · '+String(r[5]).replace(".",",")+' kg'+(r[6]?' · αέρας ως '+Math.round(r[6])+' m³/h':'')+(r[7]!=null?' · στατική ως '+r[7]+' Pa':'')+(r[8]?' · '+r[8]:''); }
+function pUtxt(r){ return r[1]+' · '+r[2]+'×'+r[3]+'×'+r[4]+' mm (Π×Υ×Β)'+(r[5]!=null?' · '+String(r[5]).replace(".",",")+' kg':'')+(r[6]?' · αέρας ως '+Math.round(r[6])+' m³/h':'')+(r[7]!=null?' · στατική ως '+r[7]+' Pa':'')+(r[8]?' · '+r[8]:''); }
 function pModelsFor(D, u){ var R = pUrows(D,u); if(R) return R.map(function(r){ return r[0]; });
   var all = pModels(D), C = PCAPS[D.brand]; if(!C || !u) return all; var r = C[pTyKey(u)]; if(!r) return all;
   var f = all.filter(function(m){ return r.length>2 ? r.some(function(x){ return Math.abs(+m-x)<0.01; }) : (+m >= r[0]-0.01 && +m <= r[1]+0.01); }); return f.length ? f : all; }
