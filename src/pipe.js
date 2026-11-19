@@ -135,7 +135,8 @@ function pBrands(){ var r=[]; Object.keys(PIPE).forEach(function(k){ if(r.indexO
 function pipeForm(){
   if(!PIPE[PS.sys]) PS.sys="daikin_hp"; var D = PIPE[PS.sys]; pFix(D);
   var o = function(v,l,s){ return '<option value="'+esc(v)+'"'+(String(s)===String(v)?' selected':'')+'>'+esc(l)+'</option>'; };
-  var h = '<div class="pcalcw"><div class="lbl">🧭 Σωληνόγραμμα</div>';
+  var vv = ""; try{ vv = (document.querySelector('meta[name="vl-ver"]')||{}).content||""; }catch(e){}
+  var h = '<div class="pcalcw"><div class="lbl">🧭 Σωληνόγραμμα <span class="small" style="float:right;font-weight:500">'+esc(vv)+'</span></div>';
   if(PS.bpick){ h += '<div class="small">Διάλεξε εταιρεία</div><div class="bgrid">'+pBrands().map(function(b){ return '<button class="br'+(b===D.brand?' on':'')+'" data-ppb="'+esc(b)+'">'+badge(b,"sm")+esc(b)+'</button>'; }).join("")+'</div>'; }
   else h += '<div class="bchosen">'+badge(D.brand,"lg")+'<div class="bt"><b>'+esc(D.brand)+'</b><small>'+esc(D.name)+'</small></div><button class="chg ico" data-ppchg="1" aria-label="Αλλαγή εταιρείας"><svg class="ic"><use href="#i-swap"/></svg></button></div>';
   var ser = Object.keys(PIPE).filter(function(k){ return PIPE[k].brand===D.brand; });
@@ -151,7 +152,7 @@ function pipeForm(){
   h += '<div class="row2"><label class="small">Μέγ. υψομετρική μεταξύ εσωτερικών (m)<input id="pp_h2" class="ppv" inputmode="decimal" value="'+esc(PS.h2)+'"></label>'+
        (D.kind==="bc"?'<label class="small">Μέγ. υψομετρική εσωτ. – BC (m)<input id="pp_hbc" class="ppv" inputmode="decimal" value="'+esc(PS.hbc)+'"></label>':'')+'</div>';
   h += '<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="mini" data-ppundo="1">↶ Αναίρεση</button><button class="mini" data-ppnew="1">🆕 Νέο σχέδιο (μόνο εξωτερική)</button></div>';
-  h += '<div class="small" style="margin-top:8px">👆 Πάτα πάνω στο σχέδιο (εξωτερική, διακλάδωση, εσωτερική ή σωλήνα) για να προσθέσεις ή να αλλάξεις.</div>';
+  h += '<div class="small" style="margin-top:8px">🗑️ Για διαγραφή: κράτα πατημένο ένα στοιχείο και σύρ’ το στο ✕ που εμφανίζεται κάτω.<br>👆 Πάτα πάνω στο σχέδιο (εξωτερική, διακλάδωση, εσωτερική ή σωλήνα) για να προσθέσεις ή να αλλάξεις.</div>';
   h += '<div id="pp_svg"></div><div id="pp_act"></div>';
   h += '<label class="small">Πρόσθετα kg φρέον (CF εσωτερικών, πίνακας ⓑ, BC κ.λπ. – αν τα ζητά το manual)<input id="pp_xkg" class="ppv" inputmode="decimal" value="'+esc(PS.xkg||"")+'" placeholder="0"></label>';
   h += '<div class="small" style="margin-top:6px">ℹ️ '+esc(D.idxNote)+(D.indNote?' '+esc(D.indNote):'')+'</div>';
@@ -456,19 +457,24 @@ function pCharge(D, runs, c){
   return h;
 }
 // ===== Παρατεταμένο πάτημα + σύρσιμο στο ✕ για διαγραφή =====
-var PDG = null, pdSup = 0;
+var PDG = null, pdSup = 0, PDL = [], pdSent = 0, pdT0 = 0;
+function pdLog(x){ PDL.push(Math.round(performance.now()-pdT0)+"ms "+x); if(PDL.length>40) PDL.shift(); }
+function pdReport(why){ if(pdSent>=2) return; pdSent++; var v=""; try{ v=(document.querySelector('meta[name="vl-ver"]')||{}).content||""; }catch(e){}
+  var t = "Βλαβολόγιο – debug σύρσιμο σωληνογράμματος\nΑποτέλεσμα: "+why+"\nΈκδοση: "+v+"\nΣυσκευή: "+navigator.userAgent+"\nΒήματα:\n"+PDL.join("\n");
+  try{ fetch(REPORT_APP,{method:"POST",mode:"no-cors",body:t}); }catch(e){} }
 function pdNode(el){ var g = el && el.closest && el.closest(".ppsvg [data-pn]"); if(!g) return null; var v = g.getAttribute("data-pn"); if(v==="A" || v==="0") return null; return +v; }
-function pdStart(x, y, id){ pdCancel(); PDG = {id:id, x0:x, y0:y, on:false}; PDG.t = setTimeout(pdOn, 450); }
-function pdOn(){ if(!PDG) return; var nd = pN(PDG.id); if(!nd){ PDG=null; return; } PDG.on = true;
+function pdStart(x, y, id){ pdCancel(); PDL = []; pdT0 = performance.now(); pdLog("start id="+id); PDG = {id:id, x0:x, y0:y, on:false}; PDG.t = setTimeout(pdOn, 450); }
+function pdOn(){ if(!PDG) return; var nd = pN(PDG.id); if(!nd){ pdLog("node missing"); PDG=null; return; } PDG.on = true; pdLog("ON (✕ shown)");
   var D = PIPE[PS.sys], lv = pLeaves(), lab = nd.t==="i" ? 'Εσωτερική '+(lv.indexOf(nd)+1)+' – '+pSL(D,nd.m) : (nd.t==="h"?'Κολεκτέρ ':'Διακλάδωση ')+pJlab(nd.id);
   var tr = document.createElement("div"); tr.id = "pptrash"; tr.innerHTML = '<div class="pptx2">✕</div><div class="pptl">Σύρε εδώ για διαγραφή</div>'; document.body.appendChild(tr);
   var gh = document.createElement("div"); gh.id = "ppghost"; gh.textContent = lab; document.body.appendChild(gh);
   pdPos(PDG.x0, PDG.y0); try{ if(navigator.vibrate) navigator.vibrate(25); }catch(e){} }
 function pdOver(x, y){ var tr = document.getElementById("pptrash"); if(!tr) return false; var r = tr.getBoundingClientRect(); return x>=r.left-20 && x<=r.right+20 && y>=r.top-30 && y<=r.bottom+20; }
 function pdPos(x, y){ var gh = document.getElementById("ppghost"), tr = document.getElementById("pptrash"); if(gh){ gh.style.left = x+"px"; gh.style.top = (y-46)+"px"; } if(tr) tr.classList.toggle("over", pdOver(x,y)); }
-function pdMove(x, y, e){ if(!PDG) return; if(!PDG.on){ if(Math.abs(x-PDG.x0)+Math.abs(y-PDG.y0) > 10) pdCancel(); return; } if(e && e.cancelable) e.preventDefault(); pdPos(x, y); }
-function pdEnd(x, y){ if(!PDG) return; clearTimeout(PDG.t); var was = PDG.on, id = PDG.id; PDG = null; pdClean();
+function pdMove(x, y, e){ if(!PDG) return; if(!PDG.on){ if(Math.abs(x-PDG.x0)+Math.abs(y-PDG.y0) > 10){ pdLog('moved before ON → cancel'); pdCancel(); } return; } if(!PDG.mv){ PDG.mv=1; pdLog('first move cancelable='+(e&&e.cancelable)); } if(e && e.cancelable) e.preventDefault(); pdPos(x, y); }
+function pdEnd(x, y){ if(!PDG) return; clearTimeout(PDG.t); var was = PDG.on, id = PDG.id; PDG = null; pdClean(); pdLog("end on="+was+" over="+pdLastOver);
   if(!was) return; pdSup = Date.now();
+  if(!pdLastOver) pdReport("αφέθηκε εκτός ✕");
   if(pdLastOver){ pSnap(); pDelNode(id); PS.sel = null; PS.delc = null; pSave(); pipeCalc(); pAct(); repToast("Αφαιρέθηκε – ↶ Αναίρεση αν το θες πίσω"); } }
 var pdLastOver = false;
 function pdClean(){ ["pptrash","ppghost"].forEach(function(i){ var e = document.getElementById(i); if(e) e.parentNode.removeChild(e); }); }
@@ -476,7 +482,7 @@ function pdCancel(){ if(PDG){ clearTimeout(PDG.t); PDG = null; } pdClean(); }
 document.addEventListener("touchstart", function(e){ if(e.touches.length!==1){ pdCancel(); return; } var id = pdNode(e.target); if(id==null) return; var t = e.touches[0]; pdStart(t.clientX, t.clientY, id); }, {passive:true});
 document.addEventListener("touchmove", function(e){ if(!PDG) return; var t = e.touches[0]; pdLastOver = PDG.on && pdOver(t.clientX, t.clientY); pdMove(t.clientX, t.clientY, e); }, {passive:false});
 document.addEventListener("touchend", function(e){ if(!PDG) return; var t = e.changedTouches[0]; pdLastOver = PDG.on && pdOver(t.clientX, t.clientY); pdEnd(t.clientX, t.clientY); });
-document.addEventListener("touchcancel", function(){ pdCancel(); });
+document.addEventListener("touchcancel", function(){ if(PDG){ pdLog("TOUCHCANCEL on="+PDG.on); var on = PDG.on; pdCancel(); pdReport("touchcancel από το iOS"+(on?" (μετά το ✕)":" (πριν το ✕)")); } });
 document.addEventListener("mousedown", function(e){ if(e.button!==0) return; var id = pdNode(e.target); if(id==null) return; pdStart(e.clientX, e.clientY, id); });
 document.addEventListener("mousemove", function(e){ if(!PDG) return; pdLastOver = PDG.on && pdOver(e.clientX, e.clientY); pdMove(e.clientX, e.clientY, e); });
 document.addEventListener("mouseup", function(e){ if(!PDG) return; pdLastOver = PDG.on && pdOver(e.clientX, e.clientY); pdEnd(e.clientX, e.clientY); });
