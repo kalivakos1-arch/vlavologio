@@ -463,7 +463,7 @@ function pdReport(why){ if(pdSent>=2) return; pdSent++; var v=""; try{ v=(docume
   var t = "Βλαβολόγιο – debug σύρσιμο σωληνογράμματος\nΑποτέλεσμα: "+why+"\nΈκδοση: "+v+"\nΣυσκευή: "+navigator.userAgent+"\nΒήματα:\n"+PDL.join("\n");
   try{ fetch(REPORT_APP,{method:"POST",mode:"no-cors",body:t}); }catch(e){} }
 function pdNode(el){ var g = el && el.closest && el.closest(".ppsvg [data-pn]"); if(!g) return null; var v = g.getAttribute("data-pn"); if(v==="A" || v==="0") return null; return +v; }
-function pdStart(x, y, id){ pdCancel(); PDL = []; pdT0 = performance.now(); pdLog("start id="+id); PDG = {id:id, x0:x, y0:y, on:false}; PDG.t = setTimeout(pdOn, 450); }
+function pdStart(x, y, id){ pdCancel(); PDL = []; pdT0 = performance.now(); pdLog("start id="+id); PDG = {id:id, x0:x, y0:y, on:false}; PDG.t = setTimeout(pdOn, 400); }
 function pdOn(){ if(!PDG) return; var nd = pN(PDG.id); if(!nd){ pdLog("node missing"); PDG=null; return; } PDG.on = true; pdLog("ON (✕ shown)");
   var D = PIPE[PS.sys], lv = pLeaves(), lab = nd.t==="i" ? 'Εσωτερική '+(lv.indexOf(nd)+1)+' – '+pSL(D,nd.m) : (nd.t==="h"?'Κολεκτέρ ':'Διακλάδωση ')+pJlab(nd.id);
   var tr = document.createElement("div"); tr.id = "pptrash"; tr.innerHTML = '<div class="pptx2">✕</div><div class="pptl">Σύρε εδώ για διαγραφή</div>'; document.body.appendChild(tr);
@@ -475,7 +475,7 @@ function pdMove(x, y, e){ if(!PDG) return; if(!PDG.on){ if(Math.abs(x-PDG.x0)+Ma
 function pdEnd(x, y){ if(!PDG) return; clearTimeout(PDG.t); var was = PDG.on, id = PDG.id; PDG = null; pdClean(); pdLog("end on="+was+" over="+pdLastOver);
   if(!was) return; pdSup = Date.now();
   if(!pdLastOver) pdReport("αφέθηκε εκτός ✕");
-  if(pdLastOver){ pSnap(); pDelNode(id); PS.sel = null; PS.delc = null; pSave(); pipeCalc(); pAct(); repToast("Αφαιρέθηκε – ↶ Αναίρεση αν το θες πίσω"); } }
+  if(pdLastOver){ if(PDW) PDW.seen = 1; pSnap(); pDelNode(id); PS.sel = null; PS.delc = null; pSave(); pipeCalc(); pAct(); repToast("Αφαιρέθηκε – ↶ Αναίρεση αν το θες πίσω"); } }
 var pdLastOver = false;
 function pdClean(){ ["pptrash","ppghost"].forEach(function(i){ var e = document.getElementById(i); if(e) e.parentNode.removeChild(e); }); }
 function pdCancel(){ if(PDG){ clearTimeout(PDG.t); PDG = null; } pdClean(); }
@@ -487,3 +487,12 @@ document.addEventListener("mousedown", function(e){ if(e.button!==0) return; var
 document.addEventListener("mousemove", function(e){ if(!PDG) return; pdLastOver = PDG.on && pdOver(e.clientX, e.clientY); pdMove(e.clientX, e.clientY, e); });
 document.addEventListener("mouseup", function(e){ if(!PDG) return; pdLastOver = PDG.on && pdOver(e.clientX, e.clientY); pdEnd(e.clientX, e.clientY); });
 document.addEventListener("contextmenu", function(e){ if(pdNode(e.target)!=null) e.preventDefault(); });
+
+document.addEventListener("selectstart", function(e){ var t = e.target; if(t && t.nodeType===3) t = t.parentNode; if(t && t.closest && t.closest(".ppscroll")) e.preventDefault(); });
+document.addEventListener("touchstart", function(e){ var t = e.target; if(t && t.closest && t.closest(".ppsvg") && pdNode(t)==null && !(t.closest(".pphit"))){ PDL = ["touch χωρίς στοιχείο: "+(t.tagName||"?")+"."+(t.getAttribute&&t.getAttribute("class")||"")]; } }, {passive:true});
+
+var PDW = null;
+document.addEventListener("touchstart", function(e){ var t = e.target; if(!(t && t.closest && t.closest(".ppsvg"))){ PDW = null; return; } PDW = {t0:Date.now(), tag:(t.tagName||"?")+"."+((t.getAttribute&&t.getAttribute("class"))||""), node:pdNode(t), on:false}; }, {passive:true});
+function pdWatch(kind){ if(!PDW) return; var d = Date.now()-PDW.t0; if(d>350 && !PDW.seen){ PDL.unshift("WATCH "+kind+" "+d+"ms target="+PDW.tag+" node="+PDW.node+" pdgOn="+(!!pdSup && Date.now()-pdSup<1500)); pdReport("κράτημα "+d+"ms χωρίς διαγραφή ("+kind+")"); } PDW = null; }
+document.addEventListener("touchend", function(){ if(PDW && Date.now()-pdSup<1500) PDW.seen = 1; setTimeout(function(){ pdWatch("touchend"); }, 0); }, {passive:true});
+document.addEventListener("touchcancel", function(){ pdWatch("touchcancel"); }, {passive:true});
