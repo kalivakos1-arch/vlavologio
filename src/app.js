@@ -1257,7 +1257,7 @@ function renderParts(){
   if(P && P.id==="pt") ptCalc();
   if(P && P.id==="fgas") fgasCalc();
   if(P && P.id==="air") airCalc();
-  if(P && P.id==="pipe") pipeCalc();
+  if(P && P.id==="pipe"){ pipeCalc(); pAct(); }
   if(P && P.id==="inst") instCalc();
 }
 var fmT=null;
