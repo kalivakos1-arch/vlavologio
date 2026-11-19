@@ -416,6 +416,18 @@ html.field .srcbox button i .ic{width:24px;height:24px}
 
   <details class="foot"><summary>ⓘ Πηγές δεδομένων & σημειώσεις</summary><div class="foot">Τα δεδομένα συγκεντρώθηκαν από service/installation manuals των κατασκευαστών (η πηγή φαίνεται σε κάθε πίνακα). Οι κωδικοί διαφέρουν ανά γενιά/σειρά – για επισκευή πλακέτας ή συμπιεστή επιβεβαίωσε στο manual του μοντέλου. Οι «αντιστοιχίες μου» αποθηκεύονται μόνο σε αυτή τη συσκευή.<br>Ψυκτικό (R410A / R32 / R290): το βλαβολόγιο ακολουθεί τη γενιά της πλακέτας, όχι το ψυκτικό – οι νέοι κωδικοί που εμφανίστηκαν αφορούν κυρίως αισθητήρες διαρροής (π.χ. Daikin VRV 5 R32, Midea EL 0C).<br><br>Τα ονόματα και σήματα των κατασκευαστών ανήκουν στους κατόχους τους. Η εφαρμογή είναι ανεξάρτητη και δεν συνδέεται με κανέναν κατασκευαστή. Βρήκες λάθος; Πάτα «⚑ Αναφορά λάθους» κάτω από τον κωδικό.</div></details>
 </div>
+<script>
+(function(){ var sent={}, n=0;
+ function show(t){ try{ var b=document.getElementById("jserr"); if(!b){ b=document.createElement("div"); b.id="jserr"; b.style.cssText="position:fixed;left:8px;right:8px;top:max(8px,env(safe-area-inset-top));z-index:20000;background:#b91c1c;color:#fff;padding:8px 10px;border-radius:10px;font:12px/1.35 system-ui;white-space:pre-wrap;box-shadow:0 6px 20px rgba(0,0,0,.3)"; b.onclick=function(){ b.remove(); }; (document.body||document.documentElement).appendChild(b); } b.textContent="⚠️ Σφάλμα εφαρμογής (στάλθηκε αυτόματα – πάτα για κλείσιμο):\n"+t; }catch(x){} }
+ window.vlErr=function(msg, where){ var key=String(msg).slice(0,200); if(sent[key] || n>5) return; sent[key]=1; n++;
+  var v=""; try{ v=(document.querySelector('meta[name="vl-ver"]')||{}).content||""; }catch(x){}
+  var t="Βλαβολόγιο – αυτόματο σφάλμα JS\nΣφάλμα: "+msg+"\nΣημείο: "+(where||"")+"\nΈκδοση: "+v+"\nΣυσκευή: "+navigator.userAgent+"\nΣελίδα: "+location.href;
+  show(msg+(where?"\n"+where:""));
+  try{ fetch("https://script.google.com/macros/s/AKfycbzSPYg-QRzDj_ZOtHDnOB9EVfwf_pBsSCLhQARjga98rbWjolVTC3aZOsQrZ4_hMwX4Ag/exec",{method:"POST",mode:"no-cors",body:t}); }catch(x){} };
+ window.addEventListener("error", function(e){ window.vlErr(e.message||String(e), (e.filename||"")+":"+(e.lineno||"")+":"+(e.colno||"")+(e.error&&e.error.stack?"\n"+String(e.error.stack).slice(0,600):"")); });
+ window.addEventListener("unhandledrejection", function(e){ var r=e.reason; if(r && /Failed to fetch|Load failed|NetworkError/i.test(String(r))) return; window.vlErr("Promise: "+(r&&r.message||r), r&&r.stack?String(r.stack).slice(0,600):""); });
+})();
+</script>
 <script>// ===== ΒΛΑΒΟΛΟΓΙΑ: ΚΛΙΜΑΤΙΣΤΙΚΑ ΤΟΙΧΟΥ / SPLIT =====
 // Μορφή: [ [κωδικοί], "τίτλος", "αιτίες / έλεγχοι / λύση" ]
 var T = window.T = window.T || {};
@@ -5838,7 +5850,7 @@ document.addEventListener("click", function(e){
   if(el.id==="fzback"){ S.focus=null; S.src="in"; renderSrc(); persist(); renderResults(); return; }
   if(el.id==="fzall"){ S.focus=null; renderParts(); return; }
   if(el.hasAttribute("data-fcount")){ S.fcount = +el.getAttribute("data-fcount"); renderParts(); return; }
-  if(el.hasAttribute("data-pc")){ S.focus=null; S.part = el.getAttribute("data-pc"); persist(); renderParts(); setTimeout(function(){ var w=document.querySelector(".pwarn"); if(w && w.scrollIntoView) w.scrollIntoView({behavior:"smooth", block:"start"}); }, 30); return; }
+  if(el.hasAttribute("data-pc")){ S.focus=null; S.part = el.getAttribute("data-pc"); persist(); try{ renderParts(); }catch(er){ if(window.vlErr) window.vlErr((er&&er.message)||er, "renderParts("+S.part+")\n"+(er&&er.stack||"")); } setTimeout(function(){ var w=document.querySelector(".pwarn"); if(w && w.scrollIntoView) w.scrollIntoView({behavior:"smooth", block:"start"}); }, 30); return; }
   if(el.hasAttribute("data-gopart")){ S.part = el.getAttribute("data-gopart"); S.focus = el.hasAttribute("data-fcode") ? {part:S.part, code:el.getAttribute("data-fcode"), title:el.getAttribute("data-ftitle"), side:el.getAttribute("data-fside")} : null; S.fcount=0; S.src="parts"; renderSrc(); persist(); renderParts(); window.scrollTo({top:$("srcbox").getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); return; }
   if(el.hasAttribute("data-mdel")){ var id=+el.getAttribute("data-mdel"); meas = meas.filter(function(m){return m.id!==id;}); LS.set("vl_meas",meas); renderMine(); return; }
   if(el.id==="psave"){
