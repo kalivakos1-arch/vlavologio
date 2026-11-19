@@ -4,17 +4,26 @@ function pSave(){ try{ localStorage.setItem("vl_pipe", JSON.stringify(PS)); }cat
 function pNum(v){ var n=parseFloat(String(v||"").replace(",",".")); return isNaN(n)?0:n; }
 function pPick(tbl, x){ var lt=tbl.lt, rows=tbl.rows||tbl; for(var i=0;i<rows.length;i++){ if(lt ? x<rows[i][0] : x<=rows[i][0]) return rows[i]; } return rows[rows.length-1]; }
 function pIdx(D, m){ m=+m; return D.idx ? (D.idx[m]!=null?D.idx[m]:m) : m; }
+function pML(D,m){ return D.mLab ? D.mLab(m) : (D.brand==="Daikin"?"κλάση ":"P")+m; }
+function pSL(D,m){ return D.sLab ? D.sLab(m) : D.mLab ? pFmt(+m) : (D.brand==="Daikin"?"":"P")+m; }
+function pInd(D,u,ix){ return D.ind ? pPick(D.ind, D.indByIdx ? ix : +u.m).slice(1) : (D.indTxt||['—','—']); }
+function pFix(D){ var chg = PS.outSys && PS.outSys!==PS.sys;
+  if(D.outInput){ if(!(pNum(PS.out)>0) || chg) PS.out = D.outDef; } else if(D.outs.map(String).indexOf(String(PS.out))<0 || chg) PS.out = String(D.outs[Math.min(1,D.outs.length-1)]);
+  if(chg){ var dm = D.kw ? [5.6,3.6,2.8] : D.brand==="Toshiba" ? [18,12,9] : D.brand==="Hitachi" ? [2,1.5,1] : [63,40,40];
+    PS.units.forEach(function(u,i){ u.m = String(dm[i%3]); }); }
+  PS.outSys = PS.sys;
+  var ms = D.models.map(String); PS.units.forEach(function(u){ if(ms.indexOf(String(u.m))<0){ var v=pNum(u.m), b=ms[0]; ms.forEach(function(x){ if(Math.abs(+x-v) < Math.abs(+b-v)) b=x; }); u.m = b; } }); }
 function pFmt(n){ return (Math.round(n*100)/100).toString().replace(".",","); }
 function pCap(sz, mx){ // μην ξεπερνάς την κύρια διατομή
   return sz.map(function(v,i){ return (mx && mx[i] && parseFloat(v)>parseFloat(mx[i])) ? mx[i] : v; });
 }
 function pipeForm(){
-  var D = PIPE[PS.sys] || PIPE.daikin_hp;
-  if(D.outs.map(String).indexOf(String(PS.out))<0) PS.out = String(D.outs[0]);
+  if(!PIPE[PS.sys]) PS.sys="daikin_hp"; var D = PIPE[PS.sys];
+  pFix(D);
   var o = function(v,l,s){ return '<option value="'+esc(v)+'"'+(String(s)===String(v)?' selected':'')+'>'+esc(l)+'</option>'; };
   var h = '<div class="pcalcw"><div class="lbl">🧭 Σωληνόγραμμα</div>';
   h += '<label class="small">Σειρά<select id="pp_sys" class="ppv">'+Object.keys(PIPE).map(function(k){ return o(k, PIPE[k].name, PS.sys); }).join("")+'</select></label>';
-  h += '<div class="row2"><label class="small">Εξωτερική<select id="pp_out" class="ppv">'+D.outs.map(function(x){ return o(x, D.outLab(x), PS.out); }).join("")+'</select></label>';
+  h += '<div class="row2"><label class="small">Εξωτερική'+(D.outInput?' – ψυκτική απόδοση (kW)<input id="pp_out" class="ppv" inputmode="decimal" value="'+esc(PS.out)+'">':'<select id="pp_out" class="ppv">'+D.outs.map(function(x){ return o(x, D.outLab(x), PS.out); }).join("")+'</select>')+'</label>';
   if(D.kind==="hr") h += '<label class="small">BS<select id="pp_bsm" class="ppv">'+o("multi","Ένα multi BS κοντά στην εξωτερική",PS.bsm)+o("single","BS1Q σε κάθε εσωτερική (γραμμή refnet)",PS.bsm)+'</select></label>';
   h += '</div>';
   var star = D.kind==="bc" || (D.kind==="hr" && PS.bsm==="multi");
@@ -28,20 +37,20 @@ function pipeForm(){
   PS.units.forEach(function(u,i){
     var n = PS.units.length, segOn = !star && i>0 && i<n-1;
     h += '<div class="pprow"><b>'+(i+1)+'</b>'+
-      '<label class="small">Μέγεθος<select class="ppv" data-pu="'+i+'" data-pk="m">'+D.models.map(function(m){ return o(m, (D.brand==="Daikin"?"κλάση ":"P")+m, u.m); }).join("")+'</select></label>'+
+      '<label class="small">Μέγεθος<select class="ppv" data-pu="'+i+'" data-pk="m">'+D.models.map(function(m){ return o(m, pML(D,m), u.m); }).join("")+'</select></label>'+
       (star?'':'<label class="small">Γραμμή από προηγ. διακλάδωση (m)<input class="ppv" data-pu="'+i+'" data-pk="s" inputmode="decimal" value="'+esc(segOn?u.s:"")+'"'+(segOn?'':' disabled placeholder="—"')+'></label>')+
       '<label class="small">'+(star?(D.kind==="bc"?'BC → μονάδα (m)':'BS → μονάδα (m)'):'Διακλάδωση → μονάδα (m)')+'<input class="ppv" data-pu="'+i+'" data-pk="b" inputmode="decimal" value="'+esc(u.b)+'"></label>'+
       (n>2?'<button class="mini" data-pdel="'+i+'" aria-label="Αφαίρεση">✕</button>':'')+'</div>';
   });
   h += '</div><button class="mini" id="pp_add">+ εσωτερική</button>';
-  h += '<div class="small" style="margin-top:6px">ℹ️ '+esc(D.idxNote)+'</div>';
+  h += '<div class="small" style="margin-top:6px">ℹ️ '+esc(D.idxNote)+(D.indNote?' '+esc(D.indNote):'')+'</div>';
   h += '<div id="pp_out_box"></div><div class="small" style="margin-top:6px">Πηγή: '+esc(D.src)+'</div></div>';
   return h;
 }
 function pSvgLine(D, segs, units, hr){
   var n=units.length, W=Math.max(360, 170+n*130), Hh=hr?230:200, s='';
   s+='<svg class="ppsvg" viewBox="0 0 '+W+' '+Hh+'" width="'+W+'" height="'+Hh+'" xmlns="http://www.w3.org/2000/svg" font-size="11" font-family="system-ui,sans-serif">';
-  s+='<rect x="6" y="40" width="70" height="44" rx="6" class="ppbox"/><text x="41" y="60" text-anchor="middle" class="pptx">Εξωτ.</text><text x="41" y="75" text-anchor="middle" class="pptx">'+esc(D.outLab(PS.out).split(" ")[0])+'</text>';
+  s+='<rect x="6" y="40" width="70" height="44" rx="6" class="ppbox"/><text x="41" y="60" text-anchor="middle" class="pptx">Εξωτ.</text><text x="41" y="75" text-anchor="middle" class="pptx">'+esc(D.kw?D.outLab(PS.out):D.outLab(PS.out).split(" ")[0])+'</text>';
   var xj = function(k){ return 140+k*130; }, y=62;
   segs.forEach(function(g,k){ var x1 = k===0?76:xj(k-1), x2 = xj(k);
     s+='<line x1="'+x1+'" y1="'+y+'" x2="'+x2+'" y2="'+y+'" class="ppln"/>';
@@ -63,7 +72,7 @@ function pSvgLine(D, segs, units, hr){
 function pSvgStar(D, A, units, box){
   var n=units.length, W=Math.max(360, 30+n*96), Hh=270, s='', bx=10, bw=W-20;
   s+='<svg class="ppsvg" viewBox="0 0 '+W+' '+Hh+'" width="'+W+'" height="'+Hh+'" xmlns="http://www.w3.org/2000/svg" font-size="11" font-family="system-ui,sans-serif">';
-  s+='<rect x="10" y="8" width="96" height="34" rx="6" class="ppbox"/><text x="58" y="30" text-anchor="middle" class="pptx">'+esc(D.outLab(PS.out).split(" ")[0])+'</text>';
+  s+='<rect x="10" y="8" width="96" height="34" rx="6" class="ppbox"/><text x="58" y="30" text-anchor="middle" class="pptx">'+esc(D.kw?D.outLab(PS.out):D.outLab(PS.out).split(" ")[0])+'</text>';
   s+='<line x1="58" y1="42" x2="58" y2="86" class="ppln"/><text x="66" y="58" class="ppsz">'+esc(A.sz.join(" / "))+'</text><text x="66" y="72" class="pplen">'+(A.L?pFmt(A.L)+' m':'')+'</text>';
   s+='<rect x="'+bx+'" y="86" width="'+bw+'" height="30" rx="6" class="ppbox2"/><text x="'+(bx+bw/2)+'" y="105" text-anchor="middle" class="pptx">'+esc(box)+'</text>';
   units.forEach(function(u,k){ var x = 50+k*96;
@@ -77,12 +86,12 @@ function pSvgStar(D, A, units, box){
 }
 function pipeCalc(){
   var box = document.getElementById("pp_out_box"); if(!box) return;
-  var D = PIPE[PS.sys], out = +PS.out, U = PS.units, n = U.length, msg = [], ok = [], rows = [];
-  var lab = function(m){ return (D.brand==="Daikin"?"":"P")+m; };
+  var D = PIPE[PS.sys], out = pNum(PS.out), U = PS.units, n = U.length, msg = [], ok = [], rows = [];
+  var lab = function(m){ return pSL(D,m); };
   var idx = U.map(function(u){ return pIdx(D,u.m); }), tot = idx.reduce(function(a,b){return a+b;},0);
   var main = pPick(D.main, out).slice(1);
   var A = pNum(PS.A), H = pNum(PS.H), h2 = pNum(PS.h2), L = D.lim;
-  var html = '<div class="small" style="margin:6px 0">Σύνολο εσωτερικών: <b>'+pFmt(tot)+'</b>'+(D.idx?' (δείκτης)':'')+' · '+n+' μονάδες</div>';
+  var html = '<div class="small" style="margin:6px 0">Σύνολο εσωτερικών: <b>'+pFmt(tot)+'</b>'+(D.kw?' kW':D.brand==="Toshiba"?' HP':D.idx?' (δείκτης)':'')+((D.kw&&(D.outInput||D.outKW))||D.brand==="Toshiba"?' · εξωτερική '+esc(D.outLab(PS.out))+' · αναλογία '+Math.round(tot/(D.outKW?D.outKW(out):out)*100)+'%':'')+' · '+n+' μονάδες</div>';
   var hr = D.kind==="hr", star = D.kind==="bc" || (hr && PS.bsm==="multi");
   if(!star){
     // γραμμή: διακλάδωση k (0..n-2) εξυπηρετεί μονάδες k..n-1
@@ -95,21 +104,24 @@ function pipeCalc(){
       segs.push({sz:sz, kit:kit, L:Ls, down:down});
       rows.push([k===0?'Εξωτερική → 1η διακλάδωση':'Διακλάδωση '+k+' → '+(k+1), (k===0?'—':pFmt(down)), sz.join(" / "), kit, Ls]);
     }
-    var us = U.map(function(u,i){ var j = Math.min(i, n-2), b = pNum(u.b), base = 0;
+    var minAfter = 1e9; var us = U.map(function(u,i){ var j = Math.min(i, n-2), b = pNum(u.b), base = 0;
       for(var q=1;q<=j;q++) base += pNum(U[q].s);
-      total += b; far = Math.max(far, A+base+b); afterMax = Math.max(afterMax, base+b);
-      var sz = hr ? pPick(D.branch, idx[i]).slice(1) : pPick(D.ind, +u.m).slice(1);
+      total += b; far = Math.max(far, A+base+b); afterMax = Math.max(afterMax, base+b); minAfter = Math.min(minAfter, base+b);
+      var sz = hr ? pPick(D.branch, idx[i]).slice(1) : pInd(D,u,idx[i]);
       var o = {lab:lab(u.m), sz:sz, L:b};
-      if(hr){ o.bs = pPick(D.bs1, idx[i])[1]; o.sz2 = pPick(D.ind, +u.m).slice(1); }
+      if(hr){ o.bs = pPick(D.bs1, idx[i])[1]; o.sz2 = pInd(D,u,idx[i]); }
       rows.push(['Διακλάδωση '+(j+1)+' → μονάδα '+(i+1)+(hr?' (3 σωλήνες ως το '+o.bs+', μετά 2)':''), pFmt(idx[i]), sz.join(" / ")+(hr?' → '+o.sz2.join(" / "):''), hr?o.bs:'—', b]);
       return o;
     });
     html += '<div class="ppscroll">'+pSvgLine(D, segs, us, hr)+'</div>';
     html += pTable(D, rows, hr?['Υγρό','Αναρρόφηση','Υψ./χαμ.']:null);
     if(L){ pChk(msg, ok, far, L.L1, 'Πιο μακρινή εσωτερική από την εξωτερική (πραγματικό)', 'Ισοδύναμο ≤ '+L.L1eq+' m – πρόσθεσε τις καμπύλες.');
-      if(afterMax > L.after) msg.push('⚠️ Μετά την 1η διακλάδωση: '+pFmt(afterMax)+' m > '+L.after+' m. '+(D.after90||'')); else ok.push('Μετά την 1η διακλάδωση: '+pFmt(afterMax)+' m ≤ '+L.after+' m');
+      var afL = (L.afterH && H > L.afterH[0]) ? L.afterH[1] : L.after;
+      if(L.dL) pChk(msg, ok, afterMax-minAfter, L.dL, 'Διαφορά πιο μακρινής – πλησιέστερης εσωτερικής από την 1η διακλάδωση');
+      if(afL==null){} else if(afterMax > afL) msg.push('⚠️ Μετά την 1η διακλάδωση: '+pFmt(afterMax)+' m > '+afL+' m'+(afL!==L.after?' (υψομετρική > '+L.afterH[0]+' m)':'')+'. '+(D.after90||'')); else ok.push('Μετά την 1η διακλάδωση: '+pFmt(afterMax)+' m ≤ '+afL+' m');
+      if(L.indMax){ var bm = Math.max.apply(null, U.map(function(u){ return pNum(u.b); })); pChk(msg, ok, bm, L.indMax, 'Διακλάδωση → εσωτερική (μέγιστο)'); }
       if(L.total) pChk(msg, ok, total, L.total, 'Συνολικό μήκος σωληνώσεων'); }
-    if(D.upAt && far >= D.upAt) msg.push('⚠️ '+D.upNote+' Υγρό κύριας: '+pPick(D.mainUp,out)[1]+' mm.');
+    if(D.upAt && (D.upMain?A:far) >= D.upAt){ var mu = D.mainUp ? pPick(D.mainUp,out) : null; msg.push('⚠️ '+D.upNote+(!mu?'':mu.length>2?' Κύρια: υγρό '+mu[1]+' / αέριο '+mu[2]+' mm.':' Υγρό κύριας: '+mu[1]+' mm.')); }
     if(D.mainUpME && D.mainUpME[out] && far >= D.mainUpME[out][0]) msg.push('⚠️ PUHY-P'+out+': με πιο μακρινή εσωτερική ≥ '+D.mainUpME[out][0]+' m, υγρό κύριας (A) '+D.mainUpME[out][1]+' mm.');
   } else if(D.kind==="hr"){
     var ports = 0, pu = U.map(function(u,i){ var p = idx[i] > D.port.max ? 2 : 1, st = ports+1; ports += p; return {p:p, st:st}; });
@@ -153,7 +165,7 @@ function pipeCalc(){
   // υψομετρικές
   if(L){ var hl = PS.Hpos==="up" ? L.Hup : L.Hdown; pChk(msg, ok, H, hl, 'Υψομετρική εξωτ.–εσωτ. (εξωτερική '+(PS.Hpos==="up"?'πάνω':'κάτω')+')', D.hNote||'');
     var h2l = (D.kind==="bc" && U.some(function(u){return +u.m>=200;})) ? L.h2_200 : L.h2;
-    if(h2 > h2l){ if(L.h2max && h2 <= L.h2max) msg.push('⚠️ Υψομετρική μεταξύ εσωτερικών '+pFmt(h2)+' m > '+h2l+' m. '+(D.h2Note||'Ως '+L.h2max+' m μόνο υπό τους όρους του manual (π.χ. μόνο εσωτερικές VRV DX, >20HP).')); else msg.push('⛔ Υψομετρική μεταξύ εσωτερικών '+pFmt(h2)+' m > '+(L.h2max||h2l)+' m.'); }
+    if(h2l==null){} else if(h2 > h2l){ if(L.h2max && h2 <= L.h2max) msg.push('⚠️ Υψομετρική μεταξύ εσωτερικών '+pFmt(h2)+' m > '+h2l+' m. '+(D.h2Note||'Ως '+L.h2max+' m μόνο υπό τους όρους του manual (π.χ. μόνο εσωτερικές VRV DX, >20HP).')); else msg.push('⛔ Υψομετρική μεταξύ εσωτερικών '+pFmt(h2)+' m > '+(L.h2max||h2l)+' m.'); }
     else ok.push('Υψομετρική μεταξύ εσωτερικών: '+pFmt(h2)+' m ≤ '+h2l+' m');
   }
   if(!L && D.limNote) msg.push('ℹ️ '+D.limNote);
@@ -172,7 +184,7 @@ document.addEventListener("change", function(e){ var t=e.target; if(!t.classList
 document.addEventListener("input", function(e){ var t=e.target; if(!t.classList || !t.classList.contains("ppv") || t.tagName==="SELECT") return; pUpd(t, false); });
 function pUpd(t, re){
   if(t.dataset.pu!=null){ PS.units[+t.dataset.pu][t.dataset.pk] = t.value; }
-  else { var k = t.id.replace("pp_",""); PS[k] = t.value; if(k==="sys"||k==="bsm"){ pSave(); pRerender(); return; } }
+  else { var k = t.id.replace("pp_",""); PS[k] = t.value; if(k==="sys"||k==="bsm"){ pFix(PIPE[PS.sys]); pSave(); pRerender(); return; } }
   pSave(); pipeCalc();
 }
 function pRerender(){ var w = document.getElementById("pp_out_box"); if(!w) return; var c = w.closest(".pcalcw"); if(!c) return; var d=document.createElement("div"); d.innerHTML=pipeForm(); c.replaceWith(d.firstChild); pipeCalc(); }
