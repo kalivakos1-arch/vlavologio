@@ -1,5 +1,5 @@
 // ===== 🧰 Εργαλεία: P/T, F-gas, αέρας =====
-var TOOL_IDS = ["pres","pt","charge","fgas","air","conv","inst"];
+var TOOL_IDS = ["pipe","pres","pt","charge","fgas","air","conv","inst"];
 function fx(x,d){ return (Math.round(x*Math.pow(10,d))/Math.pow(10,d)).toFixed(d).replace(".",","); }
 function nval(id){ var e=document.getElementById(id); if(!e) return NaN; var v=parseFloat(String(e.value).replace(",",".")); return isNaN(v)?NaN:v; }
 function refOpts(sel, list){ return (list||REF_ORDER).map(function(r){ return '<option value="'+r+'"'+(r===sel?' selected':'')+'>'+r+(REFI[r]?' ('+REFI[r].cls+')':'')+'</option>'; }).join(""); }
