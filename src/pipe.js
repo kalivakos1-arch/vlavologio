@@ -371,7 +371,7 @@ function pUnitsHtml(D, lv, out){ var P = typeof PUNIT!=="undefined" && PUNIT[D.b
   h += '</table></div>'; if(P) h += '<div class="small">Πηγή: '+esc(P.src)+(P.ind?' · '+esc(P.ind):'')+'</div>';
   var O = typeof POUT!=="undefined" && POUT[PS.sys], o = O && O.rows[out];
   h += '<div class="lbl" style="margin-top:10px">🔌 Παροχή ρεύματος εξωτερικής</div>';
-  if(o) h += '<div class="pver good">'+esc(D.outLab(out))+': <b>'+esc(o[0])+'</b> · MCA '+String(o[1]).replace(".",",")+' A · ασφάλεια '+o[2]+' A</div><div class="small">'+esc(O.note)+' Πηγή: '+esc(O.src)+'</div>';
+  if(o) h += '<div class="pver good">'+esc(D.outLab(out))+': <b>'+esc(o[0])+'</b>'+(o[1]!=null?' · MCA '+String(o[1]).replace(".",",")+' A':'')+' · ασφάλεια '+o[2]+' A</div><div class="small">'+esc(O.note)+' Πηγή: '+esc(O.src)+'</div>';
   else h += '<div class="small">Δεν έχω ακόμα επίσημα ηλεκτρικά στοιχεία για αυτή την εξωτερική.</div>';
   return h; }
 var BOM = {}, KIT = {};
