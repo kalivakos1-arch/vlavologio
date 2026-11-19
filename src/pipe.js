@@ -369,7 +369,7 @@ function pipeCalc(){
 function pUnitsHtml(D, lv, out){ var P = typeof PUNIT!=="undefined" && PUNIT[D.brand], h = '<div class="lbl" style="margin-top:10px">📐 Μηχανήματα</div><div class="ppscroll"><table class="pptab"><tr><th>#</th><th>Τύπος / απόδοση</th><th>Μοντέλο · διαστάσεις Π×Υ×Β · βάρος · αέρας · στατική</th></tr>';
   lv.forEach(function(u,i){ var r = pUinfo(D,u); h += '<tr><td>'+(i+1)+'</td><td>'+esc(pUnitName(u))+'<br><b>'+esc(pML(D,u.m))+'</b></td><td>'+(r ? esc(pUtxt(r)) : '<span class="small">'+(P?'δεν υπάρχει αυτή η απόδοση στον τύπο':'δεν έχω ακόμα επίσημα στοιχεία για '+esc(D.brand))+'</span>')+'</td></tr>'; });
   h += '</table></div>'; if(P) h += '<div class="small">Πηγή: '+esc(P.src)+(P.ind?' · '+esc(P.ind):'')+'</div>';
-  var O = typeof POUT!=="undefined" && POUT[PS.sys], o = O && O.rows[out];
+  var O = typeof POUT!=="undefined" && POUT[PS.sys], o = O && (O.rows[out] || O.rows[String(+out)]);
   h += '<div class="lbl" style="margin-top:10px">🔌 Παροχή ρεύματος εξωτερικής</div>';
   if(o) h += '<div class="pver good">'+esc(D.outLab(out))+': <b>'+esc(o[0])+'</b>'+(o[1]!=null?' · MCA '+String(o[1]).replace(".",",")+' A':'')+' · ασφάλεια '+o[2]+' A</div><div class="small">'+esc(O.note)+' Πηγή: '+esc(O.src)+'</div>';
   else h += '<div class="small">Δεν έχω ακόμα επίσημα ηλεκτρικά στοιχεία για αυτή την εξωτερική.</div>';
