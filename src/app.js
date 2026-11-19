@@ -1275,7 +1275,7 @@ document.addEventListener("click", function(e){
   if(el.id==="fzback"){ S.focus=null; S.src="in"; renderSrc(); persist(); renderResults(); return; }
   if(el.id==="fzall"){ S.focus=null; renderParts(); return; }
   if(el.hasAttribute("data-fcount")){ S.fcount = +el.getAttribute("data-fcount"); renderParts(); return; }
-  if(el.hasAttribute("data-pc")){ S.focus=null; S.part = el.getAttribute("data-pc"); persist(); renderParts(); return; }
+  if(el.hasAttribute("data-pc")){ S.focus=null; S.part = el.getAttribute("data-pc"); persist(); renderParts(); setTimeout(function(){ var w=document.querySelector(".pwarn"); if(w && w.scrollIntoView) w.scrollIntoView({behavior:"smooth", block:"start"}); }, 30); return; }
   if(el.hasAttribute("data-gopart")){ S.part = el.getAttribute("data-gopart"); S.focus = el.hasAttribute("data-fcode") ? {part:S.part, code:el.getAttribute("data-fcode"), title:el.getAttribute("data-ftitle"), side:el.getAttribute("data-fside")} : null; S.fcount=0; S.src="parts"; renderSrc(); persist(); renderParts(); window.scrollTo({top:$("srcbox").getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); return; }
   if(el.hasAttribute("data-mdel")){ var id=+el.getAttribute("data-mdel"); meas = meas.filter(function(m){return m.id!==id;}); LS.set("vl_meas",meas); renderMine(); return; }
   if(el.id==="psave"){

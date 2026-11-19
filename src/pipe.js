@@ -40,7 +40,7 @@ function pipeForm(){
       '<label class="small">Μέγεθος<select class="ppv" data-pu="'+i+'" data-pk="m">'+D.models.map(function(m){ return o(m, pML(D,m), u.m); }).join("")+'</select></label>'+
       (star?'':'<label class="small">Γραμμή από προηγ. διακλάδωση (m)<input class="ppv" data-pu="'+i+'" data-pk="s" inputmode="decimal" value="'+esc(segOn?u.s:"")+'"'+(segOn?'':' disabled placeholder="—"')+'></label>')+
       '<label class="small">'+(star?(D.kind==="bc"?'BC → μονάδα (m)':'BS → μονάδα (m)'):'Διακλάδωση → μονάδα (m)')+'<input class="ppv" data-pu="'+i+'" data-pk="b" inputmode="decimal" value="'+esc(u.b)+'"></label>'+
-      (n>2?'<button class="mini" data-pdel="'+i+'" aria-label="Αφαίρεση">✕</button>':'')+'</div>';
+      (n>2?'<button class="mini" data-ppdel="'+i+'" aria-label="Αφαίρεση">✕</button>':'')+'</div>';
   });
   h += '</div><button class="mini" id="pp_add">+ εσωτερική</button>';
   h += '<div class="small" style="margin-top:6px">ℹ️ '+esc(D.idxNote)+(D.indNote?' '+esc(D.indNote):'')+'</div>';
@@ -194,9 +194,9 @@ function pUpd(t, re){
 }
 function pRerender(){ var w = document.getElementById("pp_out_box"); if(!w) return; var c = w.closest(".pcalcw"); if(!c) return; var d=document.createElement("div"); d.innerHTML=pipeForm(); c.replaceWith(d.firstChild); pipeCalc(); }
 document.addEventListener("click", function(e){
-  var a = e.target.closest("#pp_add"), d = e.target.closest("[data-pdel]");
+  var a = e.target.closest("#pp_add"), d = e.target.closest("[data-ppdel]");
   if(a){ var last = PS.units[PS.units.length-1]; PS.units.push({m:last?last.m:"40", s:"5", b:"6"}); pSave(); pRerender(); }
-  else if(d){ PS.units.splice(+d.dataset.pdel,1); pSave(); pRerender(); }
+  else if(d){ PS.units.splice(+d.dataset.ppdel,1); pSave(); pRerender(); }
 });
 // ===== Συμπληρωματικό φρέον (επίσημοι τύποι manuals) =====
 var PCHG = {

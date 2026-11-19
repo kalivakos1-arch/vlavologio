@@ -5838,7 +5838,7 @@ document.addEventListener("click", function(e){
   if(el.id==="fzback"){ S.focus=null; S.src="in"; renderSrc(); persist(); renderResults(); return; }
   if(el.id==="fzall"){ S.focus=null; renderParts(); return; }
   if(el.hasAttribute("data-fcount")){ S.fcount = +el.getAttribute("data-fcount"); renderParts(); return; }
-  if(el.hasAttribute("data-pc")){ S.focus=null; S.part = el.getAttribute("data-pc"); persist(); renderParts(); return; }
+  if(el.hasAttribute("data-pc")){ S.focus=null; S.part = el.getAttribute("data-pc"); persist(); renderParts(); setTimeout(function(){ var w=document.querySelector(".pwarn"); if(w && w.scrollIntoView) w.scrollIntoView({behavior:"smooth", block:"start"}); }, 30); return; }
   if(el.hasAttribute("data-gopart")){ S.part = el.getAttribute("data-gopart"); S.focus = el.hasAttribute("data-fcode") ? {part:S.part, code:el.getAttribute("data-fcode"), title:el.getAttribute("data-ftitle"), side:el.getAttribute("data-fside")} : null; S.fcount=0; S.src="parts"; renderSrc(); persist(); renderParts(); window.scrollTo({top:$("srcbox").getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); return; }
   if(el.hasAttribute("data-mdel")){ var id=+el.getAttribute("data-mdel"); meas = meas.filter(function(m){return m.id!==id;}); LS.set("vl_meas",meas); renderMine(); return; }
   if(el.id==="psave"){
@@ -7183,7 +7183,7 @@ function pipeForm(){
       '<label class="small">Μέγεθος<select class="ppv" data-pu="'+i+'" data-pk="m">'+D.models.map(function(m){ return o(m, pML(D,m), u.m); }).join("")+'</select></label>'+
       (star?'':'<label class="small">Γραμμή από προηγ. διακλάδωση (m)<input class="ppv" data-pu="'+i+'" data-pk="s" inputmode="decimal" value="'+esc(segOn?u.s:"")+'"'+(segOn?'':' disabled placeholder="—"')+'></label>')+
       '<label class="small">'+(star?(D.kind==="bc"?'BC → μονάδα (m)':'BS → μονάδα (m)'):'Διακλάδωση → μονάδα (m)')+'<input class="ppv" data-pu="'+i+'" data-pk="b" inputmode="decimal" value="'+esc(u.b)+'"></label>'+
-      (n>2?'<button class="mini" data-pdel="'+i+'" aria-label="Αφαίρεση">✕</button>':'')+'</div>';
+      (n>2?'<button class="mini" data-ppdel="'+i+'" aria-label="Αφαίρεση">✕</button>':'')+'</div>';
   });
   h += '</div><button class="mini" id="pp_add">+ εσωτερική</button>';
   h += '<div class="small" style="margin-top:6px">ℹ️ '+esc(D.idxNote)+(D.indNote?' '+esc(D.indNote):'')+'</div>';
@@ -7337,9 +7337,9 @@ function pUpd(t, re){
 }
 function pRerender(){ var w = document.getElementById("pp_out_box"); if(!w) return; var c = w.closest(".pcalcw"); if(!c) return; var d=document.createElement("div"); d.innerHTML=pipeForm(); c.replaceWith(d.firstChild); pipeCalc(); }
 document.addEventListener("click", function(e){
-  var a = e.target.closest("#pp_add"), d = e.target.closest("[data-pdel]");
+  var a = e.target.closest("#pp_add"), d = e.target.closest("[data-ppdel]");
   if(a){ var last = PS.units[PS.units.length-1]; PS.units.push({m:last?last.m:"40", s:"5", b:"6"}); pSave(); pRerender(); }
-  else if(d){ PS.units.splice(+d.dataset.pdel,1); pSave(); pRerender(); }
+  else if(d){ PS.units.splice(+d.dataset.ppdel,1); pSave(); pRerender(); }
 });
 // ===== Συμπληρωματικό φρέον (επίσημοι τύποι manuals) =====
 var PCHG = {
