@@ -350,7 +350,7 @@ document.addEventListener("click", function(e){
   if(t.hasAttribute("data-ppb")){ var b = t.getAttribute("data-ppb"); PS.bpick = false; if(PIPE[PS.sys].brand!==b){ var k = Object.keys(PIPE).filter(function(x){ return PIPE[x].brand===b; })[0]; PS.sys = k; PS.sel = null; } pRerender(); return; }
   if(t.hasAttribute("data-pps")){ PS.sys = t.getAttribute("data-pps"); PS.sel = null; pRerender(); return; }
   if(t.hasAttribute("data-ppu")){ PS.unit = t.getAttribute("data-ppu"); pRerender(); return; }
-  if(t.hasAttribute("data-pn")){ var v = t.getAttribute("data-pn"); PS.delc = null; PS.sel = v==="A" ? "A" : +v; pipeCalc(); pAct(); return; }
+  if(t.hasAttribute("data-pn")){ if(Date.now()-pdSup < 600) return; var v = t.getAttribute("data-pn"); PS.delc = null; PS.sel = v==="A" ? "A" : +v; pipeCalc(); pAct(); return; }
   if(t.id==="pp_unsel"){ PS.sel = null; pipeCalc(); pAct(); return; }
   if(t.hasAttribute("data-ppundo")){ if(pUndo()){ pSave(); pipeCalc(); pAct(); } else repToast("Δεν υπάρχει κάτι για αναίρεση"); return; }
   if(t.hasAttribute("data-ppdn")){ var di = +t.getAttribute("data-ppdn"), dn = pN(di); if(!dn) return;
@@ -455,3 +455,29 @@ function pCharge(D, runs, c){
   h += '<div class="small">Πηγή: '+esc(C.src)+'. Τα μήκη είναι όσα έγραψες (πραγματικά). Στρογγυλοποίηση όπως το manual.</div>';
   return h;
 }
+// ===== Παρατεταμένο πάτημα + σύρσιμο στο ✕ για διαγραφή =====
+var PDG = null, pdSup = 0;
+function pdNode(el){ var g = el && el.closest && el.closest(".ppsvg [data-pn]"); if(!g) return null; var v = g.getAttribute("data-pn"); if(v==="A" || v==="0") return null; return +v; }
+function pdStart(x, y, id){ pdCancel(); PDG = {id:id, x0:x, y0:y, on:false}; PDG.t = setTimeout(pdOn, 450); }
+function pdOn(){ if(!PDG) return; var nd = pN(PDG.id); if(!nd){ PDG=null; return; } PDG.on = true;
+  var D = PIPE[PS.sys], lv = pLeaves(), lab = nd.t==="i" ? 'Εσωτερική '+(lv.indexOf(nd)+1)+' – '+pSL(D,nd.m) : (nd.t==="h"?'Κολεκτέρ ':'Διακλάδωση ')+pJlab(nd.id);
+  var tr = document.createElement("div"); tr.id = "pptrash"; tr.innerHTML = '<div class="pptx2">✕</div><div class="pptl">Σύρε εδώ για διαγραφή</div>'; document.body.appendChild(tr);
+  var gh = document.createElement("div"); gh.id = "ppghost"; gh.textContent = lab; document.body.appendChild(gh);
+  pdPos(PDG.x0, PDG.y0); try{ if(navigator.vibrate) navigator.vibrate(25); }catch(e){} }
+function pdOver(x, y){ var tr = document.getElementById("pptrash"); if(!tr) return false; var r = tr.getBoundingClientRect(); return x>=r.left-20 && x<=r.right+20 && y>=r.top-30 && y<=r.bottom+20; }
+function pdPos(x, y){ var gh = document.getElementById("ppghost"), tr = document.getElementById("pptrash"); if(gh){ gh.style.left = x+"px"; gh.style.top = (y-46)+"px"; } if(tr) tr.classList.toggle("over", pdOver(x,y)); }
+function pdMove(x, y, e){ if(!PDG) return; if(!PDG.on){ if(Math.abs(x-PDG.x0)+Math.abs(y-PDG.y0) > 10) pdCancel(); return; } if(e && e.cancelable) e.preventDefault(); pdPos(x, y); }
+function pdEnd(x, y){ if(!PDG) return; clearTimeout(PDG.t); var was = PDG.on, id = PDG.id; PDG = null; pdClean();
+  if(!was) return; pdSup = Date.now();
+  if(pdLastOver){ pSnap(); pDelNode(id); PS.sel = null; PS.delc = null; pSave(); pipeCalc(); pAct(); repToast("Αφαιρέθηκε – ↶ Αναίρεση αν το θες πίσω"); } }
+var pdLastOver = false;
+function pdClean(){ ["pptrash","ppghost"].forEach(function(i){ var e = document.getElementById(i); if(e) e.parentNode.removeChild(e); }); }
+function pdCancel(){ if(PDG){ clearTimeout(PDG.t); PDG = null; } pdClean(); }
+document.addEventListener("touchstart", function(e){ if(e.touches.length!==1){ pdCancel(); return; } var id = pdNode(e.target); if(id==null) return; var t = e.touches[0]; pdStart(t.clientX, t.clientY, id); }, {passive:true});
+document.addEventListener("touchmove", function(e){ if(!PDG) return; var t = e.touches[0]; pdLastOver = PDG.on && pdOver(t.clientX, t.clientY); pdMove(t.clientX, t.clientY, e); }, {passive:false});
+document.addEventListener("touchend", function(e){ if(!PDG) return; var t = e.changedTouches[0]; pdLastOver = PDG.on && pdOver(t.clientX, t.clientY); pdEnd(t.clientX, t.clientY); });
+document.addEventListener("touchcancel", function(){ pdCancel(); });
+document.addEventListener("mousedown", function(e){ if(e.button!==0) return; var id = pdNode(e.target); if(id==null) return; pdStart(e.clientX, e.clientY, id); });
+document.addEventListener("mousemove", function(e){ if(!PDG) return; pdLastOver = PDG.on && pdOver(e.clientX, e.clientY); pdMove(e.clientX, e.clientY, e); });
+document.addEventListener("mouseup", function(e){ if(!PDG) return; pdLastOver = PDG.on && pdOver(e.clientX, e.clientY); pdEnd(e.clientX, e.clientY); });
+document.addEventListener("contextmenu", function(e){ if(pdNode(e.target)!=null) e.preventDefault(); });
