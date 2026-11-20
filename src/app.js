@@ -669,10 +669,11 @@ function partById(id){ for(var i=0;i<PARTS.length;i++) if(PARTS[i].id===id) retu
 function partLinks(txt, c){
   var ids = [];
   PKEYS.forEach(function(k){ if(ids.length<3 && k[1].test(txt) && !(k[0]==="sensor" && ids.indexOf("pswitch")>=0 && !/θερμ/i.test(txt))) ids.push(k[0]); });
-  if(!ids.length) return "";
+  var gx = c ? gdExtra(txt) : [];
+  if(!ids.length && !gx.length) return "";
   var side = c && /εξωτερ/i.test(c[1]) ? "out" : c && /εσωτερ/i.test(c[1]) ? "in" : "";
   var ctx = c ? ' data-fcode="'+esc(c[0][0])+'" data-ftitle="'+esc(c[1])+'" data-fside="'+side+'"' : '';
-  return '<div class="plinks">'+(c?'<button class="plk gdbtn" data-guide="'+esc(ids.join(","))+'"'+ctx+'>🧭 Έλεγχος βήμα‑βήμα</button>':'')+ids.map(function(id){ var p=partById(id); return '<button class="plk" data-gopart="'+id+'"'+ctx+'>'+p.icon+' Πώς μετράω: '+esc(p.name)+'</button>'; }).join("")+'</div>';
+  return '<div class="plinks">'+(c?'<button class="plk gdbtn" data-guide="'+esc(ids.concat(gx).join(","))+'"'+ctx+'>🧭 Έλεγχος βήμα‑βήμα</button>':'')+ids.map(function(id){ var p=partById(id); return '<button class="plk" data-gopart="'+id+'"'+ctx+'>'+p.icon+' Πώς μετράω: '+esc(p.name)+'</button>'; }).join("")+'</div>';
 }
 function partPlats(){
   var b = brandObj(); if(!b) return [];

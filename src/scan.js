@@ -819,7 +819,7 @@ document.addEventListener("click", function(e){
 
 // ===== Έλεγχος βήμα-βήμα από κωδικό βλάβης =====
 // Σειρά: από τα εύκολα/φθηνά στα ακριβά. Το IPM μετά τον συμπιεστή: βραχυκυκλωμένος συμπιεστής καίει και καινούργιο IPM.
-var GD_ORDER = ["sensor","pswitch","fan","eev","fourway","comp","ipm"];
+var GD_ORDER = ["x_power","x_comm","x_drain","sensor","pswitch","x_air","x_ref","fan","eev","fourway","comp","ipm","x_pcb"];
 var GD_STEP = {
  sensor:{t:"Αισθητήριο (θερμίστορ)", how:"Βγάλε το φις από την πλακέτα και μέτρα Ω. Σύγκρινε με τον πίνακα για τη θερμοκρασία που έχει τώρα.", ok:"Μέσα σε ±10% από τον πίνακα", bad:"OL (κομμένο), ~0 Ω (βραχυκύκλωμα) ή μακριά από τον πίνακα", u:"kΩ"},
  pswitch:{t:"Πιεσοστάτης / αισθητήρας πίεσης", how:"Πιεσοστάτης: μέτρα συνέχεια με το μηχάνημα σβηστό. Αισθητήρας 3 καλωδίων: με ρεύμα μέτρα 5 V τροφοδοσία και σήμα.", ok:"Πιεσοστάτης ~0 Ω · αισθητήρας: σήμα 0,5–4,5 V που ακολουθεί την πίεση", bad:"Πιεσοστάτης OL με κανονική πίεση · σήμα σταθερό 0 V ή 5 V", u:"Ω / V"},
@@ -827,13 +827,21 @@ var GD_STEP = {
  eev:{t:"Εκτονωτική βαλβίδα (πηνίο)", how:"Βγάλε το φις του πηνίου. Μέτρα κοινό → κάθε φάση.", ok:"4 ίσες τιμές (συνήθως 42–50 Ω) · «τικ‑τικ» στην εκκίνηση", bad:"OL ή άνιση τιμή σε φάση · κανένας ήχος με καλό πηνίο", u:"Ω"},
  fourway:{t:"Τετράοδη βαλβίδα", how:"Μέτρα το πηνίο χωρίς ρεύμα. Με ρεύμα, στη θέρμανση, μέτρα αν φτάνουν 230 V AC.", ok:"Πηνίο ~1–2,5 kΩ · φτάνει τάση και αλλάζει λειτουργία", bad:"Πηνίο OL · τάση φτάνει αλλά δεν αλλάζει (κολλημένη)", u:"kΩ / V"},
  comp:{t:"Συμπιεστής (περιελίξεις)", how:"Πρώτα DC στους πυκνωτές < 5 V. Βγάλε τα καλώδια U/V/W και μέτρα ανά ζεύγος, μετά κάθε ακροδέκτη προς σωλήνα.", ok:"U‑V = V‑W = W‑U (διαφορά <5–10%) · προς σασί OL (>2 MΩ με megger)", bad:"Άνισες τιμές, OL ή διαρροή προς σασί", u:"Ω"},
+ x_power:{t:"Τάση τροφοδοσίας", how:"Μέτρα στην κλέμα τροφοδοσίας της εξωτερικής με το μηχάνημα σε λειτουργία, και ξανά τη στιγμή που ξεκινά ο συμπιεστής. Στα τριφασικά μέτρα και τις 3 φάσεις.", ok:"Μονοφασικό 207–253 V (230 V ±10%) · τριφασικό 360–440 V με ίσες φάσεις · δεν «βουτάει» στο ξεκίνημα", bad:"Εκτός ορίων, άνισες φάσεις ή μεγάλη πτώση στο ξεκίνημα (χαλαρή επαφή, λεπτό ή μακρύ καλώδιο)", u:"V"},
+ x_comm:{t:"Καλώδιο επικοινωνίας εσωτ. ↔ εξωτ.", how:"Με το ρεύμα κλειστό: έλεγξε ότι οι κλέμες αντιστοιχούν ένα‑ένα (π.χ. 1‑2‑3 ή S1‑S2‑S3), ότι είναι σφιχτές, χωρίς μάτισμα και ότι το καλώδιο δεν περνά δίπλα σε καλώδια ρεύματος. Με ρεύμα: μέτρα DC στη γραμμή σήματος – πρέπει να αυξομειώνεται.", ok:"Σωστή αντιστοιχία, σφιχτές κλέμες · η τάση σήματος «παίζει»", bad:"Λάθος/χαλαρή κλέμα, μάτισμα, ή σταθερή τάση (π.χ. 0 V) στη γραμμή σήματος", u:"V DC"},
+ x_drain:{t:"Αποχέτευση / φλοτέρ", how:"Κοίτα αν το ταψί έχει νερό, αν δουλεύει η αντλία συμπυκνωμάτων και αν ο σωλήνας έχει κλίση και δεν είναι φραγμένος. Μέτρα το φλοτέρ με άδειο ταψί.", ok:"Άδειο ταψί · η αντλία δουλεύει · φλοτέρ κλειστό (~0 Ω) με άδειο ταψί", bad:"Νερό στο ταψί, φραγμένος σωλήνας, αντλία δεν δουλεύει ή φλοτέρ ανοιχτό (OL) με άδειο ταψί", u:"Ω"},
+ x_ref:{t:"Ψυκτικό κύκλωμα (πιέσεις)", how:"Βάλε μανόμετρα με το μηχάνημα να δουλεύει 15′. Με το εργαλείο «Πιέσεις» βγάλε υπερθέρμανση και υπόψυξη. Έλεγξε και ότι οι βάνες είναι τελείως ανοιχτές και τα στοιχεία καθαρά.", ok:"Υπερθέρμανση 2–8 K (inverter με εκτονωτική) · υπόψυξη 3–10 K", bad:"Λείπει φρέον, φραγή ή παραπάνω φρέον (δες τον «Κανόνα» στις Πιέσεις)", u:"bar / K", part:"pres"},
+ x_air:{t:"Ροή αέρα (φίλτρα, στοιχεία, ανεμιστήρες)", how:"Κοίτα φίλτρα εσωτερικής, στοιχείο εσωτερικής και εξωτερικής (σκόνη, λάδια, φύλλα), φτερωτές, και ότι τίποτα δεν κλείνει την έξοδο αέρα της εξωτερικής (επανακυκλοφορία ζεστού αέρα).", ok:"Καθαρά φίλτρα και στοιχεία · ελεύθερη ροή · ανεμιστήρες σε κανονικές στροφές", bad:"Βρόμικα φίλτρα/στοιχεία, εμπόδιο ή ζεστός αέρας που ξαναμπαίνει στην εξωτερική"},
+ x_pcb:{t:"Πλακέτα – τροφοδοσίες & ασφάλεια", how:"Με ρεύμα και προσοχή: μέτρα την είσοδο AC στην πλακέτα, την ασφάλεια (συνέχεια, με ρεύμα κλειστό) και τις χαμηλές τάσεις (συνήθως 5 V, 12 V, 15 V DC). Κοίτα για καμένα σημεία, φουσκωμένους πυκνωτές, καμένο varistor.", ok:"Φτάνει AC · ασφάλεια καλή · σωστές χαμηλές τάσεις · κανένα σημάδι καψίματος", bad:"Καμένη ασφάλεια, λείπει χαμηλή τάση ή σημάδια καψίματος → πλακέτα (ή βραχυκύκλωμα σε εξάρτημα που τροφοδοτεί)", u:"V"},
  ipm:{t:"IPM / πλακέτα inverter", how:"DC στους πυκνωτές < 5 V. Δοκιμή διόδου στις 3 φάσεις, και τις δύο φορές.", ok:"3 ίσες τιμές ~0,3–0,7 V μία φορά, OL ανάποδα", bad:"0 V ή πολύ χαμηλή τιμή σε φάση = καμένο", u:"V (δίοδος)"}
 };
 function gdBuild(ids){
   var st = [{id:"reset", t:"Reset ρεύματος", how:"Κλείσε τον γενικό διακόπτη 3–5 λεπτά, άνοιξε και βάλε το μηχάνημα να δουλέψει.", ok:"Δεν ξαναβγαίνει ο κωδικός", bad:"Ξαναβγαίνει ο κωδικός", resetStep:true},
             {id:"conn", t:"Φις, καλώδια, κονέκτορες", how:"Με το ρεύμα κλειστό: έλεγξε τα φις του εξαρτήματος στην πλακέτα και στη διαδρομή. Τράβηξε ελαφρά κάθε καλώδιο.", ok:"Σφιχτά, χωρίς οξείδωση ή κάψιμο", bad:"Χαλαρό, οξειδωμένο, καμένο ή κομμένο"}];
-  GD_ORDER.forEach(function(id){ if(ids.indexOf(id)>=0 && GD_STEP[id]){ var g = GD_STEP[id]; st.push({id:id, t:g.t, how:g.how, ok:g.ok, bad:g.bad, u:g.u, part:id}); } });
-  st.push({id:"pcb", t:"Πλακέτα – έξοδος προς το εξάρτημα", how:"Με ρεύμα: μέτρα την τάση/σήμα που βγάζει η πλακέτα προς το εξάρτημα (δες «Πώς μετράω» του εξαρτήματος).", ok:"Βγαίνει η σωστή τάση/σήμα", bad:"Δεν βγαίνει τάση/σήμα ενώ το εξάρτημα είναι καλό"});
+  GD_ORDER.forEach(function(id){ if(ids.indexOf(id)>=0 && GD_STEP[id]){ var g = GD_STEP[id]; st.push({id:id, t:g.t, how:g.how, ok:g.ok, bad:g.bad, u:g.u, part:g.part!==undefined ? g.part : (id.indexOf("x_")===0 ? null : id)}); } });
+  var hasPart = ids.some(function(i){ return i.indexOf("x_")!==0; });
+  if(!hasPart && ids.indexOf("x_pcb")<0 && (ids.indexOf("x_comm")>=0 || ids.indexOf("x_power")>=0)){ var gp = GD_STEP.x_pcb; st.push({id:"x_pcb", t:gp.t, how:gp.how, ok:gp.ok, bad:gp.bad, u:gp.u, part:null}); }
+  if(hasPart && ids.indexOf("x_pcb")<0) st.push({id:"pcb", t:"Πλακέτα – έξοδος προς το εξάρτημα", how:"Με ρεύμα: μέτρα την τάση/σήμα που βγάζει η πλακέτα προς το εξάρτημα (δες «Πώς μετράω» του εξαρτήματος).", ok:"Βγαίνει η σωστή τάση/σήμα", bad:"Δεν βγαίνει τάση/σήμα ενώ το εξάρτημα είναι καλό"});
   return st;
 }
 function gdOpen(ids, code, title, side){
@@ -871,7 +879,7 @@ function gdRender(){
   h += '<div class="card gdstep"><div class="dthead"><b>'+(g.i+1)+'. '+esc(s.t)+'</b><span class="small">βήμα '+(g.i+1)+' από '+g.st.length+'</span></div>'+
     '<div class="gdhow">'+esc(s.how)+'</div>'+
     (s.resetStep?'':'<div class="gdok">✔ Εντάξει: '+esc(s.ok)+'</div><div class="gdbad">✘ Εκτός: '+esc(s.bad)+'</div>')+
-    (s.u?'<label class="small">Τι μέτρησες ('+esc(s.u)+')<input id="gdval" value="'+esc(g.val[s.id]||"")+'" inputmode="text" placeholder="προαιρετικά"></label>':'')+
+    gdExpect(s.id)+(s.u?'<label class="small">Τι μέτρησες ('+esc(s.u)+')<input id="gdval" value="'+esc(g.val[s.id]||"")+'" inputmode="text" placeholder="'+esc(GD_PH[s.id]||"προαιρετικά")+'"></label><div id="gdhint">'+gdHint(s.id, g.val[s.id]||"")+'</div>':'')+
     (s.part?'<button class="plk" data-gopart="'+s.part+'" data-fcode="'+esc(g.code)+'" data-ftitle="'+esc(g.title)+'" data-fside="'+esc(g.side)+'" id="gdhowto">'+partById(s.part).icon+' Πώς μετράω αναλυτικά</button>':'')+
     '<div class="dtbtns">'+(s.resetStep?'<button class="mini dtn'+(r==="bad"?' on':'')+'" data-gdr="bad">🔁 Ξαναβγαίνει</button><button class="mini dty'+(r==="ok"?' on':'')+'" data-gdr="ok">✅ Έφυγε</button>':'<button class="mini dty'+(r==="ok"?' on':'')+'" data-gdr="ok">✔ Εντάξει</button><button class="mini dtn'+(r==="bad"?' on':'')+'" data-gdr="bad">✘ Εκτός</button>')+'<button class="mini'+(r==="skip"?' on':'')+'" data-gdr="skip">Παράλειψη</button></div>'+
     '<div class="dtbtns small"><button class="mini" data-gdgo="'+(g.i-1)+'"'+(g.i>0?'':' disabled')+'>← Πίσω</button><button class="mini" id="gdend">Αποτέλεσμα</button></div></div>';
@@ -900,3 +908,46 @@ document.addEventListener("click", function(e){
   if(el.id==="gdshare"){ shareText("Έλεγχος κωδικού "+g.code+(g.title?" – "+g.title:"")+"\n"+gdSummary(), "Έλεγχος βλάβης"); return; }
 });
 window.addEventListener("popstate", function(){ var ov = document.getElementById("gdov"); if(ov && ov.style.display==="flex"){ OVN = Math.max(0,OVN-1); ov.style.display = "none"; ov.innerHTML = ""; document.body.style.overflow = ""; } });
+
+// --- επιπλέον ροές χωρίς συγκεκριμένο εξάρτημα + έξυπνη ανάγνωση τιμών ---
+function gdExtra(txt){
+  var r = [];
+  if(/επικοινων|communicat|transmission|μετάδοσ\S* σήματος|σήμα(τος)? μεταξύ|σειριακ[ήο] (γραμμ|επικ)/i.test(txt)) r.push("x_comm");
+  if(/αντιπαγωτ|πάγωμα|παγώνει|peak cut|υπερφόρτωσ|υψηλή θερμοκρασία (στοιχείου|συμπύκνωσης|εσωτερικής)|ροή αέρα/i.test(txt)) r.push("x_air");
+  if(/πλακέτα|PCB|EEPROM|μνήμη/i.test(txt)) r.push("x_pcb");
+  if(/τάσ[ηεω][ςν]? (τροφοδ|δικτύου|εισόδου)|υπέρταση|υπόταση|χαμηλή τάση|υψηλή τάση|ασυμμετρ[ίι]α φάσ|έλλειψη φάσης|απώλεια φάσης|ανάστροφη φάση/i.test(txt)) r.push("x_power");
+  if(/φλοτέρ|αντλία (συμπυκν|νερού|αποχ)|στάθμη νερού|αποχέτευσ|συμπυκνωμ/i.test(txt)) r.push("x_drain");
+  if(/(υψηλ|χαμηλ)\S* πίεσ|έλλειψη (ψυκτικ|φρέον)|λίγο (ψυκτικ|φρέον)|διαρροή (ψυκτικ|φρέον)|θερμοκρασία (σωλήνα )?κατάθλιψης|υπερθέρμανση (κατάθλ|συμπιεστ)|peak cut/i.test(txt)) r.push("x_ref");
+  return r;
+}
+var GD_PH = {comp:"π.χ. 1,2 1,2 1,3", fan:"π.χ. 12 12 13", eev:"π.χ. 46 46 47 46", ipm:"π.χ. 0,45 0,45 0,46", x_power:"π.χ. 228", sensor:"π.χ. 9,8", fourway:"π.χ. 1,6"};
+function gdNums(v){ var m = String(v||"").match(/\d+(?:[.,]\d+)?/g); return m ? m.map(function(x){ return parseFloat(x.replace(",", ".")); }) : []; }
+function gdExpect(id){
+  var map = {comp:["compOhm","Ω ανά ζεύγος"], eev:["eevOhm","Ω κοινό→φάση"], fourway:["wayOhm","Ω πηνίο"]}, m = map[id]; if(!m) return "";
+  var r = knownVal(m[0]); if(!r) return "";
+  return '<div class="pext">📘 Για το μοντέλο '+esc(S.model||"")+' το manual δίνει <b>'+r[0]+'–'+r[1]+' '+m[1]+'</b>.</div>';
+}
+function gdHint(id, v){
+  if(!v) return "";
+  var ol = /OL|∞|άπειρ|κομμέν/i.test(v), n = gdNums(v), out = function(cls, t){ return '<div class="gdh '+cls+'">👉 '+t+'</div>'; };
+  if(ol) return out("bad", "Υπάρχει OL – κομμένη περιέλιξη ή καλώδιο → μάλλον <b>Εκτός</b>.");
+  if(!n.length) return "";
+  var map = {comp:"compOhm", eev:"eevOhm", fourway:"wayOhm"}, kv = map[id] ? knownVal(map[id]) : null;
+  if(kv){ var bad = n.filter(function(x){ return x < kv[0]*0.9 || x > kv[1]*1.1; }); if(bad.length) return out("bad", "Τιμή έξω από το εύρος του manual ("+kv[0]+"–"+kv[1]+") → μάλλον <b>Εκτός</b>."); }
+  if(id==="x_power"){ var x = n[0]; if(n.length>=3){ var mx = Math.max.apply(null,n.slice(0,3)), mn = Math.min.apply(null,n.slice(0,3)), avg = (mx+mn)/2; if(avg>300 && (mx-mn)/avg*100 > 2) return out("bad", "Ασυμμετρία φάσεων "+hfx((mx-mn)/avg*100,1)+"% (πάνω από 2%) → <b>Εκτός</b>."); }
+    if(x>300) return x>=360 && x<=440 ? out("ok", "Μέσα στα όρια τριφασικού (360–440 V).") : out("bad", "Έξω από τα όρια τριφασικού (360–440 V) → <b>Εκτός</b>.");
+    return x>=207 && x<=253 ? out("ok", "Μέσα στα όρια μονοφασικού (207–253 V).") : out("bad", "Έξω από τα όρια μονοφασικού (207–253 V) → <b>Εκτός</b>."); }
+  if((id==="comp" || id==="fan" || id==="ipm") && n.length>=3 || id==="eev" && n.length>=4){
+    var k = id==="eev" ? n.slice(0,4) : n.slice(0,3), mx2 = Math.max.apply(null,k), mn2 = Math.min.apply(null,k);
+    if(id==="ipm" && mn2 < 0.1) return out("bad", "Τιμή κοντά στο 0 V → βραχυκύκλωμα, <b>Εκτός</b>.");
+    if(id==="comp" && mn2 < 0.1) return out("bad", "Σχεδόν 0 Ω → βραχυκυκλωμένη περιέλιξη, <b>Εκτός</b>.");
+    var d = mn2 > 0 ? (mx2-mn2)/mn2*100 : 999, lim = id==="comp" ? 10 : id==="ipm" ? 15 : 10;
+    return d <= lim ? out("ok", "Οι τιμές είναι ίσες (διαφορά "+hfx(d,0)+"%) → μάλλον <b>Εντάξει</b>.") : out("bad", "Άνισες τιμές (διαφορά "+hfx(d,0)+"%, όριο ~"+lim+"%) → μάλλον <b>Εκτός</b>.");
+  }
+  if(id==="x_drain" && n.length===1) return n[0] < 1 ? out("ok","Φλοτέρ κλειστό → εντάξει, αν το ταψί είναι άδειο.") : "";
+  return "";
+}
+document.addEventListener("input", function(e){
+  if(!e.target || e.target.id!=="gdval" || !S.gd) return; var s = S.gd.st[S.gd.i]; if(!s) return;
+  S.gd.val[s.id] = e.target.value.trim(); var h = document.getElementById("gdhint"); if(h) h.innerHTML = gdHint(s.id, e.target.value);
+});
