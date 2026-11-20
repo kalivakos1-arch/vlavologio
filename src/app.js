@@ -672,7 +672,7 @@ function partLinks(txt, c){
   if(!ids.length) return "";
   var side = c && /εξωτερ/i.test(c[1]) ? "out" : c && /εσωτερ/i.test(c[1]) ? "in" : "";
   var ctx = c ? ' data-fcode="'+esc(c[0][0])+'" data-ftitle="'+esc(c[1])+'" data-fside="'+side+'"' : '';
-  return '<div class="plinks">'+ids.map(function(id){ var p=partById(id); return '<button class="plk" data-gopart="'+id+'"'+ctx+'>'+p.icon+' Πώς μετράω: '+esc(p.name)+'</button>'; }).join("")+'</div>';
+  return '<div class="plinks">'+(c?'<button class="plk gdbtn" data-guide="'+esc(ids.join(","))+'"'+ctx+'>🧭 Έλεγχος βήμα‑βήμα</button>':'')+ids.map(function(id){ var p=partById(id); return '<button class="plk" data-gopart="'+id+'"'+ctx+'>'+p.icon+' Πώς μετράω: '+esc(p.name)+'</button>'; }).join("")+'</div>';
 }
 function partPlats(){
   var b = brandObj(); if(!b) return [];

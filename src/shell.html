@@ -304,6 +304,12 @@ details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
 #printarea .rp-h{display:flex;justify-content:space-between;gap:16px;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:12px}
 #printarea .rp-t{width:100%;border-collapse:collapse}#printarea .rp-t th{text-align:left;width:32%;vertical-align:top;padding:6px 8px;border-bottom:1px solid #ccc}#printarea .rp-t td{padding:6px 8px;border-bottom:1px solid #ccc}
 #printarea .rp-s{display:flex;gap:30px;margin-top:36px}#printarea .rp-s>div{flex:1}#printarea .rp-s img{max-width:100%;height:80px;object-fit:contain}#printarea .rp-l{height:60px;border-bottom:1px solid #000}
+#gdov{position:fixed;inset:0;z-index:9998;background:var(--bg);display:none;flex-direction:column;gap:8px;padding:calc(10px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));overflow:auto;-webkit-overflow-scrolling:touch}
+.gdbtn{background:var(--accbg)!important;border-color:var(--acc)!important;font-weight:600}
+.gdprog{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0}.gdp{width:22px;height:8px;border-radius:4px;background:var(--line);cursor:pointer}.gdp.cur{outline:2px solid var(--acc)}.gdp.ok{background:#16a34a}.gdp.bad{background:#dc2626}.gdp.skip{background:#9ca3af}
+.gdstep,.gdres{padding:12px}.gdhow{margin:8px 0;line-height:1.45}.gdok{color:#15803d;font-size:14px;margin:4px 0}.gdbad{color:#b91c1c;font-size:14px;margin:4px 0}
+.gdstep label{display:block;margin-top:8px}.gdstep input{width:100%;box-sizing:border-box;margin-top:4px}.dtbtns .mini.on{outline:2px solid var(--acc)}
+.gdsum{white-space:pre-wrap;font:inherit;font-size:14px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;margin:8px 0}
 #printarea{display:none}
 @media print{html.printing body>*:not(#printarea){display:none!important}html.printing body{background:#fff!important}html.printing #printarea{display:block!important;background:#fff;color:#000;font:15px/1.5 -apple-system,Segoe UI,Arial;padding:20px}}
 html.field{font-size:118%}

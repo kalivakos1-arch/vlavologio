@@ -209,7 +209,7 @@ function histOpen(mode, id){
   if(mode==="fgas"){ ov.innerHTML = h + fgBookHtml(); return; }
   if(mode==="form"){
     var e = id ? HIST.filter(function(x){ return x.id===id; })[0] : null, b = brandObj();
-    e = e || {cust:"", brand:b?b.n:"", oem:(S.oem && S.oem!=="__all" && PLAT[S.oem])?PLAT[S.oem].name:"", model:S.model||"", ser:S.fw.ser||"", code:S.q||"", fix:"", note:""};
+    e = e || {cust:"", brand:b?b.n:"", oem:(S.oem && S.oem!=="__all" && PLAT[S.oem])?PLAT[S.oem].name:"", model:S.model||"", ser:S.fw.ser||"", code:S.gdCode||S.q||"", fix:S.gdFix||"", note:S.gdNote||""}; S.gdFix = S.gdNote = S.gdCode = "";
     var f = function(k,l,ph){ return '<label>'+esc(l)+'<input id="hf_'+k+'" value="'+esc(e[k]||"")+'" placeholder="'+esc(ph||"")+'"></label>'; };
     h += '<div class="hform card">'+f("cust","Πελάτης / τοποθεσία","π.χ. Παπαδόπουλος – Καλαμαριά")+f("brand","Μάρκα","")+f("oem","Εργοστάσιο","")+f("model","Μοντέλο","")+
       '<label>Σειριακός<div class="row2"><input id="hf_ser" value="'+esc(e.ser||"")+'"><button class="mini" data-scan="hist"><svg class="ic"><use href="#i-scan"/></svg></button></div></label>'+
@@ -815,3 +815,88 @@ document.addEventListener("click", function(e){
   if(el.id==="techsave"){ var t = {}; ["company","name","phone","cert"].forEach(function(k){ var x = document.getElementById("tf_"+k); t[k] = x ? x.value.trim() : ""; }); LS.set("vl_tech", t); histOpen("list"); return; }
   if(el.id==="sigclr"){ var c = document.getElementById("sigpad"); if(c){ var x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0,0,c.width,c.height); } SIG.dirty = false; SIG.orig = ""; return; }
 });
+
+
+// ===== Έλεγχος βήμα-βήμα από κωδικό βλάβης =====
+// Σειρά: από τα εύκολα/φθηνά στα ακριβά. Το IPM μετά τον συμπιεστή: βραχυκυκλωμένος συμπιεστής καίει και καινούργιο IPM.
+var GD_ORDER = ["sensor","pswitch","fan","eev","fourway","comp","ipm"];
+var GD_STEP = {
+ sensor:{t:"Αισθητήριο (θερμίστορ)", how:"Βγάλε το φις από την πλακέτα και μέτρα Ω. Σύγκρινε με τον πίνακα για τη θερμοκρασία που έχει τώρα.", ok:"Μέσα σε ±10% από τον πίνακα", bad:"OL (κομμένο), ~0 Ω (βραχυκύκλωμα) ή μακριά από τον πίνακα", u:"kΩ"},
+ pswitch:{t:"Πιεσοστάτης / αισθητήρας πίεσης", how:"Πιεσοστάτης: μέτρα συνέχεια με το μηχάνημα σβηστό. Αισθητήρας 3 καλωδίων: με ρεύμα μέτρα 5 V τροφοδοσία και σήμα.", ok:"Πιεσοστάτης ~0 Ω · αισθητήρας: σήμα 0,5–4,5 V που ακολουθεί την πίεση", bad:"Πιεσοστάτης OL με κανονική πίεση · σήμα σταθερό 0 V ή 5 V", u:"Ω / V"},
+ fan:{t:"Μοτέρ ανεμιστήρα", how:"Γύρνα τη φτερωτή με το χέρι. DC 3 καλωδίων: U‑V, V‑W, W‑U. DC 5 καλωδίων: με ρεύμα μέτρα 280–380 V DC, 15 V και Vsp στο φις.", ok:"Ελεύθερη φτερωτή · 3 ίσες τιμές (διαφορά <10%) · φτάνουν όλες οι τάσεις", bad:"Σφιχτή φτερωτή · άνισες τιμές/OL · τάσεις φτάνουν αλλά δεν γυρνάει", u:"Ω / V"},
+ eev:{t:"Εκτονωτική βαλβίδα (πηνίο)", how:"Βγάλε το φις του πηνίου. Μέτρα κοινό → κάθε φάση.", ok:"4 ίσες τιμές (συνήθως 42–50 Ω) · «τικ‑τικ» στην εκκίνηση", bad:"OL ή άνιση τιμή σε φάση · κανένας ήχος με καλό πηνίο", u:"Ω"},
+ fourway:{t:"Τετράοδη βαλβίδα", how:"Μέτρα το πηνίο χωρίς ρεύμα. Με ρεύμα, στη θέρμανση, μέτρα αν φτάνουν 230 V AC.", ok:"Πηνίο ~1–2,5 kΩ · φτάνει τάση και αλλάζει λειτουργία", bad:"Πηνίο OL · τάση φτάνει αλλά δεν αλλάζει (κολλημένη)", u:"kΩ / V"},
+ comp:{t:"Συμπιεστής (περιελίξεις)", how:"Πρώτα DC στους πυκνωτές < 5 V. Βγάλε τα καλώδια U/V/W και μέτρα ανά ζεύγος, μετά κάθε ακροδέκτη προς σωλήνα.", ok:"U‑V = V‑W = W‑U (διαφορά <5–10%) · προς σασί OL (>2 MΩ με megger)", bad:"Άνισες τιμές, OL ή διαρροή προς σασί", u:"Ω"},
+ ipm:{t:"IPM / πλακέτα inverter", how:"DC στους πυκνωτές < 5 V. Δοκιμή διόδου στις 3 φάσεις, και τις δύο φορές.", ok:"3 ίσες τιμές ~0,3–0,7 V μία φορά, OL ανάποδα", bad:"0 V ή πολύ χαμηλή τιμή σε φάση = καμένο", u:"V (δίοδος)"}
+};
+function gdBuild(ids){
+  var st = [{id:"reset", t:"Reset ρεύματος", how:"Κλείσε τον γενικό διακόπτη 3–5 λεπτά, άνοιξε και βάλε το μηχάνημα να δουλέψει.", ok:"Δεν ξαναβγαίνει ο κωδικός", bad:"Ξαναβγαίνει ο κωδικός", resetStep:true},
+            {id:"conn", t:"Φις, καλώδια, κονέκτορες", how:"Με το ρεύμα κλειστό: έλεγξε τα φις του εξαρτήματος στην πλακέτα και στη διαδρομή. Τράβηξε ελαφρά κάθε καλώδιο.", ok:"Σφιχτά, χωρίς οξείδωση ή κάψιμο", bad:"Χαλαρό, οξειδωμένο, καμένο ή κομμένο"}];
+  GD_ORDER.forEach(function(id){ if(ids.indexOf(id)>=0 && GD_STEP[id]){ var g = GD_STEP[id]; st.push({id:id, t:g.t, how:g.how, ok:g.ok, bad:g.bad, u:g.u, part:id}); } });
+  st.push({id:"pcb", t:"Πλακέτα – έξοδος προς το εξάρτημα", how:"Με ρεύμα: μέτρα την τάση/σήμα που βγάζει η πλακέτα προς το εξάρτημα (δες «Πώς μετράω» του εξαρτήματος).", ok:"Βγαίνει η σωστή τάση/σήμα", bad:"Δεν βγαίνει τάση/σήμα ενώ το εξάρτημα είναι καλό"});
+  return st;
+}
+function gdOpen(ids, code, title, side){
+  S.gd = {ids:ids, code:code||"", title:title||"", side:side||"", st:gdBuild(ids), i:0, res:{}, val:{}};
+  var ov = document.getElementById("gdov");
+  if(!ov){ ov = document.createElement("div"); ov.id = "gdov"; document.body.appendChild(ov); }
+  if(ov.style.display!=="flex") ovPush();
+  ov.style.display = "flex"; document.body.style.overflow = "hidden"; gdRender();
+}
+function gdClose(){ var ov = document.getElementById("gdov"); if(ov){ ov.style.display = "none"; ov.innerHTML = ""; } document.body.style.overflow = ""; ovPop(); }
+function gdFound(){ var g = S.gd; for(var i=0;i<g.st.length;i++){ var s = g.st[i]; if(g.res[s.id]==="bad" && !s.resetStep) return s; } return null; }
+function gdSummary(){
+  var g = S.gd, L = [];
+  g.st.forEach(function(s){ var r = g.res[s.id]; if(!r) return; if(s.resetStep){ L.push(r==="ok"?"✔ Reset ρεύματος: ο κωδικός έφυγε":r==="bad"?"• Reset ρεύματος: ο κωδικός ξαναβγαίνει":"– Reset ρεύματος: δεν έγινε"); return; } L.push((r==="ok"?"✔ ":r==="bad"?"✘ ":"– ")+s.t+(g.val[s.id]?" ("+g.val[s.id]+")":"")+(r==="skip"?": δεν ελέγχθηκε":"")); });
+  return L.join("\n");
+}
+function gdRender(){
+  var g = S.gd, ov = document.getElementById("gdov"); if(!g || !ov) return;
+  var h = '<div class="schead"><b>🧭 Έλεγχος βήμα‑βήμα'+(g.code?' – '+esc(g.code):'')+'</b><button class="mini" id="gdclose">✕</button></div>'+
+    (g.title?'<div class="small">'+esc(g.title)+'</div>':'')+
+    '<div class="gdprog">'+g.st.map(function(s,i){ var r = g.res[s.id]; return '<span class="gdp'+(i===g.i?' cur':'')+(r?' '+r:'')+'" data-gdgo="'+i+'" title="'+esc(s.t)+'"></span>'; }).join("")+'</div>';
+  var f = gdFound();
+  if(g.i >= g.st.length || g.done){
+    h += '<div class="card gdres">';
+    if(g.res.reset==="ok") h += '<div class="dtr">✅ Ο κωδικός δεν ξαναβγήκε μετά το reset. Πιθανότατα ήταν παροδικό (τάση δικτύου, παράσιτο). Αν ξαναβγεί, κάνε τους ελέγχους.</div>';
+    else if(f) h += '<div class="dtr">🎯 Πιθανός ένοχος: <b>'+esc(f.t)+'</b>'+(g.val[f.id]?' (μέτρησες '+esc(g.val[f.id])+')':'')+'</div><div class="small">Πρώτο σημείο που βγήκε εκτός. Αν το αλλάξεις και συνεχίζει, ξαναπέρασε τους ελέγχους από εκεί και κάτω.</div>';
+    else if(g.st.every(function(s){ return g.res[s.id]==="ok" || s.resetStep; })) h += '<div class="dtr">🎯 Όλα βγήκαν εντάξει. Η αιτία είναι μάλλον στην πλακέτα (λογισμικό/επικοινωνία) ή σε κάτι που ο κωδικός δεν δείχνει άμεσα. Έλεγξε τάσεις τροφοδοσίας της πλακέτας και τον κωδικό στο service manual.</div>';
+    else h += '<div class="dtr">Δεν βρέθηκε ένοχος, αλλά κάποια βήματα δεν ελέγχθηκαν. Πάτα πάνω στις κουκκίδες για να τα κάνεις.</div>';
+    h += '<pre class="gdsum">'+esc(gdSummary())+'</pre><div class="dtbtns">'+(f&&f.part?'<button class="mini" data-plist="'+esc(f.t)+'">🧾 Βάλε στη λίστα ανταλλακτικών</button>':'')+
+      '<button class="mini" id="gdhist">📒 Καταχώρηση επίσκεψης</button><button class="mini" id="gdshare">📤 Κοινοποίηση</button></div>'+
+      '<div class="dtbtns small"><button class="mini" data-gdgo="0">↺ Από την αρχή</button><button class="mini" id="gdclose2">✕ Τέλος</button></div></div>';
+    ov.innerHTML = h; return;
+  }
+  var s = g.st[g.i], r = g.res[s.id];
+  h += '<div class="card gdstep"><div class="dthead"><b>'+(g.i+1)+'. '+esc(s.t)+'</b><span class="small">βήμα '+(g.i+1)+' από '+g.st.length+'</span></div>'+
+    '<div class="gdhow">'+esc(s.how)+'</div>'+
+    (s.resetStep?'':'<div class="gdok">✔ Εντάξει: '+esc(s.ok)+'</div><div class="gdbad">✘ Εκτός: '+esc(s.bad)+'</div>')+
+    (s.u?'<label class="small">Τι μέτρησες ('+esc(s.u)+')<input id="gdval" value="'+esc(g.val[s.id]||"")+'" inputmode="text" placeholder="προαιρετικά"></label>':'')+
+    (s.part?'<button class="plk" data-gopart="'+s.part+'" data-fcode="'+esc(g.code)+'" data-ftitle="'+esc(g.title)+'" data-fside="'+esc(g.side)+'" id="gdhowto">'+partById(s.part).icon+' Πώς μετράω αναλυτικά</button>':'')+
+    '<div class="dtbtns">'+(s.resetStep?'<button class="mini dtn'+(r==="bad"?' on':'')+'" data-gdr="bad">🔁 Ξαναβγαίνει</button><button class="mini dty'+(r==="ok"?' on':'')+'" data-gdr="ok">✅ Έφυγε</button>':'<button class="mini dty'+(r==="ok"?' on':'')+'" data-gdr="ok">✔ Εντάξει</button><button class="mini dtn'+(r==="bad"?' on':'')+'" data-gdr="bad">✘ Εκτός</button>')+'<button class="mini'+(r==="skip"?' on':'')+'" data-gdr="skip">Παράλειψη</button></div>'+
+    '<div class="dtbtns small"><button class="mini" data-gdgo="'+(g.i-1)+'"'+(g.i>0?'':' disabled')+'>← Πίσω</button><button class="mini" id="gdend">Αποτέλεσμα</button></div></div>';
+  ov.innerHTML = h;
+}
+document.addEventListener("click", function(e){
+  var el = e.target.closest("[data-guide],#gdclose,#gdclose2,[data-gdr],[data-gdgo],#gdend,#gdhist,#gdshare,#gdhowto"); if(!el) return;
+  if(el.hasAttribute("data-guide")){ e.stopPropagation(); gdOpen(el.getAttribute("data-guide").split(","), el.getAttribute("data-fcode"), el.getAttribute("data-ftitle"), el.getAttribute("data-fside")); return; }
+  var g = S.gd; if(!g) return;
+  var v = document.getElementById("gdval"); if(v && g.st[g.i]) g.val[g.st[g.i].id] = v.value.trim();
+  if(el.id==="gdclose" || el.id==="gdclose2"){ gdClose(); return; }
+  if(el.id==="gdhowto"){ gdClose(); return; } // ο γενικός χειριστής [data-gopart] ανοίγει το εξάρτημα (το ↩ σε γυρνά πίσω)
+  if(el.hasAttribute("data-gdr")){
+    var s = g.st[g.i]; g.res[s.id] = el.getAttribute("data-gdr"); g.done = false;
+    if(s.resetStep && g.res[s.id]==="ok"){ g.done = true; g.i = g.st.length; }
+    else if(g.res[s.id]==="bad" && !s.resetStep){ g.done = true; g.i = g.st.length; }
+    else g.i++;
+    gdRender(); var ov = document.getElementById("gdov"); if(ov) ov.scrollTop = 0; return;
+  }
+  if(el.hasAttribute("data-gdgo")){ var n = +el.getAttribute("data-gdgo"); if(n>=0){ g.i = Math.min(n, g.st.length-1); g.done = false; if(n===0 && el.textContent.indexOf("αρχή")>=0){ g.res = {}; g.val = {}; } } gdRender(); return; }
+  if(el.id==="gdend"){ g.done = true; g.i = g.st.length; gdRender(); return; }
+  if(el.id==="gdhist"){ var f = gdFound(); S.gdCode = g.code; S.gdFix = f ? "Βρέθηκε εκτός: "+f.t+(g.val[f.id]?" ("+g.val[f.id]+")":"") : ""; S.gdNote = "Έλεγχοι:\n"+gdSummary();
+    var gov = document.getElementById("gdov"); if(gov){ gov.style.display = "none"; gov.innerHTML = ""; }
+    var hov = document.getElementById("histov"); if(!hov){ hov = document.createElement("div"); hov.id = "histov"; document.body.appendChild(hov); } hov.style.display = "flex"; // κρατάει την ίδια θέση στο ιστορικό του browser
+    histOpen("form"); return; }
+  if(el.id==="gdshare"){ shareText("Έλεγχος κωδικού "+g.code+(g.title?" – "+g.title:"")+"\n"+gdSummary(), "Έλεγχος βλάβης"); return; }
+});
+window.addEventListener("popstate", function(){ var ov = document.getElementById("gdov"); if(ov && ov.style.display==="flex"){ OVN = Math.max(0,OVN-1); ov.style.display = "none"; ov.innerHTML = ""; document.body.style.overflow = ""; } });
