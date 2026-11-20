@@ -295,8 +295,17 @@ details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
 .prow{position:relative;padding-right:40px}.prow .x{position:absolute;right:8px;top:8px}.pdone b{text-decoration:line-through;opacity:.6}
 .htabs{margin:2px 0 6px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 16px;border-radius:12px;z-index:10000;font-size:14px}
+.hx{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--card)}.hx summary{font-weight:600;cursor:pointer;padding:4px 0}
+.hgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.hgrid{align-items:end}.hgrid select{width:100%;margin-top:4px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px 9px;font-size:15px}.hchk{display:flex!important;align-items:center;gap:8px;grid-column:1/-1}.hchk input{width:auto!important;margin:0}
+.sigw{margin-top:10px}.sigw canvas{width:100%;height:120px;background:#fff;border:1px solid var(--line);border-radius:10px;touch-action:none;display:block;margin:4px 0}
+.fgb{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:#dc2626;color:#fff;font-size:12px;line-height:18px;text-align:center}
+.fgdue{padding:9px 12px;border-radius:12px;background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.4);margin:8px 0;cursor:pointer}
+.hcard.fg-late{border-color:#dc2626}.hcard.fg-soon{border-color:#f59e0b}
+#printarea .rp-h{display:flex;justify-content:space-between;gap:16px;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:12px}
+#printarea .rp-t{width:100%;border-collapse:collapse}#printarea .rp-t th{text-align:left;width:32%;vertical-align:top;padding:6px 8px;border-bottom:1px solid #ccc}#printarea .rp-t td{padding:6px 8px;border-bottom:1px solid #ccc}
+#printarea .rp-s{display:flex;gap:30px;margin-top:36px}#printarea .rp-s>div{flex:1}#printarea .rp-s img{max-width:100%;height:80px;object-fit:contain}#printarea .rp-l{height:60px;border-bottom:1px solid #000}
 #printarea{display:none}
-@media print{html.printing body>*:not(#printarea){display:none!important}html.printing #printarea{display:block!important;color:#000;font:15px/1.5 -apple-system,Segoe UI,Arial;padding:20px}}
+@media print{html.printing body>*:not(#printarea){display:none!important}html.printing body{background:#fff!important}html.printing #printarea{display:block!important;background:#fff;color:#000;font:15px/1.5 -apple-system,Segoe UI,Arial;padding:20px}}
 html.field{font-size:118%}
 html.field body{--muted:var(--text2)}
 html.field .mini,html.field .chip,html.field button{min-height:46px;font-size:1.02em}
