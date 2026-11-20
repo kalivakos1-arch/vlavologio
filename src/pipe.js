@@ -548,6 +548,6 @@ document.addEventListener("touchstart", function(e){ var t = e.target; if(t && t
 
 var PDW = null;
 document.addEventListener("touchstart", function(e){ var t = e.target; if(!(t && t.closest && t.closest(".ppsvg"))){ PDW = null; return; } PDW = {t0:Date.now(), tag:(t.tagName||"?")+"."+((t.getAttribute&&t.getAttribute("class"))||""), node:pdNode(t), on:false}; }, {passive:true});
-function pdWatch(kind){ if(!PDW) return; var d = Date.now()-PDW.t0; if(d>350 && !PDW.seen){ PDL.unshift("WATCH "+kind+" "+d+"ms target="+PDW.tag+" node="+PDW.node+" pdgOn="+(!!pdSup && Date.now()-pdSup<1500)); pdReport("κράτημα "+d+"ms χωρίς διαγραφή ("+kind+")"); } PDW = null; }
+function pdWatch(kind){ if(!PDW) return; if(PDW.node==null){ PDW = null; return; } var d = Date.now()-PDW.t0; if(d>350 && !PDW.seen){ PDL.unshift("WATCH "+kind+" "+d+"ms target="+PDW.tag+" node="+PDW.node+" pdgOn="+(!!pdSup && Date.now()-pdSup<1500)); pdReport("κράτημα "+d+"ms χωρίς διαγραφή ("+kind+")"); } PDW = null; }
 document.addEventListener("touchend", function(){ if(PDW && Date.now()-pdSup<1500) PDW.seen = 1; setTimeout(function(){ pdWatch("touchend"); }, 0); }, {passive:true});
 document.addEventListener("touchcancel", function(){ pdWatch("touchcancel"); }, {passive:true});
