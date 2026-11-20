@@ -1191,6 +1191,7 @@ function renderParts(){
     var hf = focusHead();
     if(!mkey(S.model) || mkey(S.model).length<4) hf += '<div class="pcalcw fmodel"><div class="lbl">🏷️ Γράψε το μοντέλο από το ταμπελάκι (εσωτερικής ή εξωτερικής)</div><input id="fmodel" placeholder="π.χ. FTXM35R, GWH12ACC, V5MFO32-60" autocapitalize="characters" spellcheck="false" value="'+esc(S.model||"")+'"><div class="small">Με το μοντέλο βρίσκω τις προδιαγραφές του ανταλλακτικού (Ω, φίσες, χρώματα). Χωρίς μοντέλο σου δείχνω τη γενική μέθοδο.</div></div>';
     hf += '<div class="pwarn">⚡ Πριν ακουμπήσεις: κλείσε ρεύμα, περίμενε 5–10′ να αδειάσουν οι πυκνωτές της πλακέτας (μέτρα DC < 5V). Μετρήσεις «με ρεύμα» μόνο με μονωμένους ακροδέκτες.</div>';
+    hf += ruleBox(S.part);
     if(d) hf += renderDiag(d);
     else hf += '<div id="pmodelinfo"></div>' + (S.part==="fan" ? fanCountBox() : '');
     if(S.part==="fan") hf += '<div id="fanw">'+fanWizard()+'</div>';
@@ -1219,6 +1220,7 @@ function renderParts(){
   if(!P){ h += '<div class="empty">Διάλεξε εξάρτημα. Θα δεις χρώματα καλωδίων, βήματα με το πολύμετρο και τιμές από τα manuals.</div>'; }
   else {
     h += '<div class="pwarn">⚡ Πριν ακουμπήσεις: κλείσε ρεύμα, περίμενε 5–10′ να αδειάσουν οι πυκνωτές της πλακέτας (μέτρα DC < 5V). Μετρήσεις «με ρεύμα» μόνο με μονωμένους ακροδέκτες.</div>';
+    h += ruleBox(P.id);
     if(P.id==="fan") h += '<div id="fanw">'+fanWizard()+'</div>';
     if(P.id==="comp") h += '<div class="pcalcw"><div class="lbl">🔎 Κωδικός συμπιεστή (ετικέτα πάνω στον συμπιεστή)</div><input id="pcomp" placeholder="π.χ. ASN98D22UFZ" autocapitalize="characters" spellcheck="false"><div id="pcompres"></div></div>';
     if(MEAS[P.id]) h += measBox(P.id);

@@ -362,3 +362,7 @@ document.addEventListener("click", function(e){ if(e.target && e.target.id==="ad
   // iPhone: τα γρήγορα πατήματα στο λογότυπο κάνουν ζουμ – το touchend με preventDefault το σταματά (και δεν βγαίνει click)
   document.addEventListener("touchend", function(e){ if(e.target.closest && e.target.closest(".logo")){ e.preventDefault(); tap(); } }, {passive:false});
 })();
+function ruleBox(id){
+  var r = PRULE[id]; if(!r) return "";
+  return '<div class="prule"><div class="prt">📏 Κανόνας</div>'+r.map(function(x){ return '<div class="prl">'+esc(x)+'</div>'; }).join("")+'</div>';
+}
