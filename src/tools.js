@@ -111,12 +111,34 @@ function airCalc(){
 document.addEventListener("input", function(e){ if(e.target.classList && e.target.classList.contains("aiv")) airCalc(); });
 document.addEventListener("change", function(e){ if(e.target.classList && e.target.classList.contains("aiv")) airCalc(); });
 
-// --- κουμπί Εργαλεία στην κεφαλίδα ---
+// --- κάτω μπάρα: Βλάβη / Εργαλεία / Πελάτες / Γνώσεις, μενού ⋯ ---
+function navSync(){
+  var m = S.src==="parts" && !S.focus ? (S.pmode==="tools" ? "tools" : "kb") : "code";
+  document.documentElement.classList.toggle("mode-tools", m==="tools");
+  document.documentElement.classList.toggle("mode-kb", m==="kb");
+  [["nav_code","code"],["toolsbtn","tools"],["nav_kb","kb"]].forEach(function(x){ var b=document.getElementById(x[0]); if(b) b.classList.toggle("on", m===x[1]); });
+}
+function navGo(mode){
+  var hm = document.getElementById("hmenu"); if(hm) hm.hidden = true;
+  if(mode==="code"){ S.focus = null; if(S.src==="parts") S.src = "in"; }
+  else { S.focus = null; S.src = "parts"; if(S.pmode!==mode){ S.pmode = mode; var P = partById(S.part); if(P && (TOOL_IDS.indexOf(P.id)>=0) !== (mode==="tools")) S.part = null; } }
+  renderSrc(); renderResults(); persist(); navSync(); window.scrollTo(0,0);
+}
 document.addEventListener("click", function(e){
-  if(!e.target.closest("#toolsbtn")) return;
-  var c = document.querySelector('[data-s="parts"]'); if(c) c.click();
-  setTimeout(function(){ var g=document.getElementById("toolsgrp"); if(g) g.scrollIntoView({behavior:"smooth", block:"start"}); }, 80);
+  var el = e.target.closest("#toolsbtn,#nav_code,#nav_kb,#menubtn,#ballbtn,[data-pc]");
+  var hm = document.getElementById("hmenu");
+  if(hm && !hm.hidden && !e.target.closest("#hmenu,#menubtn")) hm.hidden = true;
+  if(!el){ return; }
+  if(el.id==="toolsbtn"){ navGo("tools"); return; }
+  if(el.id==="nav_code"){ navGo("code"); return; }
+  if(el.id==="nav_kb"){ navGo("kb"); return; }
+  if(el.id==="menubtn"){ hm.hidden = !hm.hidden; el.setAttribute("aria-expanded", String(!hm.hidden)); return; }
+  if(el.id==="ballbtn"){ S.ball = !S.ball; renderBrands(); return; }
+  if(el.hasAttribute("data-pc")){ var id = el.getAttribute("data-pc"); S.pmode = TOOL_IDS.indexOf(id)>=0 ? "tools" : "kb"; setTimeout(navSync, 0); }
 });
+document.addEventListener("click", function(e){ if(e.target.closest("#hmenu .hmi")){ setTimeout(function(){ var hm=document.getElementById("hmenu"); if(hm) hm.hidden = true; }, 0); } });
+document.addEventListener("click", function(e){ if(e.target.closest("[data-s],[data-gopart],#fzback,[data-q]")) setTimeout(navSync, 0); });
+setTimeout(navSync, 0);
 
 // --- σύνδεσμοι manuals μάρκας ---
 function manLinks(b){

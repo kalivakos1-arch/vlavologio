@@ -311,6 +311,22 @@ details.allc summary{font-size:14.5px}details.allc .all{max-height:none}
 .gdstep label{display:block;margin-top:8px}.gdstep input{width:100%;box-sizing:border-box;margin-top:4px}.dtbtns .mini.on{outline:2px solid var(--acc)}
 .gdh{margin-top:6px;padding:7px 10px;border-radius:10px;font-size:14px}.gdh.ok{background:rgba(22,163,74,.12);color:#15803d}.gdh.bad{background:rgba(220,38,38,.1);color:#b91c1c}
 .gdsum{white-space:pre-wrap;font:inherit;font-size:14px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;margin:8px 0}
+#bnav{position:fixed;left:0;right:0;bottom:0;z-index:9000;display:flex;background:var(--card);border-top:1px solid var(--line);padding:4px 4px calc(4px + env(safe-area-inset-bottom));box-shadow:0 -2px 10px rgba(0,0,0,.06)}
+#bnav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;color:var(--muted);font:inherit;font-size:12px;font-weight:600;padding:6px 2px;border-radius:12px;cursor:pointer}
+#bnav button .ic{width:24px;height:24px}#bnav button.on{color:var(--acc);background:var(--accbg)}
+body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+#menubtn{font-size:22px;font-weight:700;line-height:1}
+#hmenu{position:absolute;right:12px;top:calc(62px + env(safe-area-inset-top));z-index:9500;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:6px;display:flex;flex-direction:column;min-width:240px}
+#hmenu[hidden]{display:none}.hmi{display:flex;align-items:center;gap:10px;background:none;border:0;color:var(--text);font:inherit;font-size:15px;text-align:left;padding:11px 12px;border-radius:10px;cursor:pointer}.hmi:hover{background:var(--accbg)}.hmi.on{color:var(--acc)}
+header{position:relative}
+.srcbox [data-s="parts"]{display:none!important}
+html.mode-tools #brandcard,html.mode-tools #catwrap,html.mode-tools #oembox,html.mode-tools .search,html.mode-tools #notes,html.mode-tools .foot,html.mode-kb #notes,html.mode-kb .search .sbox,html.mode-kb .search .recent,html.mode-kb .srcbox{display:none!important}
+.bmore{width:100%;margin-top:10px}
+.bgrid.cmp{grid-template-columns:repeat(4,1fr);gap:6px}.bgrid.cmp .br{padding:8px 2px;font-size:12.5px;min-height:0}
+#brandcard:has(.bchosen){padding-top:10px;padding-bottom:10px}#brandcard:has(.bchosen)>.lbl,#catwrap:has(.catsel)>.lbl{display:none}#catwrap:has(.catsel){padding-top:8px;padding-bottom:8px}
+#oembox:has(.oemx){padding:10px 12px}.oemx>summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--muted);padding:2px 0}.oemx[open]>summary{margin-bottom:8px}
+header #hmenu .hmi,header #hmenu #theme{display:flex!important;width:auto!important;height:auto!important;border:0!important;background:none!important;place-items:initial;justify-content:flex-start;color:var(--text);font-size:15px;border-radius:10px;margin:0!important}
+header #hmenu .hmi:hover{background:var(--accbg)!important}header #hmenu .hmi .ic{width:20px;height:20px;flex:none}
 #printarea{display:none}
 @media print{html.printing body>*:not(#printarea){display:none!important}html.printing body{background:#fff!important}html.printing #printarea{display:block!important;background:#fff;color:#000;font:15px/1.5 -apple-system,Segoe UI,Arial;padding:20px}}
 html.field{font-size:118%}
@@ -415,10 +431,10 @@ html.field .srcbox button i .ic{width:24px;height:24px}
 <div class="wrap">
   <header>
     <div class="logo"><svg viewBox="0 0 48 48" width="40" height="40"><use href="#i-gauge"/></svg></div>
-    <div class="hgrow"><h1>Βλαβολόγιο Κλιματισμού</h1><p>Κωδικοί, λυχνίες & μετρήσεις από τα service manuals</p></div><button id="qscan" class="hbtn" aria-label="Σάρωση barcode" title="Σάρωση ετικέτας"><svg class="ic"><use href="#i-scan"/></svg></button><button id="toolsbtn" class="hbtn" aria-label="Εργαλεία" title="Εργαλεία: P/T, φρέον, F-gas, αέρας"><svg class="ic"><use href="#i-gauge"/></svg></button><button id="histbtn" class="hbtn" aria-label="Ιστορικό" title="Ιστορικό επισκέψεων"><svg class="ic"><use href="#i-log"/></svg></button><button id="fieldbtn" class="hbtn" aria-label="Λειτουργία πεδίου"><svg class="ic"><use href="#i-type"/></svg></button><button id="theme" aria-label="Θέμα"><svg class="ic"><use href="#i-theme"/></svg></button>
+    <div class="hgrow"><h1>Βλαβολόγιο Κλιματισμού</h1><p>Κωδικοί, λυχνίες & μετρήσεις από τα service manuals</p></div><button id="qscan" class="hbtn" aria-label="Σάρωση barcode" title="Σάρωση ετικέτας"><svg class="ic"><use href="#i-scan"/></svg></button><button id="menubtn" class="hbtn" aria-label="Μενού" aria-expanded="false">⋯</button>
+    <div id="hmenu" hidden><button id="fieldbtn" class="hmi"><svg class="ic"><use href="#i-type"/></svg> Μεγάλα γράμματα (πεδίο)</button><button id="theme" class="hmi"><svg class="ic"><use href="#i-theme"/></svg> Φωτεινό / σκοτεινό θέμα</button><button class="hmi" id="repgen">⚑ Αναφορά προβλήματος</button></div>
   </header>
 
-  <button class="repgen" id="repgen">⚑ Αναφορά προβλήματος</button>
   <div class="card" id="brandcard">
     <label class="lbl step"><b>1</b> Μάρκα</label>
     <div id="bchosen"></div>
@@ -442,6 +458,7 @@ html.field .srcbox button i .ic{width:24px;height:24px}
 
   <details class="foot"><summary>ⓘ Πηγές δεδομένων & σημειώσεις</summary><div class="foot">Τα δεδομένα συγκεντρώθηκαν από service/installation manuals των κατασκευαστών (η πηγή φαίνεται σε κάθε πίνακα). Οι κωδικοί διαφέρουν ανά γενιά/σειρά – για επισκευή πλακέτας ή συμπιεστή επιβεβαίωσε στο manual του μοντέλου. Οι «αντιστοιχίες μου» αποθηκεύονται μόνο σε αυτή τη συσκευή.<br>Ψυκτικό (R410A / R32 / R290): το βλαβολόγιο ακολουθεί τη γενιά της πλακέτας, όχι το ψυκτικό – οι νέοι κωδικοί που εμφανίστηκαν αφορούν κυρίως αισθητήρες διαρροής (π.χ. Daikin VRV 5 R32, Midea EL 0C).<br><br>Τα ονόματα και σήματα των κατασκευαστών ανήκουν στους κατόχους τους. Η εφαρμογή είναι ανεξάρτητη και δεν συνδέεται με κανέναν κατασκευαστή. Βρήκες λάθος; Πάτα «⚑ Αναφορά λάθους» κάτω από τον κωδικό.</div></details>
 </div>
+<nav id="bnav"><button id="nav_code" class="on"><svg class="ic"><use href="#i-code"/></svg><span>Βλάβη</span></button><button id="toolsbtn"><svg class="ic"><use href="#i-gauge"/></svg><span>Εργαλεία</span></button><button id="histbtn"><svg class="ic"><use href="#i-log"/></svg><span>Πελάτες</span></button><button id="nav_kb"><svg class="ic"><use href="#i-book"/></svg><span>Γνώσεις</span></button></nav>
 <script>
 (function(){ var sent={}, n=0;
  function show(t){ try{ var b=document.getElementById("jserr"); if(!b){ b=document.createElement("div"); b.id="jserr"; b.style.cssText="position:fixed;left:8px;right:8px;top:max(8px,env(safe-area-inset-top));z-index:20000;background:#b91c1c;color:#fff;padding:8px 10px;border-radius:10px;font:12px/1.35 system-ui;white-space:pre-wrap;box-shadow:0 6px 20px rgba(0,0,0,.3)"; b.onclick=function(){ b.remove(); }; (document.body||document.documentElement).appendChild(b); } b.textContent="⚠️ Σφάλμα εφαρμογής (στάλθηκε αυτόματα – πάτα για κλείσιμο):\n"+t; }catch(x){} }

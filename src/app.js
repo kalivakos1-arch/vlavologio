@@ -351,10 +351,12 @@ function renderBrands(){
   renderBrands._init = true;
   $("brandSel").classList.toggle("on", $("brandsWrap").classList.contains("open"));
   var rb = []; recent.forEach(function(x){ if(rb.indexOf(x.brand)<0) rb.push(x.brand); }); rb = rb.slice(0,6).map(function(n){ return BRANDS.filter(function(b){ return b.n===n; })[0]; }).filter(Boolean);
-  $("brands").innerHTML = (rb.length?'<div class="grp">⭐ Πρόσφατες</div><div class="bgrid">'+rb.map(btn).join("")+'</div>':'')+'<div class="grp">🏭 Κατασκευαστές με δικά τους εργοστάσια</div><div class="bgrid">'+own.map(btn).join("")+'</div>'+
-    '<div class="grp">🔗 Χωρίς δικό τους εργοστάσιο – γνωστός κατασκευαστής</div><div class="bgrid">'+oem.map(btn).join("")+'</div>'+
-    '<div class="grp">🏭 Δικό τους εργοστάσιο – χωρίς δημόσιο βλαβολόγιο</div><div class="bgrid">'+fac.map(btn).join("")+'</div>'+
-    (reb.length?'<div class="grp">❓ Χωρίς δικό τους εργοστάσιο – αλλάζει ανά σειρά (θα χρειαστεί μοντέλο/ταμπελάκι)</div><div class="bgrid">'+reb.map(btn).join("")+'</div>':'');
+  var rest = oem.length+fac.length+reb.length;
+  $("brands").innerHTML = (rb.length?'<div class="grp">⭐ Πρόσφατες</div><div class="bgrid cmp">'+rb.map(btn).join("")+'</div>':'')+'<div class="grp">🏭 Οι βασικές μάρκες</div><div class="bgrid cmp">'+own.map(btn).join("")+'</div>'+
+    (S.ball ? '<div class="grp">🔗 Χωρίς δικό τους εργοστάσιο – γνωστός κατασκευαστής</div><div class="bgrid cmp">'+oem.map(btn).join("")+'</div>'+
+    '<div class="grp">🏭 Δικό τους εργοστάσιο – χωρίς δημόσιο βλαβολόγιο</div><div class="bgrid cmp">'+fac.map(btn).join("")+'</div>'+
+    (reb.length?'<div class="grp">❓ Χωρίς δικό τους εργοστάσιο – αλλάζει ανά σειρά (θα χρειαστεί μοντέλο/ταμπελάκι)</div><div class="bgrid cmp">'+reb.map(btn).join("")+'</div>':'')+'<button class="mini bmore" id="ballbtn">▲ Λιγότερες μάρκες</button>'
+    : '<button class="mini bmore" id="ballbtn">▼ Όλες οι μάρκες ('+rest+' ακόμα)</button>');
   if(document.activeElement!==$("bq")) $("bq").value = S.bedit ? "" : (S.brand || "");
   $("bsug").innerHTML = "";
 }
@@ -419,8 +421,8 @@ function renderOem(){
   if(b.own){
     box.style.display = "block";
     box.innerHTML = (b.oem||b.fac ? '<div class="hint" style="margin:0 0 8px">🏭 '+esc((b.oem||b.fac).replace(/^./,function(c){return c.toUpperCase();}))+'.</div>' : "")+(b.hint ? '<div class="hint" style="margin:0 0 8px">'+esc(b.hint)+'</div>' : "")+
-      '<button class="mini scanbtn" data-scan="ser"><svg class="ic"><use href="#i-scan"/></svg> Σκάναρε το barcode της ετικέτας – ημερομηνία κατασκευής</button>'+
-      (S.fw.ser ? '<div class="serbox"><div class="small"><b>Σειριακός:</b> '+esc(S.fw.ser)+' <button class="x" data-fwclr="ser">✕</button></div>'+serHtml(S.fw.ser, null)+'</div>' : '')+manLinks(b);
+      (S.fw.ser ? '<div class="serbox"><div class="small"><b>Σειριακός:</b> '+esc(S.fw.ser)+' <button class="x" data-fwclr="ser">✕</button></div>'+serHtml(S.fw.ser, null)+'</div>' : '')+
+      '<details class="oemx"><summary>🏷️ Ετικέτα (ημερομηνία κατασκευής) & manuals '+esc(b.n)+'</summary><button class="mini scanbtn" data-scan="ser"><svg class="ic"><use href="#i-scan"/></svg> Σκάναρε το barcode της ετικέτας – ημερομηνία κατασκευής</button>'+manLinks(b)+'</details>';
     return;
     box.innerHTML = (b.oem||b.fac ? '<div class="hint">🏭 '+esc((b.oem||b.fac).replace(/^./,function(c){return c.toUpperCase();}))+'.</div>' : "")+(b.hint ? '<div class="hint">'+esc(b.hint)+'</div>' : "")+
       '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι – προαιρετικό)</label><input id="model" placeholder="π.χ. '+esc(b.n==="LG"?"S12EQ / HU071MR":b.n==="Daikin"?"FTXM35R":b.n==="Gree"?"GWH12ACC-K6DNA1D":"μοντέλο εσωτερικής ή εξωτερικής")+'" autocapitalize="characters" spellcheck="false">'+
@@ -1209,16 +1211,21 @@ function renderParts(){
     if(MEAS[S.part]) measUpdate();
     return;
   }
-  var h = '<div class="kbh">📚 Τράπεζα γνώσεων</div><div class="small" style="margin:-4px 2px 10px">Οδηγοί πολυμέτρου, μετρήσεις εξαρτημάτων, πιέσεις. Για να ελέγξεις μια βλάβη, ξεκίνα από τον κωδικό – θα σε φέρει εδώ μόνο με ό,τι χρειάζεσαι.</div><div class="pbox"><label class="lbl">Μοντέλο κλιματιστικού (ταμπελάκι)</label>'+
-    '<input id="pmodel" placeholder="π.χ. GWH12AGB-K6DNA1A" autocapitalize="characters" spellcheck="false" value="'+esc(S.model||"")+'">'+
-    '<div class="small pinfo" id="pplat"></div><div id="pmodelinfo"></div><div id="pmine"></div></div>';
-  h += mmGuide(!S.part);
   var pcb = function(p){ return '<button class="pc'+(S.part===p.id?' on':'')+'" data-pc="'+p.id+'">'+p.icon+' '+esc(p.name)+'</button>'; };
   var isTool = function(p){ return typeof TOOL_IDS!=="undefined" && TOOL_IDS.indexOf(p.id)>=0; };
-  h += '<div class="lbl">Ποιο εξάρτημα θες να ελέγξεις;</div><div class="pchips">'+PARTS.filter(function(p){ return !isTool(p); }).map(pcb).join("")+'</div>';
-  h += '<div class="lbl" id="toolsgrp">🧰 Εργαλεία & υπολογισμοί</div><div class="pchips">'+PARTS.filter(isTool).sort(function(a,b){ return TOOL_IDS.indexOf(a.id)-TOOL_IDS.indexOf(b.id); }).map(pcb).join("")+'</div>';
+  var cp0 = partById(S.part); if(cp0) S.pmode = isTool(cp0) ? "tools" : "kb";
+  var h = "";
+  if(S.pmode==="tools"){
+    h += '<div class="kbh">🧰 Εργαλεία & υπολογισμοί</div><div class="pchips" id="toolsgrp">'+PARTS.filter(isTool).sort(function(a,b){ return TOOL_IDS.indexOf(a.id)-TOOL_IDS.indexOf(b.id); }).map(pcb).join("")+'</div>';
+  } else {
+  h += '<div class="kbh">📚 Τράπεζα γνώσεων</div><div class="small" style="margin:-4px 2px 10px">Οδηγοί πολυμέτρου, μετρήσεις εξαρτημάτων, πιέσεις. Για να ελέγξεις μια βλάβη, ξεκίνα από τον κωδικό – θα σε φέρει εδώ μόνο με ό,τι χρειάζεσαι.</div><div class="pbox"><label class="lbl">Μοντέλο κλιματιστικού (ταμπελάκι)</label>'+
+    '<input id="pmodel" placeholder="π.χ. GWH12AGB-K6DNA1A" autocapitalize="characters" spellcheck="false" value="'+esc(S.model||"")+'">'+
+    '<div class="small pinfo" id="pplat"></div><div id="pmodelinfo"></div><div id="pmine"></div></div>';
+    h += mmGuide(false);
+    h += '<div class="lbl">Ποιο εξάρτημα θες να ελέγξεις;</div><div class="pchips">'+PARTS.filter(function(p){ return !isTool(p); }).map(pcb).join("")+'</div>';
+  }
   var P = partById(S.part);
-  if(!P){ h += '<div class="empty">Διάλεξε εξάρτημα. Θα δεις χρώματα καλωδίων, βήματα με το πολύμετρο και τιμές από τα manuals.</div>'; }
+  if(!P){ h += S.pmode==="tools" ? '<div class="empty">Διάλεξε εργαλείο.</div>' : '<div class="empty">Διάλεξε εξάρτημα. Θα δεις χρώματα καλωδίων, βήματα με το πολύμετρο και τιμές από τα manuals.</div>'; }
   else {
     h += '<div class="pwarn">⚡ Πριν ακουμπήσεις: κλείσε ρεύμα, περίμενε 5–10′ να αδειάσουν οι πυκνωτές της πλακέτας (μέτρα DC < 5V). Μετρήσεις «με ρεύμα» μόνο με μονωμένους ακροδέκτες.</div>';
     h += ruleBox(P.id);
@@ -1351,7 +1358,7 @@ $("clr").addEventListener("click", function(){ S.q=""; $("q").value=""; renderRe
 
 
 function setTheme(t){ LS.set("vl_theme",t); var r=document.documentElement; if(t==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",t);
-  $("theme").innerHTML = '<svg class="ic"><use href="#i-'+(t==="light"?"sun":t==="dark"?"moon":"theme")+'"/></svg>'; $("theme").title = t==="light"?"Φωτεινό θέμα":t==="dark"?"Σκούρο θέμα":"Αυτόματο θέμα (όπως το κινητό)";
+  $("theme").innerHTML = '<svg class="ic"><use href="#i-'+(t==="light"?"sun":t==="dark"?"moon":"theme")+'"/></svg> Θέμα: '+(t==="light"?"φωτεινό":t==="dark"?"σκοτεινό":"αυτόματο"); $("theme").title = t==="light"?"Φωτεινό θέμα":t==="dark"?"Σκούρο θέμα":"Αυτόματο θέμα (όπως το κινητό)";
   var dark = t==="dark" || (t==="auto" && !(window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches));
   var m=document.querySelector('meta[name=theme-color]'); if(m) m.setAttribute("content", dark?"#0F1B25":"#E4E9ED"); }
 setTheme(LS.get("vl_theme","auto"));
