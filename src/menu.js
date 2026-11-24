@@ -86,7 +86,7 @@ function aboutHtml(){
     '<div class="small">Οι κωδικοί διαφέρουν ανά γενιά και σειρά. Για αλλαγή πλακέτας ή συμπιεστή επιβεβαίωσε στο manual του μοντέλου. Τα ονόματα και σήματα των κατασκευαστών ανήκουν στους κατόχους τους. Η εφαρμογή είναι ανεξάρτητη και δεν συνδέεται με κανέναν κατασκευαστή.</div>'+
     '<div class="small" style="margin-top:8px">'+(m?'Έκδοση '+esc(m.content.replace("vl-v",""))+' · ':'')+'Τα δεδομένα σου (σημειώσεις, πελάτες, αναφορές) μένουν μόνο σε αυτή τη συσκευή.</div>';
 }
-var APP_URL = "https://kalivakos1-arch.github.io/vlavologio/";
+var APP_URL = "https://vlavologio.github.io/";
 function shareApp(){
   var d = {title:"Βλαβολόγιο Κλιματισμού", text:"Κωδικοί βλαβών, λυχνίες, μετρήσεις και εργαλεία για τεχνικούς κλιματισμού – δωρεάν, στα ελληνικά, και χωρίς internet.", url:APP_URL};
   if(navigator.share){ navigator.share(d).catch(function(){}); return; }
@@ -112,3 +112,29 @@ document.addEventListener("click", function(e){
   LS.set("vl_welcomed", true); var w = document.getElementById("welcome"); if(w) w.hidden = true;
   if(b.id==="welhelp") movOpen("❓ Πώς δουλεύει", HELP_HTML);
 });
+// ===== Μεταφορά δεδομένων από την παλιά διεύθυνση (kalivakos1-arch.github.io/vlavologio) =====
+var OLD_ORIGIN = "https://kalivakos1-arch.github.io";
+function vlMergeLS(ls){
+  var n = 0;
+  Object.keys(ls||{}).forEach(function(k){
+    if(!/^vl_/.test(k) || /^vl_(replast|repq|migrated)$/.test(k)) return;
+    var v = ls[k], cur = localStorage.getItem(k);
+    try{
+      if(k==="vl_hist"){ var a = JSON.parse(cur||"[]"), b = JSON.parse(v||"[]"), ids = {}; a.forEach(function(h){ ids[h.id]=1; }); b.forEach(function(h){ if(h && h.id && !ids[h.id]){ a.push(h); n++; } }); localStorage.setItem(k, JSON.stringify(a)); return; }
+      if(k==="vl_notes"){ var o = JSON.parse(cur||"{}"), p = JSON.parse(v||"{}"); Object.keys(p).forEach(function(x){ if(!o[x]){ o[x]=p[x]; n++; } }); localStorage.setItem(k, JSON.stringify(o)); return; }
+      if(cur===null || k==="vl_state"){ localStorage.setItem(k, v); n++; }
+    }catch(x){}
+  });
+  return n;
+}
+function vlAllLS(){ var o = {}; for(var i=0;i<localStorage.length;i++){ var k = localStorage.key(i); if(/^vl_/.test(k)) o[k] = localStorage.getItem(k); } return o; }
+(function(){
+  if(!/mig=1/.test(location.hash) || !window.opener) return;
+  window.addEventListener("message", function(e){
+    if(e.origin!==OLD_ORIGIN || !e.data || e.data.t!=="vlmig") return;
+    var n = vlMergeLS(e.data.ls); try{ e.source.postMessage({t:"vlmig-ok", n:n}, e.origin); }catch(x){}
+    try{ localStorage.setItem("vl_migrated", String(Date.now())); }catch(x){}
+    history.replaceState(null, "", location.pathname); alert("✅ Τα δεδομένα σου μεταφέρθηκαν στη νέα διεύθυνση."); location.reload();
+  });
+  try{ window.opener.postMessage({t:"vlmig-ready"}, OLD_ORIGIN); }catch(x){}
+})();

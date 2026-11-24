@@ -253,7 +253,7 @@ document.addEventListener("click", function(e){
   }
   if(el.id==="histdel"){ var d = el.getAttribute("data-id"); if(el.getAttribute("data-c")!=="1"){ el.setAttribute("data-c","1"); el.textContent="Πάτα ξανά για διαγραφή"; return; } HIST = HIST.filter(function(h){ return h.id!==d; }); histSave(); histOpen("list"); return; }
   if(el.id==="histexp"){
-    var blob = new Blob([JSON.stringify({app:"vlavologio", v:1, hist:HIST, serLearn:serLearn, myMap:LS.get("vl_mymap",[])}, null, 1)], {type:"application/json"}), fn = "vlavologio-istoriko-"+new Date().toISOString().slice(0,10)+".json";
+    var blob = new Blob([JSON.stringify({app:"vlavologio", v:2, hist:HIST, serLearn:serLearn, myMap:LS.get("vl_mymap",[]), ls:vlAllLS()}, null, 1)], {type:"application/json"}), fn = "vlavologio-istoriko-"+new Date().toISOString().slice(0,10)+".json";
     try{ var file = new File([blob], fn, {type:"application/json"}); if(navigator.canShare && navigator.canShare({files:[file]})){ navigator.share({files:[file], title:"Βλαβολόγιο – αντίγραφο"}).catch(function(){}); return; } }catch(x){}
     var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = fn; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500); return;
   }
@@ -262,6 +262,7 @@ document.addEventListener("input", function(e){ if(e.target && e.target.id==="hi
 document.addEventListener("change", function(e){
   if(!e.target || e.target.id!=="histimp" || !e.target.files || !e.target.files[0]) return;
   var rd = new FileReader(); rd.onload = function(){ try{ var d = JSON.parse(rd.result); if(!d || d.app!=="vlavologio") throw 0;
+    if(d.ls){ vlMergeLS(d.ls); alert("✅ Η επαναφορά έγινε."); location.reload(); return; }
     var ids = {}; HIST.forEach(function(h){ ids[h.id]=1; }); (d.hist||[]).forEach(function(h){ if(h && h.id && !ids[h.id]) HIST.push(h); }); histSave();
     if(d.serLearn){ d.serLearn.forEach(function(l){ if(!serLearn.some(function(x){ return x.b===l.b && x.p===l.p; })) serLearn.push(l); }); LS.set("vl_serlearn", serLearn); }
     histOpen("list"); } catch(x){ alert("Το αρχείο δεν είναι αντίγραφο του Βλαβολογίου."); } };
