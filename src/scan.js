@@ -203,7 +203,7 @@ function histOpen(mode, id){
   var ov = document.getElementById("histov");
   if(!ov){ ov = document.createElement("div"); ov.id = "histov"; document.body.appendChild(ov); }
   ov.style.display = "flex"; document.body.style.overflow = "hidden";
-  var h = '<div class="schead"><b>📒 Ιστορικό & ανταλλακτικά</b><button class="mini" id="histclose">✕</button></div>'+
+  var h = '<div class="schead"><b>📒 Πελάτες – επισκέψεις & ανταλλακτικά</b><button class="mini" id="histclose">✕</button></div>'+
     '<div class="chips htabs"><button class="chip'+(mode!=="parts"&&mode!=="fgas"?' on':'')+'" id="htab_h">📒 Επισκέψεις ('+HIST.length+')</button><button class="chip'+(mode==="parts"?' on':'')+'" id="htab_p">🧾 Ανταλλακτικά ('+PLIST.filter(function(p){return !p.done;}).length+')</button><button class="chip'+(mode==="fgas"?' on':'')+'" id="htab_f">🧯 F‑gas'+fgBadge()+'</button></div>';
   if(mode==="parts"){ ov.innerHTML = h + plistHtml(); return; }
   if(mode==="fgas"){ ov.innerHTML = h + fgBookHtml(); return; }
@@ -400,7 +400,7 @@ document.addEventListener("change", function(e){ var t = e.target; if(!t) return
 document.addEventListener("input", function(e){ var t = e.target; if(t && /^chg_[lsg]$/.test(t.id)) chargeCalc(); });
 
 // ===== Λειτουργία πεδίου (μεγάλα γράμματα, υψηλή αντίθεση) =====
-function setField(on){ LS.set("vl_field", !!on); document.documentElement.classList.toggle("field", !!on); var b = document.getElementById("fieldbtn"); if(b){ b.classList.toggle("on", !!on); b.title = on ? "Λειτουργία πεδίου: ΝΑΙ" : "Λειτουργία πεδίου (μεγάλα γράμματα, έντονη αντίθεση)"; } }
+function setField(on){ LS.set("vl_field", !!on); document.documentElement.classList.toggle("field", !!on); var b = document.getElementById("fieldbtn"); if(b){ b.classList.toggle("on", !!on); b.innerHTML = '<span class="hmic">🔠</span><span>Μεγάλα γράμματα: '+(on?"ΝΑΙ":"ΟΧΙ")+'<small>Για χρήση στο πεδίο, με έντονη αντίθεση</small></span>'; b.title = on ? "Λειτουργία πεδίου: ΝΑΙ" : "Λειτουργία πεδίου (μεγάλα γράμματα, έντονη αντίθεση)"; } }
 document.addEventListener("click", function(e){ if(e.target.closest("#fieldbtn")) setField(!document.documentElement.classList.contains("field")); });
 setField(LS.get("vl_field", false));
 

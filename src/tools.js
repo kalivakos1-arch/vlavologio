@@ -111,6 +111,12 @@ function airCalc(){
 document.addEventListener("input", function(e){ if(e.target.classList && e.target.classList.contains("aiv")) airCalc(); });
 document.addEventListener("change", function(e){ if(e.target.classList && e.target.classList.contains("aiv")) airCalc(); });
 
+function hmSet(open){
+  var hm=document.getElementById("hmenu"), bk=document.getElementById("hmback"), mb=document.getElementById("menubtn");
+  if(hm) hm.hidden=!open; if(bk) bk.hidden=!open; if(mb) mb.setAttribute("aria-expanded", String(!!open));
+  if(open){ var v=document.getElementById("hmver"); if(v && !v.textContent){ var m=document.querySelector('meta[name="vl-ver"]'); v.textContent=m?"Έκδοση "+m.content.replace("vl-v",""):""; } }
+}
+document.addEventListener("keydown", function(e){ if(e.key==="Escape"){ var hm=document.getElementById("hmenu"); if(hm && !hm.hidden) hmSet(false); } });
 // --- κάτω μπάρα: Βλάβη / Εργαλεία / Πελάτες / Γνώσεις, μενού ⋯ ---
 function navSync(){
   var m = S.src==="parts" && !S.focus ? (S.pmode==="tools" ? "tools" : "kb") : "code";
@@ -119,7 +125,7 @@ function navSync(){
   [["nav_code","code"],["toolsbtn","tools"],["nav_kb","kb"]].forEach(function(x){ var b=document.getElementById(x[0]); if(b) b.classList.toggle("on", m===x[1]); });
 }
 function navGo(mode){
-  var hm = document.getElementById("hmenu"); if(hm) hm.hidden = true;
+  hmSet(false);
   if(mode==="code"){ S.focus = null; if(S.src==="parts") S.src = "in"; }
   else { S.focus = null; S.src = "parts"; if(S.pmode!==mode){ S.pmode = mode; var P = partById(S.part); if(P && (TOOL_IDS.indexOf(P.id)>=0) !== (mode==="tools")) S.part = null; } }
   renderSrc(); renderResults(); persist(); navSync(); window.scrollTo(0,0);
@@ -127,16 +133,16 @@ function navGo(mode){
 document.addEventListener("click", function(e){
   var el = e.target.closest("#toolsbtn,#nav_code,#nav_kb,#menubtn,#ballbtn,[data-pc]");
   var hm = document.getElementById("hmenu");
-  if(hm && !hm.hidden && !e.target.closest("#hmenu,#menubtn")) hm.hidden = true;
+  if(hm && !hm.hidden && !e.target.closest("#hmenu,#menubtn")) hmSet(false);
   if(!el){ return; }
   if(el.id==="toolsbtn"){ navGo("tools"); return; }
   if(el.id==="nav_code"){ navGo("code"); return; }
   if(el.id==="nav_kb"){ navGo("kb"); return; }
-  if(el.id==="menubtn"){ hm.hidden = !hm.hidden; el.setAttribute("aria-expanded", String(!hm.hidden)); return; }
+  if(el.id==="menubtn"){ hmSet(hm.hidden); return; }
   if(el.id==="ballbtn"){ S.ball = !S.ball; renderBrands(); return; }
   if(el.hasAttribute("data-pc")){ var id = el.getAttribute("data-pc"); S.pmode = TOOL_IDS.indexOf(id)>=0 ? "tools" : "kb"; setTimeout(navSync, 0); }
 });
-document.addEventListener("click", function(e){ if(e.target.closest("#hmenu .hmi")){ setTimeout(function(){ var hm=document.getElementById("hmenu"); if(hm) hm.hidden = true; }, 0); } });
+document.addEventListener("click", function(e){ if(e.target.closest("#hmenu .hmi")){ setTimeout(function(){ hmSet(false); }, 0); } });
 document.addEventListener("click", function(e){ if(e.target.closest("[data-s],[data-gopart],#fzback,[data-q]")) setTimeout(navSync, 0); });
 setTimeout(navSync, 0);
 
@@ -255,7 +261,7 @@ function repOpen(tkey, code, opt){
   d.innerHTML='<div class="repbox" role="dialog" aria-modal="true" aria-labelledby="reph"><div class="reph" id="reph">⚑ '+(gen?'Αναφορά προβλήματος':'Αναφορά λάθους')+'<button class="repx" id="repcancel2" aria-label="Κλείσιμο">✕</button></div>'+
     (opt.photo&&!ctxl?'':ctxl?'<div class="small">'+(code?'Κωδικός <b>'+esc(code)+'</b> · ':'')+ctxl+'</div>':'<div class="small">Δεν έχει επιλεγεί μάρκα – γράψ’ την στο σχόλιο αν αφορά συγκεκριμένη μονάδα.</div>')+
     (opt.photo?'<div class="repask">🔎 Ο σειριακός <b class="code">'+esc(opt.ser||"")+'</b> δεν αναγνωρίστηκε.<br>📷 Βγάλε μια φωτογραφία <b>ολόκληρο το ταμπελάκι</b> της μονάδας (να φαίνονται μάρκα, μοντέλο, σειριακός και κατασκευαστής) και πάτα «Αποστολή» – θα ελεγχθεί και θα προστεθεί.</div>'+PHB:'')+
-    '<div class="repk">'+kinds.map(function(k,i){ var on=opt.ser ? /Λείπει μάρκα/.test(k) : i===0; return '<label class="chk"><input type="radio" name="repk" value="'+esc(k)+'"'+(on?' checked':'')+'> '+esc(k)+'</label>'; }).join("")+'</div>'+
+    '<div class="repk">'+kinds.map(function(k,i){ var on=opt.kind ? k===opt.kind : opt.ser ? /Λείπει μάρκα/.test(k) : i===0; return '<label class="chk"><input type="radio" name="repk" value="'+esc(k)+'"'+(on?' checked':'')+'> '+esc(k)+'</label>'; }).join("")+'</div>'+
     '<div class="row2"><input id="repmodel" placeholder="Μοντέλο" autocapitalize="characters" spellcheck="false" value="'+esc(cx.model)+'">'+
     (gen?'<input id="repcode" placeholder="Κωδικός (αν υπάρχει)" autocapitalize="characters" spellcheck="false" value="'+esc(opt.ser?"":cx.q)+'">':'')+'</div>'+
     '<input id="repser" placeholder="Σειριακός (αν υπάρχει)" autocapitalize="characters" spellcheck="false" value="'+esc(opt.ser||"")+'" style="margin-top:8px">'+

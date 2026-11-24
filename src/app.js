@@ -60,6 +60,7 @@ var BRANDS = [
   {n:"Wellio", oem:"ελληνική μάρκα – τα inverter τοίχου είναι μοντέλα TCL", own:"tcl", hint:"Τα Wellio inverter τοίχου είναι μοντέλα TCL (TAC-09/12/18/24CHSD) – χρησιμοποιεί βλαβολόγιο TCL."},
   {n:"CHiQ", fac:"Changhong (Κίνα) – έχει δικά της εργοστάσια κλιματιστικών, αλλά δεν υπάρχει δημόσιο βλαβολόγιο", cands:GENERIC, hint:"Η CHiQ είναι η διεθνής μάρκα της Changhong (Sichuan Changhong, Mianyang). Ελέγχθηκε και το ευρωπαϊκό εγχειρίδιο χρήσης CHiQ split (σειρά CSDH-07/09/12/18/24DK…): γράφει ότι η οθόνη δείχνει κωδικούς, αλλά δεν δίνει πίνακα κωδικών. Δεν βρέθηκε δημόσιο service manual – στείλε φωτογραφία ταμπέλας/κωδικού με την αναφορά."},
   {n:"Sang", cands:GENERIC},
+  {n:"Qualitair", cands:GENERIC, hint:"Ελληνική μάρκα (Qualitair, Μαρούσι). Δεν υπάρχει δημόσιο επίσημο βλαβολόγιο και η εταιρεία δεν δηλώνει εργοστάσιο κατασκευής (σειρά CSD‑09/12/18/24DA). Σκάναρε την ετικέτα της εξωτερικής ή διάλεξε εργοστάσιο από την πλακέτα/το τηλεχειριστήριο. Για το επίσημο βλαβολόγιο: Qualitair 210 8066070."},
   {n:"Cooper&Hunter", oem:"αμερικανική μάρκα – κατασκευάζεται από τη Gree (Zhuhai)", own:"gree", hint:"Κατασκευάζεται από Gree – χρησιμοποιεί βλαβολόγιο Gree."},
   {n:"Bosch", fac:"Bosch – από τον Ιούλιο 2025 ιδιοκτήτης των εργοστασίων Hitachi (JCH)· τα Bosch Climate split είναι όμως Midea OEM", cands:{split:["midea"], vrf:["midea"], vrfhr:["midea"]}, hint:"Τα Bosch Climate (split) και τα Bosch VRF (AF5300) είναι Midea OEM. Οι αντλίες Bosch Compress έχουν δικό τους βλαβολόγιο (δεν περιλαμβάνεται)."},
   {n:"Carrier", fac:"Carrier – έχει δικά της εργοστάσια (και την Toshiba Carrier για VRF/επαγγελματικά)· τα οικιακά split στην Ευρώπη είναι συνήθως Midea OEM", cands:{split:["midea","toshiba"], vrf:["toshiba","midea"], vrfhr:["toshiba","midea"], hp:["midea"]}, hint:"Carrier: τα οικιακά είναι συνήθως Midea, τα επαγγελματικά/VRF Toshiba-Carrier. Δες ταμπελάκι."},
@@ -111,7 +112,7 @@ var ALIAS = {
  "Panasonic":["πανασονικ","πανασόνικ"], "Samsung":["σαμσουνγκ","σάμσουνγκ","σαμσουγκ"], "Hitachi":["χιτατσι","χιτάτσι"], "Gree":["γκρι","γκρη","γρι","γκριι"],
  "Midea":["μιντεα","μιντέα","μιδεα","μιντια"], "AUX":["αουξ","αυξ","ωξ","οξ","άουξ"], "Hisense":["χαισενς","χαϊσενς","χισενς","χαισενσ"], "Haier":["χαιερ","χάιερ","χαϊερ","χαιρ"], "Candy":["κάντι","καντι","καντυ","κάντυ","κεντι"],
  "TCL":["τσλ","τισιελ","τι σι ελ"], "Cooper&Hunter":["κουπερ","κούπερ","κουπερ χαντερ","κουπερ εντ χαντερ","κουπερ και χαντερ","cooper"], "Bosch":["μπος","μποσ"], "Carrier":["καριερ","κάριερ"],
- "Inventor":["ινβεντορ","ινβέντορ","inventor"], "Kerosun":["κεροσαν","κεροσάν","kero sun","kero-sun","κερο σαν"], "Aufit":["αουφιτ","άουφιτ","aufit"], "Argo":["αργκο","άργκο","αργο","άργο"], "Nobu":["νομπου","νόμπου","νομπού"], "Wellio":["γουελιο","γουέλιο"], "CHiQ":["τσικ","σικιου","changhong","τσανγκχονγκ"], "Sang":["σανγκ","σανκ"], "Toyotomi":["τογιοτομι","τογιοτόμι"], "Sendo":["σεντο","σέντο"], "Nexi (by Sendo)":["νεξι","νέξι"],
+ "Inventor":["ινβεντορ","ινβέντορ","inventor"], "Kerosun":["κεροσαν","κεροσάν","kero sun","kero-sun","κερο σαν"], "Aufit":["αουφιτ","άουφιτ","aufit"], "Argo":["αργκο","άργκο","αργο","άργο"], "Nobu":["νομπου","νόμπου","νομπού"], "Wellio":["γουελιο","γουέλιο"], "CHiQ":["τσικ","σικιου","changhong","τσανγκχονγκ"], "Sang":["σανγκ","σανκ"], "Toyotomi":["τογιοτομι","τογιοτόμι"], "Qualitair":["κουαλιτερ","κουάλιτερ","κουαλιταιρ","qualiter","κοβαλιτερ"], "Sendo":["σεντο","σέντο"], "Nexi (by Sendo)":["νεξι","νέξι"],
  "Juro-Pro":["τζουρο","τζούρο","τζουρο προ","juro"], "Morris":["μορις","μόρις"], "Tesla":["τεσλα","τέσλα"], "Pitsos":["πιτσος","πίτσος"], "Equation":["εκουεισιον","equation"],
  "F&U":["εφ εντ γιου","fu"], "Eurolamp":["ευρολαμπ","γιουρολαμπ"], "Primo":["πριμο","πρίμο"], "Philco":["φιλκο","φίλκο"], "Arielli":["αριελι","αριέλι"], "Finlux":["φινλουξ"],
  "Nuvelle":["νουβελ"], "Miyato":["μιγιατο","μιγιάτο"], "Coolstar":["κουλσταρ"], "United":["γιουνάιτεντ","γιουναιτεντ"], "Intercool":["ιντερκουλ"], "Omnys":["ομνις"],
@@ -523,6 +524,7 @@ function card(r, showPlat){
     (typeof outBox==="function" ? outBox(t, c) : '')+
     procBox(c, t.plat)+
     partLinks(c[1]+' '+(c[2]||''), c)+
+    (typeof noteBox==="function" ? noteBox(t.key, c[0][0], c[1]) : '')+
     (typeof repButton==="function" ? repButton(t.key, c[0][0]) : '')+
     '<div class="rs">'+esc(t.tbl.name)+(typeof VERIF_T!=="undefined" && VERIF_T[t.key] ? '<br>⚠️ '+esc(VERIF_T[t.key]) : '')+'</div>'+
   '</div>';
@@ -725,7 +727,7 @@ function renderMine(){
   var pl = partPlats();
   info.innerHTML = !b ? 'Διάλεξε μάρκα πάνω για τιμές από τα manuals της (αλλιώς βλέπεις γενικές οδηγίες).' :
     (pl.length===1 ? 'Τιμές για: <b>'+esc(PLAT[pl[0]].name)+'</b>'+(b.own?'':' (εργοστάσιο της '+esc(b.n)+')') :
-     '⚠️ Η '+esc(b.n)+' δεν έχει δικό της εργοστάσιο: διάλεξε «Εργοστάσιο παραγωγής» πάνω (ή γράψε μοντέλο που έχεις αποθηκεύσει) για να δεις τις σωστές τιμές.');
+     '⚠️ Η '+esc(b.n)+' δεν έχει δικό της εργοστάσιο: διάλεξε «Εργοστάσιο παραγωγής» στην καρτέλα «Βλάβη» (ή γράψε μοντέλο που έχεις αποθηκεύσει) για να δεις τις σωστές τιμές.');
 }
 function applyModel(v){
   S.model = v; var b = brandObj(); if(!b || b.own) return false;
@@ -1358,7 +1360,7 @@ $("clr").addEventListener("click", function(){ S.q=""; $("q").value=""; renderRe
 
 
 function setTheme(t){ LS.set("vl_theme",t); var r=document.documentElement; if(t==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",t);
-  $("theme").innerHTML = '<svg class="ic"><use href="#i-'+(t==="light"?"sun":t==="dark"?"moon":"theme")+'"/></svg> Θέμα: '+(t==="light"?"φωτεινό":t==="dark"?"σκοτεινό":"αυτόματο"); $("theme").title = t==="light"?"Φωτεινό θέμα":t==="dark"?"Σκούρο θέμα":"Αυτόματο θέμα (όπως το κινητό)";
+  $("theme").innerHTML = '<span class="hmic">'+(t==="light"?"☀️":t==="dark"?"🌙":"🌓")+'</span><span>Θέμα: '+(t==="light"?"φωτεινό":t==="dark"?"σκοτεινό":"αυτόματο (όπως το κινητό)")+'<small>Πάτα για αλλαγή</small></span>'; $("theme").title = t==="light"?"Φωτεινό θέμα":t==="dark"?"Σκούρο θέμα":"Αυτόματο θέμα (όπως το κινητό)";
   var dark = t==="dark" || (t==="auto" && !(window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches));
   var m=document.querySelector('meta[name=theme-color]'); if(m) m.setAttribute("content", dark?"#0F1B25":"#E4E9ED"); }
 setTheme(LS.get("vl_theme","auto"));
