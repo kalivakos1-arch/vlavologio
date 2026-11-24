@@ -1229,7 +1229,8 @@ function renderParts(){
   var P = partById(S.part);
   if(!P){ h += S.pmode==="tools" ? '<div class="empty">Διάλεξε εργαλείο.</div>' : '<div class="empty">Διάλεξε εξάρτημα. Θα δεις χρώματα καλωδίων, βήματα με το πολύμετρο και τιμές από τα manuals.</div>'; }
   else {
-    h += '<div class="pwarn">⚡ Πριν ακουμπήσεις: κλείσε ρεύμα, περίμενε 5–10′ να αδειάσουν οι πυκνωτές της πλακέτας (μέτρα DC < 5V). Μετρήσεις «με ρεύμα» μόνο με μονωμένους ακροδέκτες.</div>';
+    h += '<div id="ptop"></div>';
+    if(!isTool(P)) h += '<div class="pwarn">⚡ Πριν ακουμπήσεις: κλείσε ρεύμα, περίμενε 5–10′ να αδειάσουν οι πυκνωτές της πλακέτας (μέτρα DC < 5V). Μετρήσεις «με ρεύμα» μόνο με μονωμένους ακροδέκτες.</div>';
     h += ruleBox(P.id);
     if(P.id==="fan") h += '<div id="fanw">'+fanWizard()+'</div>';
     if(P.id==="comp") h += '<div class="pcalcw"><div class="lbl">🔎 Κωδικός συμπιεστή (ετικέτα πάνω στον συμπιεστή)</div><input id="pcomp" placeholder="π.χ. ASN98D22UFZ" autocapitalize="characters" spellcheck="false"><div id="pcompres"></div></div>';
@@ -1257,7 +1258,7 @@ function renderParts(){
     h += ex;
     h += P.body.map(function(s){ return '<div class="psec"><div class="pst">'+esc(s[0])+'</div><div class="psb">'+esc(s[1])+'</div></div>'; }).join("");
     if(typeof TOOL_IDS==='undefined' || TOOL_IDS.indexOf(P.id)<0) h += '<div class="pnote small">Οι τιμές (Ω, V) είναι από τα service manuals της μάρκας όπου υπάρχει πηγή, αλλιώς τυπικές. Η ακριβής τιμή περιέλιξης συμπιεστή/μοτέρ αλλάζει ανά μοντέλο και γράφεται στο wiring diagram ή στο service manual του – η πιο αξιόπιστη σύγκριση είναι οι 3 φάσεις μεταξύ τους.</div>';
-    h += '<div class="psave"><div class="lbl">📒 Κράτα τη μέτρησή σου για αυτό το μοντέλο</div><div class="row2"><input id="pval" placeholder="π.χ. U-V-W 1,4Ω · γείωση OL"><button id="psave" class="mini">Αποθήκευση</button></div><div id="psmsg" class="small"></div></div>';
+    if(typeof TOOL_IDS==='undefined' || TOOL_IDS.indexOf(P.id)<0) h += '<div class="psave"><div class="lbl">📒 Κράτα τη μέτρησή σου για αυτό το μοντέλο</div><div class="row2"><input id="pval" placeholder="π.χ. U-V-W 1,4Ω · γείωση OL"><button id="psave" class="mini">Αποθήκευση</button></div><div id="psmsg" class="small"></div></div>';
   }
   out.innerHTML = h;
   renderMine(); renderModelBox();
@@ -1287,7 +1288,7 @@ document.addEventListener("click", function(e){
   if(el.id==="fzback"){ S.focus=null; S.src="in"; renderSrc(); persist(); renderResults(); return; }
   if(el.id==="fzall"){ S.focus=null; renderParts(); return; }
   if(el.hasAttribute("data-fcount")){ S.fcount = +el.getAttribute("data-fcount"); renderParts(); return; }
-  if(el.hasAttribute("data-pc")){ S.focus=null; S.part = el.getAttribute("data-pc"); persist(); try{ renderParts(); }catch(er){ if(window.vlErr) window.vlErr((er&&er.message)||er, "renderParts("+S.part+")\n"+(er&&er.stack||"")); } setTimeout(function(){ var w=document.querySelector(".pwarn"); if(w && w.scrollIntoView) w.scrollIntoView({behavior:"smooth", block:"start"}); }, 30); return; }
+  if(el.hasAttribute("data-pc")){ S.focus=null; S.part = el.getAttribute("data-pc"); persist(); try{ renderParts(); }catch(er){ if(window.vlErr) window.vlErr((er&&er.message)||er, "renderParts("+S.part+")\n"+(er&&er.stack||"")); } setTimeout(function(){ var w=document.getElementById("ptop")||document.querySelector(".pwarn"); if(w && w.scrollIntoView) w.scrollIntoView({behavior:"smooth", block:"start"}); }, 30); return; }
   if(el.hasAttribute("data-gopart")){ S.part = el.getAttribute("data-gopart"); S.focus = el.hasAttribute("data-fcode") ? {part:S.part, code:el.getAttribute("data-fcode"), title:el.getAttribute("data-ftitle"), side:el.getAttribute("data-fside")} : null; S.fcount=0; S.src="parts"; renderSrc(); persist(); renderParts(); window.scrollTo({top:$("srcbox").getBoundingClientRect().top+window.scrollY-10,behavior:"smooth"}); return; }
   if(el.hasAttribute("data-mdel")){ var id=+el.getAttribute("data-mdel"); meas = meas.filter(function(m){return m.id!==id;}); LS.set("vl_meas",meas); renderMine(); return; }
   if(el.id==="psave"){

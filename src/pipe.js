@@ -161,7 +161,7 @@ function pipeForm(){
   if(PS.bpick){ h += '<div class="small">Διάλεξε εταιρεία</div><div class="bgrid">'+pBrands().map(function(b){ return '<button class="br'+(b===D.brand?' on':'')+'" data-ppb="'+esc(b)+'">'+badge(b,"sm")+esc(b)+'</button>'; }).join("")+'</div>'; }
   else h += '<div class="bchosen">'+badge(D.brand,"lg")+'<div class="bt"><b>'+esc(D.brand)+'</b><small>'+esc(D.name)+'</small></div><button class="chg ico" data-ppchg="1" aria-label="Αλλαγή εταιρείας"><svg class="ic"><use href="#i-swap"/></svg></button></div>';
   var ser = Object.keys(PIPE).filter(function(k){ return PIPE[k].brand===D.brand; });
-  if(ser.length>1 && !PS.bpick) h += '<div class="pchips" style="margin-top:6px">'+ser.map(function(k){ return '<button class="pc'+(k===PS.sys?' on':'')+'" data-pps="'+k+'">'+esc(PIPE[k].kind==="line"?"Αντλία θερμότητας":"Ανάκτηση θερμότητας")+'</button>'; }).join("")+'</div>';
+  if(ser.length>1 && !PS.bpick) h += '<div class="pchips" style="margin-top:6px">'+ser.map(function(k){ return '<button class="pc'+(k===PS.sys?' on':'')+'" data-pps="'+k+'">'+esc(pSysLab(D.brand, PIPE[k].kind))+'</button>'; }).join("")+'</div>';
   h += '<div class="pchips" style="margin-top:6px"><button class="pc'+(PS.unit!=="btu"?' on':'')+'" data-ppu="kw">kW</button><button class="pc'+(PS.unit==="btu"?' on':'')+'" data-ppu="btu">BTU/h</button><span style="width:10px"></span><button class="pc'+(PS.inch!=="in"?' on':'')+'" data-ppin="mm">mm</button><button class="pc'+(PS.inch==="in"?' on':'')+'" data-ppin="in">ίντσες</button></div>';
   var ov = D.outInput ? (PS.unit==="btu" ? String(Math.round(pNum(PS.out)*BTU)) : PS.out) : PS.out;
   h += '<div class="row2"><label class="small">Εξωτερική'+(D.outInput?' – ψυκτική απόδοση ('+(PS.unit==="btu"?'BTU/h':'kW')+')<input id="pp_out" class="ppv" inputmode="decimal" value="'+esc(ov)+'">':'<select id="pp_out" class="ppv">'+D.outs.map(function(x){ return o(x, pOL(D,x), PS.out); }).join("")+'</select>')+'</label>';
@@ -427,6 +427,10 @@ document.addEventListener("click", function(e){
   if(t.hasAttribute("data-ppm")){ var s2 = pN(PS.sel); if(s2) s2.m = t.getAttribute("data-ppm"); pSave(); pipeCalc(); pAct(); return; }
 });
 // ===== Συμπληρωματικό φρέον (επίσημοι τύποι manuals) =====
+function pSysLab(b, kind){ var hr = kind!=="line";
+  if(b==="Daikin") return hr ? "VRV HR (ανάκτηση θερμότητας)" : "VRV (αντλία θερμότητας)";
+  if(b==="Mitsubishi Electric") return hr ? "City Multi R2 (ανάκτηση)" : "City Multi Y (αντλία)";
+  return hr ? "VRF HR (ανάκτηση θερμότητας)" : "VRF (αντλία θερμότητας)"; }
 var PCHG = {
  daikin_hp:{f:{22.2:.37,19.1:.26,15.9:.18,12.7:.12,9.5:.059,6.4:.022}, src:"Daikin 4P546220-1F, «To determine the additional refrigerant amount»", round:1,
   extra:function(c){ var r=[], h=c.out, cr=c.tot/(h*25)*100, col=h<=8?0:h<=14?1:2;

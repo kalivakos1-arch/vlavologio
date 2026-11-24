@@ -344,6 +344,8 @@ header #hmenu .hmi{align-items:center;gap:12px;padding:10px 12px}header #hmenu .
 .note .nbtns{display:flex;gap:8px;margin-top:6px}.note .nbtns button{flex:1}
 .wel{border:1.5px solid var(--acc)}.wel[hidden]{display:none}.welh{font-weight:800;font-size:17px}.welol{margin:8px 0 10px;padding-left:22px;line-height:1.6}.welb{display:flex;gap:8px}.welb button{flex:1;height:44px}html.mode-tools #welcome,html.mode-kb #welcome{display:none!important}
 .toast{bottom:calc(84px + env(safe-area-inset-bottom))!important}
+.repov,.mov{align-items:center!important;padding-top:max(12px,env(safe-area-inset-top))!important;padding-bottom:max(12px,env(safe-area-inset-bottom))!important}
+.repbox{max-height:calc(100vh - 24px)!important;max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;overscroll-behavior:contain}
 #printarea{display:none}
 @media print{html.printing body>*:not(#printarea){display:none!important}html.printing body{background:#fff!important}html.printing #printarea{display:block!important;background:#fff;color:#000;font:15px/1.5 -apple-system,Segoe UI,Arial;padding:20px}}
 html.field{font-size:118%}
