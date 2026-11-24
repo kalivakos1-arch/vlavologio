@@ -608,7 +608,7 @@ function renderResults(){
   var plats = {}; tabs.forEach(function(t){plats[t.plat]=1;}); var multi = Object.keys(plats).length>1;
   var q = cq();
   var html = "";
-  if(S.src==="led"){ out.innerHTML = renderLed(b, tabs, multi); ledNotes(tabs); return; }
+  if(S.src==="led"){ var lt = tabs.filter(function(t){ return t.tbl && t.tbl.lamps; }); if(!lt.length){ out.innerHTML = ledGuideOnly(b); $("notes").innerHTML=""; return; } out.innerHTML = renderLed(b, lt, multi); ledNotes(lt); return; }
   if(S.src==="out"){
     var gp = {}; candidates(b).forEach(function(p){ if(!(b.own || !S.oem || S.oem==="__all" || S.oem===p)) return; if(OUTGUIDE[p]) gp[p]=OUTGUIDE[p]; });
     var gk = Object.keys(gp);
