@@ -253,6 +253,11 @@ function repCtx(){
 }
 function repOpen(tkey, code, opt){
   opt=opt||{};
+  if(!opt.page && typeof vlPageCtx==="function"){ try{ var pc=vlPageCtx(); opt.page=pc.page; if(!opt.ph) opt.ph=pc.ph; }catch(x){} }
+  if(code && opt.page && opt.page.indexOf("Αναφορά για κωδικό")<0){ var rr=null; try{ rr=document.querySelector('[data-rep="'+String(tkey+"|"+code).replace(/"/g,'\\"')+'"]'); }catch(x){} var rc=rr?rr.closest(".res"):null, rt=rc?String((rc.querySelector(".rh")||{}).nextElementSibling ? rc.querySelector(".rh").nextElementSibling.textContent : "").replace(/\s+/g," ").trim().slice(0,80):"";
+    opt.page=opt.page.replace(/\n/, "\nΑναφορά για κωδικό: "+code+(rt?" – "+rt:"")+" (πίνακας "+(tkey||"-")+")\n"); opt.ph="Τι είναι λάθος στον κωδικό "+code+"; π.χ. «η μονάδα το εξηγεί αλλιώς», «λάθος έλεγχος»"; }
+  if(opt.kind==="Λείπει μάρκα / μοντέλο / κωδικός" && !opt.pgr) opt.ph="Ποια μάρκα / μοντέλο / κωδικός λείπει; Γράψε ό,τι βλέπεις στο ταμπελάκι ή στην οθόνη.";
+  if(opt.ser) opt.ph="Ό,τι ξέρεις για τη μονάδα (μάρκα, μοντέλο). Η φωτογραφία της ταμπέλας βοηθά πολύ.";
   var d=document.getElementById("repdlg");
   if(!d){ d=document.createElement("div"); d.id="repdlg"; d.className="repov"; document.body.appendChild(d); }
   var gen=!tkey, cx=repCtx(), tname=(!gen && typeof T!=="undefined" && T[tkey]) ? T[tkey].name : "", kinds=gen?REPORT_KINDS_GEN:REPORT_KINDS;
@@ -270,8 +275,8 @@ function repOpen(tkey, code, opt){
     '<div class="scbtns"><button class="mini prim" id="repsend">📤 Αποστολή</button><button class="mini" id="repcancel">Άκυρο</button></div>'+
     '<div class="small" style="margin-top:6px">Η αναφορά στέλνεται ανώνυμα για έλεγχο και διόρθωση. <b>Μη γράφεις στοιχεία πελάτη</b> (όνομα, τηλέφωνο, διεύθυνση) και φωτογράφιζε μόνο την ταμπέλα της μονάδας. Δεν στέλνεται τίποτα χωρίς να πατήσεις «Αποστολή».</div></div>';
   d._page=opt.page||""; if(opt.page){ var tx=document.getElementById("reptxt"); if(tx){ var cxd=document.createElement("div"); cxd.className="repctx"; cxd.innerHTML='<b>📍 Στέλνεται μαζί αυτόματα:</b>\n'+esc(opt.page); tx.parentNode.insertBefore(cxd, tx); if(opt.ph) tx.placeholder=opt.ph;
-      var bx=d.querySelector(".repbox"), hd=d.querySelector(".reph"); if(hd && hd.firstChild) hd.firstChild.nodeValue="⚑ Αναφορά για αυτή τη σελίδα";
-      var nt=hd?hd.nextElementSibling:null; if(nt && nt.classList.contains("small")) nt.remove();
+      var bx=d.querySelector(".repbox"), hd=d.querySelector(".reph"); if(opt.pgr && hd && hd.firstChild) hd.firstChild.nodeValue="⚑ Αναφορά για αυτή τη σελίδα";
+      var nt=hd?hd.nextElementSibling:null; if(nt && nt.classList.contains("small") && (opt.pgr || /Μάρκα: /.test(opt.page))) nt.remove();
       if(opt.lite){ var rm=document.getElementById("repmodel"); if(rm && rm.parentNode) rm.parentNode.style.display="none"; var rs=document.getElementById("repser"); if(rs) rs.style.display="none"; }
       if(hd){ hd.parentNode.insertBefore(tx, hd.nextSibling); hd.parentNode.insertBefore(cxd, hd.nextSibling); }
     } }

@@ -81,7 +81,8 @@ function scanOpen(target){
   ov.innerHTML = '<div class="schead"><b><svg class="ic"><use href="#i-scan"/></svg> Σάρωση barcode</b><button class="mini" id="scclose">✕</button></div>'+
     '<div class="scbox"><video id="scvid" playsinline muted autoplay></video><div class="scguide"></div></div>'+
     '<div class="scmsg" id="scmsg">Άνοιγμα κάμερας…</div>'+
-    '<div class="scbtns"><label class="mini scphoto">📸 Φωτογραφία του barcode<input type="file" accept="image/*" capture="environment" id="scfile" hidden></label></div>'+
+    '<div class="scbtns"><label class="mini prim scphoto">🏷️ Φωτογραφία ταμπέλας (διαβάζει μάρκα & μοντέλο)<input type="file" accept="image/*" capture="environment" id="scplate" hidden></label></div>'+
+    '<div class="scbtns"><label class="mini scphoto">📸 Φωτογραφία μόνο του barcode<input type="file" accept="image/*" capture="environment" id="scfile" hidden></label></div>'+
     '<div id="scres"></div>';
   ov.style.display = "flex"; document.body.style.overflow = "hidden";
   if("BarcodeDetector" in window){
