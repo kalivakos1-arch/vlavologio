@@ -364,6 +364,7 @@ function pipeCalc(){
     if(h2l==null){} else if(h2 > h2l){ if(L.h2max && h2 <= L.h2max) msg.push('⚠️ Υψομετρική μεταξύ εσωτερικών '+pFmt(h2)+' m > '+h2l+' m. '+(D.h2Note||'Ως '+L.h2max+' m μόνο υπό τους όρους του manual.')); else msg.push('⛔ Υψομετρική μεταξύ εσωτερικών '+pFmt(h2)+' m > '+(L.h2max||h2l)+' m.'); }
     else ok.push('Υψομετρική μεταξύ εσωτερικών: '+pFmt(h2)+' m ≤ '+h2l+' m');
   }
+  if(D.outInfo){ var oi = D.outInfo(out); if(oi){ html += '<div class="small">🔗 '+esc(oi[0])+'</div>'; if(oi[1]) pKit(oi[1]); } }
   if(!L && D.limNote) msg.push('ℹ️ '+D.limNote); else if(D.limNote) html += '<div class="small">ℹ️ '+esc(D.limNote)+'</div>';
   html += msg.map(function(m){ return '<div class="pver'+(m[0]==='⛔'?' bad':'')+'">'+esc(m)+'</div>'; }).join("");
   html += ok.length ? '<div class="pver good">✅ '+ok.map(esc).join('<br>✅ ')+'</div>' : '';
@@ -503,7 +504,7 @@ var PCHG = {
     if(bad.length) r.push(["W2: "+bad.join(", "), null, "Δεν υπάρχουν στον πίνακα W2 του manual (μόνο κασέτα, mini κασέτα, καναλάτο, τοίχου)."]);
     return r; }, max:"Αν το πρόσθετο ξεπερνά τα 5,5 kg, το συνολικό μήκος πρέπει να μικρύνει (manual: το 180 m μπορεί να μη φτάνεται λόγω αυτού του ορίου)."},
  hisense_hr:{f:{22.2:.39,19.05:.28,15.88:.19,12.7:.12,9.53:.06,6.35:.03}, src:"Hisense AVWT-76FESR…170FESS installation & maintenance manual P00570Q, §8.3 Table 8.1 (W = W1 + W2 + W3)", round:1,
-  addMax:function(o){ return {76:28,96:28,114:33,136:38.5,154:38.5,170:42}[o]; }, w0:function(o){ return {76:6.5,96:6.5,114:9.9,136:9,154:10.5,170:10.5}[o]; },
+  addMax:function(o){ return o<=96?28:o<=114?33:o<=154?38.5:o<=170?42:o<=232?46:o<=460?52:null; }, w0:function(o){ var W={76:6.5,96:6.5,114:9.9,136:9,154:10.5,170:10.5}, c=PIPE.hisense_hr.combo[o]||[o], t=0; c.forEach(function(x){ t+=W[x]; }); return Math.round(t*10)/10; },
   extra:function(c){ var big = c.idx.filter(function(m){ return m>=76; }).length, r = Math.round(c.tot/c.out*100);
     return [["W2 εσωτερικές 76/96 kBtu/h ("+big+" × 1 kg)", big],["W3 αναλογία "+r+"%", r<100?0:r<=115?0.5:1.0]]; }},
  fujitsu_jiv:{f:{12.7:.114,9.52:.058,6.35:.021}, src:"Fujitsu AIRSTAGE AJ*126/144LELAH installation manual, §8.3.2", round:2, factory:11.0, totMax:25.6}
@@ -529,7 +530,7 @@ function pCharge(D, runs, c){
   if(C.noNeg && tot<0) { notes.push("Βγήκε αρνητικό: δεν προσθέτεις φρέον."); tot = 0; }
   var mult = Math.pow(10, C.round||1), shown = (C.up ? Math.ceil(tot*mult-1e-9) : Math.round(tot*mult))/mult;
   h += '<tr><td colspan="3"><b>Σύνολο συμπληρωματικού'+(miss?' (χωρίς '+pFmt(miss)+' m)':'')+'</b></td><td><b>'+pFmt(shown)+' kg</b></td></tr></table></div>';
-  if(C.addMax){ var am = typeof C.addMax==="function" ? C.addMax(c.out) : C.addMax; var w0 = typeof C.w0==="function" ? C.w0(c.out) : C.w0; notes.unshift('Πρόσθετο '+pFmt(shown)+' kg '+(shown<=am?'≤':'>')+' μέγιστο πρόσθετο '+pFmt(am)+' kg'+(shown<=am?' ✅':' ⛔ – μίκρυνε τα μήκη')+'.'+(w0!=null?' Εργοστασιακό '+pFmt(w0)+' kg → σύνολο '+pFmt(shown+w0)+' kg.':'')); }
+  if(C.addMax){ var am = typeof C.addMax==="function" ? C.addMax(c.out) : C.addMax; var w0 = typeof C.w0==="function" ? C.w0(c.out) : C.w0; if(am==null) notes.unshift('Μέγιστο πρόσθετο φρέον για αυτή την εξωτερική: δεν το δίνει ο πίνακας του manual.'+(w0!=null?' Εργοστασιακό '+pFmt(w0)+' kg.':'')); else notes.unshift('Πρόσθετο '+pFmt(shown)+' kg '+(shown<=am?'≤':'>')+' μέγιστο πρόσθετο '+pFmt(am)+' kg'+(shown<=am?' ✅':' ⛔ – μίκρυνε τα μήκη')+'.'+(w0!=null?' Εργοστασιακό '+pFmt(w0)+' kg → σύνολο '+pFmt(shown+w0)+' kg.':'')); }
   if(C.factory){ var all = shown + C.factory; notes.unshift('Εργοστασιακό '+pFmt(C.factory)+' kg + πρόσθετο = '+pFmt(all)+' kg '+(all<=C.totMax?'≤':'>')+' '+pFmt(C.totMax)+' kg'+(all<=C.totMax?' ✅':' ⛔')); }
   if(miss) notes.unshift('⚠️ '+pFmt(miss)+' m σωλήνα προς εσωτερικές δεν έχουν γνωστή διατομή ('+unk.map(String).join(", ")+'). Πρόσθεσε μήκος × kg/m της διατομής σύνδεσης κάθε εσωτερικής.');
   if(C.fNote) notes.unshift(C.fNote(c));
