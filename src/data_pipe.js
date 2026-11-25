@@ -189,6 +189,25 @@ var PIPE = {
   after90:"Πάνω από 40 m από το 1ο multi-kit ως την τελευταία εσωτερική: η κύρια σωλήνα (μετά την 1η διακλάδωση) μεγαλώνει μία διατομή με συστολές (manual, «Piping Branch Restriction»). Ο κατάλογος δίνει ως 90 m με αυτούς τους όρους.",
   limNote:"Υψομετρικές διαφορές: δεν τις έχω επιβεβαιωμένες από επίσημο έγγραφο για τη σειρά sigma – δες τον πίνακα «Piping Branch Restriction» του manual (CD-ROM). Ευθύ κομμάτι ≥ 0,5 m μετά από κάθε multi-kit."
  },
+ hisense_h5: {
+  name:"Hisense Hi-Smart H5 mini VRF (AVW-41/48/54HJDH2H1 · HKDH2H1, R32)", brand:"Hisense", kind:"line", pipes:["Υγρό","Αέριο"],
+  src:"Hisense TC&SM R32 Hi-Smart H5 TCY12023016A (2024.02), §1.1–1.2, §3.1 Connection of refrigerant pipes, §3.2 Pipe connection design guidance – διανέμεται από ACAE (Ισπανία), μονάδες 220–240 V / 380–415 V με SEER (ευρωπαϊκή αγορά)",
+  outs:[41,48,54], capSame:true, totU:"kBtu/h", outLab:function(m){ return "AVW-"+m+"H(J/K)DH2H1 – "+({41:"4 HP, 12,1",48:"5 HP, 14,0",54:"6 HP, 15,5"})[m]+" kW"; },
+  kwOf:function(m){ return Math.round(m*1000/3412.14*10)/10; },
+  main:[[54,"9.53","15.88"]],
+  branch:{lt:true, rows:[[54,"9.53","15.88"],[1e9,"9.53","19.05"]]},
+  indTxt:["σύνδεση εσωτ.","σύνδεση εσωτ."],
+  indNote:"Από την τελευταία διακλάδωση προς την εσωτερική: η διατομή της σύνδεσης της εσωτερικής (κατάλογος εσωτερικής). Υγρό πάνω από 15 m: 9,53 με συστολή αντί για 6,35.",
+  first:[[1e9,"HFQ-102F"]], joint:{rows:[[1e9,"HFQ-102F"]]},
+  models:[5,7,9,12,15,17,19,22,24,27,28,30,38,48,54], idx:null, dm:[19,12,9],
+  mLab:function(m){ return (m<10?"0":"")+m+" kBtu/h"; }, sLab:function(m){ return (m<10?"0":"")+m+"k"; },
+  idxNote:"Η δυναμικότητα μετράει σε kBtu/h (κωδικός μοντέλου εσωτερικής). Μετά την 1η διακλάδωση: σύνολο < 54 → 15,88/9,53, 54–86 → 19,05/9,53. Αν βγει μεγαλύτερη από πριν, κρατάς την προηγούμενη. Εσωτερικές: προτείνονται 6/7/8, μέγιστο 10/12/13 (41/48/54), αναλογία 50–150%.",
+  lim:{L1:80, L1eq:100, after:40, indMax:40, total:180, Hup:50, Hdown:40, h2:15},
+  ratio:[50,150], nMax:{41:[6,10],48:[7,12],54:[8,13]}, recL:[60,120],
+  after90:"Από την 1η διακλάδωση ως κάθε εσωτερική ≤ 40 m (L2).",
+  hNote:"Εξωτερική πάνω: ως 50 m. Εξωτερική κάτω: ως 40 m.",
+  limNote:"Όρια manual: συνολικό 180 m, πιο μακρινή 80 m (ισοδύναμο 100 m), διακλάδωση → εσωτερική 40 m, υψομετρική εσωτερικών 15 m, το πολύ 2 «κύριες» διακλαδώσεις. Προτεινόμενο: πιο μακρινή ≤ 60 m και σύνολο ≤ 120 m – πάνω από αυτά, αναλογία ≤ 100% και όχι πάνω από τις προτεινόμενες εσωτερικές. Αν το ισοδύναμο ως την εσωτερική ξεπερνά τα 100 m, το αέριο ως την 1η διακλάδωση μεγαλώνει μία διατομή. Το πρόσθετο φρέον ≤ 5,5 kg μπορεί να περιορίσει το μήκος."
+ },
  fujitsu_jiv: {
   name:"Fujitsu Airstage J-IV (AJ*126/144LELAH, R410A)", brand:"Fujitsu", kind:"line", pipes:["Υγρό","Αέριο"], kw:true,
   src:"Fujitsu General installation manual AIRSTAGE outdoor unit AJ*126LELAH / AJ*144LELAH, §4.1 System configuration, §4.2 Pipe selection (πίνακες B, C, D, E)",
@@ -208,6 +227,6 @@ var PIPE = {
 };
 PARTS.push({id:"pipe", icon:"🧭", name:"Σωληνόγραμμα VRF / VRF HR", body:[
  ["Πώς το χρησιμοποιείς","Διάλεξε σειρά και εξωτερική. Πρόσθεσε τις εσωτερικές με τη σειρά που βρίσκονται πάνω στη γραμμή, από την εξωτερική προς το τέλος. Γράψε τα μήκη. Το εργαλείο δίνει διατομή για κάθε τμήμα, κιτ διακλάδωσης/BS/BC και ελέγχει τα όρια του manual."],
- ["Σειρές","Daikin VRV IV+ (αντλία & ανάκτηση θερμότητας), Mitsubishi Electric City Multi Y & R2, Samsung DVM S2, LG Multi V, Toshiba SMMS-u, Gree GMV6, Panasonic ECOi EX ME2, Midea V6, Hitachi Set Free sigma, Fujitsu Airstage J-IV. Hisense: δεν υπάρχει ακόμα – βρήκα μόνο το αμερικάνικο manual (60 Hz, kBtu/h), όχι το ευρωπαϊκό."],
+ ["Σειρές","Daikin VRV IV+ (αντλία & ανάκτηση θερμότητας), Mitsubishi Electric City Multi Y & R2, Samsung DVM S2, LG Multi V, Toshiba SMMS-u, Gree GMV6, Panasonic ECOi EX ME2, Midea V6, Hitachi Set Free sigma, Fujitsu Airstage J-IV, Hisense Hi-Smart H5 mini VRF (4–6 HP, R32). Τα μεγάλα Hisense VRF (Hi-FLEXi) δεν υπάρχουν ακόμα – δεν βρέθηκε ευρωπαϊκό manual με πίνακες σωληνώσεων."],
  ["Τι ΔΕΝ κάνει","Δεν υπολογίζει ισοδύναμο μήκος από καμπύλες, collector (header), πολλαπλές εξωτερικές ή sub BC. Το συμπληρωματικό φρέον βγαίνει μόνο για τις σειρές που έχουν τύπο στο manual τους (όπου λείπει τιμή, το γράφει). Πριν την εγκατάσταση, επιβεβαίωσε πάντα με το manual του συγκεκριμένου μοντέλου."]
 ]});
