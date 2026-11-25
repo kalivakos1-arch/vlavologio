@@ -48,7 +48,7 @@ function dateTxt(d){
 }
 function serHtml(t, cs){
   var r = serInfo(t, cs);
-  if(!r.length) return '<div class="small">Δεν αναγνώρισα τη μορφή. Αν ξέρεις το εργοστάσιο, πάτα το παρακάτω για να το θυμάμαι την επόμενη φορά.</div><button class="repb" data-repser="'+esc(serClean(t))+'">📷 Στείλε φωτογραφία της ταμπέλας για να προστεθεί</button>';
+  if(!r.length) return '<div class="small">Από τον σειριακό δεν φαίνεται το εργοστάσιο (πολλές μάρκες δεν το κωδικοποιούν).</div><div class="lbl">Γράψε το <b>μοντέλο</b> από το ταμπελάκι:</div><input id="scmodel" placeholder="π.χ. TAG-18IG" autocapitalize="characters" spellcheck="false" autocomplete="off"><div id="scmres"></div><div class="small" style="margin-top:8px">Αν δεν βρεθεί ούτε από το μοντέλο:</div><button class="repb" data-repser="'+esc(serClean(t))+'">📷 Στείλε φωτογραφία της ταμπέλας για να προστεθεί</button>';
   return r.map(function(e){
     var nm = PLAT[e.o] ? PLAT[e.o].name : e.o;
     return '<div class="serl"><b>'+esc(e.k)+'</b>'+(e.w?' → <span class="det">'+esc(nm)+'</span>':'')+(e.off?' <span class="small">(δεν είναι στα συνήθη εργοστάσια αυτής της μάρκας)</span>':'')+
@@ -57,6 +57,21 @@ function serHtml(t, cs){
 }
 
 // ===== Scanner UI =====
+function modelLookup(m){
+  var v = gr2lat(String(m||"")).toUpperCase().replace(/\s/g,""), out = [], seen = {};
+  if(v.length<4) return out;
+  OEMRX.forEach(function(r){ if(!r.re.test(v)) return;
+    var bs = r.b ? r.b : BRANDS.filter(function(b){ return b.own===r.o; }).map(function(b){ return b.n; });
+    bs.forEach(function(n){ var k = n+"|"+r.o; if(seen[k]) return; seen[k]=1; out.push({b:n, o:r.o, w:r.w}); }); });
+  return out;
+}
+document.addEventListener("input", function(e){
+  if(!e.target || e.target.id!=="scmodel") return;
+  var box = document.getElementById("scmres"); if(!box) return;
+  var v = e.target.value, r = modelLookup(v);
+  box.innerHTML = !v || v.length<4 ? "" : !r.length ? '<div class="small">Δεν το βρίσκω ακόμα – στείλε φωτογραφία της ταμπέλας με το κουμπί παρακάτω.</div>' :
+    r.map(function(x){ return '<div class="serl"><b>'+esc(x.b)+'</b> → <span class="det">'+esc(PLAT[x.o]?PLAT[x.o].name:x.o)+'</span><div class="small">'+esc(x.w)+'</div><button class="chip on" data-qb="'+esc(x.b)+'" data-qm="'+esc(v.trim().toUpperCase())+'" data-qo="'+esc(x.o)+'">Συνέχεια με '+esc(x.b)+'</button></div>'; }).join("");
+});
 var SCAN = {st:null, timer:0, det:null, target:"ser", busy:false, hits:{}};
 function scanOpen(target){
   ovPush();
@@ -239,7 +254,7 @@ function histClose(){ var ov = document.getElementById("histov"); if(ov){ ov.sty
 document.addEventListener("click", function(e){
   var el = e.target.closest("#histbtn,#histclose,#histnew,#histsave,#histlist,#histdel,#histexp,[data-hid],#qscan,[data-qb]"); if(!el) return;
   if(el.id==="qscan"){ scanOpen("quick"); return; }
-  if(el.hasAttribute("data-qb")){ var nm = el.getAttribute("data-qb"), t = SCAN.last; scanClose(); S.brand = nm; S.bedit=false; S.catOpen=true; S.oem=null; S.model=""; S.ledv={}; S.fw={plate:"",rc:"",comp:"",pcb:"",ser:serClean(t)}; S.fwOpen = true; renderAll(); return; }
+  if(el.hasAttribute("data-qb")){ var nm = el.getAttribute("data-qb"), t = SCAN.last, qm = el.getAttribute("data-qm")||"", qo = el.getAttribute("data-qo")||""; scanClose(); S.brand = nm; S.bedit=false; S.catOpen=true; S.oem=(qo && PLAT[qo])?qo:null; S.model=qm; S.ledv={}; S.fw={plate:"",rc:"",comp:"",pcb:"",ser:serClean(t)}; S.fwOpen = true; renderAll(); return; }
   if(el.id==="histbtn"){ histOpen("list"); return; }
   if(el.id==="histclose"){ histClose(); return; }
   if(el.id==="histnew"){ histOpen("form"); return; }

@@ -346,6 +346,9 @@ header #hmenu .hmi{align-items:center;gap:12px;padding:10px 12px}header #hmenu .
 .toast{bottom:calc(84px + env(safe-area-inset-bottom))!important}
 .repov,.mov{align-items:center!important;padding-top:max(12px,env(safe-area-inset-top))!important;padding-bottom:max(12px,env(safe-area-inset-bottom))!important}
 .repbox{max-height:calc(100vh - 24px)!important;max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;overscroll-behavior:contain}
+.pgrep{display:block;width:100%;margin:18px 0 6px;padding:12px 14px;border-radius:14px;border:1.5px dashed var(--line);background:transparent;color:var(--muted);font:inherit;font-size:14.5px;text-align:center;cursor:pointer}.pgrep b{color:var(--acc)}
+.pgrep.inov{margin:16px 0 8px;flex:none}
+.repctx{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;font-size:13.5px;line-height:1.45;white-space:pre-wrap;max-height:150px;overflow:auto}.repctx b{font-size:13px}
 #printarea{display:none}
 @media print{html.printing body>*:not(#printarea){display:none!important}html.printing body{background:#fff!important}html.printing #printarea{display:block!important;background:#fff;color:#000;font:15px/1.5 -apple-system,Segoe UI,Arial;padding:20px}}
 html.field{font-size:118%}
@@ -476,6 +479,7 @@ html.field .srcbox button i .ic{width:24px;height:24px}
   <div id="results"></div>
   <div id="notes"></div>
 
+  <div id="pgfoot"><button class="pgrep" id="pgrep">⚑ Είδες κάτι λάθος σε αυτή τη σελίδα; <b>Αναφορά</b></button></div>
   <details class="foot"><summary>ⓘ Πηγές δεδομένων & σημειώσεις</summary><div class="foot">Τα δεδομένα συγκεντρώθηκαν από service/installation manuals των κατασκευαστών (η πηγή φαίνεται σε κάθε πίνακα). Οι κωδικοί διαφέρουν ανά γενιά/σειρά – για επισκευή πλακέτας ή συμπιεστή επιβεβαίωσε στο manual του μοντέλου. Οι «αντιστοιχίες μου» αποθηκεύονται μόνο σε αυτή τη συσκευή.<br>Ψυκτικό (R410A / R32 / R290): το βλαβολόγιο ακολουθεί τη γενιά της πλακέτας, όχι το ψυκτικό – οι νέοι κωδικοί που εμφανίστηκαν αφορούν κυρίως αισθητήρες διαρροής (π.χ. Daikin VRV 5 R32, Midea EL 0C).<br><br>Τα ονόματα και σήματα των κατασκευαστών ανήκουν στους κατόχους τους. Η εφαρμογή είναι ανεξάρτητη και δεν συνδέεται με κανέναν κατασκευαστή. Βρήκες λάθος; Πάτα «⚑ Αναφορά λάθους» κάτω από τον κωδικό.</div></details>
 </div>
 <nav id="bnav"><button id="nav_code" class="on"><svg class="ic"><use href="#i-code"/></svg><span>Βλάβη</span></button><button id="toolsbtn"><svg class="ic"><use href="#i-gauge"/></svg><span>Εργαλεία</span></button><button id="histbtn"><svg class="ic"><use href="#i-log"/></svg><span>Πελάτες</span></button><button id="nav_kb"><svg class="ic"><use href="#i-book"/></svg><span>Γνώσεις</span></button></nav>

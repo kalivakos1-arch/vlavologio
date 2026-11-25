@@ -172,6 +172,7 @@ var OEMRX = [
   {b:["Inventor","Nobu"], re:/^[VU]\dM[CDFR]/, o:"midea", w:"Επαγγελματικά Inventor σειράς V5M/V6M (κασέτα MCI, κανάλι MDI, ντουλάπα MFI/MFO, οροφής MRI – εξωτερικές U5MRS/U5MRT) είναι Midea."},
   {b:["Inventor","Nobu"], re:/^[A-Z]\dMV[IO]/, o:"midea", w:"Σειρές Inventor …MVI/…MVO (π.χ. P6MVI, O1MVI, O3MVI): τα service manuals τους έχουν αισθητήρια T1–T4 και λειτουργία ελέγχου τύπου Midea."},
   {b:["Inventor","Nobu"], re:/^L\dV[IO]/, o:"inv_gree", w:"Σειρά Inventor L4VI/L4VO: το service manual έχει τη δομή και τους κωδικούς Gree."},
+  {b:["Toyotomi"], re:/^TA[NG][-\/]?\d{2}IG/, o:"aux", w:"Toyotomi Ikigai (TAN/TAG-09/12/18/24IG): το επίσημο εγχειρίδιο Wi‑Fi της Toyotomi για τη σειρά χρησιμοποιεί την εφαρμογή «AC Freedom», που είναι της AUX Air Conditioner Co. → ηλεκτρονικά/πλακέτα AUX. Το εγχειρίδιο χρήσης δεν έχει πίνακα κωδικών – επιβεβαίωσε με τον κωδικό που δείχνει η μονάδα."},
   {b:["Toyotomi"], re:/^(CT|TR)[NG][-\/]?\d/, o:"gree", w:"Toyotomi CTN/CTG (Erai) και TRN/TRG: τα εγχειρίδια δείχνουν κωδικούς Gree (U8, H6, H3, E1, E5, C5, F0–F2)."},
   {b:["Bosch"], re:/^RAC\d|^CL\d{4}|^CLIMATE/, o:"midea", w:"Bosch Climate (RAC…) είναι Midea."},
   // Μάρκες με δικό τους εργοστάσιο – ονοματολογία μοντέλων Ευρώπης (κατάλογοι κατασκευαστών, Eurovent, EPREL)

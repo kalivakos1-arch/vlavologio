@@ -269,6 +269,12 @@ function repOpen(tkey, code, opt){
     '<textarea id="reptxt" rows="4" placeholder="'+(gen?'Τι έγινε; π.χ. «δεν μπορώ να κλείσω την κάμερα»':'Τι είδες στη μονάδα; π.χ. «η πλακέτα έδειχνε κόκκινο ×5, όχι ×3»')+'"></textarea>'+
     '<div class="scbtns"><button class="mini prim" id="repsend">📤 Αποστολή</button><button class="mini" id="repcancel">Άκυρο</button></div>'+
     '<div class="small" style="margin-top:6px">Η αναφορά στέλνεται ανώνυμα για έλεγχο και διόρθωση. <b>Μη γράφεις στοιχεία πελάτη</b> (όνομα, τηλέφωνο, διεύθυνση) και φωτογράφιζε μόνο την ταμπέλα της μονάδας. Δεν στέλνεται τίποτα χωρίς να πατήσεις «Αποστολή».</div></div>';
+  d._page=opt.page||""; if(opt.page){ var tx=document.getElementById("reptxt"); if(tx){ var cxd=document.createElement("div"); cxd.className="repctx"; cxd.innerHTML='<b>📍 Στέλνεται μαζί αυτόματα:</b>\n'+esc(opt.page); tx.parentNode.insertBefore(cxd, tx); if(opt.ph) tx.placeholder=opt.ph;
+      var bx=d.querySelector(".repbox"), hd=d.querySelector(".reph"); if(hd && hd.firstChild) hd.firstChild.nodeValue="⚑ Αναφορά για αυτή τη σελίδα";
+      var nt=hd?hd.nextElementSibling:null; if(nt && nt.classList.contains("small")) nt.remove();
+      if(opt.lite){ var rm=document.getElementById("repmodel"); if(rm && rm.parentNode) rm.parentNode.style.display="none"; var rs=document.getElementById("repser"); if(rs) rs.style.display="none"; }
+      if(hd){ hd.parentNode.insertBefore(tx, hd.nextSibling); hd.parentNode.insertBefore(cxd, hd.nextSibling); }
+    } }
   d._photo=""; d.style.display="flex"; d.setAttribute("data-k",(tkey||"")+"|"+(code||"")); if(!opt.photo) setTimeout(function(){ var t=document.getElementById("reptxt"); if(t) t.focus(); },50);
 }
 // Φωτογραφία: σμίκρυνση, γκρι JPEG, base64 – στέλνεται σε κομμάτια των 30.000 χαρακτήρων στην ίδια φόρμα
@@ -321,7 +327,7 @@ document.addEventListener("click", function(e){
     if(ph){ var pid=Date.now().toString(36)+Math.random().toString(36).slice(2,6), n=Math.ceil(ph.length/REP_CHUNK);
       for(var pi=0;pi<n;pi++) parts.push("VLPHOTO|"+pid+"|"+(pi+1)+"|"+n+"|"+ph.slice(pi*REP_CHUNK,(pi+1)*REP_CHUNK));
       r.photo=pid+" ("+n+" μέρη)"; }
-    var t=repText(r);
+    r.page=d._page||""; var t=repText(r)+(r.page?"\n\n— Σελίδα —\n"+r.page:"");
     d.style.display="none";
     if(REPORT_FORM){
       var q=repQueue(); q.push(t); parts.forEach(function(x){ q.push(x); }); try{ localStorage.setItem("vl_repq",JSON.stringify(q)); }catch(x){ try{ q=q.slice(0,q.length-parts.length); localStorage.setItem("vl_repq",JSON.stringify(q)); }catch(y){} }

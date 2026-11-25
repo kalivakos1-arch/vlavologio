@@ -138,3 +138,82 @@ function vlAllLS(){ var o = {}; for(var i=0;i<localStorage.length;i++){ var k = 
   });
   try{ window.opener.postMessage({t:"vlmig-ready"}, OLD_ORIGIN); }catch(x){}
 })();
+// ===== Αναφορά από κάθε σελίδα, με προσυμπληρωμένο το πού είναι και τι έχει επιλέξει ο χρήστης =====
+var VL_TRAIL = [];
+document.addEventListener("click", function(e){
+  var b = e.target.closest("button,a,label.chk,[data-b],[data-pc]"); if(!b || b.closest("#repdlg") || b.id==="pgrep" || b.classList.contains("pgrep")) return;
+  var t = (b.getAttribute("data-b") || (b.getAttribute("data-pc") && typeof partById==="function" && partById(b.getAttribute("data-pc")) ? partById(b.getAttribute("data-pc")).name : "") || b.getAttribute("aria-label") || b.textContent || "").replace(/\s+/g," ").trim().slice(0,45); if(!t) return;
+  if(VL_TRAIL[VL_TRAIL.length-1]!==t) VL_TRAIL.push(t); if(VL_TRAIL.length>10) VL_TRAIL = VL_TRAIL.slice(-10);
+}, true);
+function vlTxt(el){ return el ? String(el.textContent||"").replace(/\s+/g," ").trim() : ""; }
+function vlScrape(root){
+  var L = []; if(!root) return L;
+  var on = [], seen = {};
+  root.querySelectorAll("button.on,.chip.on,.pc.on,.br.on,[aria-pressed=true]").forEach(function(b){ if(b.closest("#repdlg")) return; var t = vlTxt(b).slice(0,40); if(t && !seen[t]){ seen[t]=1; on.push(t); } });
+  if(on.length) L.push("Επιλεγμένα: "+on.slice(0,14).join(" · "));
+  var f = [];
+  root.querySelectorAll("input,select,textarea").forEach(function(el){
+    if(el.closest("#repdlg") || el.type==="file" || el.type==="hidden" || el.type==="button") return;
+    if((el.type==="radio" || el.type==="checkbox") && !el.checked) return;
+    if(el.offsetParent===null && el.type!=="radio") return;
+    var v = el.tagName==="SELECT" ? vlTxt(el.options[el.selectedIndex]) : (el.type==="checkbox"||el.type==="radio") ? "✔" : String(el.value||"").trim();
+    if(!v) return;
+    var lb = el.closest("label"), name = "";
+    if(lb){ var c = lb.cloneNode(true); c.querySelectorAll("input,select,textarea").forEach(function(x){ x.remove(); }); name = vlTxt(c); }
+    if(!name) name = el.getAttribute("aria-label") || el.getAttribute("placeholder") || el.id || "πεδίο";
+    f.push(name.slice(0,50)+": "+v.slice(0,60));
+  });
+  if(f.length) L.push("Τιμές που έγραψε/διάλεξε:\n  • "+f.slice(0,25).join("\n  • "));
+  var tb = root.querySelectorAll("table"); for(var ti=0; ti<tb.length && ti<3; ti++){ var rows = [];
+    tb[ti].querySelectorAll("tr").forEach(function(tr,ri){ if(ri<10) rows.push(Array.prototype.map.call(tr.children, function(td){ return vlTxt(td).slice(0,40); }).join(" | ")); });
+    if(rows.length) L.push("Πίνακας "+(ti+1)+" στην οθόνη:\n  "+rows.join("\n  ")); }
+  root.querySelectorAll(".pver,.pwarnv,.bad,.warn").forEach(function(x,i){ if(i<4) L.push("Μήνυμα: "+vlTxt(x).slice(0,140)); });
+  return L;
+}
+function vlPageCtx(){
+  var L = [], title = "", ph = "";
+  var ovs = [["gdov","Έλεγχος βήμα‑βήμα"],["histov","Πελάτες"],["scanov","Σάρωση barcode"],["mov",""]];
+  for(var i=0;i<ovs.length;i++){ var o = document.getElementById(ovs[i][0]);
+    if(o && o.style.display!=="none" && !o.hidden && (o.style.display==="flex" || ovs[i][0]==="mov") && o.innerHTML){
+      var hd = o.querySelector(".schead b,.reph,.gdh b,b");
+      title = (ovs[i][1] ? ovs[i][1]+" › " : "") + vlTxt(hd).replace(/✕/g,"").slice(0,80);
+      if(ovs[i][0]==="gdov" && S.gd){ var st = S.gd.st && S.gd.st[S.gd.i]; L.push("Κωδικός: "+(S.gd.code||"-")+(S.gd.title?" · "+S.gd.title:"")); if(st) L.push("Βήμα "+(S.gd.i+1)+" από "+S.gd.st.length+": "+(st.t||st.title||st.id||"")); }
+      L = L.concat(vlScrape(o)); ph = "Τι δεν είναι σωστό σε αυτή την οθόνη;";
+      break; }
+  }
+  var cx = (typeof repCtx==="function") ? repCtx() : {}, mode = document.documentElement.classList.contains("mode-tools") ? "tools" : document.documentElement.classList.contains("mode-kb") ? "kb" : "code";
+  if(!title){
+    var P = S.part ? partById(S.part) : null;
+    if(mode!=="code"){
+      title = (mode==="tools" ? "Εργαλεία" : "Γνώσεις") + (P ? " › "+P.name : " (αρχική)");
+      ph = P ? "Τι είδες λάθος στο «"+P.name+"»; π.χ. λάθος τιμή, λάθος όρος, κάτι που λείπει" : "";
+    } else {
+      var sb = document.querySelector("#srcbox button.on");
+      title = "Βλάβη › "+(vlTxt(sb)||"Κωδικός");
+      ph = "Τι είδες λάθος εδώ; π.χ. «ο κωδικός λέει άλλο στη μονάδα», «λείπει ο κωδικός»";
+    }
+    if(cx.brand) L.push("Μάρκα: "+cx.brand+(cx.cat?" · "+cx.cat:""));
+    if(S.oem && S.oem!=="__all" && typeof PLAT!=="undefined" && PLAT[S.oem]) L.push("Εργοστάσιο: "+PLAT[S.oem].name);
+    if(S.model) L.push("Μοντέλο: "+S.model);
+    if(mode==="code"){
+      if(cx.q) L.push("Αναζήτηση: «"+cx.q+"»");
+      var cards = document.querySelectorAll("#results .res");
+      if(cards.length){ var hs = []; cards.forEach(function(c,i){ if(i<4){ var h = c.querySelector(".rh"), d0 = h ? h.nextElementSibling : null; hs.push((vlTxt(c.querySelector(".codes"))+" "+vlTxt(d0).slice(0,40)).trim()); } }); L.push("Αποτελέσματα στην οθόνη: "+cards.length+(hs.length?" (π.χ. "+hs.filter(Boolean).join(" · ")+")":"")); }
+      else { var em = document.querySelector("#results .empty"); if(em) L.push("Οθόνη: "+vlTxt(em).slice(0,120)); }
+    }
+    if(mode==="tools" && P && P.id==="pipe" && typeof PS!=="undefined" && typeof PIPE!=="undefined" && PIPE[PS.sys]) L.push("Σύστημα: "+PIPE[PS.sys].name+" · εξωτερική "+PS.out+(PS.unit==="btu"?" (BTU/h)":""));
+    L = L.concat(vlScrape(document.getElementById("results")));
+  }
+  if(VL_TRAIL.length) L.push("Τελευταία πατήματα: "+VL_TRAIL.slice(-8).join(" → "));
+  var m = document.querySelector('meta[name="vl-ver"]'); L.push("Έκδοση: "+(m?m.content:"?")+" · "+(window.innerWidth<600?"κινητό":"υπολογιστής")+" · "+(document.documentElement.getAttribute("data-theme")||"auto"));
+  return {page:"Σελίδα: "+title+"\n"+L.join("\n"), ph:ph};
+}
+function vlPageReport(){ var c = vlPageCtx(), code = !document.documentElement.classList.contains("mode-tools") && !document.documentElement.classList.contains("mode-kb") && !/^Σελίδα: (Πελάτες|Έλεγχος|Σάρωση)/.test(c.page); repOpen("", "", {page:c.page, ph:c.ph, kind:"Λάθος σε πληροφορία", lite:!code}); }
+document.addEventListener("click", function(e){ if(e.target.closest("#pgrep,.pgrep")) { e.preventDefault(); vlPageReport(); } });
+// Κουμπί αναφοράς και στο τέλος των πλήρων οθονών (Πελάτες, Έλεγχος βήμα‑βήμα) και των παραθύρων
+function vlEnsureRep(){
+  ["histov","gdov"].forEach(function(id){ var o = document.getElementById(id); if(o && o.style.display==="flex" && !o.querySelector(".pgrep")){ var b = document.createElement("button"); b.className = "pgrep inov"; b.innerHTML = "⚑ Είδες κάτι λάθος σε αυτή τη σελίδα; <b>Αναφορά</b>"; o.appendChild(b); } });
+  var mv = document.getElementById("mov"); if(mv && !mv.hidden){ var bx = mv.querySelector(".repbox"); if(bx && !bx.querySelector(".pgrep")){ var b2 = document.createElement("button"); b2.className = "pgrep inov"; b2.innerHTML = "⚑ Κάτι λάθος εδώ; <b>Αναφορά</b>"; bx.appendChild(b2); } }
+}
+document.addEventListener("click", function(){ setTimeout(vlEnsureRep, 60); });
+document.addEventListener("input", function(){ setTimeout(vlEnsureRep, 60); });
