@@ -221,7 +221,7 @@ function histOpen(mode, id){
   if(!ov){ ov = document.createElement("div"); ov.id = "histov"; document.body.appendChild(ov); }
   ov.style.display = "flex"; document.body.style.overflow = "hidden";
   var h = '<div class="schead"><b>📒 Πελάτες – επισκέψεις & ανταλλακτικά</b><button class="mini" id="histclose">✕</button></div>'+
-    '<div class="chips htabs"><button class="chip'+(mode!=="parts"&&mode!=="fgas"&&mode!=="maint"?' on':'')+'" id="htab_h">📒 Επισκέψεις ('+HIST.length+')</button><button class="chip'+(mode==="parts"?' on':'')+'" id="htab_p">🧾 Ανταλλακτικά ('+PLIST.filter(function(p){return !p.done;}).length+')</button><button class="chip'+(mode==="fgas"?' on':'')+'" id="htab_f">🧯 F‑gas'+fgBadge()+'</button><button class="chip'+(mode==="maint"?' on':'')+'" id="htab_m">🔔 Συντήρηση'+mtBadge()+'</button></div>';
+    '<div class="chips htabs"><button class="chip'+(mode!=="parts"&&mode!=="fgas"&&mode!=="maint"?' on':'')+'" id="htab_h">📒 Επισκέψεις ('+HIST.length+')</button><button class="chip'+(mode==="parts"?' on':'')+'" id="htab_p">🧾 Ανταλλακτικά ('+PLIST.filter(function(p){return !p.done;}).length+')</button><button class="chip'+(mode==="fgas"?' on':'')+'" id="htab_f">❄️ F‑gas'+fgBadge()+'</button><button class="chip'+(mode==="maint"?' on':'')+'" id="htab_m">🔔 Συντήρηση'+mtBadge()+'</button></div>';
   if(mode==="parts"){ ov.innerHTML = h + plistHtml(); return; }
   if(mode==="fgas"){ ov.innerHTML = h + fgBookHtml(); return; }
   if(mode==="maint"){ ov.innerHTML = h + mtHtml(); return; }
@@ -744,7 +744,7 @@ function histExtraHtml(e){
   return '<details class="hx"'+(open?' open':'')+'><summary>📏 Μετρήσεις</summary><div class="hgrid">'+
       n("lp","Χαμηλή πίεση (bar)","")+n("hp","Υψηλή πίεση (bar)","")+n("sh","Υπερθέρμανση (K)","")+n("sc","Υπόψυξη (K)","")+
       n("tin","Αέρας που μπαίνει (°C)","")+n("tout","Αέρας που βγαίνει (°C)","")+n("amp","Ρεύμα (A)","")+'</div></details>'+
-    '<details class="hx"'+(e.ref||e.chg||e.add||e.rec||e.lchk?' open':'')+'><summary>🧯 Φρέον & F‑gas</summary><div class="hgrid">'+
+    '<details class="hx"'+(e.ref||e.chg||e.add||e.rec||e.lchk?' open':'')+'><summary>❄️ Φρέον & F‑gas</summary><div class="hgrid">'+
       '<label>Ψυκτικό<select id="hf_ref"><option value="">—</option>'+refOpts(e.ref||"")+'</select></label>'+
       n("chg","Φορτίο συστήματος (kg)","όλο, με προσθήκες")+n("add","Προστέθηκαν τώρα (kg)","")+n("rec","Ανακτήθηκαν τώρα (kg)","")+
       '<label>Έλεγχος διαρροής<select id="hf_lchk"><option value="">Δεν έγινε</option><option value="ok"'+(e.lchk==="ok"?" selected":"")+'>Έγινε – χωρίς διαρροή</option><option value="leak"'+(e.lchk==="leak"?" selected":"")+'>Έγινε – βρέθηκε διαρροή</option></select></label>'+
@@ -808,7 +808,7 @@ function fgBookHtml(){
   U.sort(function(a,b){ var d = ord[fgState(a)]-ord[fgState(b)]; return d || (a.next||0)-(b.next||0); });
   var lab = {late:"⛔ Εκπρόθεσμος", soon:"⏰ Σύντομα", ok:"✅ Εντάξει", none:"— Χωρίς υποχρέωση"};
   var h = '<div class="small" style="margin:6px 0 10px">Μονάδες με καταγεγραμμένο φρέον. Η συχνότητα ελέγχου βγαίνει από το φορτίο × GWP (Κανονισμός (ΕΕ) 2024/573, άρθρο 5). Δεν υπολογίζεται σύστημα ανίχνευσης διαρροής – αν έχει, η συχνότητα διπλασιάζεται.</div>';
-  if(!U.length) return h+'<div class="small">Δεν υπάρχουν ακόμα μονάδες. Σε μια επίσκεψη συμπλήρωσε «🧯 Φρέον & F‑gas» (ψυκτικό και φορτίο) και θα εμφανιστεί εδώ.</div>';
+  if(!U.length) return h+'<div class="small">Δεν υπάρχουν ακόμα μονάδες. Σε μια επίσκεψη συμπλήρωσε «❄️ Φρέον & F‑gas» (ψυκτικό και φορτίο) και θα εμφανιστεί εδώ.</div>';
   h += U.map(function(u){
     var st = fgState(u), add = 0, rec = 0; u.ev.forEach(function(e){ add += hnum(e.add)||0; rec += hnum(e.rec)||0; });
     return '<div class="hcard fg-'+st+'"><div><b>'+esc(u.cust||"—")+'</b> · '+esc([u.brand,u.model].filter(Boolean).join(" "))+'</div>'+
