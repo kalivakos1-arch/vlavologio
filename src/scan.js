@@ -73,7 +73,7 @@ document.addEventListener("input", function(e){
     r.map(function(x){ return '<div class="serl"><b>'+esc(x.b)+'</b> → <span class="det">'+esc(PLAT[x.o]?PLAT[x.o].name:x.o)+'</span><div class="small">'+esc(x.w)+'</div><button class="chip on" data-qb="'+esc(x.b)+'" data-qm="'+esc(v.trim().toUpperCase())+'" data-qo="'+esc(x.o)+'">Συνέχεια με '+esc(x.b)+'</button></div>'; }).join("");
 });
 var SCAN = {st:null, timer:0, det:null, target:"ser", busy:false, hits:{}};
-function scanOpen(target){
+function scanOpen(target, noCam){
   ovPush();
   SCAN.target = target||"ser"; SCAN.hits = {};
   var ov = document.getElementById("scanov");
@@ -88,6 +88,7 @@ function scanOpen(target){
   if("BarcodeDetector" in window){
     try{ BarcodeDetector.getSupportedFormats().then(function(f){ var want = ["code_128","code_39","ean_13","itf","qr_code","data_matrix","upc_a"].filter(function(x){ return f.indexOf(x)>=0; }); if(want.length) SCAN.det = new BarcodeDetector({formats:want}); }).catch(function(){}); }catch(e){ SCAN.det = null; }
   }
+  if(noCam) return;
   if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ scanMsg("Η κάμερα δεν είναι διαθέσιμη εδώ – πάτα «📸 Φωτογραφία του barcode»."); return; }
   navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}, width:{ideal:1920}, height:{ideal:1080}}, audio:false}).then(function(st){
     SCAN.st = st; var v = document.getElementById("scvid"); if(!v){ scanStop(); return; }

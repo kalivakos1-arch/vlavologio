@@ -350,6 +350,9 @@ header #hmenu .hmi{align-items:center;gap:12px;padding:10px 12px}header #hmenu .
 .pgrep.inov{margin:16px 0 8px;flex:none}
 .repctx{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;font-size:13.5px;line-height:1.45;white-space:pre-wrap;max-height:150px;overflow:auto}.repctx b{font-size:13px}
 .plres{display:grid;gap:6px;margin:8px 0;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.plres>div{display:flex;flex-direction:column}.plres b{font-size:16px}.plgo{width:100%;height:48px;margin:8px 0}
+.platecta{display:flex;align-items:center;gap:12px;margin:10px 0 2px;padding:12px 14px;border-radius:14px;border:1.5px solid var(--acc);background:color-mix(in srgb,var(--acc) 10%,transparent);cursor:pointer;color:var(--text)}
+.platecta .pcic{font-size:26px;flex:none}.platecta b{display:block;font-size:15px}.platecta small{display:block;color:var(--muted);font-size:13px;line-height:1.35}
+.platecta.sm{margin:8px 0 4px;padding:9px 12px}.platecta.sm .pcic{font-size:21px}
 #printarea{display:none}
 @media print{html.printing body>*:not(#printarea){display:none!important}html.printing body{background:#fff!important}html.printing #printarea{display:block!important;background:#fff;color:#000;font:15px/1.5 -apple-system,Segoe UI,Arial;padding:20px}}
 html.field{font-size:118%}
@@ -462,7 +465,7 @@ html.field .srcbox button i .ic{width:24px;height:24px}
   <div class="card" id="brandcard">
     <label class="lbl step"><b>1</b> Μάρκα</label>
     <div id="bchosen"></div>
-    <div id="bpick"><div class="bsearch"><span class="mag"><svg class="ic"><use href="#i-search"/></svg></span><input id="bq" placeholder="π.χ. LG, Daikin, Gree" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><button id="brandSel" aria-label="Όλες οι μάρκες"><svg class="ic"><use href="#i-grid"/></svg></button></div>
+    <div id="bpick"><div class="bsearch"><span class="mag"><svg class="ic"><use href="#i-search"/></svg></span><input id="bq" placeholder="π.χ. LG, Daikin, Gree" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go"><button id="brandSel" aria-label="Όλες οι μάρκες"><svg class="ic"><use href="#i-grid"/></svg></button></div><label class="platecta" id="platecta"><span class="pcic">📷</span><span><b>Δεν ξέρεις τη μάρκα ή το εργοστάσιο;</b><small>Βγάλε φωτογραφία την ταμπέλα της μονάδας – βρίσκω μάρκα, μοντέλο και εργοστάσιο</small></span><input type="file" accept="image/*" capture="environment" class="plin" hidden></label>
     <div id="bsug"></div><button class="ledreset" id="bcancel" style="display:none">✕ Άκυρο – μένω στην ίδια μάρκα</button></div>
     <div id="brandsWrap"><div id="brands"></div></div>
   </div>

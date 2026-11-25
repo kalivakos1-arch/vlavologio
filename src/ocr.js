@@ -93,3 +93,10 @@ function plateShow(P, raw){
   var mi = document.getElementById("scmodel"); if(mi && P.model && !P.hit) mi.dispatchEvent(new Event("input", {bubbles:true}));
 }
 document.addEventListener("change", function(e){ if(e.target && e.target.id==="scplate") platePhoto(e.target.files && e.target.files[0]); });
+
+// Φωτογραφία ταμπέλας κατευθείαν από τη σελίδα (βήμα «Μάρκα» ή «Μοντέλο»)
+document.addEventListener("change", function(e){
+  if(!e.target || !e.target.classList || !e.target.classList.contains("plin")) return;
+  var f = e.target.files && e.target.files[0]; e.target.value = ""; if(!f) return;
+  scanOpen("quick", true); platePhoto(f);
+});

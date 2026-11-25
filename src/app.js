@@ -440,7 +440,8 @@ function renderOem(){
   box.innerHTML =
     manLinks(b)+(b.fac?'<div class="hint">🏭 '+esc(b.fac)+'.</div>':'')+(b.hint?'<div class="hint">'+esc(b.hint)+'</div>':'<div class="hint">Η '+esc(b.n)+' δεν έχει δικό της εργοστάσιο. Διάλεξε εργοστάσιο ή άφησε «Σύγκριση» για να δεις τι σημαίνει ο κωδικός σε κάθε πιθανό εργοστάσιο.</div>')+
     '<label class="lbl step"><b>3</b> Μοντέλο (από το ταμπελάκι)</label>'+
-    '<div class="row2"><input id="model" placeholder="μοντέλο εξωτερικής ή εσωτερικής – π.χ. V5MFO32-60" autocapitalize="characters" spellcheck="false"><button class="mini" data-scan="model" title="Σάρωση barcode"><svg class="ic"><use href="#i-scan"/></svg></button><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
+    '<div class="row2"><input id="model" placeholder="μοντέλο εξωτερικής ή εσωτερικής – π.χ. V5MFO32-60" autocapitalize="characters" spellcheck="false"><button id="saveMap" class="mini">Αποθήκευση</button></div>'+
+    '<label class="platecta sm"><span class="pcic">📷</span><span><b>Φωτογραφία ταμπέλας</b><small>Διαβάζω το μοντέλο και βρίσκω το εργοστάσιο</small></span><input type="file" accept="image/*" capture="environment" class="plin" hidden></label>'+
     '<div id="mapMsg" class="small"></div>'+
     '<label class="lbl">Εργοστάσιο παραγωγής</label>'+
     '<div class="chips">'+(cs.length>1?'<button class="chip'+(S.oem==="__all"?' on':'')+'" data-o="__all">Σύγκριση όλων</button>':'')+
