@@ -36,10 +36,11 @@ function plateParse(raw){
   var dt = T.match(/MANUFACTUR\w*\s*DAT\w*[^0-9]{0,6}([0-9]{4}[\.\/\-][0-9]{1,2})/) || T.match(/(?:DATE|PROD)\w*[^0-9]{0,6}((?:19|20)[0-9]{2}[\.\/\-][0-9]{1,2})/); if(dt) R.date = dt[1];
   return R;
 }
+function ocrOpt(o){ var b = location.href.replace(/[#?].*$/,"").replace(/[^\/]*$/,""); o = o || {}; o.workerPath = b+"ocr/worker.min.js"; o.corePath = b+"ocr/core"; o.langPath = b+"ocr/lang"; o.workerBlobURL = false; return o; }
 function ocrLoad(){
   return new Promise(function(res, rej){
     if(window.Tesseract) return res();
-    var s = document.createElement("script"); s.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"; s.async = true;
+    var s = document.createElement("script"); s.src = "ocr/tesseract.min.js"; s.async = true;
     s.onload = function(){ window.Tesseract ? res() : rej(new Error("load")); }; s.onerror = function(){ rej(new Error("net")); }; document.head.appendChild(s);
   });
 }
@@ -57,7 +58,7 @@ function platePhoto(file){
     withDet.then(ocrLoad).then(function(){
       var pct = -1;
       var lg = {logger:function(m){ if(m && m.status==="recognizing text"){ var p = Math.round((m.progress||0)*100); if(p!==pct && p%10===0){ pct = p; scanMsg("🏷️ Διαβάζω την ταμπέλα… "+p+"%"); } } }};
-      if(!Tesseract.createWorker) return Tesseract.recognize(c, "eng", lg);
+      lg = ocrOpt(lg); if(!Tesseract.createWorker) return Tesseract.recognize(c, "eng", lg);
       return Tesseract.createWorker("eng", 1, lg).then(function(w){
         return w.setParameters({tessedit_pageseg_mode:"11"}).then(function(){ return w.recognize(c); }).then(function(r){ try{ w.terminate(); }catch(x){} return r; });
       });
@@ -119,7 +120,7 @@ function ocrWarm(){
   try{
     if(LS.get("vl_ocrready", false) || !navigator.onLine) return;
     var c = navigator.connection; if(c && (c.saveData || /2g/.test(c.effectiveType||""))) return;
-    ocrLoad().then(function(){ if(!Tesseract.createWorker) return; return Tesseract.createWorker("eng", 1).then(function(w){ LS.set("vl_ocrready", Date.now()); try{ w.terminate(); }catch(x){} }); }).catch(function(){});
+    ocrLoad().then(function(){ if(!Tesseract.createWorker) return; return Tesseract.createWorker("eng", 1, ocrOpt()).then(function(w){ LS.set("vl_ocrready", Date.now()); try{ w.terminate(); }catch(x){} }); }).catch(function(){});
   }catch(x){}
 }
 window.addEventListener("load", function(){ setTimeout(function(){ if(window.requestIdleCallback) requestIdleCallback(ocrWarm, {timeout:20000}); else ocrWarm(); }, 15000); });

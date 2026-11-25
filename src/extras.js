@@ -165,34 +165,9 @@ function statsHtml(){
     '<div class="small" style="margin-top:10px">Βγαίνουν μόνο από τα δικά σου δεδομένα σε αυτό το κινητό.</div>';
 }
 document.addEventListener("click", function(e){ if(e.target.closest("#mn_stats")){ hmSet(false); movOpen("📊 Στατιστικά", statsHtml()); } });
-// ===== Ανώνυμη καταμέτρηση χρήσης (μία αποστολή τη μέρα, χωρίς προσωπικά δεδομένα) =====
-function vlUse(k){ try{ var u = JSON.parse(localStorage.getItem("vl_use")||"{}"); u[k] = (u[k]||0)+1; localStorage.setItem("vl_use", JSON.stringify(u)); }catch(x){} }
-function vlIid(){ var i = localStorage.getItem("vl_iid"); if(!i){ i = Math.random().toString(36).slice(2,10); try{ localStorage.setItem("vl_iid", i); localStorage.setItem("vl_since", new Date().toISOString().slice(0,10)); }catch(x){} } return i; }
-function vlPing(){
-  try{
-    if(localStorage.getItem("vl_noping")==="1" || !navigator.onLine || !REPORT_APP) return;
-    var d = new Date(), day = d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);
-    if(localStorage.getItem("vl_pingday")===day) return;
-    var u = {}; try{ u = JSON.parse(localStorage.getItem("vl_use")||"{}"); }catch(x){}
-    var m = document.querySelector('meta[name="vl-ver"]'), sa = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone;
-    var hc = 0; try{ hc = HIST.length; }catch(x){} var hp = +(localStorage.getItem("vl_lasth")||hc);
-    var t = "📊 ΧΡΗΣΗ (ανώνυμα)\nσυσκευή: "+vlIid()+" (από "+(localStorage.getItem("vl_since")||day)+")\nημέρα: "+day+"\nέκδοση: "+(m?m.content:"?")+
-      "\nτύπος: "+(/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?"κινητό/tablet":"υπολογιστής")+(sa?", εγκατεστημένη":", browser")+
-      "\nαπό την προηγούμενη φορά: κωδικοί "+(u.kod||0)+" · σωληνόγραμμα "+(u.pipe||0)+" · σάρωση "+(u.scan||0)+" · φωτογραφία ταμπέλας "+(u.ocr||0)+
-      "\nεπισκέψεις στο ιστορικό: "+hc+" ("+(hc-hp>=0?"+":"")+(hc-hp)+")";
-    repPost(t).then(function(){ try{ localStorage.setItem("vl_pingday", day); localStorage.setItem("vl_use","{}"); localStorage.setItem("vl_lasth", String(hc)); }catch(x){} }).catch(function(){});
-  }catch(x){}
-}
-(function(){
-  var _rr = renderResults, _lastK = "";
-  renderResults = function(){ var r = _rr.apply(this, arguments); try{ var q = cq(), k = (S.brand||"")+"|"+q; if(q && k!==_lastK){ _lastK = k; vlUse("kod"); } }catch(x){} return r; };
-  var _pf = pipeForm; pipeForm = function(){ vlUse("pipe"); return _pf.apply(this, arguments); };
-  var _so = scanOpen; scanOpen = function(){ vlUse("scan"); return _so.apply(this, arguments); };
-  var _pp = platePhoto; platePhoto = function(){ vlUse("ocr"); return _pp.apply(this, arguments); };
-  document.addEventListener("change", function(e){ if(e.target && e.target.id==="vl_ping_on"){ try{ localStorage.setItem("vl_noping", e.target.checked?"0":"1"); }catch(x){} } });
-  setTimeout(vlPing, 4000);
-  document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible") setTimeout(vlPing, 1500); });
-})();
+// Καμία καταμέτρηση χρήσης: η εφαρμογή δεν στέλνει τίποτα χωρίς να το ζητήσει ο χρήστης (αναφορές). Καθάρισμα παλιών κλειδιών v102.
+try{ ["vl_use","vl_iid","vl_since","vl_pingday","vl_lasth","vl_noping"].forEach(function(k){ localStorage.removeItem(k); }); }catch(x){}
+function vlUse(){}
 // ===== Αρχική: «πάνελ ημέρας» =====
 var HERO_TIPS = [
   ["📷","Φωτογράφισε την <b>ταμπέλα</b> της μονάδας – βρίσκω μάρκα, μοντέλο και εργοστάσιο."],

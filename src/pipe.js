@@ -542,9 +542,7 @@ function pCharge(D, runs, c){
 // ===== Παρατεταμένο πάτημα + σύρσιμο στο ✕ για διαγραφή =====
 var PDG = null, pdSup = 0, PDL = [], pdSent = 0, pdT0 = 0;
 function pdLog(x){ PDL.push(Math.round(performance.now()-pdT0)+"ms "+x); if(PDL.length>40) PDL.shift(); }
-function pdReport(why){ if(pdSent>=2) return; pdSent++; var v=""; try{ v=(document.querySelector('meta[name="vl-ver"]')||{}).content||""; }catch(e){}
-  var t = "Βλαβολόγιο – debug σύρσιμο σωληνογράμματος\nΑποτέλεσμα: "+why+"\nΈκδοση: "+v+"\nΣυσκευή: "+navigator.userAgent+"\nΒήματα:\n"+PDL.join("\n");
-  try{ fetch(REPORT_APP,{method:"POST",mode:"no-cors",body:t}); }catch(e){} }
+function pdReport(why){} // παλιό debug – δεν στέλνει τίποτα
 function pdNode(el){ var g = el && el.closest && el.closest(".ppsvg [data-pn]"); if(!g) return null; var v = g.getAttribute("data-pn"); if(v==="A" || v==="0") return null; return +v; }
 function pdStart(x, y, id){ pdCancel(); PDL = []; pdT0 = performance.now(); pdLog("start id="+id); PDG = {id:id, x0:x, y0:y, on:false}; PDG.t = setTimeout(pdOn, 400); }
 function pdOn(){ if(!PDG) return; var nd = pN(PDG.id); if(!nd){ pdLog("node missing"); PDG=null; return; } PDG.on = true; pdLog("ON (✕ shown)");
