@@ -86,6 +86,7 @@ function plateShow(P, raw){
   if(P.hit) h += '<div class="small">'+esc(P.hit.w)+'</div>';
   var bn = P.hit ? P.hit.b : (P.brands[0]||"");
   if(bn) h += '<button class="mini prim plgo" data-qb="'+esc(bn)+'" data-qm="'+esc(P.model||"")+'" data-qo="'+esc(P.hit?P.hit.o:"")+'" data-qr="'+esc(P.ref||"")+'" data-qc="'+esc(P.chg||"")+'">✅ Σωστά – συνέχεια με '+esc(bn)+'</button>';
+  h += '<button class="mini plhist" data-plhist="1" data-pb="'+esc(bn)+'" data-pm="'+esc(P.model||"")+'" data-po="'+esc(P.hit?P.hit.o:"")+'" data-pr="'+esc(P.ref||"")+'" data-pc2="'+esc(P.chg||"")+'" data-ps="'+esc(P.ser||"")+'">📒 Νέα επίσκεψη πελάτη με αυτά (και F‑gas)</button>';
   h += P.hit ? '<details class="small"><summary>Λάθος μοντέλο; Διόρθωσέ το</summary>'+plateManual(P.model)+'</details>' : plateManual(P.model);
   h += '<div class="scbtns" style="margin-top:10px"><button class="mini" id="scagain">🔁 Νέα φωτογραφία</button><button class="mini" data-repser="'+esc(P.ser||P.model||"")+'">📷 Δεν βγήκε σωστό – στείλε την ταμπέλα</button></div>';
   h += '<details class="small" style="margin-top:8px"><summary>Τι διάβασε ο αναγνώστης</summary><pre style="white-space:pre-wrap;font-size:12px">'+esc(String(raw).slice(0,1500))+'</pre></details>';
@@ -100,3 +101,25 @@ document.addEventListener("change", function(e){
   var f = e.target.files && e.target.files[0]; e.target.value = ""; if(!f) return;
   scanOpen("quick", true); platePhoto(f);
 });
+
+document.addEventListener("click", function(e){
+  var b = e.target.closest("[data-plhist]"); if(!b) return; e.stopPropagation();
+  var g = function(k){ return b.getAttribute(k)||""; };
+  scanStop(); var so = document.getElementById("scanov"); if(so){ so.style.display = "none"; so.innerHTML = ""; } document.body.style.overflow = "";
+  if(g("data-pb")){ S.brand = g("data-pb"); S.bedit = false; }
+  if(g("data-po") && PLAT[g("data-po")]) S.oem = g("data-po");
+  if(g("data-pm")) S.model = g("data-pm");
+  S.fw = S.fw || {}; if(g("data-ps")) S.fw.ser = g("data-ps");
+  S.plate = {ref:g("data-pr"), chg:g("data-pc2")};
+  renderAll(); persist();
+  histOpen("form");
+}, true);
+// Προετοιμασία του αναγνώστη κειμένου από πριν (μία φορά, όσο υπάρχει internet), ώστε η φωτογραφία ταμπέλας να δουλεύει και σε σημεία χωρίς σήμα
+function ocrWarm(){
+  try{
+    if(LS.get("vl_ocrready", false) || !navigator.onLine) return;
+    var c = navigator.connection; if(c && (c.saveData || /2g/.test(c.effectiveType||""))) return;
+    ocrLoad().then(function(){ if(!Tesseract.createWorker) return; return Tesseract.createWorker("eng", 1).then(function(w){ LS.set("vl_ocrready", Date.now()); try{ w.terminate(); }catch(x){} }); }).catch(function(){});
+  }catch(x){}
+}
+window.addEventListener("load", function(){ setTimeout(function(){ if(window.requestIdleCallback) requestIdleCallback(ocrWarm, {timeout:20000}); else ocrWarm(); }, 15000); });

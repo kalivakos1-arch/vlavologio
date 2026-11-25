@@ -221,14 +221,20 @@ function histOpen(mode, id){
   if(!ov){ ov = document.createElement("div"); ov.id = "histov"; document.body.appendChild(ov); }
   ov.style.display = "flex"; document.body.style.overflow = "hidden";
   var h = '<div class="schead"><b>📒 Πελάτες – επισκέψεις & ανταλλακτικά</b><button class="mini" id="histclose">✕</button></div>'+
-    '<div class="chips htabs"><button class="chip'+(mode!=="parts"&&mode!=="fgas"?' on':'')+'" id="htab_h">📒 Επισκέψεις ('+HIST.length+')</button><button class="chip'+(mode==="parts"?' on':'')+'" id="htab_p">🧾 Ανταλλακτικά ('+PLIST.filter(function(p){return !p.done;}).length+')</button><button class="chip'+(mode==="fgas"?' on':'')+'" id="htab_f">🧯 F‑gas'+fgBadge()+'</button></div>';
+    '<div class="chips htabs"><button class="chip'+(mode!=="parts"&&mode!=="fgas"&&mode!=="maint"?' on':'')+'" id="htab_h">📒 Επισκέψεις ('+HIST.length+')</button><button class="chip'+(mode==="parts"?' on':'')+'" id="htab_p">🧾 Ανταλλακτικά ('+PLIST.filter(function(p){return !p.done;}).length+')</button><button class="chip'+(mode==="fgas"?' on':'')+'" id="htab_f">🧯 F‑gas'+fgBadge()+'</button><button class="chip'+(mode==="maint"?' on':'')+'" id="htab_m">🔔 Συντήρηση'+mtBadge()+'</button></div>';
   if(mode==="parts"){ ov.innerHTML = h + plistHtml(); return; }
   if(mode==="fgas"){ ov.innerHTML = h + fgBookHtml(); return; }
+  if(mode==="maint"){ ov.innerHTML = h + mtHtml(); return; }
   if(mode==="form"){
     var e = id ? HIST.filter(function(x){ return x.id===id; })[0] : null, b = brandObj();
-    e = e || {cust:"", brand:b?b.n:"", oem:(S.oem && S.oem!=="__all" && PLAT[S.oem])?PLAT[S.oem].name:"", model:S.model||"", ser:S.fw.ser||"", code:S.gdCode||S.q||"", fix:S.gdFix||"", note:S.gdNote||""}; S.gdFix = S.gdNote = S.gdCode = "";
+    var PL = S.plate || {}; S.plate = null;
+    e = e || {cust:"", ref:PL.ref||"", chg:PL.chg||"", brand:b?b.n:"", oem:(S.oem && S.oem!=="__all" && PLAT[S.oem])?PLAT[S.oem].name:"", model:S.model||"", ser:S.fw.ser||"", code:S.gdCode||S.q||"", fix:S.gdFix||"", note:S.gdNote||""}; S.gdFix = S.gdNote = S.gdCode = "";
     var f = function(k,l,ph){ return '<label>'+esc(l)+'<input id="hf_'+k+'" value="'+esc(e[k]||"")+'" placeholder="'+esc(ph||"")+'"></label>'; };
-    h += '<div class="hform card">'+f("cust","Πελάτης / τοποθεσία","π.χ. Παπαδόπουλος – Καλαμαριά")+f("brand","Μάρκα","")+f("oem","Εργοστάσιο","")+f("model","Μοντέλο","")+
+    var mint = e.mint || "12";
+    h += '<div class="hform card">'+f("cust","Πελάτης / τοποθεσία","π.χ. Παπαδόπουλος – Καλαμαριά")+
+      '<label>Τηλέφωνο πελάτη<input id="hf_tel" type="tel" inputmode="tel" value="'+esc(e.tel||"")+'" placeholder="π.χ. 69xxxxxxxx"></label>'+
+      '<div class="mrem"><label class="chk"><input type="checkbox" id="hf_mrem"'+(e.mrem?' checked':'')+'> 🔔 Υπενθύμιση συντήρησης <span class="small">(μόνο αν το θέλει ο πελάτης)</span></label>'+
+      '<label class="mrint">κάθε <select id="hf_mint">'+[["6","6 μήνες"],["12","12 μήνες"],["24","24 μήνες"]].map(function(o){ return '<option value="'+o[0]+'"'+(mint===o[0]?' selected':'')+'>'+o[1]+'</option>'; }).join("")+'</select></label></div>'+f("brand","Μάρκα","")+f("oem","Εργοστάσιο","")+f("model","Μοντέλο","")+
       '<label>Σειριακός<div class="row2"><input id="hf_ser" value="'+esc(e.ser||"")+'"><button class="mini" data-scan="hist"><svg class="ic"><use href="#i-scan"/></svg></button></div></label>'+
       f("code","Κωδικός βλάβης","π.χ. E1, F5")+
       '<label>Τι έκανες / τι άλλαξες<textarea id="hf_fix" placeholder="π.χ. άλλαξα αισθητήριο σωλήνα εσωτ. (20kΩ)">'+esc(e.fix||"")+'</textarea></label>'+
@@ -237,7 +243,7 @@ function histOpen(mode, id){
       '<div class="scbtns" style="margin-top:10px"><button class="mini" id="hrep" data-id="'+esc(id||"")+'">📤 Αναφορά για πελάτη</button><button class="mini" id="hprint" data-id="'+esc(id||"")+'">🖨️ Εκτύπωση / PDF</button></div>'+
       '<div class="scbtns" style="margin-top:10px"><button class="mini" id="histsave" data-id="'+esc(id||"")+'">💾 Αποθήκευση</button><button class="mini" id="histlist">Άκυρο</button>'+(id?'<button class="mini" id="histdel" data-id="'+esc(id)+'">🗑️ Διαγραφή</button>':'')+'</div></div>';
   } else {
-    h += fgDueBanner()+'<button class="mini scanbtn" id="histnew">➕ Νέα καταχώρηση (από την τρέχουσα βλάβη)</button>'+
+    h += mtDueBanner()+fgDueBanner()+'<button class="mini scanbtn" id="histnew">➕ Νέα καταχώρηση (από την τρέχουσα βλάβη)</button>'+
       '<input id="histq" placeholder="Αναζήτηση: πελάτης, σειριακός, μοντέλο, κωδικός…" value="'+esc(S.hq||"")+'">'+
       '<div id="histl"></div>'+
       '<div class="small" style="margin-top:12px">Το ιστορικό μένει μόνο σε αυτό το κινητό. Κράτα αντίγραφο πριν αλλάξεις κινητό:</div>'+
@@ -698,12 +704,12 @@ document.addEventListener("change", function(e){ var t=e.target; if(t && t.id===
 
 
 // ===== Μετρήσεις, φρέον, υπογραφή & βιβλίο F-gas (μόνο στο κινητό) =====
-var HX_TXT = ["cust","brand","oem","model","ser","code","fix","note","lp","hp","sh","sc","tin","tout","amp","ref","chg","add","rec","lchk"];
+var HX_TXT = ["cust","tel","mint","brand","oem","model","ser","code","fix","note","lp","hp","sh","sc","tin","tout","amp","ref","chg","add","rec","lchk"];
 function TECH(){ return LS.get("vl_tech", {}) || {}; }
 function histReadForm(){
   var o = {};
   HX_TXT.forEach(function(k){ var x = document.getElementById("hf_"+k); o[k] = x ? String(x.value).trim() : ""; });
-  var hm = document.getElementById("hf_herm"); o.herm = !!(hm && hm.checked);
+  var hm = document.getElementById("hf_herm"); o.herm = !!(hm && hm.checked); var mr = document.getElementById("hf_mrem"); o.mrem = !!(mr && mr.checked);
   o.sig = SIG.dirty ? sigData() : (SIG.orig || "");
   return o;
 }

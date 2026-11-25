@@ -345,7 +345,7 @@ function renderBrands(){
   var own = list.filter(function(b){return b.own && !b.oem;}), oem = list.filter(function(b){return b.oem;}), fac = list.filter(function(b){return b.fac;}), reb = list.filter(function(b){return !b.own && !b.fac;});
   function btn(b){ return '<button class="br'+(b.n===S.brand?' on':'')+(b.own&&!b.oem?'':b.oem||b.fac?' oem':' reb')+'" data-b="'+esc(b.n)+'">'+badge(b.n,"sm")+esc(b.n)+'</button>'; }
   var cb = brandObj(), editing = !cb || S.bedit;
-  $("bchosen").innerHTML = (cb && !editing) ? '<div class="bchosen">'+badge(cb.n,"lg")+'<div class="bt"><b>'+esc(cb.n)+'</b><small>'+esc(bSub(cb))+'</small></div><button class="chg ico" id="chgBrand" aria-label="Αλλαγή μάρκας" title="Αλλαγή μάρκας"><svg class="ic"><use href="#i-swap"/></svg></button></div>' : "";
+  $("bchosen").innerHTML = (cb && !editing) ? '<div class="bchosen">'+badge(cb.n,"lg")+'<div class="bt"><b>'+esc(cb.n)+'</b><small>'+esc((!cb.own && S.oem && S.oem!=="__all" && PLAT[S.oem]) ? "Εργοστάσιο: "+PLAT[S.oem].name+(S.model?" (από το μοντέλο "+S.model+")":"") : bSub(cb))+'</small></div><button class="chg ico" id="chgBrand" aria-label="Αλλαγή μάρκας" title="Αλλαγή μάρκας"><svg class="ic"><use href="#i-swap"/></svg></button></div>' : "";
   $("bpick").style.display = editing ? "" : "none";
   $("bcancel").style.display = (cb && S.bedit) ? "" : "none";
   if(!editing) $("brandsWrap").classList.remove("open");
