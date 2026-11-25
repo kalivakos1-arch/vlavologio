@@ -84,7 +84,8 @@ function aboutHtml(){
   return '<div>Βλαβολόγιο για τεχνικούς κλιματισμού: κωδικοί βλαβών, λυχνίες, μετρήσεις και εργαλεία, στα ελληνικά.</div>'+
     '<ul><li><b>'+codes.toLocaleString("el-GR")+'</b> κωδικοί σε <b>'+tabs+'</b> πίνακες</li><li><b>'+BRANDS.length+'</b> μάρκες (με αντιστοίχιση στο εργοστάσιο που τις κατασκευάζει)</li><li>Κάθε πίνακας γράφει από ποιο <b>επίσημο manual</b> προέρχεται. Όπου κάτι δεν έχει επιβεβαιωθεί για ευρωπαϊκό μοντέλο, φαίνεται με ⚠️.</li></ul>'+
     '<div class="small">Οι κωδικοί διαφέρουν ανά γενιά και σειρά. Για αλλαγή πλακέτας ή συμπιεστή επιβεβαίωσε στο manual του μοντέλου. Τα ονόματα και σήματα των κατασκευαστών ανήκουν στους κατόχους τους. Η εφαρμογή είναι ανεξάρτητη και δεν συνδέεται με κανέναν κατασκευαστή.</div>'+
-    '<div class="small" style="margin-top:8px">'+(m?'Έκδοση '+esc(m.content.replace("vl-v",""))+' · ':'')+'Τα δεδομένα σου (σημειώσεις, πελάτες, αναφορές) μένουν μόνο σε αυτή τη συσκευή.</div>';
+    '<div class="small" style="margin-top:8px">'+(m?'Έκδοση '+esc(m.content.replace("vl-v",""))+' · ':'')+'Τα δεδομένα σου (σημειώσεις, πελάτες, αναφορές) μένουν μόνο σε αυτή τη συσκευή.</div>'+
+    '<label class="small" style="display:flex;gap:8px;align-items:flex-start;margin-top:8px"><input type="checkbox" id="vl_ping_on" style="appearance:auto;width:18px;height:18px;flex:none"'+(localStorage.getItem("vl_noping")==="1"?'':' checked')+'><span>Ανώνυμη καταμέτρηση χρήσης: μία φορά τη μέρα στέλνεται η έκδοση και πόσες φορές χρησιμοποιήθηκε κάθε εργαλείο. Δεν στέλνονται πελάτες, σημειώσεις, τηλέφωνα ή τοποθεσία.</span></label>';
 }
 var APP_URL = "https://vlavologio.github.io/";
 function shareApp(){
