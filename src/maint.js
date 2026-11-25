@@ -33,7 +33,7 @@ function mtHtml(){
     return '<div class="mtc"><div><b>'+esc(x.cust||"—")+'</b> · <span class="small">'+lab[st]+'</span></div>'+
       '<div class="small">'+esc([x.brand,x.model].filter(Boolean).join(" · ")||"—")+' · τελευταία επίσκεψη '+esc(new Date(x.ts).toLocaleDateString("el-GR"))+' · κάθε '+u.m+' μήνες → <b>'+esc(new Date(u.next).toLocaleDateString("el-GR"))+'</b></div>'+
       '<div class="mtb">'+(tel?'<a class="mini" href="tel:'+esc(tel)+'">📞 Κλήση</a><a class="mini" href="sms:'+esc(tel)+(ios?'&':'?')+'body='+msg+'">💬 SMS</a><a class="mini" href="https://wa.me/'+esc(tel.replace(/^\+/,"").replace(/^(69\d{8})$/,"30$1"))+'?text='+msg+'" target="_blank" rel="noopener">WhatsApp</a>':'<span class="small">Δεν υπάρχει τηλέφωνο – πρόσθεσέ το στην επίσκεψη.</span>')+'</div>'+
-      '<div class="mtb"><button class="mini" data-mtnew="'+esc(x.id)+'">➕ Νέα επίσκεψη</button><button class="mini" data-mtsn="'+esc(u.k)+'">⏭ Σε 1 μήνα</button><button class="mini" data-mtoff="'+esc(x.id)+'">🔕 Όχι άλλες</button></div></div>';
+      '<div class="mtb"><button class="mini" data-mtnew="'+esc(x.id)+'">➕ Νέα επίσκεψη</button><button class="mini" data-mtcal="'+esc(x.id)+'">📅 Ραντεβού</button><button class="mini" data-mtsn="'+esc(u.k)+'">⏭ Σε 1 μήνα</button><button class="mini" data-mtoff="'+esc(x.id)+'">🔕 Όχι άλλες</button></div></div>';
   }).join("");
 }
 document.addEventListener("click", function(e){
