@@ -27,7 +27,7 @@ function pCapLab(D,m){ var k = pKwOf(D,m), bt = function(x){ return String(Math.
 function pSL(D,m){ if(D.kw) return PS.unit==="btu" ? String(Math.round(+m*BTU/1000))+"k" : pFmt(+m); return D.sLab ? D.sLab(m) : (D.brand==="Daikin"?"":"P")+m; }
 function pOL(D,o){ var k = pOutKw(D,o), l = D.outLab(o); if(PS.unit==="btu" && k) l += (D.outInput||D.outKW?" · ":" ≈ ")+pBtuTxt(k); return l; }
 function pInd(D,u,ix){ return D.ind ? pPick(D.ind, D.indByIdx ? ix : +u.m).slice(1) : (D.indTxt||['—','—']); }
-function pStar(D){ return D.kind==="bc" || (D.kind==="hr" && PS.bsm==="multi"); }
+function pStar(D){ return D.kind==="bc" || (D.kind==="hr" && PS.bsm==="multi" && !D.bsSingle); }
 function pDm(D){ return D.dm ? D.dm : D.kw ? [5.6,3.6,2.8] : D.brand==="Toshiba" ? [18,12,9] : D.brand==="Hitachi" ? [2,1.5,1] : [63,40,40]; }
 
 // --- ίντσες ---
@@ -44,7 +44,6 @@ function pUnitName(u){ var t = u.ty==="cas1" ? "cas4" : (u.ty||"wall"); return p
 // εύρος αποδόσεων ανά τύπο εσωτερικής – μόνο από επίσημους καταλόγους (σε μονάδες του μοντέλου: κλάση Daikin / P Mitsubishi)
 var PCAPS = {
  "Daikin": {src:"Daikin VRV indoor unit overview (κατάλογος VRV 5 ECPEN25-213)", wall:[15,20,25,32,40,50,63], cas4:[15,20,25,32,40,50,63,80,100,125], duct_low:[15,20,25,32,40,50,63], duct_mid:[15,20,25,32,40,50,63,80,100,125,140], duct_high:[50,63,80,100,125,200,250], ceil:[32,50,63,71,100], cons:[20,25,32,40,50,63]},
-  "Hisense": {src:"Hisense TC&SM Hi-Smart H5 TCY12023016A, Table 1.1 Indoor Unit Type List", wall:[5,7,9,12,15,19,24,28], cas4:[5,7,9,12,15,17,19,22,24,27,30,38,48,54], duct_low:[5,7,9,12,15,17,19,24], duct_mid:[5,7,9,12,15,17,19,24], duct_high:[5,7,9,12,15,17,19,24], ceil:[], cons:[]},
  "Mitsubishi Electric": {src:"Mitsubishi Electric City Multi indoor units (PKFY, PLFY, PEFY VMS1/VMA/VMHS, PCFY, PFFY)", wall:[15,100], cas4:[15,140], duct_low:[15,63], duct_mid:[20,140], duct_high:[40,250], ceil:[40,125], cons:[20,63]}
 };
 function pTyKey(u){ var t = (u && u.ty==="cas1") ? "cas4" : ((u && u.ty) || "wall"); return t==="duct" ? "duct_"+((u && u.st) || "mid") : t; }
@@ -52,7 +51,7 @@ function pUrows(D, u){ var P = typeof PUNIT!=="undefined" && PUNIT[D.brand]; ret
 function pUinfo(D, u){ var R = pUrows(D,u); if(!R) return null; for(var i=0;i<R.length;i++) if(Math.abs(R[i][0]-pNum(u.m))<0.01) return R[i]; return null; }
 function pUtxt(r){ return r[1]+' · '+r[2]+'×'+r[3]+'×'+r[4]+' mm (Π×Υ×Β)'+(r[5]!=null?' · '+String(r[5]).replace(".",",")+' kg':'')+(r[6]?' · αέρας ως '+Math.round(r[6])+' m³/h':'')+(r[7]!=null?' · στατική ως '+r[7]+' Pa':'')+(r[8]?' · '+r[8]:''); }
 function pModelsFor(D, u){ var R = pUrows(D,u); if(R) return R.map(function(r){ return r[0]; });
-  var all = pModels(D), C = PCAPS[D.brand]; if(!C || !u) return all; var r = C[pTyKey(u)]; if(!r) return all;
+  var all = pModels(D), C = D.caps || PCAPS[D.brand]; if(!C || !u) return all; var r = C[pTyKey(u)]; if(!r) return all;
   var f = all.filter(function(m){ return r.length>2 ? r.some(function(x){ return Math.abs(+m-x)<0.01; }) : (+m >= r[0]-0.01 && +m <= r[1]+0.01); }); return f.length ? f : all; }
 function pFitModel(D, u){ var ms = pModelsFor(D, u).map(String); if(ms.indexOf(String(u.m))>=0) return; var v = pNum(u.m), b = ms[0]; ms.forEach(function(x){ if(Math.abs(+x-v) < Math.abs(+b-v)) b = x; }); u.m = b; }
 var PSIZES = [6.35,9.52,12.7,15.88,19.05,22.22,25.4,28.58,31.75,34.92,38.1,41.28,44.45,53.98];
@@ -163,11 +162,12 @@ function pipeForm(){
   if(PS.bpick){ h += '<div class="small">Διάλεξε εταιρεία</div><div class="bgrid">'+pBrands().map(function(b){ return '<button class="br'+(b===D.brand?' on':'')+'" data-ppb="'+esc(b)+'">'+badge(b,"sm")+esc(b)+'</button>'; }).join("")+'</div>'; }
   else h += '<div class="bchosen">'+badge(D.brand,"lg")+'<div class="bt"><b>'+esc(D.brand)+'</b><small>'+esc(D.name)+'</small></div><button class="chg ico" data-ppchg="1" aria-label="Αλλαγή εταιρείας"><svg class="ic"><use href="#i-swap"/></svg></button></div>';
   var ser = Object.keys(PIPE).filter(function(k){ return PIPE[k].brand===D.brand; });
-  if(ser.length>1 && !PS.bpick) h += '<div class="pchips" style="margin-top:6px">'+ser.map(function(k){ return '<button class="pc'+(k===PS.sys?' on':'')+'" data-pps="'+k+'">'+esc(pSysLab(D.brand, PIPE[k].kind))+'</button>'; }).join("")+'</div>';
+  if(ser.length>1 && !PS.bpick) h += '<div class="pchips" style="margin-top:6px">'+ser.map(function(k){ return '<button class="pc'+(k===PS.sys?' on':'')+'" data-pps="'+k+'">'+esc(PIPE[k].chip || pSysLab(D.brand, PIPE[k].kind))+'</button>'; }).join("")+'</div>';
   h += '<div class="pchips" style="margin-top:6px"><button class="pc'+(PS.unit!=="btu"?' on':'')+'" data-ppu="kw">kW</button><button class="pc'+(PS.unit==="btu"?' on':'')+'" data-ppu="btu">BTU/h</button><span style="width:10px"></span><button class="pc'+(PS.inch!=="in"?' on':'')+'" data-ppin="mm">mm</button><button class="pc'+(PS.inch==="in"?' on':'')+'" data-ppin="in">ίντσες</button></div>';
   var ov = D.outInput ? (PS.unit==="btu" ? String(Math.round(pNum(PS.out)*BTU)) : PS.out) : PS.out;
   h += '<div class="row2"><label class="small">Εξωτερική'+(D.outInput?' – ψυκτική απόδοση ('+(PS.unit==="btu"?'BTU/h':'kW')+')<input id="pp_out" class="ppv" inputmode="decimal" value="'+esc(ov)+'">':'<select id="pp_out" class="ppv">'+D.outs.map(function(x){ return o(x, pOL(D,x), PS.out); }).join("")+'</select>')+'</label>';
-  if(D.kind==="hr") h += '<label class="small">BS<select id="pp_bsm" class="ppv">'+o("multi","Ένα multi BS κοντά στην εξωτερική",PS.bsm)+o("single","BS1Q σε κάθε εσωτερική",PS.bsm)+'</select></label>';
+  if(D.kind==="hr" && D.bsSingle) h += '<div class="small" style="align-self:end">'+esc(D.bsSingle)+'</div>';
+  else if(D.kind==="hr") h += '<label class="small">BS<select id="pp_bsm" class="ppv">'+o("multi","Ένα multi BS κοντά στην εξωτερική",PS.bsm)+o("single","BS1Q σε κάθε εσωτερική",PS.bsm)+'</select></label>';
   h += '</div>';
   if(pStar(D)) h += '<label class="small">'+(D.kind==="bc"?'Μήκος εξωτερική → BC (m)':'Μήκος εξωτερική → BS (m)')+'<input id="pp_A" class="ppv" inputmode="decimal" value="'+esc(PS.A)+'"></label>';
   h += '<div class="row2"><label class="small">Υψομετρική εξωτ.–εσωτ. (m)<input id="pp_H" class="ppv" inputmode="decimal" value="'+esc(PS.H)+'"></label>'+
@@ -257,7 +257,9 @@ function pSvgStar(D, A, units, box){
 function pipeCalc(){
   var box = document.getElementById("pp_out_box"), svb = document.getElementById("pp_svg"); if(!box) return;
   var D = PIPE[PS.sys], out = pNum(PS.out), msg = [], ok = [], rows = [], L = D.lim; BOM = {}; KIT = {};
-  var lv = pLeaves(), n = lv.length, idxL = lv.map(function(u){ return pIdx(D,u.m); }), tot = idxL.reduce(function(a,b){return a+b;},0);
+  var lv = pLeaves(), n = lv.length;
+  if(D.limOver && D.nMax && D.nMax[out] && n > D.nMax[out][0]) L = Object.assign({}, L, D.limOver);
+  var idxL = lv.map(function(u){ return pIdx(D,u.m); }), tot = idxL.reduce(function(a,b){return a+b;},0);
   var lab = function(m){ return pSL(D,m); };
   var main = pPick(D.main, out).slice(1), A = pNum(PS.A), H = pNum(PS.H), h2 = pNum(PS.h2);
   var okw = pOutKw(D,out), totKw = D.kw ? tot : null;
@@ -289,7 +291,7 @@ function pipeCalc(){
         rows.push([I.let+(I.man?' ✎':'')+' · '+from(p)+' → '+PJL[c.id], pFmt(dn), pSzJ(I.sz), I.kit, Lc]); pBom(I.sz, Lc, D, hr?3:2); pKit(I.kit); runs.push([I.sz[0], Lc]);
         if(c.t==="j" && PCHG[PS.sys] && PCHG[PS.sys].jEq) runs.push([I.sz[0], PCHG[PS.sys].jEq]);
       } else { var no = lv.indexOf(c)+1, ix = pIdx(D,c.m); I.no = no;
-        I.sz = p===0 ? main : hr ? pPick(D.branch, ix).slice(1) : pInd(D,c,ix);
+        I.sz = p===0 ? main : hr ? pPick(D.bsUp || D.branch, ix).slice(1) : pInd(D,c,ix);
         if(!isNaN(parseFloat(I.sz[0]))) ovr();
         if(hr){ I.bs = pPick(D.bs1, ix)[1]; I.sz2 = pInd(D,c,ix); bsL.push(I.bs); }
         pBom(I.sz, Lc, D, hr?3:2); if(hr) pKit(I.bs);
@@ -299,7 +301,7 @@ function pipeCalc(){
     lv.forEach(function(u){ far = Math.max(far, dist[u.id]); if(firstJ!=null){ var a = dist[u.id]-dist[firstJ]; afterMax = Math.max(afterMax, a); minAfter = Math.min(minAfter, a); } if(u.p!==0) bmax = Math.max(bmax, pNum(u.L)); });
     farC = far;
     if(svb) svb.innerHTML = '<div class="ppscroll">'+pSvgTree(D, info)+'</div>';
-    html += pTable(D, rows, hr?['Υγρό','Αναρρόφηση','Υψ./χαμ.']:null);
+    html += pTable(D, rows, hr?(D.colLab||['Υγρό','Αναρρόφηση','Υψ./χαμ.']):null);
     if(L){ pChk(msg, ok, far, L.L1, 'Πιο μακρινή εσωτερική από την εξωτερική (πραγματικό)', L.L1eq?'Ισοδύναμο ≤ '+L.L1eq+' m – πρόσθεσε τις καμπύλες.':'');
       var afL = (L.afterH && H > L.afterH[0]) ? L.afterH[1] : L.after;
       if(L.dL && firstJ!=null) pChk(msg, ok, afterMax-minAfter, L.dL, 'Διαφορά πιο μακρινής – πλησιέστερης εσωτερικής από την 1η διακλάδωση');
@@ -500,6 +502,10 @@ var PCHG = {
     if(mini.length) r.push(["Mini κασέτα 4 δρόμων", 0, "Κασέτες "+mini.join(", ")+": υπολόγισα ως κασέτα 4 δρόμων. Αν είναι mini κασέτα, ο πίνακας δίνει 0,19 kg (09/12) ή 0,26 kg (15/19) ανά μονάδα – διόρθωσε στο «Πρόσθετα kg»."]);
     if(bad.length) r.push(["W2: "+bad.join(", "), null, "Δεν υπάρχουν στον πίνακα W2 του manual (μόνο κασέτα, mini κασέτα, καναλάτο, τοίχου)."]);
     return r; }, max:"Αν το πρόσθετο ξεπερνά τα 5,5 kg, το συνολικό μήκος πρέπει να μικρύνει (manual: το 180 m μπορεί να μη φτάνεται λόγω αυτού του ορίου)."},
+ hisense_hr:{f:{22.2:.39,19.05:.28,15.88:.19,12.7:.12,9.53:.06,6.35:.03}, src:"Hisense AVWT-76FESR…170FESS installation & maintenance manual P00570Q, §8.3 Table 8.1 (W = W1 + W2 + W3)", round:1,
+  addMax:function(o){ return {76:28,96:28,114:33,136:38.5,154:38.5,170:42}[o]; }, w0:function(o){ return {76:6.5,96:6.5,114:9.9,136:9,154:10.5,170:10.5}[o]; },
+  extra:function(c){ var big = c.idx.filter(function(m){ return m>=76; }).length, r = Math.round(c.tot/c.out*100);
+    return [["W2 εσωτερικές 76/96 kBtu/h ("+big+" × 1 kg)", big],["W3 αναλογία "+r+"%", r<100?0:r<=115?0.5:1.0]]; }},
  fujitsu_jiv:{f:{12.7:.114,9.52:.058,6.35:.021}, src:"Fujitsu AIRSTAGE AJ*126/144LELAH installation manual, §8.3.2", round:2, factory:11.0, totMax:25.6}
 };
 function pKey(F, d){ var x=parseFloat(d), b=null; Object.keys(F).forEach(function(k){ if(Math.abs(parseFloat(k)-x)<0.25) b=k; }); return b; }
@@ -523,7 +529,7 @@ function pCharge(D, runs, c){
   if(C.noNeg && tot<0) { notes.push("Βγήκε αρνητικό: δεν προσθέτεις φρέον."); tot = 0; }
   var mult = Math.pow(10, C.round||1), shown = (C.up ? Math.ceil(tot*mult-1e-9) : Math.round(tot*mult))/mult;
   h += '<tr><td colspan="3"><b>Σύνολο συμπληρωματικού'+(miss?' (χωρίς '+pFmt(miss)+' m)':'')+'</b></td><td><b>'+pFmt(shown)+' kg</b></td></tr></table></div>';
-  if(C.addMax){ var am = typeof C.addMax==="function" ? C.addMax(c.out) : C.addMax; notes.unshift('Πρόσθετο '+pFmt(shown)+' kg '+(shown<=am?'≤':'>')+' μέγιστο πρόσθετο '+pFmt(am)+' kg'+(shown<=am?' ✅':' ⛔ – μίκρυνε τα μήκη')+'. Εργοστασιακό '+pFmt(C.w0)+' kg → σύνολο '+pFmt(shown+C.w0)+' kg.'); }
+  if(C.addMax){ var am = typeof C.addMax==="function" ? C.addMax(c.out) : C.addMax; var w0 = typeof C.w0==="function" ? C.w0(c.out) : C.w0; notes.unshift('Πρόσθετο '+pFmt(shown)+' kg '+(shown<=am?'≤':'>')+' μέγιστο πρόσθετο '+pFmt(am)+' kg'+(shown<=am?' ✅':' ⛔ – μίκρυνε τα μήκη')+'.'+(w0!=null?' Εργοστασιακό '+pFmt(w0)+' kg → σύνολο '+pFmt(shown+w0)+' kg.':'')); }
   if(C.factory){ var all = shown + C.factory; notes.unshift('Εργοστασιακό '+pFmt(C.factory)+' kg + πρόσθετο = '+pFmt(all)+' kg '+(all<=C.totMax?'≤':'>')+' '+pFmt(C.totMax)+' kg'+(all<=C.totMax?' ✅':' ⛔')); }
   if(miss) notes.unshift('⚠️ '+pFmt(miss)+' m σωλήνα προς εσωτερικές δεν έχουν γνωστή διατομή ('+unk.map(String).join(", ")+'). Πρόσθεσε μήκος × kg/m της διατομής σύνδεσης κάθε εσωτερικής.');
   if(C.fNote) notes.unshift(C.fNote(c));
