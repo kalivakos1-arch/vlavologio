@@ -193,3 +193,58 @@ function vlPing(){
   setTimeout(vlPing, 4000);
   document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible") setTimeout(vlPing, 1500); });
 })();
+// ===== Αρχική: «πάνελ ημέρας» =====
+var HERO_TIPS = [
+  ["📷","Φωτογράφισε την <b>ταμπέλα</b> της μονάδας – βρίσκω μάρκα, μοντέλο και εργοστάσιο."],
+  ["🎙","Στη φόρμα επίσκεψης πάτα το <b>μικρόφωνο</b> και υπαγόρευσε τι έκανες."],
+  ["📅","Βάλε <b>υπενθύμιση συντήρησης</b> στον πελάτη – με ένα πάτημα του στέλνεις SMS ή WhatsApp."],
+  ["🏷️","Τύπωσε <b>QR αυτοκόλλητο</b> για τη μονάδα: την επόμενη φορά το σκανάρεις και βλέπεις όλο το ιστορικό."],
+  ["🧭","Το <b>σωληνόγραμμα VRF</b> δίνει διατομές, κιτ διακλάδωσης, όρια και πρόσθετο φρέον από το manual."],
+  ["🧾","Από την επίσκεψη βγάζεις <b>δελτίο εργασίας με ΦΠΑ</b> και φωτογραφίες, έτοιμο για τον πελάτη."],
+  ["💾","Κάνε <b>αντίγραφο ασφαλείας</b> από το μενού ⋯ – οι πελάτες σου μένουν μόνο στο κινητό σου."],
+  ["🚦","Στα <b>λαμπάκια</b> της εσωτερικής γράψε πώς αναβοσβήνουν – βρίσκω τον κωδικό."]
+];
+function heroHtml(){
+  var d = new Date(), h = d.getHours(), g = h < 5 ? "Καλό βράδυ" : h < 13 ? "Καλημέρα" : h < 21 ? "Καλησπέρα" : "Καλό βράδυ";
+  var ds = d.toLocaleDateString("el-GR",{weekday:"long", day:"numeric", month:"long"});
+  var hist = (typeof HIST!=="undefined" && HIST) ? HIST : [], fixed = hist.filter(function(x){ return x && x.fix && String(x.fix).trim(); }).length;
+  var cust = {}; hist.forEach(function(x){ var c = x && String(x.cust||"").trim().toLowerCase(); if(c) cust[c] = 1; });
+  var due = 0; try{ due = mtUnits().filter(function(u){ return mtState(u)!=="ok"; }).length; }catch(x){}
+  var tip = HERO_TIPS[Math.floor(d.getTime()/864e5) % HERO_TIPS.length];
+  var st = hist.length ? '<div class="hstats"><span><b>'+fixed+'</b> βλάβες λύθηκαν</span><span><b>'+Object.keys(cust).length+'</b> πελάτες</span>'+(due?'<span style="border-color:var(--hot)"><b>'+due+'</b> συντηρήσεις</span>':'')+'</div>' : '';
+  return '<p class="hg">'+g+' 👋</p><div class="hd">'+esc(ds.charAt(0).toUpperCase()+ds.slice(1))+' · τι έχουμε σήμερα;</div><div class="tbar"></div>'+st+
+    '<div class="hacts"><button data-hx="plate"><span class="hi">📷</span>Ταμπέλα</button><button data-hx="pipe"><span class="hi">🧭</span>Σωλήνες VRF</button><button data-hx="visit"><span class="hi">➕</span>Νέα επίσκεψη</button><button data-hx="maint"><span class="hi">🔔</span>Συντηρήσεις'+(due?'<span class="bd">'+due+'</span>':'')+'</button></div>'+
+    '<div class="htip"><span>'+tip[0]+'</span><span><b>Ήξερες ότι…</b> '+tip[1]+'</span></div>';
+}
+function heroRender(){
+  var el = document.getElementById("hero"); if(!el) return;
+  var cl = document.documentElement.classList, show = !cl.contains("mode-tools") && !cl.contains("mode-kb") && !(typeof brandObj==="function" && brandObj()) && !(S.q && S.q.trim());
+  if(!show){ if(!el.hidden) el.hidden = true; return; }
+  var k = new Date().toDateString()+"|"+((typeof HIST!=="undefined"&&HIST)?HIST.length:0);
+  if(el.hidden || el.dataset.k!==k){ el.innerHTML = heroHtml(); el.dataset.k = k; }
+  el.hidden = false;
+}
+function vlBuzz(){ try{ if(navigator.vibrate) navigator.vibrate(8); }catch(x){} }
+(function(){
+  var _ra = renderAll; renderAll = function(){ var r = _ra.apply(this, arguments); try{ heroRender(); }catch(x){} return r; };
+  document.addEventListener("click", function(e){
+    var b = e.target.closest && e.target.closest("[data-hx]");
+    if(b){ vlBuzz(); var x = b.getAttribute("data-hx");
+      if(x==="plate"){ var i = document.querySelector("#platecta .plin"); if(i) i.click(); else scanOpen("quick"); vlUse("hero_plate"); }
+      else if(x==="pipe"){ document.getElementById("toolsbtn").click(); setTimeout(function(){ var p = document.querySelector('[data-pc="pipe"]'); if(p) p.click(); }, 60); }
+      else if(x==="visit") histOpen("form");
+      else if(x==="maint") histOpen("maint");
+      return; }
+    if(e.target.closest && e.target.closest("#bnav button,.br,.cat,.srcbox button")) vlBuzz();
+    setTimeout(function(){ try{ heroRender(); }catch(x){} }, 0);
+  }, true);
+  document.addEventListener("input", function(e){ if(e.target && e.target.id==="q") setTimeout(heroRender, 0); });
+  setTimeout(heroRender, 0);
+})();
+document.addEventListener("click", function(e){
+  if(!(e.target.closest && e.target.closest("#histsave"))) return;
+  var fx = document.getElementById("hf_fix"), had = fx && fx.value.trim();
+  setTimeout(function(){ try{ if(!had || document.getElementById("hf_fix")) return;
+    var n = HIST.filter(function(x){ return x && x.fix && String(x.fix).trim(); }).length;
+    vlBuzz(); repToast(n===1 ? "✅ Η πρώτη σου λυμένη βλάβη στο Βλαβολόγιο!" : n%10===0 ? "🏆 "+n+" λυμένες βλάβες – μπράβο!" : "✅ Καταγράφηκε · "+n+" λυμένες βλάβες"); }catch(x){} }, 120);
+}, true);

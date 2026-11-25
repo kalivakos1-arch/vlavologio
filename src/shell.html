@@ -10,8 +10,10 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Βλαβολόγιο">
-<meta name="theme-color" content="#0F1B25">
+<meta name="theme-color" content="#0B1521">
 <title>Βλαβολόγιο Κλιματισμού</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400..800&display=swap">
 <style>
 :root{--bg:#0F1B25;--bg2:#0C161F;--card:#162532;--card2:#1C2E3D;--card3:#223748;--line:#28404F;--line2:#35505F;--text:#E8EEF2;--text2:#C3D0DA;--muted:#8FA2B1;--acc:#5AA2F0;--acc2:#3F8BE0;--accbg:rgba(90,162,240,.13);--acctx:#CFE4FC;--onacc:#06192C;--warn:#F2C230;--warnbg:rgba(242,194,48,.11);--warntx:#F8E2A0;--ok:#3FC98A;--okbg:rgba(63,201,138,.12);--oktx:#B5EED3;--bad:#FF5A67;--badbg:rgba(255,90,103,.12);--badtx:#FFD0D4;--lo:#5AA2F0;--hi:#FF5A67;--mid:#F2C230;--sh:0 1px 0 rgba(0,0,0,.25),0 6px 18px -8px rgba(0,0,0,.45);--r:16px;--disp:#081217;--dispx:#7FE7FF;--dispg:rgba(127,231,255,.45)}
 :root[data-theme=light]{--bg:#E4E9ED;--bg2:#DCE2E7;--card:#FFFFFF;--card2:#F2F5F7;--card3:#E8EDF1;--line:#D1D9DF;--line2:#B9C4CD;--text:#13232F;--text2:#2C3E4C;--muted:#5B6B78;--acc:#1E5AA8;--acc2:#17478A;--accbg:rgba(30,90,168,.09);--acctx:#163F78;--onacc:#fff;--warn:#A86F00;--warnbg:rgba(224,161,0,.13);--warntx:#5E3F00;--ok:#1F8A5B;--okbg:rgba(31,138,91,.11);--oktx:#135A3B;--bad:#C8283A;--badbg:rgba(200,40,58,.09);--badtx:#7A1220;--lo:#1E5AA8;--hi:#C8283A;--mid:#E0A100;--sh:0 1px 0 rgba(19,35,47,.04),0 2px 10px -4px rgba(19,35,47,.10)}
@@ -442,6 +444,47 @@ html.field .srcbox button i .ic{width:24px;height:24px}
 .instr{display:grid;grid-template-columns:42% 1fr;gap:10px;padding:9px 11px;border-top:1px solid var(--line);font-size:14px;align-items:baseline}
 .instr:first-child{border-top:0}.instr b{font-size:17px}.instr>span{color:var(--muted);font-size:13px}
 .instr.miss>div{color:var(--warn)}
+
+/* ===== v103 – «Θερμοστάτης»: ψύξη ↔ θέρμανση ===== */
+:root{--bg:#0B1521;--bg2:#08111B;--card:#12202F;--card2:#182A3C;--card3:#1F3449;--line:#24394E;--line2:#31495F;--text:#EEF4F9;--text2:#C7D4DF;--muted:#8EA3B5;--acc:#38C6F4;--acc2:#1FAEDF;--accbg:rgba(56,198,244,.13);--acctx:#CFF2FD;--onacc:#04202B;--hot:#FFB23F;--hotbg:rgba(255,178,63,.14);--lo:#38C6F4;--mid:#9AA8FF;--hi:#FFB23F;--r:18px;--sh:0 1px 0 rgba(0,0,0,.25),0 10px 24px -14px rgba(0,0,0,.6)}
+:root[data-theme=light]{--bg:#EEF3F8;--bg2:#E6EDF4;--card:#FFFFFF;--card2:#F3F7FB;--card3:#E8EFF6;--line:#D8E2EB;--line2:#C2D0DC;--text:#0D1B2A;--text2:#2A3E52;--muted:#5E7183;--acc:#0B7DC1;--acc2:#086AA5;--accbg:rgba(11,125,193,.09);--acctx:#08507C;--onacc:#FFFFFF;--hot:#E07B00;--hotbg:rgba(224,123,0,.1);--lo:#0B7DC1;--mid:#6A6FE0;--hi:#E07B00;--sh:0 1px 0 rgba(13,27,42,.04),0 10px 24px -16px rgba(13,27,42,.35)}
+@media (prefers-color-scheme:light){:root:not([data-theme=dark]){--bg:#EEF3F8;--bg2:#E6EDF4;--card:#FFFFFF;--card2:#F3F7FB;--card3:#E8EFF6;--line:#D8E2EB;--line2:#C2D0DC;--text:#0D1B2A;--text2:#2A3E52;--muted:#5E7183;--acc:#0B7DC1;--acc2:#086AA5;--accbg:rgba(11,125,193,.09);--acctx:#08507C;--onacc:#FFFFFF;--hot:#E07B00;--hotbg:rgba(224,123,0,.1);--lo:#0B7DC1;--mid:#6A6FE0;--hi:#E07B00;--sh:0 1px 0 rgba(13,27,42,.04),0 10px 24px -16px rgba(13,27,42,.35)}}
+body{font-family:"Commissioner",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;background:radial-gradient(900px 420px at 0% -120px,color-mix(in srgb,var(--lo) 16%,transparent),transparent 70%),radial-gradient(900px 420px at 100% -160px,color-mix(in srgb,var(--hi) 12%,transparent),transparent 70%),var(--bg)}
+h1{font-size:20px;font-weight:800;letter-spacing:-.3px}
+header::after{background:linear-gradient(90deg,var(--lo),var(--mid) 50%,var(--hi))}
+.wrap{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
+.card{border-radius:var(--r)}
+.br{border-radius:16px;transition:transform .15s,border-color .15s,box-shadow .15s}
+.br:hover{border-color:var(--acc);box-shadow:0 6px 16px -10px var(--acc)}
+.br:active{transform:scale(.96)}
+/* hero */
+.hero{position:relative;overflow:hidden;border-radius:22px;padding:16px 16px 14px;margin:0 0 12px;border:1px solid var(--line);background:radial-gradient(130% 120% at 0% 0%,color-mix(in srgb,var(--lo) 34%,transparent),transparent 60%),radial-gradient(130% 120% at 100% 100%,color-mix(in srgb,var(--hi) 32%,transparent),transparent 60%),var(--card);box-shadow:var(--sh)}
+.hero[hidden]{display:none}
+.hero .hg{font-size:24px;font-weight:800;letter-spacing:-.5px;line-height:1.15;margin:0}
+.hero .hd{color:var(--muted);font-size:13.5px;margin:3px 0 12px;text-transform:none}
+.hero .tbar{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--lo),var(--mid),var(--hi));background-size:200% 100%;margin:0 0 12px}
+@media (prefers-reduced-motion:no-preference){.hero .tbar{animation:tsweep 1.6s ease-out 1 both}}
+@keyframes tsweep{from{background-position:100% 0;opacity:.3}to{background-position:0 0;opacity:1}}
+.hstats{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.hstats span{display:inline-flex;align-items:baseline;gap:5px;padding:6px 10px;border-radius:12px;background:var(--card2);border:1px solid var(--line);font-size:13px;color:var(--text2)}
+.hstats b{font-size:17px;color:var(--text);font-variant-numeric:tabular-nums}
+.hacts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.hacts button{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:11px 4px 10px;border-radius:16px;border:1px solid var(--line);background:var(--card2);color:var(--text);font:inherit;font-size:12.5px;font-weight:700;line-height:1.15;text-align:center}
+.hacts .hi{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;font-size:21px;background:var(--accbg)}
+.hacts button:nth-child(2) .hi{background:color-mix(in srgb,var(--mid) 16%,transparent)}
+.hacts button:nth-child(3) .hi{background:var(--okbg)}
+.hacts button:nth-child(4) .hi{background:var(--hotbg)}
+.hacts .bd{position:absolute;top:6px;right:8px;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--hot);color:#1d1200;font-size:12px;font-weight:800;display:grid;place-items:center}
+.htip{display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;padding:10px 12px;border-radius:14px;background:var(--card2);border:1px dashed var(--line2);font-size:13.5px;color:var(--text2);line-height:1.4}
+.htip b{color:var(--text)}
+/* κάτω μενού: πλωτή μπάρα */
+#bnav{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom));padding:5px;border:1px solid var(--line);border-radius:22px;background:color-mix(in srgb,var(--card) 88%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);box-shadow:0 12px 30px -12px rgba(0,0,0,.45)}
+#bnav button{border-radius:16px;position:relative;transition:color .15s,background .15s}
+#bnav button.on{color:var(--text);background:var(--accbg)}
+#bnav button.on::after{content:"";position:absolute;left:30%;right:30%;bottom:3px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--lo),var(--hi))}
+#bnav button.on .ic{color:var(--acc)}
+.wel{border:1px solid var(--line);background:radial-gradient(120% 120% at 100% 0%,color-mix(in srgb,var(--hi) 14%,transparent),transparent 60%),var(--card)}
+@media (max-width:360px){.hacts{grid-template-columns:repeat(2,1fr)}}
 </style>
 <meta name="description" content="Κωδικοί βλαβών, λυχνίες, μετρήσεις και εργαλεία για τεχνικούς κλιματισμού – στα ελληνικά, από τα επίσημα service manuals. Δουλεύει και χωρίς internet.">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Βλαβολόγιο Κλιματισμού">
@@ -480,6 +523,7 @@ html.field .srcbox button i .ic{width:24px;height:24px}
     <div id="hmback" hidden></div><div id="hmenu" hidden role="dialog" aria-label="Μενού"><div class="hmtop"><img src="icon.png" alt="" class="hmlogo" onerror="this.style.display='none'"><div><b>Βλαβολόγιο Κλιματισμού</b><small id="hmver"></small></div><button class="hmx" id="hmclose" aria-label="Κλείσιμο">✕</button></div><div class="hmg">Τα δικά μου</div><button class="hmi" id="mn_notes"><span class="hmic">📝</span><span>Οι σημειώσεις μου<small>Ό,τι έγραψες σε κωδικούς</small></span></button><button class="hmi" id="mn_bak"><span class="hmic">☁️</span><span>Αντίγραφο ασφαλείας<small>Drive / iCloud · συνεργάτες</small></span></button><button class="hmi" id="mn_stats"><span class="hmic">📊</span><span>Στατιστικά<small>Μάρκες, συχνές βλάβες, επισκέψεις</small></span></button><button class="hmi" id="mn_tech"><span class="hmic">👤</span><span>Στοιχεία τεχνικού<small>Για αναφορές και βιβλίο F‑gas</small></span></button><div class="hmg">Εμφάνιση</div><button id="fieldbtn" class="hmi"><span class="hmic">🔠</span><span>Μεγάλα γράμματα (πεδίο)</span></button><button id="theme" class="hmi"><span class="hmic">🌓</span><span>Φωτεινό / σκοτεινό θέμα</span></button><div class="hmg">Βοήθεια</div><button class="hmi" id="mn_help"><span class="hmic">❓</span><span>Πώς δουλεύει<small>Σύντομος οδηγός σε 1 λεπτό</small></span></button><button class="hmi" id="mn_install"><span class="hmic">📲</span><span>Βάλ’ την στην αρχική οθόνη<small>Ανοίγει σαν εφαρμογή, και χωρίς internet</small></span></button><button class="hmi" id="mn_about"><span class="hmic">ⓘ</span><span>Σχετικά & πηγές</span></button><div class="hmg">Επικοινωνία</div><button class="hmi" id="mn_share"><span class="hmic">📤</span><span>Κοινοποίηση εφαρμογής<small>Στείλ’ την σε συνάδελφο</small></span></button><button class="hmi" id="mn_sugg"><span class="hmic">💡</span><span>Πρότεινε κωδικό ή βελτίωση</span></button><button class="hmi" id="repgen"><span class="hmic">⚑</span><span>Αναφορά προβλήματος</span></button></div>
   </header>
 
+  <div class="hero" id="hero" hidden></div>
   <div class="card wel" id="welcome" hidden><div class="welh">👋 Καλώς ήρθες στο Βλαβολόγιο</div><ol class="welol"><li>Διάλεξε <b>μάρκα</b></li><li>Γράψε τον <b>κωδικό</b> της οθόνης ή διάλεξε <b>λυχνίες</b></li><li>Ακολούθησε τον <b>έλεγχο βήμα‑βήμα</b></li></ol><div class="welb"><button class="mini prim" id="welok">Ξεκινάμε</button><button class="mini" id="welhelp">❓ Πλήρης οδηγός</button></div></div>
   <div class="card" id="brandcard">
     <label class="lbl step"><b>1</b> Μάρκα</label>
