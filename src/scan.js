@@ -78,7 +78,7 @@ function scanOpen(target){
   SCAN.target = target||"ser"; SCAN.hits = {};
   var ov = document.getElementById("scanov");
   if(!ov){ ov = document.createElement("div"); ov.id = "scanov"; document.body.appendChild(ov); }
-  ov.innerHTML = '<div class="schead"><b><svg class="ic"><use href="#i-scan"/></svg> Σάρωση barcode</b><button class="mini" id="scclose">✕</button></div>'+
+  ov.innerHTML = '<div class="schead"><b><svg class="ic"><use href="#i-scan"/></svg> Σάρωση ταμπέλας / barcode</b><button class="mini" id="scclose">✕</button></div>'+
     '<div class="scbox"><video id="scvid" playsinline muted autoplay></video><div class="scguide"></div></div>'+
     '<div class="scmsg" id="scmsg">Άνοιγμα κάμερας…</div>'+
     '<div class="scbtns"><label class="mini prim scphoto">🏷️ Φωτογραφία ταμπέλας (διαβάζει μάρκα & μοντέλο)<input type="file" accept="image/*" capture="environment" id="scplate" hidden></label></div>'+
