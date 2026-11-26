@@ -94,9 +94,10 @@ function pPos(id){ var a=PS.tree.n; for(var i=0;i<a.length;i++) if(a[i].id===id)
 function pLeaves(){ var r=[]; (function w(id){ var ks=pKids(id); if(id!==0 && !ks.length && pN(id).t==="i"){ r.push(pN(id)); return; } ks.forEach(function(k){ w(k.id); }); })(0); return r; }
 function pBuild(units, firstL, star){ // units: [{m, L, s}]
   var T = {k:0, n:[{id:0, t:"o"}], star:!!star}; PS.tree = T;
-  if(star || units.length<2){ units.forEach(function(u){ pNew("i",0,star?u.L:firstL,u.m); }); return T; }
+  if(star || units.length<2){ units.forEach(function(u){ var x = pNew("i",0,star?u.L:firstL,u.m); if(u.ty) x.ty = u.ty; if(u.st) x.st = u.st; }); return T; }
   var J = pNew("j",0,firstL);
   for(var k=0;k<units.length-1;k++){ pNew("i",J.id,units[k].L,units[k].m); if(k<units.length-2) J = pNew("j",J.id,units[k+1].s||"5"); else pNew("i",J.id,units[k+1].L,units[k+1].m); }
+  var lv = T.n.filter(function(x){ return x.t==="i"; }); lv.forEach(function(x,i){ if(units[i] && units[i].ty) x.ty = units[i].ty; if(units[i] && units[i].st) x.st = units[i].st; });
   return T;
 }
 function pFix(D){
@@ -154,6 +155,72 @@ function pDelBranch(id){ var B = pN(id); if(!B || (B.t!=="j" && B.t!=="h")) retu
   var at = pPos(id); PS.tree.n.splice(at,1); if(ks.length){ var c = ks[0]; c.p = B.p; c.L = String(pNum(B.L)+pNum(c.L)); } return true; }
 // --- φόρμα ---
 function pBrands(){ var r=[]; Object.keys(PIPE).forEach(function(k){ if(r.indexOf(PIPE[k].brand)<0) r.push(PIPE[k].brand); }); return r; }
+// ===== ⚡ Γρήγορη λίστα: μονάδες στη σειρά πάνω σε μία γραμμή =====
+function pChain(){
+  var T = PS.tree; if(!T) return null; var k0 = pKids(0);
+  if(T.star) return k0.every(function(x){ return x.t==="i" && !pKids(x.id).length; }) ? {star:true, u:k0.map(function(x){ return {n:x}; })} : null;
+  if(!k0.length) return {u:[]};
+  if(k0.length===1 && k0[0].t==="i" && !pKids(k0[0].id).length) return {single:true, u:[{n:k0[0]}]};
+  if(k0.length!==1 || k0[0].t!=="j") return null;
+  var J = k0[0], out = [], A = J;
+  while(true){ var ks = pKids(J.id); if(ks.length!==2 || ks[0].t!=="i" || pKids(ks[0].id).length) return null;
+    out.push({n:ks[0], j:J});
+    if(ks[1].t==="j"){ J = ks[1]; continue; }
+    if(ks[1].t==="i" && !pKids(ks[1].id).length){ out.push({n:ks[1], last:true}); break; }
+    return null; }
+  return {A:A, u:out};
+}
+function pQL(D,m){ if(D.kw) return pML(D,m); var c = pCapLab(D,m); return String(c[0]).replace(/^κλάση /,'')+(c[1]?' · '+String(c[1]).replace(/^≈ /,''):''); }
+var PTYS = {wall:"Τοίχου", cas4:"Κασέτα", duct:"Καναλάτο", ceil:"Οροφής", cons:"Κονσόλα"};
+function pStep(key, val, lab, cls){ return '<div class="ppqs'+(cls?' '+cls:'')+'"><span class="ppql">'+lab+'</span><span class="ppst"><button type="button" data-pqd="-1" data-pqk="'+key+'" aria-label="λιγότερα">−</button><input data-pqk="'+key+'" inputmode="decimal" value="'+esc(String(val==null?"":val))+'"><em>m</em><button type="button" data-pqd="1" data-pqk="'+key+'" aria-label="περισσότερα">+</button></span></div>'; }
+function pQuickHtml(D, ch){
+  var star = !!ch.star, n = ch.u.length, h = '<div class="ppq">';
+  var box = D.kind==="bc" ? "BC" : "BS";
+  if(star) h += pStep("A", PS.A, '🏠 Εξωτερική → '+box, 'ppqmain');
+  else if(ch.A) h += pStep("j:"+ch.A.id, ch.A.L, '🏠 Εξωτερική → 1η διακλάδωση', 'ppqmain');
+  ch.u.forEach(function(x, k){ var u = x.n, ty = u.ty||"wall";
+    if(!star && k>0 && x.j) h += pStep("j:"+x.j.id, x.j.L, '↓ Κύρια γραμμή ως τη διακλάδωση της '+(k+1), 'ppqseg');
+    var ms = pModelsFor(D, u).map(String); if(ms.indexOf(String(u.m))<0) ms.push(String(u.m));
+    h += '<div class="ppqu"><div class="ppqr"><span class="ppqn">'+(k+1)+'</span>'+
+      '<select data-pqty="'+u.id+'" aria-label="Τύπος">'+PTY.map(function(t){ return '<option value="'+t[0]+'"'+(t[0]===ty?' selected':'')+'>'+esc(PTYS[t[0]]||t[1])+'</option>'; }).join("")+'</select>'+
+      '<select data-pqm="'+u.id+'" aria-label="Απόδοση">'+ms.map(function(m){ return '<option value="'+esc(m)+'"'+(String(u.m)===m?' selected':'')+'>'+esc(pQL(D,m))+'</option>'; }).join("")+'</select>'+
+      (n>1?'<button type="button" class="ppqdel" data-pqdel="'+u.id+'" aria-label="Αφαίρεση μονάδας '+(k+1)+'">✕</button>':'')+'</div>'+
+      (ty==="duct"?'<div class="pchips ppqstat">'+PST.map(function(z){ return '<button class="pc'+((u.st||"mid")===z[0]?' on':'')+'" data-pqst="'+u.id+':'+z[0]+'">'+esc(z[1])+'</button>'; }).join("")+'</div>':'')+
+      pStep("L:"+u.id, u.L, ch.single ? 'Σωλήνα εξωτερική → μονάδα' : star ? 'Σωλήνα '+box+' → μονάδα' : 'Σωλήνα διακλάδωση → μονάδα')+'</div>';
+  });
+  h += '<div class="ppqadd"><span>➕ Πρόσθεσε στο τέλος της γραμμής</span><div>'+PTY.map(function(t){ return '<button type="button" data-pqadd="'+t[0]+'">'+pIcoBtn(t[0])+esc(t[1])+'</button>'; }).join("")+'</div></div>';
+  return h + '</div>';
+}
+function pQSet(key, v){
+  v = String(Math.max(0, Math.round(pNum(v)*10)/10)).replace(".",",");
+  if(key==="A"){ PS.A = v; return; }
+  var p = key.split(":"), nd = pN(+p[1]); if(nd) nd.L = v;
+}
+function pQGet(key){ if(key==="A") return PS.A; var p = key.split(":"), nd = pN(+p[1]); return nd ? nd.L : "0"; }
+function pQRefresh(keepFocus){ pSave(); var q = document.getElementById("pp_q"), ch = pChain(); if(q && ch && !keepFocus) q.innerHTML = pQuickHtml(PIPE[PS.sys], ch); pipeCalc(); }
+document.addEventListener("click", function(e){
+  if(e.target.closest && e.target.closest("[data-ppprint]")) document.querySelectorAll("details.ppd").forEach(function(d){ d.open = true; });
+  var t = e.target.closest && e.target.closest("[data-ppmode],[data-pqd],[data-pqdel],[data-pqadd],[data-pqst],[data-ppqreset]"); if(!t) return;
+  if(t.hasAttribute("data-ppmode")){ PS.mode = t.getAttribute("data-ppmode"); PS.sel = null; pSave(); pRerender(); return; }
+  if(t.hasAttribute("data-ppqreset")){ pSnap(); var lv = pLeaves().map(function(u){ return {m:u.m, L:u.L||"5", s:"5", ty:u.ty, st:u.st}; }); pBuild(lv, PS.A||"20", pStar(PIPE[PS.sys])); pSave(); pRerender(); return; }
+  if(t.hasAttribute("data-pqd")){ var k = t.getAttribute("data-pqk"), d = +t.getAttribute("data-pqd"); pQSet(k, pNum(pQGet(k)) + d); var inp = document.querySelector('input[data-pqk="'+k+'"]'); if(inp) inp.value = pQGet(k); try{ if(navigator.vibrate) navigator.vibrate(6); }catch(x){} pQRefresh(true); return; }
+  if(t.hasAttribute("data-pqdel")){ pSnap(); pDelUnit(+t.getAttribute("data-pqdel")); pQRefresh(); repToast("Αφαιρέθηκε – στο «✏️ Σχέδιο» έχει ↶ Αναίρεση"); return; }
+  if(t.hasAttribute("data-pqst")){ var a = t.getAttribute("data-pqst").split(":"), u = pN(+a[0]); if(u){ u.st = a[1]; pFitModel(PIPE[PS.sys], u); } pQRefresh(); return; }
+  if(t.hasAttribute("data-pqadd")){ pSnap(); var ty = t.getAttribute("data-pqadd"), lv2 = pLeaves(), last = lv2[lv2.length-1], oldL = last && last.L;
+    var nu = pAddUnit(PS.tree.star ? null : (last ? last.id : 0), ty);
+    if(!PS.tree.star && last && nu.p===last.p && pN(last.p) && pN(last.p).t==="j" && pN(last.p).p!==0){ pN(last.p).L = "5"; last.L = oldL; }
+    nu.L = "5"; pQRefresh(); setTimeout(function(){ var el = document.querySelector('[data-pqm="'+nu.id+'"]'); if(el){ el.scrollIntoView({block:"center", behavior:"smooth"}); } }, 50); return; }
+}, true);
+document.addEventListener("change", function(e){
+  var t = e.target; if(!t || !t.closest || !t.closest("#pp_q")) return;
+  if(t.hasAttribute("data-pqm")){ var u = pN(+t.getAttribute("data-pqm")); if(u) u.m = t.value; pQRefresh(); return; }
+  if(t.hasAttribute("data-pqty")){ var u2 = pN(+t.getAttribute("data-pqty")); if(u2){ u2.ty = t.value; pFitModel(PIPE[PS.sys], u2); } pQRefresh(); return; }
+  if(t.hasAttribute("data-pqk")){ pQSet(t.getAttribute("data-pqk"), t.value); t.value = pQGet(t.getAttribute("data-pqk")); pQRefresh(true); return; }
+});
+document.addEventListener("input", function(e){
+  var t = e.target; if(!t || !t.hasAttribute || !t.hasAttribute("data-pqk") || !t.closest("#pp_q")) return;
+  if(t.value.trim()==="" || isNaN(pNum(t.value))) return; var k = t.getAttribute("data-pqk"); if(k==="A") PS.A = t.value; else { var nd = pN(+k.split(":")[1]); if(nd) nd.L = t.value; } pSave(); pipeCalc();
+});
 function pipeForm(){
   if(!PIPE[PS.sys]) PS.sys="daikin_hp"; var D = PIPE[PS.sys]; pFix(D);
   var o = function(v,l,s){ return '<option value="'+esc(v)+'"'+(String(s)===String(v)?' selected':'')+'>'+esc(l)+'</option>'; };
@@ -174,12 +241,20 @@ function pipeForm(){
        '<label class="small">Η εξωτερική είναι<select id="pp_Hpos" class="ppv">'+o("up","πιο ψηλά",PS.Hpos)+o("down","πιο χαμηλά",PS.Hpos)+'</select></label></div>';
   h += '<div class="row2"><label class="small">Μέγ. υψομετρική μεταξύ εσωτερικών (m)<input id="pp_h2" class="ppv" inputmode="decimal" value="'+esc(PS.h2)+'"></label>'+
        (D.kind==="bc"?'<label class="small">Μέγ. υψομετρική εσωτ. – BC (m)<input id="pp_hbc" class="ppv" inputmode="decimal" value="'+esc(PS.hbc)+'"></label>':'')+'</div>';
+  var qm = PS.mode!=="adv", ch = qm ? pChain() : null;
+  h += '<div class="ppmode"><button class="pc'+(qm?' on':'')+'" data-ppmode="q">⚡ Γρήγορα (λίστα)</button><button class="pc'+(!qm?' on':'')+'" data-ppmode="adv">✏️ Σχέδιο (ελεύθερο)</button></div>';
+  if(qm){
+    h += ch ? '<div id="pp_q">'+pQuickHtml(D, ch)+'</div>' : '<div class="pver">Το σχέδιο σου έχει διακλαδώσεις που δεν είναι σε μία γραμμή – συνέχισε στο «✏️ Σχέδιο» ή <button class="mini" data-ppqreset="1">κάν’ το λίστα</button> (κρατάω μονάδες και μήκη, ξαναστήνω τις διακλαδώσεις στη σειρά).</div>';
+    h += '<div id="pp_act" hidden></div>';
+  } else {
   h += '<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="mini" data-ppundo="1">↶ Αναίρεση</button><button class="mini" data-ppnew="1">🆕 Νέο σχέδιο (μόνο εξωτερική)</button></div>';
   h += '<div class="small" style="margin-top:8px">🗑️ Για διαγραφή: κράτα πατημένο ένα στοιχείο και σύρ’ το στο ✕ που εμφανίζεται κάτω.<br>🔤 Γράμματα όπως στην LG: A κύρια σωλήνα, B/C/… μεταξύ διακλαδώσεων, a/b/c… προς τις εσωτερικές.<br>👆 Πάτα πάνω στο σχέδιο (εξωτερική, διακλάδωση, εσωτερική ή σωλήνα) για να προσθέσεις ή να αλλάξεις.</div>';
   h += '<div id="pp_svg"></div><div id="pp_act"></div>';
+  }
+  if(qm) h += '<div id="pp_out_box"></div><details class="ppd" open><summary>🗺️ Σχέδιο δικτύου</summary><div id="pp_svg" class="ppro"></div></details>';
   h += '<label class="small">Πρόσθετα kg φρέον (CF εσωτερικών, πίνακας ⓑ, BC κ.λπ. – αν τα ζητά το manual)<input id="pp_xkg" class="ppv" inputmode="decimal" value="'+esc(PS.xkg||"")+'" placeholder="0"></label>';
   h += '<div class="small" style="margin-top:6px">ℹ️ '+esc(D.idxNote)+(D.indNote?' '+esc(D.indNote):'')+'</div>';
-  h += '<div id="pp_out_box"></div><div class="small" style="margin-top:6px">Πηγή: '+esc(D.src)+'</div></div>';
+  h += (qm?'':'<div id="pp_out_box"></div>')+'<div class="small" style="margin-top:6px">Πηγή: '+esc(D.src)+'</div></div>';
   return h;
 }
 // --- πίνακας ενεργειών για ό,τι πάτησες ---
@@ -301,7 +376,7 @@ function pipeCalc(){
     lv.forEach(function(u){ far = Math.max(far, dist[u.id]); if(firstJ!=null){ var a = dist[u.id]-dist[firstJ]; afterMax = Math.max(afterMax, a); minAfter = Math.min(minAfter, a); } if(u.p!==0) bmax = Math.max(bmax, pNum(u.L)); });
     farC = far;
     if(svb) svb.innerHTML = '<div class="ppscroll">'+pSvgTree(D, info)+'</div>';
-    html += pTable(D, rows, hr?(D.colLab||['Υγρό','Αναρρόφηση','Υψ./χαμ.']):null);
+    html += '<details class="ppd" open><summary>📋 Διατομές ανά τμήμα</summary>'+pTable(D, rows, hr?(D.colLab||['Υγρό','Αναρρόφηση','Υψ./χαμ.']):null)+'</details>';
     if(L){ pChk(msg, ok, far, L.L1, 'Πιο μακρινή εσωτερική από την εξωτερική (πραγματικό)', L.L1eq?'Ισοδύναμο ≤ '+L.L1eq+' m – πρόσθεσε τις καμπύλες.':'');
       var afL = (L.afterH && H > L.afterH[0]) ? L.afterH[1] : L.after;
       if(L.dL && firstJ!=null) pChk(msg, ok, afterMax-minAfter, L.dL, 'Διαφορά πιο μακρινής – πλησιέστερης εσωτερικής από την 1η διακλάδωση');
@@ -329,7 +404,7 @@ function pipeCalc(){
       runs.push([main[0], A]); pBom(main, A, D, 3); if(bsm){ bsL.push(bsm[0]); pKit(bsm[0]); } farC = far;
       rows.unshift(['A · Εξωτερική → BS (3 σωλήνες)', pFmt(tot), pSzJ(main), bsm?bsm[0]:'—', A]);
       if(svb) svb.innerHTML = '<div class="ppscroll">'+pSvgStar(D, {sz:main, L:A}, us, bsm?bsm[0]+' ('+ports+' θύρες)':'Χρειάζονται >1 BS')+'</div>';
-      html += pTable(D, rows, ['Υγρό','Αναρρόφηση','Υψ./χαμ.']);
+      html += '<details class="ppd" open><summary>📋 Διατομές ανά τμήμα</summary>'+pTable(D, rows, ['Υγρό','Αναρρόφηση','Υψ./χαμ.'])+'</details>';
       if(!bsm) msg.push('⛔ '+ports+' θύρες / δείκτης '+pFmt(tot)+': δεν χωράνε σε ένα multi BS (ως 16 θύρες και 750). Το εργαλείο δεν σχεδιάζει ακόμα πολλά BS.');
       else ok.push(bsm[0]+': '+ports+'/'+bsm[1]+' θύρες, δείκτης '+pFmt(tot)+' ≤ '+bsm[2]+' · ως '+D.port.units+' εσωτερικές ανά θύρα, ≤'+D.port.max+' ανά θύρα (≤'+D.port.two+' με 2 θύρες μαζί)');
       pChk(msg, ok, far, L.L1, 'Πιο μακρινή εσωτερική από την εξωτερική (πραγματικό)', 'Ισοδύναμο ≤ '+L.L1eq+' m.');
@@ -347,7 +422,7 @@ function pipeCalc(){
       runs.push([main[0], A, 'hp']); pBom(main, A, D, 2, ['Υψηλή πίεση','Χαμηλή πίεση']); if(bc) pKit(bc[0]); farC = far;
       rows.unshift(['A · Εξωτερική → BC (υψηλή / χαμηλή)', 'P'+pFmt(tot), pSzJ(main), bc?bc[0]:'—', A]);
       if(svb) svb.innerHTML = '<div class="ppscroll">'+pSvgStar(D, {sz:main, L:A}, us, bc?bc[0]+' ('+ports+' θύρες)':'>16 θύρες')+'</div>';
-      html += pTable(D, rows, ['Υψηλή/Υγρό','Χαμηλή/Αέριο']);
+      html += '<details class="ppd" open><summary>📋 Διατομές ανά τμήμα</summary>'+pTable(D, rows, ['Υψηλή/Υγρό','Χαμηλή/Αέριο'])+'</details>';
       if(!bc) msg.push('⛔ '+ports+' θύρες: ξεπερνά ένα BC (16 θύρες). Χρειάζεται main + sub BC – δεν το σχεδιάζει ακόμα το εργαλείο.');
       else ok.push(bc[0]+': '+ports+'/'+bc[1]+' θύρες. Έλεγξε και τη μέγιστη δυναμικότητα του BC στο manual του.');
       pChk(msg, ok, A, L.A, 'Εξωτερική → BC');
@@ -365,12 +440,17 @@ function pipeCalc(){
     else ok.push('Υψομετρική μεταξύ εσωτερικών: '+pFmt(h2)+' m ≤ '+h2l+' m');
   }
   if(D.outInfo){ var oi = D.outInfo(out); if(oi){ html += '<div class="small">🔗 '+esc(oi[0])+'</div>'; if(oi[1]) pKit(oi[1]); } }
+  var nBad = msg.filter(function(m){ return m[0]==='⛔'; }).length, nWarn = msg.filter(function(m){ return m.indexOf('⚠️')===0; }).length;
+  html += '<details class="ppd"'+(nBad||nWarn?' open':'')+'><summary>📏 Όρια του manual'+(nBad?' · ⛔ '+nBad:nWarn?' · ⚠️ '+nWarn:' · ✅')+'</summary>';
   if(!L && D.limNote) msg.push('ℹ️ '+D.limNote); else if(D.limNote) html += '<div class="small">ℹ️ '+esc(D.limNote)+'</div>';
   html += msg.map(function(m){ return '<div class="pver'+(m[0]==='⛔'?' bad':'')+'">'+esc(m)+'</div>'; }).join("");
   html += ok.length ? '<div class="pver good">✅ '+ok.map(esc).join('<br>✅ ')+'</div>' : '';
-  html += pUnitsHtml(D, lv, out);
-  html += pBomHtml();
-  html += pCharge(D, runs, {out:out, tot:tot, n:n, far:farC, idx:idxL, bs:bsL, u:lv});
+  html += '</details>';
+  html += '<details class="ppd"><summary>🔌 Μηχανήματα & ρεύμα</summary>'+pUnitsHtml(D, lv, out)+'</details>';
+  html += '<details class="ppd" open><summary>📦 Λίστα υλικών</summary>'+pBomHtml()+'</details>';
+  var chH = pCharge(D, runs, {out:out, tot:tot, n:n, far:farC, idx:idxL, bs:bsL, u:lv});
+  html += chH ? '<details class="ppd" open><summary>🧪 Συμπληρωματικό φρέον'+(PCH_LAST?' · '+pFmt(PCH_LAST.kg)+' kg':'')+'</summary>'+chH+'</details>' : '';
+  html = pSummary(D, rows, nBad, nWarn) + html;
   html += '<div style="margin-top:10px"><button class="mini" data-ppprint="1">🖨️ Εκτύπωση / PDF για τον πελάτη</button></div>';
   html += '<div class="small">Οι διατομές σε mm (εξωτερική διάμετρος). Τα μήκη είναι πραγματικά: για ισοδύναμο μήκος πρόσθεσε καμπύλες και κιτ διακλάδωσης όπως λέει το manual.</div>';
   box.innerHTML = html;
@@ -510,8 +590,20 @@ var PCHG = {
  fujitsu_jiv:{f:{12.7:.114,9.52:.058,6.35:.021}, src:"Fujitsu AIRSTAGE AJ*126/144LELAH installation manual, §8.3.2", round:2, factory:11.0, totMax:25.6}
 };
 function pKey(F, d){ var x=parseFloat(d), b=null; Object.keys(F).forEach(function(k){ if(Math.abs(parseFloat(k)-x)<0.25) b=k; }); return b; }
+var PCH_LAST = null;
+function pSummary(D, rows, nBad, nWarn){
+  var r0 = rows[0], main = r0 ? String(r0[2]).split(" → ")[0] : "—", Lsum = 0; rows.forEach(function(r){ var v = pNum(r[r.length-1]); if(v>0) Lsum += v; });
+  var ks = Object.keys(KIT), kn = 0; ks.forEach(function(k){ kn += KIT[k]; });
+  var st = nBad ? ['bad','⛔ '+nBad+(nBad>1?' προβλήματα':' πρόβλημα')+' με τα όρια – δες «Όρια»'] : nWarn ? ['warn','⚠️ Θέλει προσοχή – δες «Όρια»'] : ['ok','✅ Μέσα στα όρια του manual'];
+  var mz = main.split("/").map(function(x){ x = x.trim(); return /^[0-9.,]+$/.test(x) ? 'Ø'+pD(x) : x; }).join(' / ');
+  return '<div class="ppsum '+st[0]+'"><div class="ppsh">'+st[1]+'</div><div class="ppsg">'+
+    '<div><small>Κύρια γραμμή</small><b>'+esc(mz)+'</b></div>'+
+    '<div><small>'+(D.kind==="line"?'Κιτ διακλάδωσης':'Κιτ & '+(D.kind==="bc"?'BC':'BS / switch box'))+'</small><b>'+(kn||'—')+'</b>'+(ks.length?'<i>'+esc(ks.map(function(k){ return (KIT[k]>1?KIT[k]+'× ':'')+k; }).join(', '))+'</i>':'')+'</div>'+
+    '<div><small>Πρόσθετο φρέον</small><b>'+(PCH_LAST?pFmt(PCH_LAST.kg)+' kg':'—')+'</b>'+(PCH_LAST?'<i>'+esc(PCH_LAST.refr)+'</i>':'')+'</div>'+
+    '<div><small>Μήκος σωληνώσεων</small><b>'+pFmt(Lsum)+' m</b><i>όπως τα έγραψες</i></div></div></div>';
+}
 function pCharge(D, runs, c){
-  var C = PCHG[PS.sys]; if(!C) return '';
+  var C = PCHG[PS.sys]; PCH_LAST = null; if(!C) return '';
   var F = typeof C.f==="function" ? C.f(c) : C.f, hpF = F.hp, liqF = F.liq || F;
   var agg = {}, miss = 0, unk = [];
   runs.forEach(function(r){ if(!r[1]) return; var tbl = r[2]==="hp" ? hpF : liqF, k = r[0] && pKey(tbl, r[0]);
@@ -528,7 +620,7 @@ function pCharge(D, runs, c){
   (C.extra ? C.extra(c) : []).forEach(function(e){ if(e[1]==null){ h += '<tr><td colspan="3">'+esc(e[0])+'</td><td>?</td></tr>'; if(e[2]) notes.push(e[2]); } else { tot += e[1]; h += '<tr><td colspan="3">'+esc(e[0])+'</td><td>'+pFmt(e[1])+'</td></tr>'; if(e[2]) notes.push(e[2]); } });
   var xk = pNum(PS.xkg); if(xk){ tot += xk; h += '<tr><td colspan="3">Πρόσθετα kg (από εσένα)</td><td>'+pFmt(xk)+'</td></tr>'; }
   if(C.noNeg && tot<0) { notes.push("Βγήκε αρνητικό: δεν προσθέτεις φρέον."); tot = 0; }
-  var mult = Math.pow(10, C.round||1), shown = (C.up ? Math.ceil(tot*mult-1e-9) : Math.round(tot*mult))/mult;
+  var mult = Math.pow(10, C.round||1), shown = (C.up ? Math.ceil(tot*mult-1e-9) : Math.round(tot*mult))/mult; PCH_LAST = {kg:shown, refr:C.refr||'R410A', miss:miss, unk:notes.some(function(n){ return false; })};
   h += '<tr><td colspan="3"><b>Σύνολο συμπληρωματικού'+(miss?' (χωρίς '+pFmt(miss)+' m)':'')+'</b></td><td><b>'+pFmt(shown)+' kg</b></td></tr></table></div>';
   if(C.addMax){ var am = typeof C.addMax==="function" ? C.addMax(c.out) : C.addMax; var w0 = typeof C.w0==="function" ? C.w0(c.out) : C.w0; if(am==null) notes.unshift('Μέγιστο πρόσθετο φρέον για αυτή την εξωτερική: δεν το δίνει ο πίνακας του manual.'+(w0!=null?' Εργοστασιακό '+pFmt(w0)+' kg.':'')); else notes.unshift('Πρόσθετο '+pFmt(shown)+' kg '+(shown<=am?'≤':'>')+' μέγιστο πρόσθετο '+pFmt(am)+' kg'+(shown<=am?' ✅':' ⛔ – μίκρυνε τα μήκη')+'.'+(w0!=null?' Εργοστασιακό '+pFmt(w0)+' kg → σύνολο '+pFmt(shown+w0)+' kg.':'')); }
   if(C.factory){ var all = shown + C.factory; notes.unshift('Εργοστασιακό '+pFmt(C.factory)+' kg + πρόσθετο = '+pFmt(all)+' kg '+(all<=C.totMax?'≤':'>')+' '+pFmt(C.totMax)+' kg'+(all<=C.totMax?' ✅':' ⛔')); }
