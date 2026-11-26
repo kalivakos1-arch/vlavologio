@@ -485,60 +485,6 @@ header::after{background:linear-gradient(90deg,var(--lo),var(--mid) 50%,var(--hi
 #bnav button.on .ic{color:var(--acc)}
 .wel{border:1px solid var(--line);background:radial-gradient(120% 120% at 100% 0%,color-mix(in srgb,var(--hi) 14%,transparent),transparent 60%),var(--card)}
 @media (max-width:360px){.hacts{grid-template-columns:repeat(2,1fr)}}
-
-/* ===== σωληνόγραμμα: γρήγορη λίστα ===== */
-.ppmode{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0 10px;padding:4px;border-radius:14px;background:var(--card2);border:1px solid var(--line)}
-.ppmode .pc{margin:0;justify-content:center;text-align:center;border:0;border-radius:11px;padding:10px 6px;font-weight:700}
-.ppmode .pc.on{background:var(--acc);color:var(--onacc)}
-.ppq{display:flex;flex-direction:column;gap:0}
-.ppqs{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0}
-.ppql{font-size:13.5px;color:var(--text2);line-height:1.25}
-.ppqmain{padding:10px 12px;border-radius:14px;background:var(--accbg);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);margin-bottom:6px}
-.ppqmain .ppql{color:var(--text);font-weight:700}
-.ppqseg{margin:0 0 0 8px;padding:4px 0 4px 10px;border-left:3px solid var(--acc)}
-.ppqseg .ppql{font-size:12.5px;color:var(--muted)}
-.ppst{display:inline-flex;align-items:center;flex:none;border:1px solid var(--line2);border-radius:12px;overflow:hidden;background:var(--card)}
-.ppst button{width:44px;height:44px;border:0;background:var(--card2);color:var(--text);font-size:22px;font-weight:700;line-height:1;padding:0}
-.ppst button:active{background:var(--accbg)}
-.ppst input{width:52px;height:44px;border:0;border-radius:0;background:transparent;text-align:center;font-size:18px;font-weight:800;padding:0;margin:0;color:var(--text);font-variant-numeric:tabular-nums}
-.ppst em{font-style:normal;font-size:12px;color:var(--muted);padding-right:6px;margin-left:-6px}
-.ppqu{margin:0 0 0 8px;padding:10px 0 8px 10px;border-left:3px solid var(--acc);position:relative}
-.ppqu:last-of-type{border-left-color:transparent}
-.ppqu::before{content:"";position:absolute;left:-3px;top:28px;width:10px;height:3px;background:var(--acc)}
-.ppqr{display:flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:6px}
-.ppqn{flex:none;width:24px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--acc);color:var(--onacc);font-weight:800;font-size:14px}
-.ppqr select{flex:1 1 0;min-width:0;height:44px;margin:0;font-size:14.5px;font-weight:600;padding:0 4px 0 8px}
-.ppqr select[data-pqty]{flex:0 0 104px}
-.ppqr select[data-pqm]{flex:1 1 0}
-.ppqdel{flex:none;width:34px;height:44px;border-radius:11px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:16px}
-.ppqstat{margin:6px 0 0}
-.ppqu .ppqs{padding:8px 0 0}
-.ppqadd{margin:8px 0 4px;padding:10px;border-radius:14px;border:1px dashed var(--line2)}
-.ppqadd>span{display:block;font-size:13px;color:var(--muted);margin-bottom:8px}
-.ppqadd>div{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px}
-.ppqadd button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--text);font:inherit;font-size:12px;font-weight:700;line-height:1.15}
-.ppqadd button svg{width:34px;height:22px}
-.ppro{pointer-events:none;overflow-x:auto}
-@media print{details.ppd>summary::after{content:none}}
-.ppsum{margin:12px 0 10px;padding:12px;border-radius:18px;border:1px solid var(--line);background:var(--card2)}
-.ppsum.ok{border-color:color-mix(in srgb,var(--ok) 55%,transparent);background:color-mix(in srgb,var(--ok) 9%,var(--card2))}
-.ppsum.warn{border-color:var(--hot);background:color-mix(in srgb,var(--hot) 9%,var(--card2))}
-.ppsum.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--card2))}
-.ppsh{font-weight:800;font-size:15.5px;margin-bottom:10px}
-.ppsg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ppsg>div{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:8px 10px;min-width:0}
-.ppsg small{display:block;font-size:11.5px;color:var(--muted);margin-bottom:2px}
-.ppsg b{display:block;font-size:19px;font-weight:800;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
-.ppsg i{display:block;font-style:normal;font-size:11.5px;color:var(--text2);overflow-wrap:anywhere;margin-top:2px}
-details.ppd{margin:8px 0;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:0 10px}
-details.ppd>summary{cursor:pointer;list-style:none;padding:12px 2px;font-weight:700;font-size:14.5px}
-details.ppd>summary::-webkit-details-marker{display:none}
-details.ppd>summary::after{content:"▾";float:right;color:var(--muted)}
-details.ppd[open]>summary::after{content:"▴"}
-details.ppd[open]{padding-bottom:10px}
-details.ppd>summary+.lbl{display:none}
-details.ppinfo{margin:12px 0;border:1px solid var(--line);border-radius:14px;padding:0 12px;background:var(--card)}
-details.ppinfo>summary{padding:12px 0;font-weight:700;cursor:pointer}
 </style>
 <meta name="description" content="Κωδικοί βλαβών, λυχνίες, μετρήσεις και εργαλεία για τεχνικούς κλιματισμού – στα ελληνικά, από τα επίσημα service manuals. Δουλεύει και χωρίς internet.">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Βλαβολόγιο Κλιματισμού">

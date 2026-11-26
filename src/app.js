@@ -1233,7 +1233,7 @@ function renderParts(){
   else {
     h += '<div id="ptop"></div>';
     if(!isTool(P)) h += '<div class="pwarn">⚡ Πριν ακουμπήσεις: κλείσε ρεύμα, περίμενε 5–10′ να αδειάσουν οι πυκνωτές της πλακέτας (μέτρα DC < 5V). Μετρήσεις «με ρεύμα» μόνο με μονωμένους ακροδέκτες.</div>';
-    if(P.id!=="pipe") h += ruleBox(P.id);
+    h += ruleBox(P.id);
     if(P.id==="fan") h += '<div id="fanw">'+fanWizard()+'</div>';
     if(P.id==="comp") h += '<div class="pcalcw"><div class="lbl">🔎 Κωδικός συμπιεστή (ετικέτα πάνω στον συμπιεστή)</div><input id="pcomp" placeholder="π.χ. ASN98D22UFZ" autocapitalize="characters" spellcheck="false"><div id="pcompres"></div></div>';
     if(MEAS[P.id]) h += measBox(P.id);
@@ -1258,8 +1258,7 @@ function renderParts(){
     }
     var ex = pl.map(function(p){ return PEXTRA[p] && PEXTRA[p][P.id] ? '<div class="pext">📘 <b>'+esc(PLAT[p].name)+':</b> '+esc(PEXTRA[p][P.id])+'</div>' : ''; }).join("");
     h += ex;
-    var bodyH = P.body.map(function(s){ return '<div class="psec"><div class="pst">'+esc(s[0])+'</div><div class="psb">'+esc(s[1])+'</div></div>'; }).join("");
-    h += P.id==="pipe" ? '<details class="ppinfo"><summary>ℹ️ Πώς δουλεύει, σειρές, όρια</summary>'+ruleBox(P.id)+bodyH+'</details>' : bodyH;
+    h += P.body.map(function(s){ return '<div class="psec"><div class="pst">'+esc(s[0])+'</div><div class="psb">'+esc(s[1])+'</div></div>'; }).join("");
     if(typeof TOOL_IDS==='undefined' || TOOL_IDS.indexOf(P.id)<0) h += '<div class="pnote small">Οι τιμές (Ω, V) είναι από τα service manuals της μάρκας όπου υπάρχει πηγή, αλλιώς τυπικές. Η ακριβής τιμή περιέλιξης συμπιεστή/μοτέρ αλλάζει ανά μοντέλο και γράφεται στο wiring diagram ή στο service manual του – η πιο αξιόπιστη σύγκριση είναι οι 3 φάσεις μεταξύ τους.</div>';
     if(typeof TOOL_IDS==='undefined' || TOOL_IDS.indexOf(P.id)<0) h += '<div class="psave"><div class="lbl">📒 Κράτα τη μέτρησή σου για αυτό το μοντέλο</div><div class="row2"><input id="pval" placeholder="π.χ. U-V-W 1,4Ω · γείωση OL"><button id="psave" class="mini">Αποθήκευση</button></div><div id="psmsg" class="small"></div></div>';
   }
