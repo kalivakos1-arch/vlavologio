@@ -70,7 +70,13 @@ function pIco(k, x, y, w){ // σχέδιο εικονιδίου σε κουτί 
 }
 function pIcoBtn(k){ return '<svg viewBox="0 0 40 24" width="40" height="24" style="display:block;margin:0 auto 3px">'+pIco(k,2,0,36)+'</svg>'; }
 // --- κολεκτέρ (header): μόνο όπου υπάρχει επίσημος πίνακας ---
+var PHDR_SRC = {daikin_hp:"Daikin RXYQ – «How to select the refnet header» (KHRQ22M29H < 290, 64H 290–640, 75H ≥ 640 ή σωλήνα πάνω από το κολεκτέρ ≥ Ø34,9· έως 8 έξοδοι· μονάδα 250 δεν μπαίνει μετά από κολεκτέρ)", lg_multiv:"LG Multi V 5 PDB §7.5.2 Header – επιλογή από τη διατομή αερίου στην είσοδο (ARBL05x ως Ø19,05, ARBL10x ως Ø28,58, ARBL2010 ως Ø34,9) και τις εξόδους (4/7/10)", hitachi_sf:"Hitachi Set Free – πίνακας κολεκτέρ του manual", fujitsu_jiv:"Fujitsu J-IV – πίνακας κολεκτέρ του manual", gree_gmv6:"Gree GMV6 – πίνακας κολεκτέρ του manual"};
 var PHDR = {
+ daikin_hp: function(dn, k, sz){ if(k>8) return null; if(sz && parseFloat(sz[1])>=34.9) return "KHRQ22M75H"; return dn<290 ? "KHRQ22M29H" : dn<640 ? "KHRQ22M64H" : "KHRQ22M75H"; },
+ lg_multiv: function(dn, k, sz){ var g = sz ? parseFloat(sz[1]) : 0; if(k>10 || !g) return null;
+   if(g<=19.05) return k<=4 ? "ARBL054 (4 έξοδοι)" : k<=7 ? "ARBL057 (7 έξοδοι)" : null;
+   if(g<=28.58) return k<=4 ? "ARBL104 (4 έξοδοι)" : k<=7 ? "ARBL107 (7 έξοδοι)" : "ARBL1010 (10 έξοδοι)";
+   return g<=34.92 ? "ARBL2010 (10 έξοδοι)" : null; },
  hitachi_sf: function(dn, k){ if(k<=4 && dn<=8) return "E-102SN4 (4 κλάδοι)"; if(k<=8 && dn<=10) return "E-162SN4 (8 κλάδοι)"; return null; },
  fujitsu_jiv: function(dn, k){ if(k>8) return null; return dn<=28 ? (k<=6?"UTR-H0906L":"UTR-H0908L") : (k<=6?"UTR-H1806L":"UTR-H1808L"); },
  gree_gmv6: function(dn){ return dn<=40 ? "FQ14/H1" : dn<=68 ? "FQ18/H1" : "FQ18/H2"; }
@@ -195,6 +201,7 @@ function pAct(){
   var lv = pLeaves(), no = lv.indexOf(s)+1, title, h = '<div class="ppact">';
   if(s.t==="o") title = "Εξωτερική"; else if(s.t==="A") title = "Σωλήνα εξωτερική → "+(D.kind==="bc"?"BC":"BS"); else if(s.t==="j") title = "Διακλάδωση Y "+pJlab(s.id); else if(s.t==="h") title = "Κολεκτέρ "+pJlab(s.id); else title = "Εσωτερική "+no+" – "+pTyName(s.ty);
   h += '<div class="lbl">'+esc(title)+' <button class="mini" id="pp_unsel" style="float:right">✕</button></div>';
+  if(s.t==="j"||s.t==="h") h += '<div class="small">Τι μπαίνει σε αυτό το σημείο;</div>'+pKitBtns(s.id, s.t);
   if(s.t==="i"){ h += '<div class="small">Τύπος</div><div class="pptyg">'+PTY.map(function(t){ return '<button class="ppty'+((s.ty||"wall")===t[0]?' on':'')+'" data-ppty="'+t[0]+'">'+pIcoBtn(t[0])+esc(t[1])+'</button>'; }).join("")+'</div>';
     if((s.ty||"wall")==="duct") h += '<div class="small" style="margin-top:8px">Στατική πίεση καναλάτου</div><div class="pchips">'+PST.map(function(x){ return '<button class="pc'+((s.st||"mid")===x[0]?' on':'')+'" data-ppst="'+x[0]+'">'+esc(x[1])+'</button>'; }).join("")+'</div>';
     var UI = pUinfo(D, s); if(UI) h += '<div class="pver good" style="margin-top:8px">📐 '+esc(pUtxt(UI))+'</div>'; else if(pUrows(D,s)) {} 
@@ -206,8 +213,6 @@ function pAct(){
   if(s.t!=="o" && s.t!=="A" && !PS.tree.star){
     var szc = function(k, lab, from, to){ var cur = k==="L" ? s.oL : s.oG; return '<div class="small" style="margin-top:6px">'+lab+'</div><div class="pchips"><button class="pc'+(!cur?' on':'')+'" data-ppd'+k.toLowerCase()+'="">Αυτόματο</button>'+PSIZES.filter(function(v){ return v>=from && v<=to; }).map(function(v){ return '<button class="pc'+(cur && Math.abs(parseFloat(cur)-v)<0.2?' on':'')+'" data-ppd'+k.toLowerCase()+'="'+v+'">'+esc(pD(v))+'</button>'; }).join("")+'</div>'; };
     h += '<div class="small" style="margin-top:8px"><b>Διατομή σωλήνα ως εδώ</b> – «Αυτόματο» = από τον πίνακα του manual</div>' + szc("L","Υγρό",6.35,28.58) + szc("G", D.kind==="hr"?"Αναρρόφηση":"Αέριο", 9.52,53.98); }
-  if(s.t==="j") h += '<button class="mini" data-ppconv="h" style="margin-top:8px">'+'Κάν’ το κολεκτέρ</button> ';
-  if(s.t==="h") h += '<button class="mini" data-ppconv="j" style="margin-top:8px">Κάν’ το διακλάδωση Y</button> ';
   if(s.t==="i") h += '<button class="mini ppdel" data-ppdn="'+s.id+'" style="margin-top:8px">🗑️ Αφαίρεση εσωτερικής</button>';
   if(s.t==="j"||s.t==="h"){ var ku = pSub(s.id).filter(function(x){ return pN(x).t==="i"; }).length;
     if(PS.delc===s.id) h += '<button class="mini ppdel" data-ppdn="'+s.id+'" data-ppok="1" style="margin-top:8px">⚠️ Πάτα ξανά: σβήνει '+(s.t==="h"?'το κολεκτέρ':'τη διακλάδωση')+' και '+ku+' εσωτερική(ές)</button>';
@@ -215,7 +220,18 @@ function pAct(){
   if(s.t!=="A") h += pAddGrid(star) + '<div class="small">'+(s.t==="i"?'Μια νέα εσωτερική μπαίνει δίπλα σε αυτή (με διακλάδωση). Joint/κολεκτέρ μπαίνει πριν από αυτή.':(s.t==="o"?'Joint/κολεκτέρ μπαίνει αμέσως μετά την εξωτερική.':'Η εσωτερική μπαίνει σε αυτό το σημείο. Joint/κολεκτέρ μπαίνει πριν από αυτό.'))+'</div>';
   el.innerHTML = h + '</div>';
 }
-var PJL = {};
+var PJL = {}, PKV = {};
+function pKitBtns(id, cur){ var K = PKV[id] || {};
+  var hTxt = K.h || (K.hk ? 'δεν υπάρχει μοντέλο για '+(K.nk||0)+' εξόδους' : 'μοντέλο από το manual');
+  return '<div class="ppkch"><button class="ppkb'+(cur==="j"?' on':'')+'" data-ppcv="'+id+':j"><span>🔀 Διακλάδωση Y (joint)</span><small>'+esc(K.j||'—')+(K.nk>2?' · έχει '+K.nk+' εξόδους, το joint παίρνει 2':'')+'</small></button>'+
+    '<button class="ppkb'+(cur==="h"?' on':'')+'" data-ppcv="'+id+':h"><span>🧰 Κολεκτέρ (header)</span><small>'+esc(hTxt)+(K.sub?' · μετά από κολεκτέρ μόνο εσωτερικές':'')+'</small></button></div>'; }
+function pKitChoice(){ var ids = []; (function w(id){ pKids(id).forEach(function(k){ if(k.t==="j"||k.t==="h") ids.push(k.id); w(k.id); }); })(0);
+  if(!ids.length) return '';
+  return '<div class="lbl" style="margin-top:10px">🔧 Κιτ σε κάθε σημείο – διάλεξε joint ή κολεκτέρ</div>'+ids.map(function(id){ var n = pN(id); return '<div class="ppkrow"><b>'+esc(PJL[id]||'')+'</b>'+pKitBtns(id, n.t)+'</div>'; }).join('')+
+    '<div class="small">'+(PHDR_SRC[PS.sys] ? 'Κολεκτέρ: '+esc(PHDR_SRC[PS.sys]) : 'Για αυτή τη σειρά δεν έχω ακόμα επίσημο πίνακα κολεκτέρ – αν το διαλέξεις, πάρε το μοντέλο από το manual.')+'</div>'; }
+document.addEventListener("click", function(e){ var t = e.target.closest && e.target.closest("[data-ppcv]"); if(!t) return; e.stopPropagation();
+  var a = t.getAttribute("data-ppcv").split(":"), n = pN(+a[0]); if(!n || n.t===a[1]) return; pSnap(); n.t = a[1]; pSave(); pipeCalc(); pAct();
+  repToast(a[1]==="h" ? "Έγινε κολεκτέρ – ↶ Αναίρεση αν το θες πίσω" : "Έγινε διακλάδωση Y (joint)"); }, true);
 function pJlab(id){ return PJL[id] || "Δ"; }
 // --- σχέδιο δέντρου (από πάνω προς τα κάτω) ---
 function pSvgTree(D, info){
@@ -280,12 +296,16 @@ function pipeCalc(){
         [0,1].forEach(function(k){ if(parseFloat(I.sz[k]) < parseFloat(I.auto[k]) - 0.2) msg.push('⚠️ Τμήμα '+I.let+': '+(k?'αέριο':'υγρό')+' '+pD(I.sz[k])+' μικρότερο από του manual ('+pD(I.auto[k])+').'); }); };
       if(c.t==="j" || c.t==="h"){ var dn = down[c.id], nk = pKids(c.id).length;
         I.sz = p===0 ? main : pCap(pPick(D.branch, dn).slice(1), main); ovr();
+        PKV[c.id] = {j: c.id===firstJ ? (D.firstSame ? pPick(D.joint, dn)[1] : pPick(D.first, out)[1]) : pPick(D.joint, dn)[1], h: PHDR[PS.sys] ? PHDR[PS.sys](dn, nk, I.sz) : null, hk: !!PHDR[PS.sys], nk: nk, dn: dn, sub: pKids(c.id).some(function(k){ return k.t!=="i"; })};
+
         if(c.t==="j"){ I.kit = c.id===firstJ ? (D.firstSame ? pPick(D.joint, dn)[1] : pPick(D.first, out)[1]) : pPick(D.joint, dn)[1];
           if(nk!==2) msg.push('⚠️ Η διακλάδωση '+PJL[c.id]+' έχει '+nk+' '+(nk===1?'έξοδο':'εξόδους')+' – μια Y διακλάδωση έχει 2.'); }
-        else { var hk = PHDR[PS.sys] ? PHDR[PS.sys](dn, nk) : null; I.kit = hk || "κολεκτέρ: μοντέλο από το manual";
+        else { var hk = PHDR[PS.sys] ? PHDR[PS.sys](dn, nk, I.sz) : null; I.kit = hk || "κολεκτέρ: μοντέλο από το manual";
           if(!PHDR[PS.sys]) msg.push('ℹ️ Κολεκτέρ '+PJL[c.id]+': δεν έχω επίσημο πίνακα κολεκτέρ για αυτή τη σειρά – διάλεξε μοντέλο από το manual (ανάλογα με το σύνολο '+pFmt(dn)+' και '+nk+' εξόδους).');
           else if(!hk) msg.push('⛔ Κολεκτέρ '+PJL[c.id]+': '+nk+' έξοδοι / σύνολο '+pFmt(dn)+' – δεν υπάρχει κατάλληλο μοντέλο στον πίνακα του manual.');
           if(nk<2) msg.push('⚠️ Το κολεκτέρ '+PJL[c.id]+' έχει '+nk+' έξοδο – πρόσθεσε εσωτερικές.');
+          if(PS.sys==="daikin_hp" && pKids(c.id).some(function(k){ return k.t==="i" && +k.m>=250; })) msg.push('⛔ Κολεκτέρ '+PJL[c.id]+': μονάδα κλάσης 250 δεν συνδέεται μετά από refnet header (Daikin) – βάλε joint.');
+          if(PS.sys==="daikin_hp" && nk>8) msg.push('⛔ Κολεκτέρ '+PJL[c.id]+': έως 8 έξοδοι στο refnet header.');
           var sub = []; (function w(id){ pKids(id).forEach(function(k){ if(k.t!=="i") sub.push(k); w(k.id); }); })(c.id);
           if(sub.length) msg.push('⛔ Μετά από κολεκτέρ ('+PJL[c.id]+') δεν μπαίνει άλλη διακλάδωση ή κολεκτέρ – συνδέεις μόνο εσωτερικές.'); }
         rows.push([I.let+(I.man?' ✎':'')+' · '+from(p)+' → '+PJL[c.id], pFmt(dn), pSzJ(I.sz), I.kit, Lc]); pBom(I.sz, Lc, D, hr?3:2); pKit(I.kit); runs.push([I.sz[0], Lc]);
@@ -302,6 +322,7 @@ function pipeCalc(){
     farC = far;
     if(svb) svb.innerHTML = '<div class="ppscroll">'+pSvgTree(D, info)+'</div>';
     html += pTable(D, rows, hr?(D.colLab||['Υγρό','Αναρρόφηση','Υψ./χαμ.']):null);
+    html += pKitChoice();
     if(L){ pChk(msg, ok, far, L.L1, 'Πιο μακρινή εσωτερική από την εξωτερική (πραγματικό)', L.L1eq?'Ισοδύναμο ≤ '+L.L1eq+' m – πρόσθεσε τις καμπύλες.':'');
       var afL = (L.afterH && H > L.afterH[0]) ? L.afterH[1] : L.after;
       if(L.dL && firstJ!=null) pChk(msg, ok, afterMax-minAfter, L.dL, 'Διαφορά πιο μακρινής – πλησιέστερης εσωτερικής από την 1η διακλάδωση');

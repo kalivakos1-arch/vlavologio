@@ -485,6 +485,15 @@ header::after{background:linear-gradient(90deg,var(--lo),var(--mid) 50%,var(--hi
 #bnav button.on .ic{color:var(--acc)}
 .wel{border:1px solid var(--line);background:radial-gradient(120% 120% at 100% 0%,color-mix(in srgb,var(--hi) 14%,transparent),transparent 60%),var(--card)}
 @media (max-width:360px){.hacts{grid-template-columns:repeat(2,1fr)}}
+
+.ppkch{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0 4px}
+.ppkb{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:9px 10px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--text);font:inherit;font-size:13px;font-weight:700;line-height:1.2;min-width:0}
+.ppkb small{font-weight:500;font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}
+.ppkb.on{border-color:var(--acc);background:var(--accbg);box-shadow:inset 0 0 0 1px var(--acc)}
+.ppkb.on small{color:var(--acctx)}
+.ppkrow{display:grid;grid-template-columns:34px 1fr;align-items:center;gap:6px;margin:4px 0}
+.ppkrow>b{font-size:14px;color:var(--acc)}
+.ppkrow .ppkch{margin:0}
 </style>
 <meta name="description" content="Κωδικοί βλαβών, λυχνίες, μετρήσεις και εργαλεία για τεχνικούς κλιματισμού – στα ελληνικά, από τα επίσημα service manuals. Δουλεύει και χωρίς internet.">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Βλαβολόγιο Κλιματισμού">
