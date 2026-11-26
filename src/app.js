@@ -855,9 +855,10 @@ function fanWizard(){
     [["out","Εξωτερικής"],["in","Εσωτερικής"]].map(function(x){return '<button class="pc'+(w===x[0]?' on':'')+'" data-fw="'+x[0]+'">'+x[1]+'</button>';}).join("")+'</div>');
   var sug = kn.filter(function(e){return e.w===w;});
   if(S.focus && !S.ft && sug.length && sug[0].re) S.ft = sug[0].t;
+  if(S.ft==="ac" && invOnly()) S.ft = null;
   h += '<div class="lbl">'+(fz?'':'Βήμα 2 – ')+'Τι φίσα έχει το μοτέρ;</div>';
   if(sug.length) h += '<div class="pext">📘 Για αυτό το μοντέλο το manual λέει: <b>'+esc(FTYPES.filter(function(f){return f[0]===sug[0].t;})[0][1])+'</b>. Αν βλέπεις κάτι άλλο, διάλεξε αυτό που βλέπεις.</div>';
-  h += '<div class="ftypes">'+FTYPES.map(function(f){return '<button class="pc'+(S.ft===f[0]?' on':'')+'" data-ft="'+f[0]+'"><b>'+esc(f[1])+'</b><br><span class="small">'+esc(f[2])+'</span></button>';}).join("")+'</div>';
+  h += '<div class="ftypes">'+FTYPES.filter(function(f){ return !(invOnly() && f[0]==="ac"); }).map(function(f){return '<button class="pc'+(S.ft===f[0]?' on':'')+'" data-ft="'+f[0]+'"><b>'+esc(f[1])+'</b><br><span class="small">'+esc(f[2])+'</span></button>';}).join("")+'</div>';
   if(S.ft){
     var e = sug.filter(function(x){return x.t===S.ft;})[0];
     if(S.ft==="uvw" && !(e && e.col)){ h += '<div class="small" style="margin:6px 0">Στο μοτέρ 3 καλωδίων U-V-W τα χρώματα δεν χρειάζονται: είναι 3 ίδιες περιελίξεις'+(e&&e.pins?' – μέτρα '+esc(e.pins):'')+'.</div>'; }
@@ -928,7 +929,7 @@ var MEAS = {
  comp:{
   form:function(){
     var r = knownVal("compOhm");
-    return sel("mtype","Τι συμπιεστής είναι;",[["inv","Inverter – 3 καλώδια U/V/W από την πλακέτα"],["onoff","On/Off – ακροδέκτες C/S/R με πυκνωτή"]])+
+    return sel("mtype","Τι συμπιεστής είναι;",invOnly() ? [["inv","Inverter – 3 καλώδια U/V/W από την πλακέτα"]] : [["inv","Inverter – 3 καλώδια U/V/W από την πλακέτα"],["onoff","On/Off – ακροδέκτες C/S/R με πυκνωτή"]])+
       '<div id="msub"></div>'+(r?'<div class="pext">📘 Αναμενόμενη τιμή για αυτό το μοντέλο: <b>'+r[0]+'–'+r[1]+'Ω</b> σε κάθε ζεύγος.</div>':'');
   },
   sub:function(t){
@@ -1032,6 +1033,7 @@ function measBox(id){
 }
 function measUpdate(){
   var M = MEAS[S.part]; if(!M || !$("mverd")) return;
+  if(S.part==="comp" && invOnly() && $("mtype") && !$("mtype").value) $("mtype").value = "inv";
   if(M.sub && $("mtype") && $("msub") && $("msub").getAttribute("data-t")!==$("mtype").value){ $("msub").setAttribute("data-t",$("mtype").value); $("msub").innerHTML = M.sub($("mtype").value); }
   $("mverd").innerHTML = M.judge();
 }
@@ -1198,6 +1200,7 @@ function renderParts(){
     var hf = focusHead();
     if(!mkey(S.model) || mkey(S.model).length<4) hf += '<div class="pcalcw fmodel"><div class="lbl">🏷️ Γράψε το μοντέλο από το ταμπελάκι (εσωτερικής ή εξωτερικής)</div><input id="fmodel" placeholder="π.χ. FTXM35R, GWH12ACC, V5MFO32-60" autocapitalize="characters" spellcheck="false" value="'+esc(S.model||"")+'"><div class="small">Με το μοντέλο βρίσκω τις προδιαγραφές του ανταλλακτικού (Ω, φίσες, χρώματα). Χωρίς μοντέλο σου δείχνω τη γενική μέθοδο.</div></div>';
     hf += '<div class="pwarn">⚡ Πριν ακουμπήσεις: κλείσε ρεύμα, περίμενε 5–10′ να αδειάσουν οι πυκνωτές της πλακέτας (μέτρα DC < 5V). Μετρήσεις «με ρεύμα» μόνο με μονωμένους ακροδέκτες.</div>';
+    if(S.part==="fan"||S.part==="comp") hf += invNote();
     hf += ruleBox(S.part);
     if(d) hf += renderDiag(d);
     else hf += '<div id="pmodelinfo"></div>' + (S.part==="fan" ? fanCountBox() : '');
@@ -1207,7 +1210,7 @@ function renderParts(){
     if(S.part==="sensor"){ S.focus = null; return renderParts(); }
     var ex0 = pl.map(function(p){ return PEXTRA[p] && PEXTRA[p][S.part] ? '<div class="pext">📘 <b>'+esc(PLAT[p].name)+':</b> '+esc(PEXTRA[p][S.part])+'</div>' : ''; }).join("");
     if(!d) hf += ex0;
-    hf += '<details class="note"><summary>📖 Γενικές οδηγίες για '+esc(P0.name)+'</summary>'+P0.body.map(function(s){ return '<div class="psec"><div class="pst">'+esc(s[0])+'</div><div class="psb">'+esc(s[1])+'</div></div>'; }).join("")+'</details>';
+    hf += '<details class="note"><summary>📖 Γενικές οδηγίες για '+esc(P0.name)+'</summary>'+invFilt(P0.body, function(x){ return x[0]; }).map(function(s){ return '<div class="psec"><div class="pst">'+esc(s[0])+'</div><div class="psb">'+esc(s[1])+'</div></div>'; }).join("")+'</details>';
     hf += '<div class="psave"><div class="lbl">📒 Κράτα τη μέτρησή σου για αυτό το μοντέλο</div><div class="row2"><input id="pval" placeholder="π.χ. FAN_1 U-V-W 12Ω · FAN_2 12Ω"><button id="psave" class="mini">Αποθήκευση</button></div><div id="psmsg" class="small"></div><div id="pmine"></div></div>';
     out.innerHTML = hf;
     renderMine(); renderModelBox();
@@ -1233,6 +1236,7 @@ function renderParts(){
   else {
     h += '<div id="ptop"></div>';
     if(!isTool(P)) h += '<div class="pwarn">⚡ Πριν ακουμπήσεις: κλείσε ρεύμα, περίμενε 5–10′ να αδειάσουν οι πυκνωτές της πλακέτας (μέτρα DC < 5V). Μετρήσεις «με ρεύμα» μόνο με μονωμένους ακροδέκτες.</div>';
+    if(P.id==="fan"||P.id==="comp"||P.id==="cap") h += invNote();
     h += ruleBox(P.id);
     if(P.id==="fan") h += '<div id="fanw">'+fanWizard()+'</div>';
     if(P.id==="comp") h += '<div class="pcalcw"><div class="lbl">🔎 Κωδικός συμπιεστή (ετικέτα πάνω στον συμπιεστή)</div><input id="pcomp" placeholder="π.χ. ASN98D22UFZ" autocapitalize="characters" spellcheck="false"><div id="pcompres"></div></div>';
@@ -1258,7 +1262,7 @@ function renderParts(){
     }
     var ex = pl.map(function(p){ return PEXTRA[p] && PEXTRA[p][P.id] ? '<div class="pext">📘 <b>'+esc(PLAT[p].name)+':</b> '+esc(PEXTRA[p][P.id])+'</div>' : ''; }).join("");
     h += ex;
-    h += P.body.map(function(s){ return '<div class="psec"><div class="pst">'+esc(s[0])+'</div><div class="psb">'+esc(s[1])+'</div></div>'; }).join("");
+    h += invFilt(P.body, function(x){ return x[0]; }).map(function(s){ return '<div class="psec"><div class="pst">'+esc(s[0])+'</div><div class="psb">'+esc(s[1])+'</div></div>'; }).join("");
     if(typeof TOOL_IDS==='undefined' || TOOL_IDS.indexOf(P.id)<0) h += '<div class="pnote small">Οι τιμές (Ω, V) είναι από τα service manuals της μάρκας όπου υπάρχει πηγή, αλλιώς τυπικές. Η ακριβής τιμή περιέλιξης συμπιεστή/μοτέρ αλλάζει ανά μοντέλο και γράφεται στο wiring diagram ή στο service manual του – η πιο αξιόπιστη σύγκριση είναι οι 3 φάσεις μεταξύ τους.</div>';
     if(typeof TOOL_IDS==='undefined' || TOOL_IDS.indexOf(P.id)<0) h += '<div class="psave"><div class="lbl">📒 Κράτα τη μέτρησή σου για αυτό το μοντέλο</div><div class="row2"><input id="pval" placeholder="π.χ. U-V-W 1,4Ω · γείωση OL"><button id="psave" class="mini">Αποθήκευση</button></div><div id="psmsg" class="small"></div></div>';
   }

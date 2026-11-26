@@ -401,7 +401,14 @@ document.addEventListener("click", function(e){ if(e.target && e.target.id==="ad
   // iPhone: τα γρήγορα πατήματα στο λογότυπο κάνουν ζουμ – το touchend με preventDefault το σταματά (και δεν βγαίνει click)
   document.addEventListener("touchend", function(e){ if(e.target.closest && e.target.closest(".logo")){ e.preventDefault(); tap(); } }, {passive:false});
 })();
+// VRF: μόνο inverter / DC – κρύβει on/off συμπιεστή, AC μοτέρ, πυκνωτές
+var ONOFF_RE = /on\/?off|C[‑-]S[‑-]R|^AC[: ]|\bAC \(|PSC/i;
+var INV_CATS = {vrf:"VRF", vrfhr:"VRF Heat Recovery", multi:"Multi split"};
+function invOnly(){ return !!INV_CATS[S.cat] && !S.allk; }
+function invFilt(arr, f){ return invOnly() ? arr.filter(function(x){ return !ONOFF_RE.test(f ? f(x) : x); }) : arr; }
+function invNote(){ var c = INV_CATS[S.cat]; return !c ? "" : '<div class="pext invnote">🏢 '+(S.allk ? 'Δείχνω όλους τους τύπους (και on/off). <button class="mini" data-allk="0">Μόνο inverter</button>' : esc(c)+': δείχνω μόνο <b>inverter / DC</b> (συμπιεστής U‑V‑W, DC ανεμιστήρες). Τα on/off, τα AC μοτέρ με πυκνωτή και οι πυκνωτές λειτουργίας δεν αφορούν αυτά τα μηχανήματα. <button class="mini" data-allk="1">Δείξε και on/off</button>')+'</div>'; }
+document.addEventListener("click", function(e){ var b = e.target.closest && e.target.closest("[data-allk]"); if(!b) return; S.allk = b.getAttribute("data-allk")==="1"; if(S.ft==="ac" && invOnly()) S.ft = null; try{ renderParts(); }catch(x){} });
 function ruleBox(id){
-  var r = PRULE[id]; if(!r) return "";
+  var r = PRULE[id]; if(!r) return ""; r = invFilt(r);
   return '<div class="prule"><div class="prt">📏 Κανόνας</div>'+r.map(function(x){ return '<div class="prl">'+esc(x)+'</div>'; }).join("")+'</div>';
 }
