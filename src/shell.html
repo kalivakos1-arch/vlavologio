@@ -552,12 +552,19 @@ header::after{background:linear-gradient(90deg,var(--lo),var(--mid) 50%,var(--hi
 <nav id="bnav"><button id="nav_code" class="on"><svg class="ic"><use href="#i-code"/></svg><span>Βλάβη</span></button><button id="toolsbtn"><svg class="ic"><use href="#i-gauge"/></svg><span>Εργαλεία</span></button><button id="histbtn"><svg class="ic"><use href="#i-log"/></svg><span>Πελάτες</span></button><button id="nav_kb"><svg class="ic"><use href="#i-book"/></svg><span>Γνώσεις</span></button></nav>
 <script>
 (function(){ var sent={}, n=0;
- function show(t){ try{ var b=document.getElementById("jserr"); if(!b){ b=document.createElement("div"); b.id="jserr"; b.style.cssText="position:fixed;left:8px;right:8px;top:max(8px,env(safe-area-inset-top));z-index:20000;background:#b91c1c;color:#fff;padding:8px 10px;border-radius:10px;font:12px/1.35 system-ui;white-space:pre-wrap;box-shadow:0 6px 20px rgba(0,0,0,.3)"; b.onclick=function(){ b.remove(); }; (document.body||document.documentElement).appendChild(b); } b.textContent="⚠️ Σφάλμα εφαρμογής (στάλθηκε αυτόματα – πάτα για κλείσιμο):\n"+t; }catch(x){} }
- window.vlErr=function(msg, where){ var key=String(msg).slice(0,200); if(sent[key] || n>5) return; sent[key]=1; n++;
+ function show(t, body){ try{ var b=document.getElementById("jserr"); if(!b){ b=document.createElement("div"); b.id="jserr"; b.style.cssText="position:fixed;left:8px;right:8px;top:max(8px,env(safe-area-inset-top));z-index:20000;background:#b91c1c;color:#fff;padding:8px 10px;border-radius:10px;font:12px/1.35 system-ui;white-space:pre-wrap;box-shadow:0 6px 20px rgba(0,0,0,.3)"; (document.body||document.documentElement).appendChild(b); }
+  b.textContent=""; var tx=document.createElement("div"); tx.textContent="⚠️ Σφάλμα εφαρμογής:\n"+t; b.appendChild(tx);
+  var row=document.createElement("div"); row.style.cssText="display:flex;gap:8px;margin-top:6px";
+  var s1=document.createElement("button"); s1.textContent="Αποστολή αναφοράς"; s1.id="jserrsend"; var s2=document.createElement("button"); s2.textContent="Κλείσιμο"; s2.id="jserrclose";
+  [s1,s2].forEach(function(x){ x.style.cssText="flex:1;border:0;border-radius:8px;padding:7px;font:600 12px system-ui;background:#fff;color:#b91c1c"; row.appendChild(x); }); b.appendChild(row);
+  s2.onclick=function(){ b.remove(); };
+  s1.onclick=function(){ try{ fetch("https://script.google.com/macros/s/AKfycbzSPYg-QRzDj_ZOtHDnOB9EVfwf_pBsSCLhQARjga98rbWjolVTC3aZOsQrZ4_hMwX4Ag/exec",{method:"POST",mode:"no-cors",body:body}); }catch(x){} b.remove(); };
+ }catch(x){} }
+ // Τίποτα δεν στέλνεται αυτόματα: ο χρήστης πατά «Αποστολή αναφοράς».
+ window.vlErr=function(msg, where){ if(/^Script error\.?$/.test(String(msg)) && !/[^:]/.test(String(where||""))) return; var key=String(msg).slice(0,200); if(sent[key] || n>5) return; sent[key]=1; n++;
   var v=""; try{ v=(document.querySelector('meta[name="vl-ver"]')||{}).content||""; }catch(x){}
   var t="Βλαβολόγιο – αυτόματο σφάλμα JS\nΣφάλμα: "+msg+"\nΣημείο: "+(where||"")+"\nΈκδοση: "+v+"\nΣυσκευή: "+(/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?"κινητό":"υπολογιστής")+(/iPhone|iPad|Mac/i.test(navigator.userAgent)?" Apple":/Android/i.test(navigator.userAgent)?" Android":/Windows/i.test(navigator.userAgent)?" Windows":"")+" · "+(/CriOS|Chrome/i.test(navigator.userAgent)?"Chrome":/Firefox|FxiOS/i.test(navigator.userAgent)?"Firefox":/Safari/i.test(navigator.userAgent)?"Safari":"άλλος browser");
-  show(msg+(where?"\n"+where:""));
-  try{ fetch("https://script.google.com/macros/s/AKfycbzSPYg-QRzDj_ZOtHDnOB9EVfwf_pBsSCLhQARjga98rbWjolVTC3aZOsQrZ4_hMwX4Ag/exec",{method:"POST",mode:"no-cors",body:t}); }catch(x){} };
+  show(msg+(where?"\n"+where:""), t); };
  window.addEventListener("error", function(e){ window.vlErr(e.message||String(e), (e.filename||"")+":"+(e.lineno||"")+":"+(e.colno||"")+(e.error&&e.error.stack?"\n"+String(e.error.stack).slice(0,600):"")); });
  window.addEventListener("unhandledrejection", function(e){ var r=e.reason; if(r && /Failed to fetch|Load failed|NetworkError/i.test(String(r))) return; window.vlErr("Promise: "+(r&&r.message||r), r&&r.stack?String(r.stack).slice(0,600):""); });
 })();
