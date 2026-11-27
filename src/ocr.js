@@ -52,7 +52,7 @@ function platePhoto(file){
   img.onload = function(){
     var sc = Math.min(2, 3000/Math.max(img.width, img.height)), W = Math.round(img.width*sc), H = Math.round(img.height*sc);
     var c = document.createElement("canvas"); c.width = W; c.height = H; var cx = c.getContext("2d", {willReadFrequently:true}); cx.filter = "grayscale(1) contrast(1.3)"; cx.drawImage(img, 0, 0, W, H); cx.filter = "none"; URL.revokeObjectURL(url);
-    var ser = ""; try{ var r = BC.decodeGray(BC.grayOf(cx.getImageData(0,0,W,H)), W, H, {rows:70, y0:0.02, y1:0.98, cols:true}); if(r) ser = r.t; }catch(x){}
+    var ser = ""; try{ var z0 = window.ZXing ? zxCanvas(cx, W, H, false) : null; if(z0) ser = z0.t; else { var r = BC.decodeGray(BC.grayOf(cx.getImageData(0,0,W,H)), W, H, {rows:70, y0:0.02, y1:0.98, cols:true}); if(r) ser = r.t; } }catch(x){}
     var finish = function(text){ var P = plateParse(text||""); if(!ser && SCAN.last) ser = ""; P.ser = ser; plateShow(P, text||""); };
     var withDet = SCAN.det ? SCAN.det.detect(c).then(function(r){ if(r && r.length) ser = r[0].rawValue; }).catch(function(){}) : Promise.resolve();
     withDet.then(ocrLoad).then(function(){

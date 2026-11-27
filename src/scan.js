@@ -73,6 +73,30 @@ document.addEventListener("input", function(e){
     r.map(function(x){ return '<div class="serl"><b>'+esc(x.b)+'</b> → <span class="det">'+esc(PLAT[x.o]?PLAT[x.o].name:x.o)+'</span><div class="small">'+esc(x.w)+'</div><button class="chip on" data-qb="'+esc(x.b)+'" data-qm="'+esc(v.trim().toUpperCase())+'" data-qo="'+esc(x.o)+'">Συνέχεια με '+esc(x.b)+'</button></div>'; }).join("");
 });
 var SCAN = {st:null, timer:0, det:null, target:"ser", busy:false, hits:{}};
+// ===== ZXing (στο ίδιο site): QR, DataMatrix, Code128/39, EAN, ITF – για iPhone/Safari/Firefox που δεν έχουν BarcodeDetector =====
+var ZX = {p:null, r:null};
+function zxLoad(){
+  if(window.ZXing) return Promise.resolve(window.ZXing);
+  if(ZX.p) return ZX.p;
+  ZX.p = new Promise(function(ok, no){ var s = document.createElement("script"); s.src = "scan/zxing.min.js"; s.onload = function(){ window.ZXing ? ok(window.ZXing) : no(new Error("zxing")); }; s.onerror = function(){ ZX.p = null; no(new Error("zxing load")); }; document.head.appendChild(s); });
+  return ZX.p;
+}
+function zxReader(){
+  if(ZX.r || !window.ZXing) return ZX.r; var Z = window.ZXing, F = Z.BarcodeFormat, h = new Map();
+  h.set(Z.DecodeHintType.POSSIBLE_FORMATS, [F.QR_CODE, F.DATA_MATRIX, F.CODE_128, F.CODE_39, F.EAN_13, F.ITF, F.UPC_A, F.CODE_93]);
+  h.set(Z.DecodeHintType.TRY_HARDER, true);
+  ZX.r = new Z.MultiFormatReader(); ZX.r.setHints(h); return ZX.r;
+}
+// gray: Uint8Array φωτεινότητας W×H
+function zxGray(g, W, H){
+  var r = zxReader(); if(!r) return null; var Z = window.ZXing;
+  try{ var src = new Z.RGBLuminanceSource(new Uint8ClampedArray(g.buffer, g.byteOffset, g.length), W, H);
+    var res = r.decode(new Z.BinaryBitmap(new Z.HybridBinarizer(src)));
+    return {t:res.getText(), f:String(Z.BarcodeFormat[res.getBarcodeFormat()]||"").toLowerCase()};
+  }catch(e){ try{ r.reset(); }catch(x){} return null; }
+}
+function zxGrayRot(g, W, H){ var o = new Uint8Array(W*H); for(var y=0;y<H;y++) for(var x=0;x<W;x++) o[x*H + (H-1-y)] = g[y*W+x]; return zxGray(o, H, W); }
+function zxCanvas(cx, W, H, rot){ var g = BC.grayOf(cx.getImageData(0,0,W,H)); return zxGray(g, W, H) || (rot ? zxGrayRot(g, W, H) : null); }
 function scanOpen(target, noCam){
   ovPush();
   SCAN.target = target||"ser"; SCAN.hits = {};
@@ -85,6 +109,7 @@ function scanOpen(target, noCam){
     '<div class="scbtns"><label class="mini scphoto">📸 Φωτογραφία μόνο του barcode<input type="file" accept="image/*" capture="environment" id="scfile" hidden></label></div>'+
     '<div id="scres"></div>';
   ov.style.display = "flex"; document.body.style.overflow = "hidden";
+  zxLoad().catch(function(){});
   if("BarcodeDetector" in window){
     try{ BarcodeDetector.getSupportedFormats().then(function(f){ var want = ["code_128","code_39","ean_13","itf","qr_code","data_matrix","upc_a"].filter(function(x){ return f.indexOf(x)>=0; }); if(want.length) SCAN.det = new BarcodeDetector({formats:want}); }).catch(function(){}); }catch(e){ SCAN.det = null; }
   }
@@ -113,8 +138,15 @@ function scanLoop(){
   }
   scanGray(v); SCAN.busy = false;
 }
+var scanZc = null;
 function scanGray(v){
   var W = v.videoWidth, H = v.videoHeight; if(!W) return;
+  if(window.ZXing && scanN%2===0){
+    var sc = Math.min(1, 960/Math.max(W,H)), w2 = Math.round(W*sc), h2 = Math.round(H*sc);
+    scanZc = scanZc || document.createElement("canvas"); scanZc.width = w2; scanZc.height = h2;
+    var zc = scanZc.getContext("2d", {willReadFrequently:true}); zc.drawImage(v, 0, 0, w2, h2);
+    var z = zxCanvas(zc, w2, h2, scanN%6===0); if(z){ scanFound(z.t, z.f); return; }
+  }
   scanCv = scanCv || document.createElement("canvas"); scanCv.width = W; scanCv.height = H;
   var cx = scanCv.getContext("2d", {willReadFrequently:true}); cx.drawImage(v, 0, 0, W, H);
   var g = BC.grayOf(cx.getImageData(0, 0, W, H));
@@ -128,9 +160,11 @@ function scanPhoto(file){
     var sc = Math.min(1, 2400/Math.max(img.width, img.height)), W = Math.round(img.width*sc), H = Math.round(img.height*sc);
     var c = document.createElement("canvas"); c.width = W; c.height = H; var cx = c.getContext("2d", {willReadFrequently:true}); cx.drawImage(img, 0, 0, W, H);
     URL.revokeObjectURL(url);
-    var done = function(){ var r = BC.decodeGray(BC.grayOf(cx.getImageData(0,0,W,H)), W, H, {rows:70, y0:0.02, y1:0.98, cols:true});
+    var done = function(){ var z = null; try{ z = window.ZXing ? zxCanvas(cx, W, H, true) : null; }catch(x){} if(z){ scanFound(z.t, z.f); return; }
+      var r = BC.decodeGray(BC.grayOf(cx.getImageData(0,0,W,H)), W, H, {rows:70, y0:0.02, y1:0.98, cols:true});
       if(r) scanFound(r.t, r.f); else scanMsg("Δεν διάβασα barcode στη φωτογραφία. Βγάλε την πιο κοντά, ίσια, με καλό φως και χωρίς αντανάκλαση – να γεμίζει το barcode την οθόνη."); };
-    if(SCAN.det) SCAN.det.detect(c).then(function(r){ if(r && r.length) scanFound(r[0].rawValue, r[0].format); else done(); }).catch(done); else setTimeout(done, 30);
+    var go = function(){ zxLoad().then(done, done); };
+    if(SCAN.det) SCAN.det.detect(c).then(function(r){ if(r && r.length) scanFound(r[0].rawValue, r[0].format); else go(); }).catch(go); else setTimeout(go, 30);
   };
   img.onerror = function(){ scanMsg("Δεν άνοιξε η φωτογραφία."); };
   img.src = url;
@@ -138,6 +172,8 @@ function scanPhoto(file){
 var SCT = {ser:"σειριακός μονάδας", model:"μοντέλο", pcb:"κωδικός πλακέτας", comp:"συμπιεστής"};
 function scanFound(text, fmt){
   scanStop(); SCAN.last = text;
+  var mu = String(text||"").match(/#(u=.*)$/);
+  if(mu && /vlavologio|^#/i.test(text)){ if(navigator.vibrate) try{ navigator.vibrate(60); }catch(e){} scanClose(); location.hash = mu[1]; try{ unitFromHash(); }catch(e){} return; }
   if(navigator.vibrate) try{ navigator.vibrate(60); }catch(e){}
   var b = brandObj(), cs = b && !b.own ? candidates(b) : null, info = serInfo(text, cs);
   var guess = SCAN.target;
