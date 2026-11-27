@@ -37,7 +37,7 @@ function plateParse(raw){
   var rf = T.match(/\bR[\s\-]?(32|410\s?A|22|290|454\s?B|407\s?C|134\s?A|1234YF|513A)\b/); if(rf) R.ref = "R"+rf[1].replace(/\s/g,"");
   var ch = T.match(/CHARGE[^0-9\n]{0,25}([0-9]+[\.,][0-9]{1,3})\s*K/) || T.match(/([0-9]+[\.,][0-9]{1,3})\s*KG\b(?![^\n]*WEIGHT)/); if(ch) R.chg = ch[1].replace(",",".");
   var dt = T.match(/MANUFACTUR\w*\s*DAT\w*[^0-9]{0,6}([0-9]{4}[\.\/\-][0-9]{1,2})/) || T.match(/(?:DATE|PROD)\w*[^0-9]{0,6}((?:19|20)[0-9]{2}[\.\/\-][0-9]{1,2})/); if(dt) R.date = dt[1];
-  var sn = T.match(/SERIAL[ \t]*(?:NUMBER|NO\.?|N[O0]?)[ \t]*[:;.]?[ \t]*([A-Z0-9]{8,})/); if(sn) R.ser = sn[1];
+  var sn = T.match(/\bS[EF]\w{0,3}[A1L]L?[ \t]*(?:NUMB\w{0,3}|N[O0]\.?)[ \t]*[:;.,]?[ \t]*([A-Z0-9]{8,})/); if(sn) R.ser = sn[1];
   // αλλιώς: η γραμμή κάτω από το barcode (μόνο γράμματα/αριθμοί σε ομάδες)
   if(!R.ser){ var cs = [];
     lines.forEach(function(l){ var m = l.match(/^[^A-Z0-9]*((?:[A-Z0-9]{3,}[ ]?){2,6})[^A-Z0-9]*$/); if(!m) return; var v = m[1].replace(/ /g,"");
@@ -94,6 +94,22 @@ function ocrSerOf(codes){
   var oneD = codes.filter(function(c){ return !/qr|matrix|aztec|pdf/.test(c.f) && /^[A-Z0-9\-\/]{8,}$/i.test(c.t); });
   return oneD.length ? oneD.sort(function(a,b){ return b.t.length-a.t.length; })[0].t : "";
 }
+// Έλεγχος αξιοπιστίας: ένα πεδίο θεωρείται σίγουρο μόνο αν το επιβεβαιώνουν δύο ανεξάρτητες αναγνώσεις (ή barcode / βάση μοντέλων) και είναι λογικό
+function plateVerify(P, texts, serFromCode){
+  var Ps = texts.filter(function(t){ return String(t||"").trim().length > 3; }).map(plateParse), n = function(v){ return String(v||"").replace(/[^A-Z0-9.]/gi,"").toUpperCase(); };
+  var agree = function(f, v){ return v ? Ps.filter(function(p){ return n(p[f]) === n(v); }).length : 0; };
+  // κάθε πεδίο παίρνει την τιμή που βγάζουν οι περισσότερες αναγνώσεις (ο σειριακός από barcode έχει πάντα προτεραιότητα)
+  ["ref","chg","date"].concat(serFromCode ? [] : ["ser"]).forEach(function(f){ var best = P[f], bc = agree(f, P[f]);
+    Ps.forEach(function(p){ var c = agree(f, p[f]); if(p[f] && c > bc && c >= 2){ best = p[f]; bc = c; } }); P[f] = best; });
+  var ok = {}, y = new Date().getFullYear();
+  ok.brand = !!(P.hit && P.brands.indexOf(P.hit.b) >= 0);
+  ok.model = !!P.hit && agree("model", P.model) >= 1;
+  ok.ref = !!P.ref && agree("ref", P.ref) >= 2;
+  var c = parseFloat(P.chg); ok.chg = !!P.chg && c >= 0.1 && c <= 40 && agree("chg", P.chg) >= 2;
+  var dm = String(P.date||"").match(/^((?:19|20)\d\d)\D(\d{1,2})$/); ok.date = !!dm && +dm[1] >= 1990 && +dm[1] <= y && +dm[2] >= 1 && +dm[2] <= 12 && agree("date", P.date) >= 2;
+  ok.ser = !!P.ser && (serFromCode || agree("ser", P.ser) >= 2);
+  return ok;
+}
 function platePhoto(file){
   if(!file) return; scanStop();
   var vb = document.querySelector("#scanov .scbox"); if(vb) vb.style.display = "none";
@@ -101,7 +117,7 @@ function platePhoto(file){
   var url = URL.createObjectURL(file), img = new Image();
   img.onload = function(){
     var IW = img.naturalWidth || img.width, IH = img.naturalHeight || img.height, codes = [], worker = null, txt = [];
-    var done = function(){ try{ if(worker) worker.terminate(); }catch(x){} URL.revokeObjectURL(url); var text = txt.join("\n"), P = plateParse(text); P.ser = ocrSerOf(codes) || P.ser || ""; P.codes = codes; plateShow(P, text); };
+    var done = function(){ try{ if(worker) worker.terminate(); }catch(x){} URL.revokeObjectURL(url); var text = txt.join("\n"), P = plateParse(text), bs = ocrSerOf(codes); P.ser = bs || P.ser || ""; P.codes = codes; P.ok = plateVerify(P, txt, !!bs); plateShow(P, text); };
     zxLoad().catch(function(){}).then(function(){ try{ codes = ocrBarcodes(img); }catch(x){} }).then(ocrLoad).then(function(){
       return Tesseract.createWorker("eng", 1, ocrOpt({}));
     }).then(function(w){
@@ -116,6 +132,10 @@ function platePhoto(file){
         var c2 = ocrCrop(img, sx, sy, sw, sh, 1600, 4);
         return w.setParameters({tessedit_pageseg_mode:"6"}).then(function(){ return w.recognize(c2, {}, {text:true, blocks:true}); }).then(function(r2){
           txt.unshift(r2.data.text||"");
+          // 2β) δεύτερη ανεξάρτητη ανάγνωση της ταμπέλας (άλλη κλίμακα/τρόπος) για διασταύρωση
+          scanMsg("🏷️ Διασταυρώνω τα στοιχεία…");
+          return w.setParameters({tessedit_pageseg_mode:"4"}).then(function(){ return w.recognize(ocrCrop(img, sx, sy, sw, sh, 2400, 5)); }).then(function(rb){ txt.splice(1, 0, rb.data.text||""); return r2; });
+        }).then(function(r2){
           // 3) η γραμμή του μοντέλου
           var ws = ocrWords(r2.data), mw = ws.filter(function(x){ return /^MOD[EFI]L/i.test(x.text||""); })[0];
           var serStep = function(){
@@ -152,19 +172,23 @@ function plateShow(P, raw){
   var bx = document.getElementById("scres"); if(!bx) return;
   document.querySelectorAll("#scanov > .scbtns").forEach(function(x){ x.style.display = "none"; });
   scanMsg(P.hit || P.brands.length || P.model ? "✅ Διάβασα την ταμπέλα – έλεγξε ότι είναι σωστά:" : "⚠️ Δεν βρήκα μάρκα/μοντέλο στη φωτογραφία.");
-  var rows = [];
-  rows.push(["Μάρκα", P.hit ? P.hit.b : (P.brands.join(", ") || "– δεν βρέθηκε –")]);
-  rows.push(["Μοντέλο", (P.model||"– δεν βρέθηκε –")+(P.modelRaw && P.model && P.modelRaw.replace(/\s/g,"")!==P.model ? '  <span class="small">(διάβασα «'+esc(P.modelRaw)+'», το διόρθωσα)</span>' : "")]);
-  if(P.hit) rows.push(["Εργοστάσιο", (PLAT[P.hit.o]?PLAT[P.hit.o].name:P.hit.o)]);
-  if(P.ref) rows.push(["Ψυκτικό", P.ref+(P.chg?" · "+P.chg+" kg (έλεγξέ το)":"")]);
-  if(P.date) rows.push(["Κατασκευή", P.date]);
-  if(P.ser) rows.push(["Σειριακός", P.ser]);
-  var h = '<div class="plres">'+rows.map(function(r){ return '<div><span class="small">'+esc(r[0])+'</span><b>'+(r[0]==="Μοντέλο"?r[1]:esc(r[1]))+'</b></div>'; }).join("")+'</div>';
+  var ok = P.ok || {}, rows = [], mark = function(k){ return ok[k] ? ' <span class="plok" title="Επιβεβαιωμένο από δύο αναγνώσεις">✓</span>' : ' <span class="plwarn">⚠ έλεγξέ το</span>'; };
+  var inp = function(k, v, ph){ return '<input class="plin2'+(ok[k]?'':' plchk')+'" data-plf="'+k+'" value="'+esc(v||"")+'" placeholder="'+esc(ph)+'" autocomplete="off" autocapitalize="characters" spellcheck="false">'; };
+  rows.push(["Μάρκα", esc(P.hit ? P.hit.b : (P.brands.join(", ") || "– δεν βρέθηκε –"))+(P.hit||P.brands.length ? mark("brand") : "")]);
+  rows.push(["Μοντέλο", esc(P.model||"– δεν βρέθηκε –")+(P.modelRaw && P.model && P.modelRaw.replace(/\s/g,"")!==P.model ? '  <span class="small">(διάβασα «'+esc(P.modelRaw)+'», το διόρθωσα)</span>' : "")+(P.model ? (ok.model ? ' <span class="plok" title="Υπάρχει στη βάση μοντέλων">✓</span>' : ' <span class="plwarn">⚠ δεν είναι στη βάση – έλεγξέ το</span>') : "")]);
+  if(P.hit) rows.push(["Εργοστάσιο", esc(PLAT[P.hit.o]?PLAT[P.hit.o].name:P.hit.o)]);
+  rows.push(["Ψυκτικό"+mark("ref"), inp("ref", P.ref, "π.χ. R32")]);
+  rows.push(["Φορτίο (kg)"+mark("chg"), inp("chg", P.chg, "π.χ. 0.85")]);
+  rows.push(["Κατασκευή"+mark("date"), inp("date", P.date, "π.χ. 2025.03")]);
+  rows.push(["Σειριακός"+mark("ser"), inp("ser", P.ser, "όπως στην ταμπέλα")]);
+  var h = '<div class="plres">'+rows.map(function(r){ return '<div><span class="small">'+r[0]+'</span><b>'+r[1]+'</b></div>'; }).join("")+'</div>';
+  var nbad = ["ref","chg","date","ser"].filter(function(k){ return !ok[k]; }).length + (P.model && !ok.model ? 1 : 0);
+  if(nbad) h += '<div class="plnote">⚠ Τα κίτρινα πεδία δεν τα επιβεβαίωσα με δεύτερη ανάγνωση. Κοίταξέ τα με την ταμπέλα και διόρθωσέ τα εδώ πριν συνεχίσεις.</div>';
   if(P.hit) h += '<div class="small">'+esc(P.hit.w)+'</div>';
   if(!P.model || !P.ref) h += '<div class="small" style="margin:6px 0">💡 Λείπουν στοιχεία; Πλησίασε ώστε η ταμπέλα να γεμίζει τη φωτογραφία, ίσια και χωρίς αντανάκλαση, και πάτα «🔁 Νέα φωτογραφία».</div>';
   var bn = P.hit ? P.hit.b : (P.brands[0]||"");
-  if(bn) h += '<button class="mini prim plgo" data-qb="'+esc(bn)+'" data-qm="'+esc(P.model||"")+'" data-qo="'+esc(P.hit?P.hit.o:"")+'" data-qr="'+esc(P.ref||"")+'" data-qc="'+esc(P.chg||"")+'">✅ Σωστά – συνέχεια με '+esc(bn)+'</button>';
-  h += '<button class="mini plhist" data-plhist="1" data-pb="'+esc(bn)+'" data-pm="'+esc(P.model||"")+'" data-po="'+esc(P.hit?P.hit.o:"")+'" data-pr="'+esc(P.ref||"")+'" data-pc2="'+esc(P.chg||"")+'" data-ps="'+esc(P.ser||"")+'">📒 Νέα επίσκεψη πελάτη με αυτά (και F‑gas)</button>';
+  if(bn) h += '<button class="mini prim plgo" data-qb="'+esc(bn)+'" data-qm="'+esc(P.model||"")+'" data-qo="'+esc(P.hit?P.hit.o:"")+'" data-qr="'+esc(P.ref||"")+'" data-qc="'+esc(P.chg||"")+'">'+(nbad?'✅ Τα έλεγξα – συνέχεια με ':'✅ Σωστά – συνέχεια με ')+esc(bn)+'</button>';
+  h += '<button class="mini plhist" data-plhist="1" data-pb="'+esc(bn)+'" data-pm="'+esc(P.model||"")+'" data-po="'+esc(P.hit?P.hit.o:"")+'" data-pr="'+esc(P.ref||"")+'" data-pc2="'+esc(P.chg||"")+'" data-ps="'+esc(P.ser||"")+'" data-pd="'+esc(P.date||"")+'">📒 Νέα επίσκεψη πελάτη με αυτά (και F‑gas)</button>';
   h += P.hit ? '<details class="small"><summary>Λάθος μοντέλο; Διόρθωσέ το</summary>'+plateManual(P.model)+'</details>' : plateManual(P.model);
   h += '<div class="scbtns" style="margin-top:10px"><button class="mini" id="scagain">🔁 Νέα φωτογραφία</button><button class="mini" data-repser="'+esc(P.ser||P.model||"")+'">📷 Δεν βγήκε σωστό – στείλε την ταμπέλα</button></div>';
   h += '<details class="small" style="margin-top:8px"><summary>Τι διάβασε ο αναγνώστης</summary><pre style="white-space:pre-wrap;font-size:12px">'+esc(String(raw).slice(0,1500))+'</pre></details>';
@@ -173,6 +197,13 @@ function plateShow(P, raw){
 }
 document.addEventListener("change", function(e){ if(e.target && e.target.id==="scplate") platePhoto(e.target.files && e.target.files[0]); });
 
+document.addEventListener("input", function(e){
+  var t = e.target; if(!t || !t.matches || !t.matches("#scres [data-plf]")) return;
+  var v = t.value.trim().toUpperCase().replace(",", "."), k = t.getAttribute("data-plf"); t.classList.remove("plchk"); t.classList.add("pledit");
+  if(k==="ser") try{ SCAN.last = v; }catch(x){}
+  var map = {ref:["data-qr","data-pr"], chg:["data-qc","data-pc2"], ser:[null,"data-ps"], date:[null,"data-pd"]}[k] || [];
+  document.querySelectorAll("#scres .plgo, #scres [data-plhist]").forEach(function(b){ map.forEach(function(a){ if(a && (b.hasAttribute(a) || a==="data-pd")) b.setAttribute(a, v); }); });
+});
 // Φωτογραφία ταμπέλας κατευθείαν από τη σελίδα (βήμα «Μάρκα» ή «Μοντέλο»)
 document.addEventListener("change", function(e){
   if(!e.target || !e.target.classList || !e.target.classList.contains("plin")) return;
@@ -188,7 +219,7 @@ document.addEventListener("click", function(e){
   if(g("data-po") && PLAT[g("data-po")]) S.oem = g("data-po");
   if(g("data-pm")) S.model = g("data-pm");
   S.fw = S.fw || {}; if(g("data-ps")) S.fw.ser = g("data-ps");
-  S.plate = {ref:g("data-pr"), chg:g("data-pc2")};
+  S.plate = {ref:g("data-pr"), chg:g("data-pc2"), date:g("data-pd")};
   renderAll(); persist();
   histOpen("form");
 }, true);
