@@ -144,7 +144,7 @@ function ductCalc(){
   // στατική
   var vv = '';
   if(E.max && tot > E.max) vv = '<div class="plnote" style="background:#ffd9d9;color:#5a0000">❌ Χρειάζονται ~'+f0(tot)+' Pa αλλά η μονάδα δίνει έως '+E.max+' Pa. Μεγάλωσε τις διαμέτρους, κόψε μήκος/καμπύλες ή διάλεξε μονάδα υψηλότερης στατικής.</div>';
-  else if(E.nom != null && tot > E.nom) vv = '<div class="plnote">⚙️ Χρειάζονται ~'+f0(tot)+' Pa: ρύθμισε τη στατική της μονάδας στα <b>'+Math.ceil(tot/10)*10+' Pa</b> (ονομαστική '+E.nom+' Pa'+(E.max?', μέγιστη '+E.max+' Pa':'')+') από το χειριστήριο / την πλακέτα, όπως λέει το εγχειρίδιο εγκατάστασης.</div>';
+  else if(E.nom != null && tot > E.nom) vv = '<div class="plnote">⚙️ Χρειάζονται ~'+f0(tot)+' Pa: ρύθμισε τη στατική της μονάδας στα <b>'+Math.ceil(tot/10)*10+' Pa</b> (ονομαστική '+E.nom+' Pa'+(E.max?', μέγιστη '+E.max+' Pa':'')+') από το χειριστήριο / την πλακέτα, όπως λέει το εγχειρίδιο εγκατάστασης.'+(E.max?'':' Τη μέγιστη στατική αυτής της μονάδας δεν την έχω από επίσημη πηγή – έλεγξε στο εγχειρίδιο ότι φτάνει.')+'</div>';
   else if(E.nom != null) vv = '<div class="plnote" style="background:#d9f7e6;color:#053d22">✅ Χρειάζονται ~'+f0(tot)+' Pa – φτάνει η ονομαστική στατική ('+E.nom+' Pa).'+(E.nom - tot > 30 ? ' Περισσεύει αρκετή: αν η μονάδα ρυθμίζεται, χαμήλωσέ τη για λιγότερο θόρυβο.' : '')+'</div>';
   else if(E.opts && E.opts.length){ var pick = E.opts.filter(function(x){ return x >= tot; })[0];
     vv = pick != null ? '<div class="plnote">⚙️ Χρειάζονται ~'+f0(tot)+' Pa: διάλεξε τη ρύθμιση στατικής <b>'+pick+' Pa</b> (η μονάδα έχει '+E.opts.join(" / ")+' Pa). Μη βάλεις μεγαλύτερη από όση χρειάζεται: κάνει θόρυβο.</div>' :
