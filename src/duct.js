@@ -19,13 +19,17 @@ var DUCT_RT = {
   liv:{n:"Σαλόνι / καθιστικό", v:3.0, lw:35},
   kit:{n:"Κουζίνα", v:3.0, lw:38},
   off:{n:"Γραφείο", v:3.0, lw:35},
-  oth:{n:"Άλλος χώρος", v:3.0, lw:38}
+  oth:{n:"Άλλος χώρος", v:3.0, lw:38},
+  ofo:{n:"Ανοιχτό γραφείο", v:3.0, lw:38},
+  shop:{n:"Κατάστημα", v:3.5, lw:42},
+  rest:{n:"Εστιατόριο / καφέ", v:3.5, lw:42}
 };
 var DUCT_D = {flex:[102,127,152,160,203,254,305,356,406], spiro:[100,125,150,160,180,200,250,280,315,355,400,450]};
 var DUCT_G = [[200,100],[300,100],[400,100],[500,100],[600,100],[300,150],[400,150],[500,150],[600,150],[800,150],[1000,150],[400,200],[500,200],[600,200],[800,200],[1000,200],[600,250],[800,250],[1000,250],[600,300],[800,300],[1000,300]];
 var DUCT_RG = [[300,150],[400,150],[400,200],[500,200],[600,200],[500,250],[600,250],[600,300],[800,300],[600,400],[800,400],[1000,400],[800,500],[1000,500]];
 var DSt = (function(){ try{ return JSON.parse(localStorage.getItem("vl_duct")||"null") || null; }catch(e){ return null; } })() ||
   {b:"", m:"", q:"", e:"", emax:"", h:"2.7", gc:"10", vd:"30", gh:"", t:"flex", n:"3", ret:"0", rows:[]};
+if(!DSt.md) DSt.md = "multi"; if(!DSt.sp) DSt.sp = {rt:"liv", m2:"", L:"", W:"", u:"1", n:"", len:"", bn:"2"};
 if(!DSt.ck) DSt.ck = {q:"", p:"", L:"", H:"", n:"1", ty:"sup", rt:"bed", d:"", len:"", dep:""};
 function dSave(){ try{ localStorage.setItem("vl_duct", JSON.stringify(DSt)); }catch(e){} }
 var DUCT_TY = {duct_low:"Λεπτό / χαμηλή στατική", duct_mid:"Μέση στατική", duct_high:"Υψηλή στατική", duct:"Καναλάτο"};
@@ -77,6 +81,7 @@ function ductForm(){
    '<label>Μήκος καναλιού (m)<input id="k_len" class="kv" inputmode="decimal" value="'+esc(C.len)+'" placeholder="προαιρετικό"></label></div>'+
    '<div id="k_o"></div></div>';
   h += '<div class="pcalcw" id="dcw"><div class="lbl">🌀 Κανάλια καναλάτου – διάμετροι & στόμια</div>'+
+   '<div class="row4"><label>Εφαρμογή<select id="d_md" class="dv">'+o("multi","Ένα μηχάνημα για πολλούς χώρους",DSt.md==="multi")+o("one","Ένα μηχάνημα για έναν χώρο",DSt.md==="one")+o("pro","Ενιαίος επαγγελματικός χώρος (1 ή περισσότερα μηχανήματα)",DSt.md==="pro")+'</select></label><label>&nbsp;</label></div>'+
    '<div class="small" style="margin:2px 0 8px">Τι χρειάζομαι από σένα: μηχάνημα, ύψος ταβανιού, κενό ψευδοροφής, και για κάθε στόμιο τον χώρο, τα m², πόσο μακριά πρέπει να φτάσει ο αέρας και το μήκος του καναλιού.</div>'+
    '<div class="row4"><label>Μάρκα<select id="d_b" class="dv"><option value="">– διάλεξε –</option>'+B.map(function(b){ return o(b,b,b===DSt.b); }).join("")+o("_","Άλλη / γράφω τα στοιχεία", DSt.b==="_")+'</select></label>'+
    (DSt.b && DSt.b!=="_" ? '<label>Μοντέλο<select id="d_m" class="dv"><option value="">– διάλεξε –</option>'+U.map(function(u,i){ return o(String(i), u.m+" · "+u.q+" m³/h · "+u.ty, String(i)===DSt.m); }).join("")+'</select></label>' : '<label>&nbsp;</label>')+'</div>';
@@ -88,9 +93,20 @@ function ductForm(){
    '<div class="row4"><label>Ελεύθερο κενό για κανάλι (cm)<input id="d_vd" class="dv" inputmode="decimal" value="'+esc(DSt.vd)+'" placeholder="ψευδοροφή/κουτί"></label>'+
    '<label>Μέγ. ύψος στομίου (mm)<select id="d_gh" class="dv">'+o("","χωρίς όριο",!DSt.gh)+[100,150,200,250].map(function(x){ return o(String(x), x+" mm", String(x)===DSt.gh); }).join("")+'</select></label></div>'+
    '<div class="row4"><label>Κανάλι<select id="d_t" class="dv">'+o("flex","Εύκαμπτο (flexible)",DSt.t==="flex")+o("spiro","Γαλβανιζέ σπιράλ",DSt.t==="spiro")+'</select></label>'+
-   '<label>Στόμια προσαγωγής<input id="d_n" class="dv" inputmode="numeric" value="'+esc(DSt.n)+'"></label></div>'+
+   (DSt.md==="multi" ? '<label>Στόμια προσαγωγής<input id="d_n" class="dv" inputmode="numeric" value="'+esc(DSt.n)+'"></label>' : '<label>&nbsp;</label>')+'</div>'+
    '<div class="row4"><label>Επιστροφή<select id="d_rt" class="dv">'+o("0","Γρίλια δίπλα στο μηχάνημα",DSt.ret==="0")+o("1","Με κανάλι επιστροφής",DSt.ret!=="0")+'</select></label>'+
    (DSt.ret!=="0" ? '<label>Μήκος καναλιού επιστροφής (m)<input id="d_rl" class="dv" inputmode="decimal" value="'+esc(DSt.ret)+'"></label>' : '<label>&nbsp;</label>')+'</div>';
+  if(DSt.md !== "multi"){ var SP = DSt.sp, ks = DSt.md==="pro" ? ["shop","rest","ofo","off","oth"] : ["liv","bed","kit","off","oth"];
+    h += '<div class="dcrow"><div class="small"><b>'+(DSt.md==="pro"?'Επαγγελματικός χώρος':'Ο χώρος')+'</b> – τα στόμια μπαίνουν στη μία μακριά πλευρά και φυσάνε προς την απέναντι.</div>'+
+      '<div class="row4"><label>Χρήση<select data-sp="rt" class="dv">'+ks.map(function(k){ return o(k, DUCT_RT[k].n, k===SP.rt); }).join("")+'</select></label>'+
+      '<label>m²<input data-sp="m2" class="dv" inputmode="decimal" value="'+esc(SP.m2)+'" placeholder="π.χ. '+(DSt.md==="pro"?'120':'25')+'"></label></div>'+
+      '<div class="row4"><label>Μήκος τοίχου με τα στόμια (m)<input data-sp="L" class="dv" inputmode="decimal" value="'+esc(SP.L)+'" placeholder="π.χ. '+(DSt.md==="pro"?'12':'6')+'"></label>'+
+      '<label>Πόσο μακριά να φτάσει ο αέρας (m)<input data-sp="W" class="dv" inputmode="decimal" value="'+esc(SP.W)+'" placeholder="π.χ. '+(DSt.md==="pro"?'8':'4')+'"></label></div>'+
+      '<div class="row4">'+(DSt.md==="pro"?'<label>Πόσα ίδια μηχανήματα<input data-sp="u" class="dv" inputmode="numeric" value="'+esc(SP.u)+'"></label>':'')+
+      '<label>Στόμια (κενό = τα βρίσκω εγώ)<input data-sp="n" class="dv" inputmode="numeric" value="'+esc(SP.n)+'" placeholder="αυτόματα"></label>'+(DSt.md==="pro"?'':'<label>&nbsp;</label>')+'</div>'+
+      '<div class="row4"><label>Μέσο μήκος καναλιού ανά στόμιο (m)<input data-sp="len" class="dv" inputmode="decimal" value="'+esc(SP.len)+'" placeholder="π.χ. 4"></label>'+
+      '<label>Καμπύλες 90°<input data-sp="bn" class="dv" inputmode="numeric" value="'+esc(SP.bn)+'"></label></div></div>';
+  } else
   rows.forEach(function(r, i){
     h += '<div class="dcrow"><div class="small"><b>Στόμιο '+(i+1)+'</b></div><div class="row4"><label>Χώρος<select data-dr="'+i+'" data-dk="rt" class="dv">'+Object.keys(DUCT_RT).map(function(k){ return o(k, DUCT_RT[k].n, k===r.rt); }).join("")+'</select></label>'+
       '<label>m² χώρου<input data-dr="'+i+'" data-dk="m2" class="dv" inputmode="decimal" value="'+esc(r.m2)+'" placeholder="π.χ. 14"></label></div>'+
@@ -148,7 +164,20 @@ function ductCalc(){
   if(DSt.b && DSt.b!=="_"){ var L = dUnits(DSt.b); U = L[+DSt.m]; if(!U || DSt.m===""){ O.innerHTML = '<div class="small">Διάλεξε μοντέλο.</div>'; return; } Q = U.q; E = dEsp(U); }
   else if(DSt.b==="_"){ Q = dNum(DSt.q); E = {nom:dNum(DSt.e)||null, min:null, max:dNum(DSt.emax)||null}; if(!(Q > 0)){ O.innerHTML = '<div class="small">Γράψε τον αέρα της μονάδας (m³/h, υψηλή ταχύτητα) από το φυλλάδιο.</div>'; return; } }
   else { O.innerHTML = '<div class="small">Διάλεξε μάρκα και μοντέλο.</div>'; return; }
-  var rows = dRows(), eps = DSt.t==="spiro" ? 0.09 : 3.0, DL = DUCT_D[DSt.t] || DUCT_D.flex, vd = dNum(DSt.vd)*10, gh = dNum(DSt.gh) || 0, Hc = dNum(DSt.h), gc = dNum(DSt.gc);
+  var MU = 1, SPinfo = null, rows;
+  if(DSt.md !== "multi"){ var SP = DSt.sp, rtS = DUCT_RT[SP.rt] || DUCT_RT.oth, dep0 = dNum(SP.W) || 0, ghS = dNum(DSt.gh) || 0;
+    MU = DSt.md==="pro" ? Math.max(1, parseInt(SP.u)||1) : 1;
+    var nU = parseInt(SP.n) > 0 ? Math.max(1, Math.ceil(parseInt(SP.n)/MU)) : 0, auto = !nU;
+    if(auto){ var DLa = DUCT_D[DSt.t] || DUCT_D.flex, epa = DSt.t==="spiro" ? 0.09 : 3.0, vda = dNum(DSt.vd)*10, La = dNum(SP.L) || 0;
+      // τα λιγότερα στόμια που: βγαίνουν ήσυχα, η ρίψη δεν ξεπερνά τον χώρο, το κανάλι τους χωράει μονό στο κενό, και η απόσταση μεταξύ τους δεν ξεπερνά τη ρίψη
+      for(var nn=1; nn<=12; nn++){ var qa = Q/nn, gq = dGrilleFit(qa, ghS, rtS.lw, dep0); if(!gq || (dep0 && gq.x > 1.15*dep0)) continue;
+        var fit = false; for(var k3=0;k3<DLa.length;k3++){ var F3 = dFric(qa, DLa[k3], epa); if(F3.v <= rtS.v && F3.R <= 1.0){ fit = !(vda > 0) || DLa[k3] + 30 <= vda; break; } }
+        if(!fit) continue; if(La > 0 && La/(nn*MU) > gq.x) continue; nU = nn; break; }
+      if(!nU){ for(var nn2=1; nn2<=12; nn2++){ var gq2 = dGrilleFit(Q/nn2, ghS, rtS.lw, dep0); if(gq2){ nU = nn2; break; } } } if(!nU) nU = 12; }
+    rows = []; for(var j=0;j<nU;j++) rows.push({rt:SP.rt, m2:"", dep:SP.W, len:SP.len, bn:SP.bn});
+    SPinfo = {n:nU, auto:auto, A:dNum(SP.m2), L:dNum(SP.L), rt:rtS};
+  } else rows = dRows();
+  var eps = DSt.t==="spiro" ? 0.09 : 3.0, DL = DUCT_D[DSt.t] || DUCT_D.flex, vd = dNum(DSt.vd)*10, gh = dNum(DSt.gh) || 0, Hc = dNum(DSt.h), gc = dNum(DSt.gc);
   var A = rows.map(function(r){ return dNum(r.m2); }), haveA = A.every(function(a){ return a > 0; }), SA = haveA ? A.reduce(function(s,a){ return s+a; },0) : 0;
   var Kb = DSt.t==="spiro" ? 0.25 : 0.8; // καμπύλη 90°: σπιράλ R/D≈1,5 ~0,25 · εύκαμπτο ~0,8 (συντηρητικά)
   var res = rows.map(function(r, i){
@@ -174,6 +203,12 @@ function ductCalc(){
   var worst = Math.max.apply(0, res.map(function(x){ return x.dp; })), tot = worst + rdp;
 
   if(U) h += '<div class="small" style="margin-top:8px">Μονάδα: <b>'+esc(U.m)+'</b> ('+esc(U.ty)+') · αέρας υψηλής <b>'+f0(Q)+' m³/h</b>'+(E.nom!=null?' · ονομαστική στατική <b>'+E.nom+' Pa</b>':'')+(E.opts?' · ρυθμίσεις '+E.opts.join("/")+' Pa':'')+(E.max?' · μέγιστη <b>'+E.max+' Pa</b>':'')+(U.W?' · σώμα '+U.W+'×'+U.H+'×'+U.D+' mm':'')+'</div>';
+  if(SPinfo){ var NT = SPinfo.n*MU;
+    h += '<div class="plnote" style="background:#e6f0ff;color:#0b2a55">'+(MU>1?'<b>'+MU+' μηχανήματα</b> × ':'')+'<b>'+SPinfo.n+' στόμια</b>'+(MU>1?' το καθένα = <b>'+NT+' στόμια</b> συνολικά':'')+(SPinfo.auto?' (τα λιγότερα που βγαίνουν ήσυχα, με σωστή ρίψη, μονό κανάλι που χωράει στο κενό και απόσταση μεταξύ τους όχι μεγαλύτερη από τη ρίψη)':'')+'.'+
+      (SPinfo.L>0 ? ' Βάλ\'τα ομοιόμορφα στον τοίχο των '+f1(SPinfo.L)+' m: ένα κάθε ~'+f1(SPinfo.L/NT)+' m, το πρώτο ~'+f1(SPinfo.L/NT/2)+' m από τη γωνία.' : '')+
+      (SPinfo.A>0 && Hc>0 ? ' Αέρας συνολικά '+f0(Q*MU)+' m³/h → '+f1(Q*MU/(SPinfo.A*Hc))+' αλλαγές/ώρα, '+f1(Q*MU/SPinfo.A)+' m³/h ανά m².' : '')+
+      (MU>1?' Κάθε μηχάνημα με δικό του plenum, κανάλια και επιστροφή· ο υπολογισμός παρακάτω είναι για ένα μηχάνημα.':'')+'</div>';
+    haveA = true; }
   if(!haveA) W.push("Δεν έγραψες m² σε όλους τους χώρους: μοίρασα τον αέρα ίσα. Με τα m² ο αέρας μοιράζεται ανάλογα με τον χώρο.");
   h += '<table class="dtab"><tr><th>Στόμιο</th><th>Αέρας</th><th>Κανάλι</th><th>Στόμιο προσαγωγής</th></tr>';
   res.forEach(function(x){
@@ -209,7 +244,7 @@ function ductCalc(){
   if(Hc > 3.5) W.push("Ψηλό ταβάνι ("+f1(Hc)+" m): στη θέρμανση ο ζεστός αέρας μένει ψηλά – γύρνα τις οριζόντιες περσίδες προς τα κάτω τον χειμώνα.");
   if(gc > 30) W.push("Το στόμιο είναι "+f0(gc)+" cm κάτω από το ταβάνι: χάνεται το φαινόμενο Coanda και ο κρύος αέρας «πέφτει» νωρίτερα. Καλύτερα ως 20–30 cm από το ταβάνι.");
   res.forEach(function(x){ if(x.ach != null) x.achTxt = f1(x.ach); });
-  if(haveA && Hc > 0) h += '<div class="small" style="margin-top:6px">Αλλαγές αέρα/ώρα: '+res.map(function(x){ return (x.i+1)+": "+x.achTxt; }).join(" · ")+' (πληροφοριακά· την ψυκτική ισχύ ανά χώρο τη δίνει μελέτη φορτίων).</div>';
+  if(haveA && Hc > 0 && !SPinfo) h += '<div class="small" style="margin-top:6px">Αλλαγές αέρα/ώρα: '+res.map(function(x){ return (x.i+1)+": "+x.achTxt; }).join(" · ")+' (πληροφοριακά· την ψυκτική ισχύ ανά χώρο τη δίνει μελέτη φορτίων).</div>';
   if(W.length) h += '<div class="plnote">'+W.map(function(w){ return "⚠ "+esc(w); }).join("<br>")+'</div>';
   h += '<div class="small" style="margin-top:8px">Οι διαστάσεις στομίων είναι εκτίμηση για στόμιο <b>διπλής εκτροπής</b> (τύπου 20-DH) με βάση δημοσιευμένα σημεία επιλογής κατασκευαστή· επιβεβαίωσε θόρυβο και ρίψη στον κατάλογο του στομίου που θα αγοράσεις. Ταχύτητες: κλάδος ≤ '+'2,5 m/s υπνοδωμάτιο / 3,0 m/s υπόλοιπα, τριβή ≤ 1 Pa/m.</div>'+
     '<div class="small" style="margin-top:4px">Πηγές: '+DUCT_SRC.map(esc).join(" · ")+(U && U.src ? ' · Μονάδα: '+esc(U.src) : '')+'</div>';
@@ -221,6 +256,8 @@ function dTake(t, ch){
   var map = {d_b:"b", d_m:"m", d_q:"q", d_e:"e", d_emax:"emax", d_h:"h", d_gc:"gc", d_vd:"vd", d_gh:"gh", d_t:"t", d_n:"n"}, re = false;
   if(t.id==="d_rt"){ DSt.ret = t.value==="0" ? "0" : (DSt.ret!=="0" ? DSt.ret : "3"); re = true; }
   else if(t.id==="d_rl"){ DSt.ret = t.value || "0.1"; }
+  else if(t.id==="d_md"){ DSt.md = t.value; if(DSt.md==="pro" && ["shop","rest","ofo","off","oth"].indexOf(DSt.sp.rt)<0) DSt.sp.rt = "shop"; if(DSt.md==="one" && ["liv","bed","kit","off","oth"].indexOf(DSt.sp.rt)<0) DSt.sp.rt = "liv"; re = true; }
+  else if(t.hasAttribute("data-sp")){ DSt.sp[t.getAttribute("data-sp")] = t.value; }
   else if(t.hasAttribute("data-dr")){ var r = dRows()[+t.getAttribute("data-dr")]; if(r) r[t.getAttribute("data-dk")] = t.value; }
   else if(map[t.id]){ DSt[map[t.id]] = t.value; if(t.id==="d_b"){ DSt.m = ""; re = true; } if(t.id==="d_m" || t.id==="d_t" || t.id==="d_gh") re = re || false; if(t.id==="d_n" && ch) re = true; }
   dSave();
@@ -230,6 +267,7 @@ function dTake(t, ch){
 PARTS.push({id:"duct", icon:"🌀", name:"Κανάλια καναλάτου (διάμετροι & στόμια)", body:[
  ["Πώς το χρησιμοποιείς","Διάλεξε μάρκα και μοντέλο (ή «Άλλη» και γράψε αέρα/στατική από το φυλλάδιο). Γράψε ύψος ταβανιού, πόσο κάτω από το ταβάνι μπαίνουν τα στόμια, το ελεύθερο κενό για το κανάλι και πόσα στόμια θέλεις. Για κάθε στόμιο: χώρος, m², πόσο μακριά πρέπει να φτάσει ο αέρας (μέχρι τον απέναντι τοίχο), μήκος καναλιού και καμπύλες."],
  ["Έλεγχος στομίου","Στο πάνω κουτί γράφεις αέρα (m³/h), στατική (Pa) και διάσταση στομίου: σου λέει αν θα δουλέψει, πόσο θόρυβο κάνει σε dB(A), πόσο μακριά φτάνει ο αέρας και αν φτάνει η στατική. Με Φ και μήκος καναλιού ελέγχει και το κανάλι."],
+ ["Εφαρμογές","• Ένα μηχάνημα για πολλούς χώρους (σπίτι με plenum και κανάλι ανά δωμάτιο). • Ένα μηχάνημα για έναν χώρο (π.χ. καναλάτο μόνο για το σαλόνι – για κάθε δωμάτιο με δικό του καναλάτο κάνεις ξεχωριστό υπολογισμό). • Ενιαίος επαγγελματικός χώρος (κατάστημα, καφέ, γραφείο) με ένα ή περισσότερα ίδια μηχανήματα: βρίσκει πόσα στόμια χρειάζονται και σε τι απόσταση μπαίνουν."],
  ["Τι βγάζει","Αέρα ανά στόμιο (ανάλογα με τα m²), διάμετρο καναλιού Φ για κάθε κλάδο, διαστάσεις στομίου προσαγωγής με ρίψη και θόρυβο, γρίλια επιστροφής, plenum και τη στατική που πρέπει να ρυθμίσεις στη μονάδα."],
  ["Τι να ρωτήσεις / μετρήσεις στο σημείο","• Μοντέλο εσωτερικής (ταμπέλα) • Ύψος ταβανιού • Πόσο χώρο έχεις πάνω από την ψευδοροφή ή μέσα στο κουτί (cm) • Μέγιστο ύψος για το στόμιο (σοφίτα/κουτί) • Για κάθε χώρο: m², απόσταση από το στόμιο μέχρι τον απέναντι τοίχο, μήκος διαδρομής καναλιού, πόσες στροφές • Πού θα μπει η επιστροφή και αν θέλει κανάλι."],
  ["Τι ΔΕΝ κάνει","Δεν κάνει μελέτη ψυκτικών φορτίων: τον αέρα τον μοιράζει με τα m². Δεν σχεδιάζει κεντρικό κανάλι με διακλαδώσεις (μόνο plenum με ξεχωριστό κανάλι ανά στόμιο). Γραμμικά στόμια (slot) και τετράγωνα διαχύτες ταβανιού δεν περιλαμβάνονται ακόμα."]
