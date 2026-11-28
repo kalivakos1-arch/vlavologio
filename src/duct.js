@@ -26,6 +26,7 @@ var DUCT_G = [[200,100],[300,100],[400,100],[500,100],[600,100],[300,150],[400,1
 var DUCT_RG = [[300,150],[400,150],[400,200],[500,200],[600,200],[500,250],[600,250],[600,300],[800,300],[600,400],[800,400],[1000,400],[800,500],[1000,500]];
 var DSt = (function(){ try{ return JSON.parse(localStorage.getItem("vl_duct")||"null") || null; }catch(e){ return null; } })() ||
   {b:"", m:"", q:"", e:"", emax:"", h:"2.7", gc:"10", vd:"30", gh:"", t:"flex", n:"3", ret:"0", rows:[]};
+if(!DSt.ck) DSt.ck = {q:"", p:"", L:"", H:"", n:"1", ty:"sup", rt:"bed", d:"", len:"", dep:""};
 function dSave(){ try{ localStorage.setItem("vl_duct", JSON.stringify(DSt)); }catch(e){} }
 var DUCT_TY = {duct_low:"Λεπτό / χαμηλή στατική", duct_mid:"Μέση στατική", duct_high:"Υψηλή στατική", duct:"Καναλάτο"};
 function dUnits(b){
@@ -62,7 +63,20 @@ function dRows(){ var n = Math.max(1, Math.min(12, parseInt(DSt.n)||1)); while(D
 function ductForm(){
   var B = dBrands(), U = DSt.b ? dUnits(DSt.b) : [], rows = dRows();
   var o = function(v, t, s){ return '<option value="'+esc(v)+'"'+(s?' selected':'')+'>'+esc(t)+'</option>'; };
-  var h = '<div class="pcalcw" id="dcw"><div class="lbl">🌀 Κανάλια καναλάτου – διάμετροι & στόμια</div>'+
+  var C = DSt.ck, h = '<div class="pcalcw" id="dck"><div class="lbl">🔎 Έλεγχος στομίου: θα δουλέψει; πόσο θόρυβο κάνει;</div>'+
+   '<div class="small" style="margin:2px 0 8px">Γράψε τον αέρα, τη στατική και τη διάσταση του στομίου. Αν έχεις κανάλι, βάλε και Φ / μήκος για πλήρη έλεγχο.</div>'+
+   '<div class="row4"><label>Αέρας (m³/h)<input id="k_q" class="kv" inputmode="decimal" value="'+esc(C.q)+'" placeholder="π.χ. 400"></label>'+
+   '<label>Στατική μονάδας (Pa)<input id="k_p" class="kv" inputmode="decimal" value="'+esc(C.p)+'" placeholder="π.χ. 30"></label></div>'+
+   '<div class="row4"><label>Στόμιο πλάτος (mm)<input id="k_L" class="kv" inputmode="decimal" value="'+esc(C.L)+'" placeholder="π.χ. 400"></label>'+
+   '<label>Στόμιο ύψος (mm)<input id="k_H" class="kv" inputmode="decimal" value="'+esc(C.H)+'" placeholder="π.χ. 150"></label></div>'+
+   '<div class="row4"><label>Πόσα ίδια στόμια μοιράζονται τον αέρα<input id="k_n" class="kv" inputmode="numeric" value="'+esc(C.n)+'"></label>'+
+   '<label>Τύπος<select id="k_ty" class="kv"><option value="sup"'+(C.ty!=="ret"?' selected':'')+'>Προσαγωγή (διπλής εκτροπής)</option><option value="ret"'+(C.ty==="ret"?' selected':'')+'>Επιστροφή (γρίλια)</option></select></label></div>'+
+   '<div class="row4"><label>Χώρος<select id="k_rt" class="kv">'+Object.keys(DUCT_RT).map(function(k){ return '<option value="'+k+'"'+(k===C.rt?' selected':'')+'>'+esc(DUCT_RT[k].n)+'</option>'; }).join("")+'</select></label>'+
+   '<label>Μέχρι απέναντι τοίχο (m)<input id="k_dep" class="kv" inputmode="decimal" value="'+esc(C.dep)+'" placeholder="προαιρετικό"></label></div>'+
+   '<div class="row4"><label>Κανάλι Φ (mm)<input id="k_d" class="kv" inputmode="decimal" value="'+esc(C.d)+'" placeholder="προαιρετικό"></label>'+
+   '<label>Μήκος καναλιού (m)<input id="k_len" class="kv" inputmode="decimal" value="'+esc(C.len)+'" placeholder="προαιρετικό"></label></div>'+
+   '<div id="k_o"></div></div>';
+  h += '<div class="pcalcw" id="dcw"><div class="lbl">🌀 Κανάλια καναλάτου – διάμετροι & στόμια</div>'+
    '<div class="small" style="margin:2px 0 8px">Τι χρειάζομαι από σένα: μηχάνημα, ύψος ταβανιού, κενό ψευδοροφής, και για κάθε στόμιο τον χώρο, τα m², πόσο μακριά πρέπει να φτάσει ο αέρας και το μήκος του καναλιού.</div>'+
    '<div class="row4"><label>Μάρκα<select id="d_b" class="dv"><option value="">– διάλεξε –</option>'+B.map(function(b){ return o(b,b,b===DSt.b); }).join("")+o("_","Άλλη / γράφω τα στοιχεία", DSt.b==="_")+'</select></label>'+
    (DSt.b && DSt.b!=="_" ? '<label>Μοντέλο<select id="d_m" class="dv"><option value="">– διάλεξε –</option>'+U.map(function(u,i){ return o(String(i), u.m+" · "+u.q+" m³/h · "+u.ty, String(i)===DSt.m); }).join("")+'</select></label>' : '<label>&nbsp;</label>')+'</div>';
@@ -87,8 +101,48 @@ function ductForm(){
   h += '<div id="d_o"></div></div>';
   return h;
 }
+function ductCheck(){
+  var O = document.getElementById("k_o"); if(!O) return; var C = DSt.ck, Q = dNum(C.q), P = dNum(C.p), L = dNum(C.L), H = dNum(C.H), n = Math.max(1, parseInt(C.n)||1);
+  var f1 = function(x){ return (Math.round(x*10)/10).toLocaleString("el-GR"); }, f0 = function(x){ return String(Math.round(x)); };
+  if(!(Q > 0) || !(L > 0) || !(H > 0)){ O.innerHTML = '<div class="small">Γράψε αέρα και διαστάσεις στομίου.</div>'; return; }
+  var q = Q/n, rt = DUCT_RT[C.rt] || DUCT_RT.oth, out = [], bad = 0, warn = 0, dp = 0;
+  if(C.ty === "ret"){
+    var vf = q/3600/(L*H/1e6), dr = 1.1*vf*vf; dp += dr;
+    out.push('Ταχύτητα πρόσοψης <b>'+f1(vf)+' m/s</b> · πτώση πίεσης ~'+f0(dr)+' Pa');
+    if(vf > 2.5){ bad++; out.push('❌ Πολύ μικρή γρίλια: πάνω από 2,5 m/s σφυρίζει και «πνίγει» το μηχάνημα. Θέλει πρόσοψη ≥ '+(Math.ceil(q/3600/2.0*1e6/H/100)*100)+'×'+f0(H)+' mm ή δεύτερη γρίλια.'); }
+    else if(vf > 2.0){ warn++; out.push('⚠ Λίγο μικρή: πάνω από 2,0 m/s ακούγεται. Ιδανικά ≤ 2,0 m/s.'); }
+    else out.push('✅ Μέγεθος σωστό για ήσυχη επιστροφή (≤ 2,0 m/s).');
+  } else {
+    var Ak = 0.5*L*H/1e6, vk = q/3600/Ak, lw = 6.5 + 57.5*Math.log10(vk) + 10*Math.log10(Ak), x = 6.0*vk*Math.sqrt(Ak), dg = 0.40*vk*vk; dp += dg;
+    out.push('Ταχύτητα στο στόμιο (ενεργή) <b>'+f1(vk)+' m/s</b> · ρίψη ~<b>'+f1(x)+' m</b> · πτώση πίεσης ~'+f0(dg)+' Pa');
+    out.push('Θόρυβος στομίου <b>'+(lw < 20 ? 'κάτω από 20' : '~'+f0(lw))+' dB(A)</b> στάθμη ηχητικής ισχύος (όπως τη δίνουν οι κατάλογοι στομίων). Όριο για '+esc(rt.n.toLowerCase())+': ~'+rt.lw+' dB(A).');
+    if(lw > rt.lw + 5){ bad++; out.push('❌ Θα κάνει φασαρία: '+f0(lw - rt.lw)+' dB πάνω από το όριο. Μεγαλύτερο στόμιο ή δεύτερο στόμιο.'); }
+    else if(lw > rt.lw){ warn++; out.push('⚠ Στο όριο: θα ακούγεται λίγο σε ήσυχο χώρο ('+f0(lw - rt.lw)+' dB πάνω).'); }
+    else out.push('✅ Ήσυχο για '+esc(rt.n.toLowerCase())+'.');
+    var g = dGrilleFit(q, 0, rt.lw, dNum(C.dep)||0); if((lw > rt.lw) && g) out.push('Πρόταση: <b>'+g.L+'×'+g.H+' mm</b> → ~'+f0(g.lw)+' dB(A), ρίψη ~'+f1(g.x)+' m.');
+    var dep = dNum(C.dep); if(dep > 0){ if(x < 0.7*dep){ warn++; out.push('⚠ Ο αέρας φτάνει ~'+f1(x)+' m αλλά ο χώρος είναι '+f1(dep)+' m: το βάθος του χώρου δεν θα δροσίζει καλά.'); }
+      else if(x > 1.15*dep){ warn++; out.push('⚠ Ρίψη ~'+f1(x)+' m μεγαλύτερη από τον χώρο ('+f1(dep)+' m): ο αέρας χτυπά στον απέναντι τοίχο και πέφτει πάνω στους ανθρώπους – άνοιξε τις κατακόρυφες περσίδες.'); }
+      else out.push('✅ Η ρίψη ταιριάζει στον χώρο.'); }
+    if(vk < 1.5){ warn++; out.push('⚠ Πολύ χαμηλή ταχύτητα: ο κρύος αέρας «πέφτει» αμέσως μπροστά από το στόμιο.'); }
+  }
+  var D = dNum(C.d), len = dNum(C.len) || 0;
+  if(D > 0){ var F = dFric(q, D, 3.0), dd = F.R*len*1.15 + 1.5*F.pd; dp += dd;
+    out.push('Κανάλι Φ'+f0(D)+': ταχύτητα <b>'+f1(F.v)+' m/s</b>, τριβή '+f1(F.R)+' Pa/m'+(len?' · απώλεια ~'+f0(dd)+' Pa στα '+f1(len)+' m':'')+' (εύκαμπτο).');
+    var sug = null; for(var i=0;i<DUCT_D.flex.length;i++){ var F2 = dFric(q, DUCT_D.flex[i], 3.0); if(F2.v <= rt.v && F2.R <= 1.0){ sug = DUCT_D.flex[i]; break; } }
+    if(F.v > rt.v + 1){ bad++; out.push('❌ Το κανάλι είναι μικρό: θα σφυρίζει. Βάλε Φ'+(sug||"μεγαλύτερο")+'.'); } else if(F.v > rt.v){ warn++; out.push('⚠ Το κανάλι είναι λίγο μικρό για '+esc(rt.n.toLowerCase())+' (όριο '+f1(rt.v)+' m/s)'+(sug?' – ιδανικά Φ'+sug:'')+'.'); } }
+  if(P > 0){ out.push('Χρειάζονται ~<b>'+f0(dp)+' Pa</b> '+(D>0?'(στόμιο + κανάλι)':'(μόνο το στόμιο)')+' · έχεις '+f0(P)+' Pa.');
+    if(dp > P){ bad++; out.push('❌ Δεν φτάνει η στατική: ο αέρας θα βγαίνει λιγότερος από '+f0(Q)+' m³/h. Ανέβασε τη στατική της μονάδας ή μεγάλωσε στόμιο/κανάλι.'); }
+    else if(P - dp > 40){ warn++; out.push('⚠ Περισσεύει πολλή στατική ('+f0(P-dp)+' Pa): θα βγαίνει περισσότερος αέρας και θόρυβος από όσο υπολογίζεις. Χαμήλωσε τη ρύθμιση στατικής αν γίνεται.'); }
+    else out.push('✅ Η στατική φτάνει.'); }
+  var head = bad ? '<div class="plnote" style="background:#ffd9d9;color:#5a0000">❌ Όχι όπως είναι – δες παρακάτω.</div>' : warn ? '<div class="plnote">⚠ Δουλεύει, με επιφυλάξεις.</div>' : '<div class="plnote" style="background:#d9f7e6;color:#053d22">✅ Θα δουλέψει σωστά και ήσυχα.</div>';
+  O.innerHTML = head + '<div class="small" style="line-height:1.6">'+out.join("<br>")+(n>1?'<br>Υπολογισμός ανά στόμιο: '+f0(q)+' m³/h.':'')+'</div>'+
+    '<div class="small" style="margin-top:6px">Εκτίμηση για στόμιο διπλής εκτροπής / γρίλια επιστροφής με βάση δημοσιευμένα στοιχεία κατασκευαστών (KOOLAIR, Hart & Cooley)· ο πραγματικός θόρυβος στον χώρο είναι συνήθως λίγο χαμηλότερος από τη στάθμη ισχύος.</div>';
+}
+document.addEventListener("input", function(e){ var t = e.target; if(!t || !t.classList || !t.classList.contains("kv")) return; var m = {k_q:"q", k_p:"p", k_L:"L", k_H:"H", k_n:"n", k_ty:"ty", k_rt:"rt", k_d:"d", k_len:"len", k_dep:"dep"}; if(m[t.id]){ DSt.ck[m[t.id]] = t.value; dSave(); ductCheck(); } });
+document.addEventListener("change", function(e){ var t = e.target; if(!t || !t.classList || !t.classList.contains("kv")) return; var m = {k_ty:"ty", k_rt:"rt"}; if(m[t.id]){ DSt.ck[m[t.id]] = t.value; dSave(); ductCheck(); } });
 function dNum(v){ var x = parseFloat(String(v==null?"":v).replace(",", ".")); return isNaN(x) ? NaN : x; }
 function ductCalc(){
+  ductCheck();
   var O = document.getElementById("d_o"); if(!O) return; var h = "", W = [], f1 = function(x){ return (Math.round(x*10)/10).toLocaleString("el-GR"); }, f0 = function(x){ return String(Math.round(x)); };
   var U = null, Q, E = {nom:null, min:null, max:null};
   if(DSt.b && DSt.b!=="_"){ var L = dUnits(DSt.b); U = L[+DSt.m]; if(!U || DSt.m===""){ O.innerHTML = '<div class="small">Διάλεξε μοντέλο.</div>'; return; } Q = U.q; E = dEsp(U); }
@@ -170,11 +224,12 @@ function dTake(t, ch){
   else if(t.hasAttribute("data-dr")){ var r = dRows()[+t.getAttribute("data-dr")]; if(r) r[t.getAttribute("data-dk")] = t.value; }
   else if(map[t.id]){ DSt[map[t.id]] = t.value; if(t.id==="d_b"){ DSt.m = ""; re = true; } if(t.id==="d_m" || t.id==="d_t" || t.id==="d_gh") re = re || false; if(t.id==="d_n" && ch) re = true; }
   dSave();
-  if(re){ var w = document.getElementById("dcw"); if(w){ var tmp = document.createElement("div"); tmp.innerHTML = ductForm(); w.parentNode.replaceChild(tmp.firstChild, w); } }
+  if(re){ var w = document.getElementById("dcw"); if(w){ var tmp = document.createElement("div"); tmp.innerHTML = ductForm(); w.parentNode.replaceChild(tmp.querySelector("#dcw"), w); } }
   ductCalc();
 }
 PARTS.push({id:"duct", icon:"🌀", name:"Κανάλια καναλάτου (διάμετροι & στόμια)", body:[
  ["Πώς το χρησιμοποιείς","Διάλεξε μάρκα και μοντέλο (ή «Άλλη» και γράψε αέρα/στατική από το φυλλάδιο). Γράψε ύψος ταβανιού, πόσο κάτω από το ταβάνι μπαίνουν τα στόμια, το ελεύθερο κενό για το κανάλι και πόσα στόμια θέλεις. Για κάθε στόμιο: χώρος, m², πόσο μακριά πρέπει να φτάσει ο αέρας (μέχρι τον απέναντι τοίχο), μήκος καναλιού και καμπύλες."],
+ ["Έλεγχος στομίου","Στο πάνω κουτί γράφεις αέρα (m³/h), στατική (Pa) και διάσταση στομίου: σου λέει αν θα δουλέψει, πόσο θόρυβο κάνει σε dB(A), πόσο μακριά φτάνει ο αέρας και αν φτάνει η στατική. Με Φ και μήκος καναλιού ελέγχει και το κανάλι."],
  ["Τι βγάζει","Αέρα ανά στόμιο (ανάλογα με τα m²), διάμετρο καναλιού Φ για κάθε κλάδο, διαστάσεις στομίου προσαγωγής με ρίψη και θόρυβο, γρίλια επιστροφής, plenum και τη στατική που πρέπει να ρυθμίσεις στη μονάδα."],
  ["Τι να ρωτήσεις / μετρήσεις στο σημείο","• Μοντέλο εσωτερικής (ταμπέλα) • Ύψος ταβανιού • Πόσο χώρο έχεις πάνω από την ψευδοροφή ή μέσα στο κουτί (cm) • Μέγιστο ύψος για το στόμιο (σοφίτα/κουτί) • Για κάθε χώρο: m², απόσταση από το στόμιο μέχρι τον απέναντι τοίχο, μήκος διαδρομής καναλιού, πόσες στροφές • Πού θα μπει η επιστροφή και αν θέλει κανάλι."],
  ["Τι ΔΕΝ κάνει","Δεν κάνει μελέτη ψυκτικών φορτίων: τον αέρα τον μοιράζει με τα m². Δεν σχεδιάζει κεντρικό κανάλι με διακλαδώσεις (μόνο plenum με ξεχωριστό κανάλι ανά στόμιο). Γραμμικά στόμια (slot) και τετράγωνα διαχύτες ταβανιού δεν περιλαμβάνονται ακόμα."]
