@@ -1250,6 +1250,7 @@ function renderParts(){
     if(P.id==="fgas") h += fgasForm();
     if(P.id==="air") h += airForm();
     if(P.id==="pipe") h += pipeForm();
+    if(P.id==="duct") h += ductForm();
     if(P.id==="sensor"){
       var sl = sensList();
       h += '<div class="pcalcw"><div class="lbl">🧮 Υπολογιστής αισθητηρίου</div>'+
@@ -1277,6 +1278,7 @@ function renderParts(){
   if(P && P.id==="fgas") fgasCalc();
   if(P && P.id==="air") airCalc();
   if(P && P.id==="pipe"){ pipeCalc(); pAct(); }
+  if(P && P.id==="duct") ductCalc();
   if(P && P.id==="inst") instCalc();
 }
 var fmT=null;
