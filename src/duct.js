@@ -248,7 +248,30 @@ function ductCalc(){
   if(W.length) h += '<div class="plnote">'+W.map(function(w){ return "⚠ "+esc(w); }).join("<br>")+'</div>';
   h += '<div class="small" style="margin-top:8px">Οι διαστάσεις στομίων είναι εκτίμηση για στόμιο <b>διπλής εκτροπής</b> (τύπου 20-DH) με βάση δημοσιευμένα σημεία επιλογής κατασκευαστή· επιβεβαίωσε θόρυβο και ρίψη στον κατάλογο του στομίου που θα αγοράσεις. Ταχύτητες: κλάδος ≤ '+'2,5 m/s υπνοδωμάτιο / 3,0 m/s υπόλοιπα, τριβή ≤ 1 Pa/m.</div>'+
     '<div class="small" style="margin-top:4px">Πηγές: '+DUCT_SRC.map(esc).join(" · ")+(U && U.src ? ' · Μονάδα: '+esc(U.src) : '')+'</div>';
+  // ---- λίστα υλικών ----
+  var mu = MU || 1, bom = [], dm = {}, gm = {}, bx = {}, noLen = false, typ = DSt.t==="spiro" ? "γαλβανιζέ σπιράλ" : "εύκαμπτο μονωμένο";
+  res.forEach(function(x){ var k = "Φ"+x.d.D; if(!(x.len > 0)) noLen = true; dm[k] = (dm[k]||0) + (x.len||0)*x.d.n*mu;
+    bx[k] = (bx[k]||0) + x.d.n*mu;
+    if(x.g){ var gk = x.g.L+"×"+x.g.H; gm[gk] = (gm[gk]||0) + mu; } else if(x.two){ var gk2 = x.two.L+"×"+x.two.H; gm[gk2] = (gm[gk2]||0) + 2*mu; } });
+  Object.keys(dm).forEach(function(k){ bom.push("Κανάλι "+typ+" "+k+": "+(dm[k] > 0 ? Math.ceil(dm[k]*1.1)+" m (+10% φύρα)" : "– γράψε μήκη")); });
+  if(rd) bom.push("Κανάλι επιστροφής "+typ+" "+(rd.n?rd.n+"×":"")+"Φ"+rd.D+": "+Math.ceil(rl*1.1*(rd.n||1)*mu)+" m");
+  Object.keys(gm).forEach(function(k){ bom.push("Στόμιο προσαγωγής διπλής εκτροπής "+k+" mm: "+gm[k]+" τεμ."); });
+  Object.keys(bx).forEach(function(k){ bom.push("Κουτί (plenum) στομίου με κολάρο "+k+" (ύψος κουτιού ≥ "+(parseInt(k.slice(1))+20)+" mm): "+bx[k]+" τεμ."); });
+  bom.push("Plenum εξόδου μονάδας"+(U && U.W ? " πλάτος "+U.W+" mm":"")+", ύψος ≥ "+f0(maxD+50)+" mm, μονωμένο: "+mu+" τεμ.");
+  Object.keys(bx).forEach(function(k){ bom.push("Κολάρο "+k+" με κλαπέτο ρύθμισης στο plenum: "+bx[k]+" τεμ."); });
+  if(rg) bom.push("Γρίλια επιστροφής "+rg.L+"×"+rg.H+" mm (με φίλτρο αν δεν έχει η μονάδα): "+mu+" τεμ.");
+  h += '<div class="psec"><div class="pst">🧾 Λίστα υλικών'+(mu>1?' (για '+mu+' μηχανήματα)':'')+'</div><div class="psb">'+bom.map(function(b){ return "• "+esc(b); }).join("<br>")+
+    (noLen ? '<br><span class="plwarn">Γράψε μήκη καναλιών για να βγουν τα μέτρα.</span>' : '')+'</div></div>';
+  h += '<div class="row4" style="margin-top:8px"><button class="btn" id="d_share" type="button">📤 Στείλε τη μελέτη (Viber / email)</button><button class="btn" id="d_copy" type="button">📋 Αντιγραφή</button></div>';
   O.innerHTML = h;
+  var txt = function(){ var L = ["ΜΕΛΕΤΗ ΚΑΝΑΛΙΩΝ ΚΑΝΑΛΑΤΟΥ"]; if(U) L.push("Μονάδα: "+(DSt.b||"")+" "+U.m+" – "+f0(Q)+" m³/h");
+    res.forEach(function(x){ L.push("Στόμιο "+(x.i+1)+" ("+x.rt.n+"): "+f0(x.q)+" m³/h · κανάλι "+(x.d.n>1?x.d.n+"×":"")+"Φ"+x.d.D+" · στόμιο "+(x.g ? x.g.L+"×"+x.g.H+" (~"+(x.g.lw<20?"<20":f0(x.g.lw))+" dB(A), ρίψη ~"+f1(x.g.x)+" m)" : x.two ? "2×"+x.two.L+"×"+x.two.H : "–")); });
+    if(rg) L.push("Επιστροφή: γρίλια "+rg.L+"×"+rg.H+(rd?" · κανάλι "+(rd.n?rd.n+"×":"")+"Φ"+rd.D:""));
+    var sv = (O.querySelector(".psec .plnote")||{}).innerText; if(sv) L.push("Στατική: "+sv.replace(/\s+/g," ").trim());
+    L.push(""); L.push("Υλικά:"); bom.forEach(function(b){ L.push("• "+b); }); L.push(""); L.push("Βλαβολόγιο Κλιματισμού – εκτίμηση, επιβεβαίωσε με καταλόγους κατασκευαστών."); return L.join("\n"); };
+  var bs = document.getElementById("d_share"), bc = document.getElementById("d_copy");
+  if(bs) bs.onclick = function(){ var t = txt(); if(navigator.share){ navigator.share({title:"Μελέτη καναλιών", text:t}).catch(function(){}); } else { try{ navigator.clipboard.writeText(t); bs.textContent = "✅ Αντιγράφηκε"; }catch(e){} } };
+  if(bc) bc.onclick = function(){ try{ navigator.clipboard.writeText(txt()).then(function(){ bc.textContent = "✅ Αντιγράφηκε"; }); }catch(e){} };
 }
 document.addEventListener("input", function(e){ var t = e.target; if(!t || !t.classList || !t.classList.contains("dv")) return; dTake(t, false); });
 document.addEventListener("change", function(e){ var t = e.target; if(!t || !t.classList || !t.classList.contains("dv")) return; dTake(t, true); });
