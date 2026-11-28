@@ -169,8 +169,8 @@ function serVote(base, texts){
 function platePhoto(file){
   if(!file) return; scanStop();
   var vb = document.querySelector("#scanov .scbox"); if(vb) vb.style.display = "none";
-  scanMsg("🏷️ Βρίσκω την ταμπέλα στη φωτογραφία…");
   var url = URL.createObjectURL(file), img = new Image();
+  plProgStart(url); scanMsg("🏷️ Βρίσκω την ταμπέλα στη φωτογραφία…");
   img.onload = function(){
     var IW = img.naturalWidth || img.width, IH = img.naturalHeight || img.height, codes = [], worker = null, txt = [];
     var done = function(){ try{ if(worker) worker.terminate(); }catch(x){} URL.revokeObjectURL(url); var text = txt.join("\n"), P = plateParse(text), bs = ocrSerOf(codes); P.ser = bs || P.ser || ""; P.codes = codes; P.ok = plateVerify(P, txt, !!bs); plateShow(P, text); };

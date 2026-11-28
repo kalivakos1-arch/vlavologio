@@ -123,9 +123,30 @@ function scanOpen(target, noCam){
     scanLoop();
   }).catch(function(){ scanMsg("Δεν δόθηκε άδεια για την κάμερα (ή δεν υποστηρίζεται εδώ). Πάτα «📸 Φωτογραφία του barcode» – δουλεύει πάντα."); });
 }
-function scanMsg(t){ var m = document.getElementById("scmsg"); if(m) m.textContent = t; }
+function scanMsg(t){ var m = document.getElementById("scmsg"); if(m) m.textContent = t;
+  if(PLP.on){ if(/^(✅|⚠️|Δεν)/.test(t)) plProgEnd(); else { PLP.step++; plProgDraw(); } } }
+// Πρόοδος ανάγνωσης φωτογραφίας: εικόνα με γραμμή σάρωσης, μπάρα, δευτερόλεπτα που πέρασαν και περίπου πόσα μένουν
+var PLP = {on:false, t0:0, step:0, iv:null, est:9};
+function plProgStart(url){
+  plProgEnd(); var m = document.getElementById("scmsg"); if(!m) return;
+  var d = document.createElement("div"); d.id = "plprog";
+  d.innerHTML = '<div class="plpimg"><img alt="" src="'+url+'"><i></i></div><div class="plpbar"><b></b></div><div class="plpt"><span id="plpel">0″</span><span id="plprem">περίπου 9″</span></div><div class="plphint">Μην κλείσεις την οθόνη – η ανάγνωση γίνεται μέσα στο κινητό, χωρίς ίντερνετ.</div>';
+  m.parentNode.insertBefore(d, m.nextSibling);
+  var ov = document.getElementById("scanov"); if(ov) ov.classList.add("plbusy");
+  PLP.on = true; PLP.t0 = Date.now(); PLP.step = 0; PLP.est = 9; PLP.iv = setInterval(plProgDraw, 200); plProgDraw();
+}
+function plProgDraw(){
+  if(!PLP.on) return; var d = document.getElementById("plprog"); if(!d){ plProgEnd(); return; }
+  var el = (Date.now()-PLP.t0)/1000; if(el > PLP.est - 1.5) PLP.est = el + 2.5;
+  var f = Math.min(.97, Math.max(el/PLP.est, PLP.step*.12)), b = d.querySelector(".plpbar b");
+  if(b) b.style.width = Math.round(f*100)+"%";
+  var a = document.getElementById("plpel"), r = document.getElementById("plprem");
+  if(a) a.textContent = "⏱ "+Math.floor(el)+"″";
+  if(r) r.textContent = el > 13 ? "δύσκολη φωτογραφία – λίγο ακόμα…" : "απομένουν ~"+Math.max(1, Math.round(PLP.est-el))+"″";
+}
+function plProgEnd(){ PLP.on = false; var ov = document.getElementById("scanov"); if(ov) ov.classList.remove("plbusy"); clearInterval(PLP.iv); var d = document.getElementById("plprog"); if(d) d.remove(); }
 function scanStop(){ clearTimeout(SCAN.timer); if(SCAN.st){ SCAN.st.getTracks().forEach(function(t){ t.stop(); }); SCAN.st = null; } }
-function scanClose(){ scanStop(); var ov = document.getElementById("scanov"); if(ov){ ov.style.display = "none"; ov.innerHTML = ""; } document.body.style.overflow = ""; ovPop(); }
+function scanClose(){ plProgEnd(); scanStop(); var ov = document.getElementById("scanov"); if(ov){ ov.style.display = "none"; ov.innerHTML = ""; } document.body.style.overflow = ""; ovPop(); }
 var scanCv = null, scanN = 0;
 function scanLoop(){
   var v = document.getElementById("scvid"); if(!v || !SCAN.st) return;
