@@ -114,7 +114,7 @@ function ductForm(){
       '<label>Μήκος καναλιού (m)<input data-dr="'+i+'" data-dk="len" class="dv" inputmode="decimal" value="'+esc(r.len)+'" placeholder="π.χ. 5"></label></div>'+
       '<div class="row4"><label>Καμπύλες 90°<input data-dr="'+i+'" data-dk="bn" class="dv" inputmode="numeric" value="'+esc(r.bn)+'"></label><label>&nbsp;</label></div></div>';
   });
-  h += '<div id="d_o"></div></div>';
+  h += '<div id="d_o"></div><div style="margin-top:8px"><button class="btn" id="d_reset" type="button">🗑️ Νέα μελέτη (καθάρισμα)</button></div></div>';
   return h;
 }
 function ductCheck(){
@@ -164,6 +164,12 @@ function ductCalc(){
   if(DSt.b && DSt.b!=="_"){ var L = dUnits(DSt.b); U = L[+DSt.m]; if(!U || DSt.m===""){ O.innerHTML = '<div class="small">Διάλεξε μοντέλο.</div>'; return; } Q = U.q; E = dEsp(U); }
   else if(DSt.b==="_"){ Q = dNum(DSt.q); E = {nom:dNum(DSt.e)||null, min:null, max:dNum(DSt.emax)||null}; if(!(Q > 0)){ O.innerHTML = '<div class="small">Γράψε τον αέρα της μονάδας (m³/h, υψηλή ταχύτητα) από το φυλλάδιο.</div>'; return; } }
   else { O.innerHTML = '<div class="small">Διάλεξε μάρκα και μοντέλο.</div>'; return; }
+  var bad = [], hv = dNum(DSt.h), vv0 = dNum(DSt.vd), gc0 = dNum(DSt.gc);
+  if(!isNaN(hv) && (hv < 2 || hv > 10)) bad.push("Ύψος ταβανιού "+DSt.h+" m: γράψε σε μέτρα (π.χ. 2,7).");
+  if(!isNaN(vv0) && (vv0 < 10 || vv0 > 200)) bad.push("Κενό "+DSt.vd+" cm: γράψε σε εκατοστά (π.χ. 30).");
+  if(!isNaN(gc0) && (gc0 < 0 || gc0 > 300)) bad.push("Απόσταση στομίου από ταβάνι "+DSt.gc+" cm: γράψε σε εκατοστά.");
+  if(Q > 20000) bad.push("Αέρας "+Q+" m³/h: πολύ μεγάλος – μήπως είναι σε άλλη μονάδα (l/s, m³/min);");
+  if(bad.length){ O.innerHTML = '<div class="plnote">'+bad.map(function(b){ return "⚠ "+esc(b); }).join("<br>")+'</div>'; return; }
   var MU = 1, SPinfo = null, rows;
   if(DSt.md !== "multi"){ var SP = DSt.sp, rtS = DUCT_RT[SP.rt] || DUCT_RT.oth, dep0 = dNum(SP.W) || 0, ghS = dNum(DSt.gh) || 0;
     MU = DSt.md==="pro" ? Math.max(1, parseInt(SP.u)||1) : 1;
@@ -274,6 +280,9 @@ function ductCalc(){
   if(bc) bc.onclick = function(){ try{ navigator.clipboard.writeText(txt()).then(function(){ bc.textContent = "✅ Αντιγράφηκε"; }); }catch(e){} };
 }
 document.addEventListener("input", function(e){ var t = e.target; if(!t || !t.classList || !t.classList.contains("dv")) return; dTake(t, false); });
+document.addEventListener("click", function(e){ var t = e.target; if(!t || t.id !== "d_reset") return; if(!confirm("Να καθαριστεί η μελέτη;")) return;
+  var keep = DSt.ck; DSt = {b:DSt.b, m:DSt.m, q:"", e:"", emax:"", h:"2.7", gc:"10", vd:"30", gh:"", t:"flex", n:"3", ret:"0", rows:[], md:DSt.md, sp:{rt:DSt.md==="pro"?"shop":"liv", m2:"", L:"", W:"", u:"1", n:"", len:"", bn:"2"}, ck:keep}; dSave();
+  var w = document.getElementById("dcw"); if(w){ var tmp = document.createElement("div"); tmp.innerHTML = ductForm(); w.parentNode.replaceChild(tmp.querySelector("#dcw"), w); } ductCalc(); });
 document.addEventListener("change", function(e){ var t = e.target; if(!t || !t.classList || !t.classList.contains("dv")) return; dTake(t, true); });
 function dTake(t, ch){
   var map = {d_b:"b", d_m:"m", d_q:"q", d_e:"e", d_emax:"emax", d_h:"h", d_gc:"gc", d_vd:"vd", d_gh:"gh", d_t:"t", d_n:"n"}, re = false;
