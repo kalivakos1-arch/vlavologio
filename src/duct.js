@@ -38,7 +38,8 @@ function dUnits(b){
 function dBrands(){ var s = {}; [typeof DUCTU!=="undefined"?DUCTU:{}, typeof PUNIT!=="undefined"?PUNIT:{}].forEach(function(X){ Object.keys(X).forEach(function(b){ if(dUnits(b).length) s[b]=1; }); }); return Object.keys(s).sort(); }
 function dEsp(u){ // ονομαστική / εύρος στατικής από τη σημείωση του επίσημου πίνακα
   var n = String(u.note||""), m = n.match(/(?:ονομαστική|εργοστασιακή|nominal|factory)[^0-9]{0,12}(\d+)\s*Pa/i), r = n.match(/(\d+)\s*[–\-]\s*(\d+)\s*Pa/);
-  return {nom: m ? +m[1] : null, min: r ? +r[1] : null, max: u.emax || (r ? +r[2] : null)};
+  var op = n.match(/επιλογές\s*([0-9\/ ]+)\s*Pa/);
+  return {nom: m ? +m[1] : null, min: r ? +r[1] : null, max: u.emax || (r ? +r[2] : null), opts: op ? op[1].split("/").map(function(x){ return +x; }).filter(function(x){ return x > 0; }) : null};
 }
 // τριβή Pa/m – Darcy–Weisbach με Altshul–Tsal (ASHRAE Fundamentals κεφ. 21)
 function dFric(q, Dmm, eps){ var D = Dmm/1000, A = Math.PI*D*D/4, v = q/3600/A, Re = 66.4*D*1000*v, f1 = 0.11*Math.pow(eps/1000/D + 68/Re, 0.25), f = f1 >= 0.018 ? f1 : 0.85*f1 + 0.0028;
@@ -118,7 +119,7 @@ function ductCalc(){
     rdp += rd.F.R*rl*(DSt.t==="flex"?1.15:1) + 1.5*rd.F.pd; }
   var worst = Math.max.apply(0, res.map(function(x){ return x.dp; })), tot = worst + rdp;
 
-  if(U) h += '<div class="small" style="margin-top:8px">Μονάδα: <b>'+esc(U.m)+'</b> ('+esc(U.ty)+') · αέρας υψηλής <b>'+f0(Q)+' m³/h</b>'+(E.nom!=null?' · ονομαστική στατική <b>'+E.nom+' Pa</b>':'')+(E.max?' · μέγιστη <b>'+E.max+' Pa</b>':'')+(U.W?' · σώμα '+U.W+'×'+U.H+'×'+U.D+' mm':'')+'</div>';
+  if(U) h += '<div class="small" style="margin-top:8px">Μονάδα: <b>'+esc(U.m)+'</b> ('+esc(U.ty)+') · αέρας υψηλής <b>'+f0(Q)+' m³/h</b>'+(E.nom!=null?' · ονομαστική στατική <b>'+E.nom+' Pa</b>':'')+(E.opts?' · ρυθμίσεις '+E.opts.join("/")+' Pa':'')+(E.max?' · μέγιστη <b>'+E.max+' Pa</b>':'')+(U.W?' · σώμα '+U.W+'×'+U.H+'×'+U.D+' mm':'')+'</div>';
   if(!haveA) W.push("Δεν έγραψες m² σε όλους τους χώρους: μοίρασα τον αέρα ίσα. Με τα m² ο αέρας μοιράζεται ανάλογα με τον χώρο.");
   h += '<table class="dtab"><tr><th>Στόμιο</th><th>Αέρας</th><th>Κανάλι</th><th>Στόμιο προσαγωγής</th></tr>';
   res.forEach(function(x){
@@ -145,6 +146,10 @@ function ductCalc(){
   if(E.max && tot > E.max) vv = '<div class="plnote" style="background:#ffd9d9;color:#5a0000">❌ Χρειάζονται ~'+f0(tot)+' Pa αλλά η μονάδα δίνει έως '+E.max+' Pa. Μεγάλωσε τις διαμέτρους, κόψε μήκος/καμπύλες ή διάλεξε μονάδα υψηλότερης στατικής.</div>';
   else if(E.nom != null && tot > E.nom) vv = '<div class="plnote">⚙️ Χρειάζονται ~'+f0(tot)+' Pa: ρύθμισε τη στατική της μονάδας στα <b>'+Math.ceil(tot/10)*10+' Pa</b> (ονομαστική '+E.nom+' Pa'+(E.max?', μέγιστη '+E.max+' Pa':'')+') από το χειριστήριο / την πλακέτα, όπως λέει το εγχειρίδιο εγκατάστασης.</div>';
   else if(E.nom != null) vv = '<div class="plnote" style="background:#d9f7e6;color:#053d22">✅ Χρειάζονται ~'+f0(tot)+' Pa – φτάνει η ονομαστική στατική ('+E.nom+' Pa).'+(E.nom - tot > 30 ? ' Περισσεύει αρκετή: αν η μονάδα ρυθμίζεται, χαμήλωσέ τη για λιγότερο θόρυβο.' : '')+'</div>';
+  else if(E.opts && E.opts.length){ var pick = E.opts.filter(function(x){ return x >= tot; })[0];
+    vv = pick != null ? '<div class="plnote">⚙️ Χρειάζονται ~'+f0(tot)+' Pa: διάλεξε τη ρύθμιση στατικής <b>'+pick+' Pa</b> (η μονάδα έχει '+E.opts.join(" / ")+' Pa). Μη βάλεις μεγαλύτερη από όση χρειάζεται: κάνει θόρυβο.</div>' :
+      '<div class="plnote" style="background:#ffd9d9;color:#5a0000">❌ Χρειάζονται ~'+f0(tot)+' Pa – πάνω από τη μεγαλύτερη ρύθμιση της μονάδας ('+Math.max.apply(0,E.opts)+' Pa). Μεγάλωσε διαμέτρους / κόψε μήκος.</div>'; }
+  else if(E.min != null && E.max) vv = '<div class="plnote">⚙️ Χρειάζονται ~'+f0(tot)+' Pa: η μονάδα ρυθμίζεται '+E.min+'–'+E.max+' Pa – ρύθμισέ τη στα <b>'+Math.max(E.min, Math.ceil(tot/5)*5)+' Pa</b> περίπου, όπως λέει το εγχειρίδιο εγκατάστασης.</div>';
   else vv = '<div class="plnote">Χρειάζονται ~'+f0(tot)+' Pa εξωτερική στατική'+(E.max?' (η μονάδα δίνει έως '+E.max+' Pa)':'')+'. Η ονομαστική ρύθμιση της μονάδας δεν είναι στα επίσημα στοιχεία που έχω – δες το εγχειρίδιο εγκατάστασης.</div>';
   h += '<div class="psec"><div class="pst">📊 Στατική πίεση (πιο δυσμενής διαδρομή + επιστροφή)</div><div class="psb">Προσαγωγή ~'+f0(worst)+' Pa · επιστροφή ~'+f0(rdp)+' Pa · σύνολο ~'+f0(tot)+' Pa'+vv+'</div></div>';
   if(Hc > 3.5) W.push("Ψηλό ταβάνι ("+f1(Hc)+" m): στη θέρμανση ο ζεστός αέρας μένει ψηλά – γύρνα τις οριζόντιες περσίδες προς τα κάτω τον χειμώνα.");
